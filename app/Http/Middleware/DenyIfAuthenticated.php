@@ -17,7 +17,10 @@ class DenyIfAuthenticated
     public function handle(Request $request, Closure $next, $guard = null): Response
     {
 		if (Auth::guard($guard)->check()) {
-			abort(401);
+			return \Illuminate\Support\Facades\Response::json([
+				"success" => false,
+				"message" => "ALREADY_LOGGED_IN",
+			], 401);
 		}
 
         return $next($request);
