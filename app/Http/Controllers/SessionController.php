@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use DB;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Redirect;
+use Response;
 
 class SessionController extends Controller
 {
@@ -18,9 +18,13 @@ class SessionController extends Controller
 
 		if (Auth::attempt($credentials, true)) {
 			$request->session()->regenerateToken();
-			return redirect("/");
+			return [
+				"success" => true
+			];
 		} else {
-			return Redirect::back()->withErrors(["message" => "Niepoprawna nazwa użytkownika bądź hasło."]); // TODO: Use translations
+			return Response::json([
+				"success" => false
+			], 401);
 		}
 	}
 
@@ -29,12 +33,14 @@ class SessionController extends Controller
 		Auth::logout();
 		$request->session()->invalidate();
 		$request->session()->regenerateToken();
-		return redirect("/");
+		return [
+			"success" => true
+		];
 	}
 
 	public function currentSessions(Request $request)
 	{
-		return DB::table('sessions')
+		return DB::table("sessions")
 			->where("user_id", "=", $request->user()->id)
 			->orderBy("last_activity", "desc")
 			->get(["ip_address", "user_agent", "last_activity"]);

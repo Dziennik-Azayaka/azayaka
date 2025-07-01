@@ -16,7 +16,7 @@ Route::middleware(["auth.deny", "throttle:16,1"])->group(function () {
 Route::get("/api/session", [SessionController::class, "sessionInfo"]);
 
 Route::middleware(["auth"])->group(function () {
-    Route::get("/api/sessions", [SessionController::class, "currentSessions"]);
+	Route::get("/api/sessions", [SessionController::class, "currentSessions"]);
 });
 
 // Email Verification
@@ -30,10 +30,11 @@ Route::post("/api/email/verification-notification", function (Request $request) 
 	return back()->with("message", "Verification link sent!");
 })->middleware(["auth", "throttle:6,1"])->name("verification.send");
 
-Route::get('/authentication{any?}', function () {
-    return view('authentication');
-})->where('any', '.*');
+// SPA
+Route::view("/authentication{any?}", "authentication")->where("any", ".*")->name("login");
 
-Route::get('/myaccount{any?}', function () {
-    return view('myaccount');
-})->where('any', '.*');
+Route::middleware(["auth"])->group(function () {
+	Route::view("/myaccount{any?}", "myaccount")->where("any", ".*");
+});
+
+Route::redirect("/", "/myaccount");
