@@ -1,0 +1,48 @@
+{
+    "name": "@azayaka-frontend/ui",
+    "version": "0.0.0",
+    "type": "module",
+    "main": "src/index.ts",
+    "scripts": {
+        "lint": "eslint . --fix",
+        "format": "prettier --write src/"
+    },
+    "imports": {
+        "#ui/*": [
+            "./src/*"
+        ]
+    },
+    "dependencies": {
+        "@tailwindcss/postcss": "^4.1.10",
+        "@vee-validate/zod": "^4.15.1",
+        "@vitejs/plugin-vue": "^5.2.4",
+        "@vueuse/core": "^13.3.0",
+        "class-variance-authority": "^0.7.1",
+        "clsx": "^2.1.1",
+        "lucide-vue-next": "^0.514.0",
+        "postcss": "^8.5.5",
+        "reka-ui": "^2.3.1",
+        "tailwind-merge": "^3.3.1",
+        "tailwindcss": "^4.1.10",
+        "tw-animate-css": "^1.3.4",
+        "vee-validate": "^4.15.1",
+        "vite": "^6.3.5",
+        "vue": "^3.5.13",
+        "vue-i18n": "^11.1.5",
+        "vue-router": "^4.5.1",
+        "zod": "^3.25.64"
+    },
+    "devDependencies": {
+        "@trivago/prettier-plugin-sort-imports": "^5.2.2",
+        "@tsconfig/node22": "^22.0.2",
+        "@vue/eslint-config-prettier": "^10.2.0",
+        "@vue/eslint-config-typescript": "^14.5.0",
+        "@vue/tsconfig": "^0.7.0",
+        "eslint": "^9.28.0",
+        "eslint-plugin-vue": "~10.0.1",
+        "jiti": "^2.4.2",
+        "prettier": "3.5.3",
+        "skip-formatting": "link:@vue/eslint-config-prettier/skip-formatting",
+        "tsconfig-paths": "^4.2.0"
+    }
+}

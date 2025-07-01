@@ -1,0 +1,21 @@
+{
+    "apps.myAccount": "Ustawienia konta",
+    "back": "Wróć",
+    "changeFontSize": "Zmień rozmiar czcionki",
+    "changeLanguage": "Zmień język",
+    "changeTheme": "Zmień motyw",
+    "close": "Zamknij",
+    "closeMenu": "Zamknij menu",
+    "confirm": "Potwierdź",
+    "dark": "Ciemny",
+    "goTo": "Przejdź do",
+    "hidePassword": "Ukryj hasło",
+    "highContrast": "Wysoki kontrast",
+    "larger": "Większy",
+    "light": "Jasny",
+    "logOut": "Wyloguj się",
+    "next": "Dalej",
+    "normal": "Normalny",
+    "showPassword": "Pokaż hasło",
+    "skipToContent": "Przejdź do głównej treści"
+}

@@ -1,0 +1,21 @@
+{
+    "apps.myAccount": "Account settings",
+    "back": "Back",
+    "changeFontSize": "Change font size",
+    "changeLanguage": "Change language",
+    "changeTheme": "Change theme",
+    "close": "Close",
+    "closeMenu": "Close the menu",
+    "confirm": "Confirm",
+    "dark": "Dark",
+    "goTo": "Go to",
+    "hidePassword": "Hide password",
+    "highContrast": "High contrast",
+    "larger": "Larger",
+    "light": "Light",
+    "logOut": "Log out",
+    "next": "Next",
+    "normal": "Normal",
+    "showPassword": "Show password",
+    "skipToContent": "Skip to main content"
+}

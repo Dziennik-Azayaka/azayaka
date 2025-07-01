@@ -1,0 +1,21 @@
+{
+  "name": "azayaka-frontend",
+  "version": "0.0.0",
+  "private": true,
+  "packageManager": "pnpm@10.12.4",
+  "workspaces": [
+    "frontend-apps/*",
+    "frontend-packages/*"
+  ],
+  "scripts": {
+    "preinstall": "pnpx only-allow pnpm",
+    "build": "turbo run build",
+    "dev": "turbo run dev",
+    "lint": "turbo run lint",
+    "format": "turbo run format",
+    "clean": "turbo run clean && rm -rf node_modules"
+  },
+  "devDependencies": {
+    "turbo": "^2.5.4"
+  }
+}
