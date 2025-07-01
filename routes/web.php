@@ -5,6 +5,31 @@ use App\Http\Controllers\SessionController;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Support\Facades\Route;
 
+Route::middleware(["auth.deny", "throttle:16,1"])->group(function () {
+	Route::post("/api/login", [SessionController::class, "authenticate"]);
+	Route::get("/api/activation/status", [ActivationCodeController::class, "status"]);
+	Route::post("/api/activation/lookup", [ActivationCodeController::class, "lookup"]);
+	Route::post("/api/activation/emailAvailability", [ActivationCodeController::class, "checkEmailAvailability"]);
+	Route::post("/api/activation", [ActivationCodeController::class, "createAccount"]);
+});
+
+Route::get("/api/session", [SessionController::class, "sessionInfo"]);
+
+Route::middleware(["auth"])->group(function () {
+    Route::get("/api/sessions", [SessionController::class, "currentSessions"]);
+});
+
+// Email Verification
+Route::get("/api/email/verify/{id}/{hash}", function (EmailVerificationRequest $request) {
+	$request->fulfill();
+	return redirect("/");
+})->middleware(["auth", "signed"])->name("verification.verify");
+
+Route::post("/api/email/verification-notification", function (Request $request) {
+	$request->user()->sendEmailVerificationNotification();
+	return back()->with("message", "Verification link sent!");
+})->middleware(["auth", "throttle:6,1"])->name("verification.send");
+
 Route::get('/authentication{any?}', function () {
     return view('authentication');
 })->where('any', '.*');
