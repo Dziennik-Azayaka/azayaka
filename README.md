@@ -1,0 +1,3 @@
+# Dziennik Azayaka
+
+TODO
