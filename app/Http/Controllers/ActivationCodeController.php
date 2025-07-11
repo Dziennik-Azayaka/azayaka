@@ -30,7 +30,7 @@ class ActivationCodeController extends Controller
 		$activation_code = ActivationCode::where("words", $code)->first();
 
 		if ($activation_code) {
-			session(["activation_code" => $activation_code]);
+			session(["activation_code" => $activation_code->words]);
 			session(["activation_step" => "code_found"]);
 			session()->save();
 
@@ -112,6 +112,8 @@ class ActivationCodeController extends Controller
 
 		Auth::login($user);
 		$request->session()->regenerateToken();
+
+		$activation_code->delete();
 
 		return [
 			"success" => true,
