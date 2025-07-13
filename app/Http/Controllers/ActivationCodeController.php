@@ -36,8 +36,8 @@ class ActivationCodeController extends Controller
 
 			return [
 				"found" => true,
-				"first_name" => $activation_code->first_name,
-				"last_name" => $activation_code->last_name
+				"firstName" => $activation_code->first_name,
+				"lastName" => $activation_code->last_name
 			];
 		} else {
 			return Response::json([
@@ -124,11 +124,11 @@ class ActivationCodeController extends Controller
 	{
 		$step = session("activation_step");
 		return match ($step) {
-			"code_found" => [
+			"codeFound" => [
 				"step" => $step,
 				"code" => session("activation_code")
 			],
-			"email_available" => [
+			"emailAvailable" => [
 				"step" => $step,
 				"code" => session("activation_code"),
 				"email" => session("activation_email")
