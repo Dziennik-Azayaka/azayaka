@@ -23,7 +23,10 @@ class SessionController extends Controller
 			];
 		} else {
 			return Response::json([
-				"success" => false
+				"success" => false,
+				"errors" => [
+					"INVALID_USERNAME_OR_PASSWORD"
+				]
 			], 401);
 		}
 	}

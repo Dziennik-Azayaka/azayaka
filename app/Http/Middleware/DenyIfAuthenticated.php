@@ -19,7 +19,7 @@ class DenyIfAuthenticated
 		if (Auth::guard($guard)->check()) {
 			return \Illuminate\Support\Facades\Response::json([
 				"success" => false,
-				"message" => "ALREADY_LOGGED_IN",
+				"errors" => ["ALREADY_LOGGED_IN"],
 			], 401);
 		}
 
