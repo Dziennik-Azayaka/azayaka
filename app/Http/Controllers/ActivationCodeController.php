@@ -35,13 +35,16 @@ class ActivationCodeController extends Controller
 			session()->save();
 
 			return [
-				"found" => true,
+				"success" => true,
 				"firstName" => $activation_code->first_name,
 				"lastName" => $activation_code->last_name
 			];
 		} else {
 			return Response::json([
-				"found" => false,
+				"success" => false,
+				"errors" => [
+					"CODE_NOT_FOUND"
+				]
 			], 404);
 		}
 	}
@@ -97,7 +100,7 @@ class ActivationCodeController extends Controller
 		if (!$activation_code) {
 			return Response::json([
 				"success" => false,
-				"error" => "Couldn't find activation code.",
+				"error" => ["ACTIVATION_CODE_NOT_FOUND"],
 			], 404);
 		}
 
