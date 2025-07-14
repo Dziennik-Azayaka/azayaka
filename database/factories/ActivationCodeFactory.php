@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\Student;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -25,8 +26,8 @@ class ActivationCodeFactory extends Factory
 
 		return [
 			"words" => $words_string,
-			"first_name" => $this->faker->firstName,
-			"last_name" => $this->faker->lastName
+			"student_id" => Student::inRandomOrder()->first()->id,
+			"acts_as" => "student"
 		];
 	}
 }

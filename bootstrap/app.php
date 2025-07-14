@@ -19,6 +19,9 @@ return Application::configure(basePath: dirname(__DIR__))
 			"auth.deny" => DenyIfAuthenticated::class,
 			"throttle" => CustomThrottleRequests::class
 		]);
+			$middleware->validateCsrfTokens(except: [
+				"*"
+			]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //

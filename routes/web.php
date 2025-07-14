@@ -7,10 +7,13 @@ use Illuminate\Support\Facades\Route;
 
 Route::middleware(["auth.deny", "throttle:16,1"])->group(function () {
 	Route::post("/api/login", [SessionController::class, "authenticate"]);
+});
+
+Route::middleware(["throttle:16,1"])->group(function () {
 	Route::get("/api/activation/status", [ActivationCodeController::class, "status"]);
 	Route::post("/api/activation/lookup", [ActivationCodeController::class, "lookup"]);
 	Route::post("/api/activation/emailAvailability", [ActivationCodeController::class, "checkEmailAvailability"]);
-	Route::post("/api/activation", [ActivationCodeController::class, "createAccount"]);
+	Route::post("/api/activation", [ActivationCodeController::class, "createAccountOrAttachAccess"]);
 });
 
 Route::get("/api/session", [SessionController::class, "sessionInfo"]);

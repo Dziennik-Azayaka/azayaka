@@ -3,6 +3,8 @@
 namespace Database\Seeders;
 
 use App\Models\ActivationCode;
+use App\Models\Student;
+use App\Models\Teacher;
 use App\Models\User;
 
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
@@ -22,6 +24,8 @@ class DatabaseSeeder extends Seeder
 			"email" => "test@example.com",
 		]);
 
+		Student::factory(10)->create();
+		Teacher::factory(10)->create();
 		ActivationCode::factory(10)->create();
 	}
 }

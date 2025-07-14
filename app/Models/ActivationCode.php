@@ -9,4 +9,12 @@ class ActivationCode extends Model
 {
     /** @use HasFactory<\Database\Factories\ActivationCodeFactory> */
     use HasFactory;
+
+	public function student() {
+		return $this->belongsTo(Student::class);
+	}
+
+	public function teacher() {
+		return $this->belongsTo(Teacher::class);
+	}
 }
