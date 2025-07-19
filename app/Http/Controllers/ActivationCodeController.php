@@ -67,12 +67,14 @@ class ActivationCodeController extends Controller
 
 		$email = $validator->validated()["email"];
 
+		session(["activation_email" => $email]);
 		if (User::whereEmail($email)->exists()) {
+			session(["activation_step" => "attach_to_account"]);
+			session()->save();
 			return Response::json([
 				"available" => false,
 			]);
 		} else {
-			session(["activation_email" => $email]);
 			session(["activation_step" => "email_available"]);
 			session()->save();
 			return Response::json([
@@ -155,11 +157,11 @@ class ActivationCodeController extends Controller
 	{
 		$step = session("activation_step");
 		return match ($step) {
-			"codeFound" => [
+			"code_found" => [
 				"step" => $step,
 				"code" => session("activation_code")
 			],
-			"emailAvailable" => [
+			"email_available", "attach_to_account" => [
 				"step" => $step,
 				"code" => session("activation_code"),
 				"email" => session("activation_email")
