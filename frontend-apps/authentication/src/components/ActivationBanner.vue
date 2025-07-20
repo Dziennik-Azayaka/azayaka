@@ -21,7 +21,7 @@ const { t } = useI18n();
             class="!bg-background dark:!bg-primary text-foreground dark:text-background not-sm:w-full focus-visible:outline-background"
             as-child
         >
-            <RouterLink :to="{ name: 'activation' }">
+            <RouterLink :to="{ name: 'activation.code' }">
                 {{ t("activationBannerButton") }}
                 <LucideChevronRight />
             </RouterLink>

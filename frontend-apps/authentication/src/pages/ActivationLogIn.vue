@@ -2,27 +2,23 @@
 import { toTypedSchema } from "@vee-validate/zod";
 import { LucideLoader2 } from "lucide-vue-next";
 import { useForm } from "vee-validate";
-import { onBeforeMount, ref } from "vue";
+import { ref } from "vue";
 import { useI18n } from "vue-i18n";
 import { useRouter } from "vue-router";
 import * as z from "zod";
 
 import { Button, FormControl, FormField, FormItem, FormLabel, FormMessage, PasswordInput } from "@azayaka-frontend/ui";
 
+import { IncorrectActivationCodeError, IncorrectCredentialsError } from "@/api/errors";
+import ActivationApiService from "@/api/services/activation";
 import ErrorBanner from "@/components/ErrorBanner.vue";
 import FormHeader from "@/components/FormHeader.vue";
 import { useActivationStore } from "@/stores/activation.store";
+import { backOrPush } from "@/utils/back-or-push";
 
 const { t } = useI18n();
 const router = useRouter();
 const activationStore = useActivationStore();
-
-onBeforeMount(() => {
-    if (!activationStore.code || !activationStore.emailAddress || !activationStore.accountExist)
-        router.replace({
-            name: "activation.emailAddress",
-        });
-});
 
 const formSchema = toTypedSchema(
     z.object({
@@ -37,21 +33,28 @@ const form = useForm({
 
 const error = ref<string | null>(null);
 const isLoading = ref(false);
-const onSubmit = form.handleSubmit((values) => {
+const onSubmit = form.handleSubmit(async (values) => {
     isLoading.value = true;
     error.value = null;
 
-    // FAKE
-    setTimeout(() => {
-        if (values.password !== "jan123") error.value = "incorrectPasswordError";
+    if (activationStore.status.step !== "email_available") return;
+
+    try {
+        await ActivationApiService.activate(
+            activationStore.status.code.split(","),
+            activationStore.status.email,
+            values.password,
+        );
+    } catch (reason) {
+        if (reason instanceof IncorrectActivationCodeError) error.value = "incorrectCodeError";
+        else if (reason instanceof IncorrectCredentialsError) error.value = "incorrectCredentialsError";
+        else error.value = "unknownError";
+    } finally {
         isLoading.value = false;
-    }, 2500);
+    }
 });
 
-function back() {
-    if (router.options.history.state["back"] === "/access-activation/email-address") router.back();
-    else router.push({ name: "activation.code" });
-}
+const back = () => backOrPush(router, "activation.emailAddress");
 </script>
 
 <template>

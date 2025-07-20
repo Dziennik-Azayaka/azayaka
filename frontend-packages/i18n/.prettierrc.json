@@ -8,5 +8,6 @@
   "importOrder": ["^@azayaka-frontend/(.*)$", "^#i18n/(.*)$"],
   "importOrderSeparation": true,
   "importOrderSortSpecifiers": true,
-  "plugins": ["@trivago/prettier-plugin-sort-imports"]
+  "plugins": ["@trivago/prettier-plugin-sort-imports"],
+  "useTabs": false
 }

@@ -1,3 +1,4 @@
+import { useActivationStore } from "./stores/activation.store";
 import { createRouter, createWebHistory } from "vue-router";
 
 const router = createRouter({
@@ -29,50 +30,61 @@ const router = createRouter({
         },
         {
             path: "/access-activation",
-            name: "activation",
-            redirect: {
-                name: "activation.code",
-                replace: true,
-            },
-        },
-        {
-            path: "/access-activation/code",
-            name: "activation.code",
-            component: () => import("@/pages/ActivationCode.vue"),
-            meta: {
-                title: "accessActivation",
-            },
-        },
-        {
-            path: "/access-activation/email-address",
-            name: "activation.emailAddress",
-            component: () => import("@/pages/ActivationEmailAddress.vue"),
-            meta: {
-                title: "accessActivation",
-            },
-        },
-        {
-            path: "/access-activation/log-in",
-            name: "activation.logIn",
-            component: () => import("@/pages/ActivationLogIn.vue"),
-            meta: {
-                title: "accessActivation",
-            },
-        },
-        {
-            path: "/access-activation/password",
-            name: "activation.setPassword",
-            component: () => import("@/pages/ActivationPassword.vue"),
-            meta: {
-                title: "accessActivation",
-            },
-        },
-        {
-            path: "/access-activation/email-confirmation",
-            name: "activation.emailAddressConfirmation",
-            component: () => import("@/pages/ActivationEmailAddressConfirmation.vue"),
-            meta: {
-                title: "accessActivation",
+            children: [
+                {
+                    path: "/access-activation/code",
+                    name: "activation.code",
+                    component: () => import("@/pages/ActivationCode.vue"),
+                    meta: {
+                        title: "accessActivation",
+                    },
+                },
+                {
+                    path: "/access-activation/email-address",
+                    name: "activation.emailAddress",
+                    component: () => import("@/pages/ActivationEmailAddress.vue"),
+                    meta: {
+                        title: "accessActivation",
+                    },
+                },
+                {
+                    path: "/access-activation/log-in",
+                    name: "activation.logIn",
+                    component: () => import("@/pages/ActivationLogIn.vue"),
+                    meta: {
+                        title: "accessActivation",
+                    },
+                },
+                {
+                    path: "/access-activation/password",
+                    name: "activation.setPassword",
+                    component: () => import("@/pages/ActivationPassword.vue"),
+                    meta: {
+                        title: "accessActivation",
+                    },
+                },
+                {
+                    path: "/access-activation/email-confirmation",
+                    name: "activation.emailAddressConfirmation",
+                    component: () => import("@/pages/ActivationEmailAddressConfirmation.vue"),
+                    meta: {
+                        title: "accessActivation",
+                    },
+                },
+            ],
+            beforeEnter: async (to, from, next) => {
+                const activationStore = useActivationStore();
+                if (activationStore.needSync) await activationStore.syncWithApi();
+                switch (activationStore.status.step) {
+                    case "notStarted":
+                        if (to.name !== "activation.code") next({ name: "activation.code" });
+                        break;
+                    case "code_found":
+                        if (to.name !== "activation.emailAddress" && to.name !== "activation.code")
+                            next({ name: "activation.emailAddress" });
+                        break;
+                }
+                next();
             },
         },
         {

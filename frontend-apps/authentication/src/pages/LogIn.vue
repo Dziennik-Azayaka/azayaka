@@ -17,6 +17,8 @@ import {
     PasswordInput,
 } from "@azayaka-frontend/ui";
 
+import { IncorrectCredentialsError } from "@/api/errors";
+import SessionApiService from "@/api/services/session.ts";
 import ActivationBanner from "@/components/ActivationBanner.vue";
 import ErrorBanner from "@/components/ErrorBanner.vue";
 import FormHeader from "@/components/FormHeader.vue";
@@ -42,15 +44,18 @@ const form = useForm({
 const error = ref<string | null>(null);
 const isLoading = ref(false);
 
-const onSubmit = form.handleSubmit((values) => {
+const onSubmit = form.handleSubmit(async (values) => {
     isLoading.value = true;
     error.value = null;
 
-    // FAKE
-    setTimeout(() => {
-        if (values.emailAddress !== "jan@fakelog.cf") error.value = "incorrectCredentialsError";
+    try {
+        await SessionApiService.logIn(values);
+    } catch (reason: unknown) {
+        if (reason instanceof IncorrectCredentialsError) error.value = "incorrectCredentialsError";
+        else error.value = "unknownError";
+    } finally {
         isLoading.value = false;
-    }, 2500);
+    }
 });
 </script>
 

@@ -1,10 +1,16 @@
 import { defineStore } from "pinia";
 import { ref } from "vue";
 
-export const useActivationStore = defineStore("activation", () => {
-    const code = ref<string[] | null>(null);
-    const emailAddress = ref<string | null>(null);
-    const accountExist = ref<boolean | null>(null);
+import type { ActivationStatus } from "@/api/dto/activation-status";
+import ActivationApiService from "@/api/services/activation";
 
-    return { code, emailAddress, accountExist };
+export const useActivationStore = defineStore("activation", () => {
+    const needSync = ref(true);
+    const status = ref<ActivationStatus>({ step: "notStarted" });
+
+    async function syncWithApi() {
+        status.value = await ActivationApiService.getStatus();
+    }
+
+    return { status, needSync, syncWithApi };
 });

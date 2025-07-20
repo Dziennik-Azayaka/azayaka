@@ -2,16 +2,18 @@
 import { toTypedSchema } from "@vee-validate/zod";
 import { LucideLoader2 } from "lucide-vue-next";
 import { useForm } from "vee-validate";
-import { onBeforeMount, ref } from "vue";
+import { ref } from "vue";
 import { useI18n } from "vue-i18n";
 import { useRouter } from "vue-router";
 import * as z from "zod";
 
 import { Button, FormControl, FormField, FormItem, FormLabel, FormMessage, Input } from "@azayaka-frontend/ui";
 
+import ActivationApiService from "@/api/services/activation";
 import ErrorBanner from "@/components/ErrorBanner.vue";
 import FormHeader from "@/components/FormHeader.vue";
 import { useActivationStore } from "@/stores/activation.store";
+import { backOrPush } from "@/utils/back-or-push";
 
 const { t } = useI18n();
 const router = useRouter();
@@ -26,42 +28,43 @@ const formSchema = toTypedSchema(
             .email(t("invalidEmailAddressError")),
     }),
 );
+
 const form = useForm({
     validationSchema: formSchema,
-});
-
-onBeforeMount(() => {
-    if (!activationStore.code)
-        router.replace({
-            name: "activation.code",
-        });
-    if (activationStore.emailAddress) form.setFieldValue("emailAddress", activationStore.emailAddress);
+    initialValues: { emailAddress: "email" in activationStore.status ? activationStore.status.email : undefined },
 });
 
 const isLoading = ref(false);
 const error = ref<string | null>(null);
-const onSubmit = form.handleSubmit((values) => {
+const onSubmit = form.handleSubmit(async (values) => {
     isLoading.value = true;
-    if (activationStore.emailAddress === values.emailAddress && activationStore.accountExist)
-        return router.push({
-            name: activationStore.accountExist ? "activation.logIn" : "activation.setPassword",
-        });
     error.value = null;
 
-    // FAKE
-    setTimeout(() => {
-        activationStore.emailAddress = values.emailAddress;
-        activationStore.accountExist = values.emailAddress === "jan@fakelog.cf";
-        router.push({
-            name: activationStore.accountExist ? "activation.logIn" : "activation.setPassword",
+    if (activationStore.status.step === "notStarted") return;
+
+    if ("email" in activationStore.status && activationStore.status.email === values.emailAddress)
+        return await router.push({
+            name: activationStore.status.step === "attach_to_account" ? "activation.logIn" : "activation.setPassword",
         });
-    }, 2500);
+
+    try {
+        const { accountExist } = await ActivationApiService.checkEmailAddress(values.emailAddress);
+        activationStore.status = {
+            step: accountExist ? "attach_to_account" : "email_available",
+            code: activationStore.status.code,
+            email: values.emailAddress,
+        };
+        await router.push({
+            name: accountExist ? "activation.logIn" : "activation.setPassword",
+        });
+    } catch (err: unknown) {
+        error.value = (err as Error).message;
+    } finally {
+        isLoading.value = false;
+    }
 });
 
-function back() {
-    if (router.options.history.state["back"] === "/access-activation/code") router.back();
-    else router.push({ name: "activation.code" });
-}
+const back = () => backOrPush(router, "activation.code");
 </script>
 
 <template>

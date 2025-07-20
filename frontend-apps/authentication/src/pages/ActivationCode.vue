@@ -6,6 +6,8 @@ import { useRouter } from "vue-router";
 
 import { Button, Input } from "@azayaka-frontend/ui";
 
+import { IncorrectActivationCodeError } from "@/api/errors";
+import ActivationApiService from "@/api/services/activation";
 import ErrorBanner from "@/components/ErrorBanner.vue";
 import FormHeader from "@/components/FormHeader.vue";
 import { useActivationStore } from "@/stores/activation.store";
@@ -15,28 +17,35 @@ const router = useRouter();
 const activationStore = useActivationStore();
 const isLoading = ref(false);
 const error = ref<string | null>(null);
-const code = ref(activationStore.code ? activationStore.code : new Array(10).fill(""));
-const onSubmit = () => {
+const code = ref<string[]>(
+    "code" in activationStore.status ? activationStore.status.code.split(",") : new Array(10).fill(""),
+);
+
+async function onSubmit() {
     isLoading.value = true;
-    if (activationStore.code === code.value)
-        return router.push({
-            name: "activation.emailAddress",
-        });
     error.value = null;
 
-    // FAKE
-    setTimeout(() => {
-        if (code.value.toString() !== ["krzak", "test", "", "", "", "", "", "", "", ""].toString()) {
-            error.value = "incorrectCodeError";
-            isLoading.value = false;
-        } else {
-            activationStore.code = code.value;
-            router.push({
-                name: "activation.emailAddress",
-            });
-        }
-    }, 2500);
-};
+    if (activationStore.status.step != "notStarted" && activationStore.status.code === code.value.join(","))
+        return await router.push({
+            name: "activation.emailAddress",
+        });
+
+    if (code.value.find((word) => word.trim() === "")) {
+        error.value = "incorrectCodeError";
+        return;
+    }
+
+    try {
+        await ActivationApiService.checkCode(code.value.map((word) => word.trim().toLowerCase()));
+        activationStore.status = { step: "code_found", code: code.value.join(",") };
+        await router.push({ name: "activation.emailAddress" });
+    } catch (reason: unknown) {
+        if (reason instanceof IncorrectActivationCodeError) error.value = "incorrectCodeError";
+        else error.value = "unknownError";
+    } finally {
+        isLoading.value = false;
+    }
+}
 </script>
 
 <template>
