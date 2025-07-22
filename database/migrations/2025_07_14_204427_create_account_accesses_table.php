@@ -10,12 +10,13 @@ return new class extends Migration {
 	 */
 	public function up(): void
 	{
-		Schema::create("activation_codes", function (Blueprint $table) {
+		Schema::create("account_accesses", function (Blueprint $table) {
 			$table->id();
 			$table->string("words");
+			$table->enum("acts_as", ["student", "guardian", "employee"])->nullable();
 			$table->foreignId("student_id")->nullable()->constrained("students")->cascadeOnDelete();
-			$table->enum("acts_as", ["student", "guardian"])->nullable();
-			$table->foreignId("teacher_id")->nullable()->constrained("teachers")->cascadeOnDelete();
+			$table->foreignId("employee_id")->nullable()->constrained("employees")->cascadeOnDelete();
+			$table->foreignId("user_id")->nullable()->constrained("users")->cascadeOnDelete();
 			$table->timestamps();
 		});
 	}

@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\ActivationCode;
+use App\Models\AccountAccess;
 use App\Models\User;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\Request;
@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Response;
 
-class ActivationCodeController extends Controller
+class AccountAccessesController extends Controller
 {
 	public function lookup(Request $request)
 	{
@@ -27,7 +27,7 @@ class ActivationCodeController extends Controller
 
 		$code = $validator->validated()["code"];
 
-		$activation_code = ActivationCode::where("words", $code)->first();
+		$activation_code = AccountAccess::where("words", $code)->first();
 
 		if ($activation_code) {
 			session(["activation_code" => $activation_code->words]);
@@ -100,7 +100,7 @@ class ActivationCodeController extends Controller
 
 		$data = $validator->validated();
 
-		$activation_code = ActivationCode::where("words", $data["code"])->first();
+		$activation_code = AccountAccess::where("words", $data["code"])->first();
 
 		if (!$activation_code) {
 			return Response::json([
@@ -130,20 +130,9 @@ class ActivationCodeController extends Controller
 			event(new Registered($user));
 		}
 
-		if ($activation_code_info["accessType"] == "teacher") {
-			\DB::table("users_teachers")->insert([
-				"user_id" => $user->id,
-				"teacher_id" => $activation_code->id
-			]);
-		} else {
-			\DB::table("users_students")->insert([
-				"user_id" => $user->id,
-				"student_id" => $activation_code->id,
-				"acts_as" => $activation_code->acts_as,
-			]);
-		}
-
+		$activation_code->user_id = $user->id;
 		$activation_code->delete();
+		session(["activation_code" => "", "activation_step" => "not_started"]);
 
 		Auth::login($user);
 		$request->session()->regenerateToken();
@@ -172,19 +161,17 @@ class ActivationCodeController extends Controller
 		};
 	}
 
-	private function getFirstAndLastNameFromActivationCode(ActivationCode $activation_code)
+	private function getFirstAndLastNameFromActivationCode(AccountAccess $activation_code)
 	{
-		$first_name = "";
-		$last_name = "";
 		$access_type = "student";
 
 		if ($activation_code->student) {
 			$first_name = $activation_code->student->first_name;
 			$last_name = $activation_code->student->last_name;
 		} else {
-			$first_name = $activation_code->teacher->first_name;
-			$last_name = $activation_code->teacher->last_name;
-			$access_type = "teacher";
+			$first_name = $activation_code->employee->first_name;
+			$last_name = $activation_code->employee->last_name;
+			$access_type = "employee";
 		}
 
 		return [

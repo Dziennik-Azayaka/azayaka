@@ -11,11 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create("users_students", function (Blueprint $table) {
+        Schema::create("employees", function (Blueprint $table) {
             $table->id();
-			$table->foreignId("user_id")->constrained("users")->cascadeOnDelete();
-			$table->foreignId("student_id")->constrained("students")->cascadeOnDelete();
-			$table->enum("acts_as", ["student", "guardian"])->default("student");
+			$table->string("first_name");
+			$table->string("last_name");
+			$table->enum("role", ["guest", "pedagogue", "teacher", "secretary", "principal", "administrator"]);
             $table->timestamps();
         });
     }
@@ -25,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists("users_students");
+        Schema::dropIfExists("teachers");
     }
 };

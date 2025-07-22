@@ -2,9 +2,9 @@
 
 namespace Database\Seeders;
 
-use App\Models\ActivationCode;
+use App\Models\AccountAccess;
 use App\Models\Student;
-use App\Models\Teacher;
+use App\Models\Employee;
 use App\Models\User;
 
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
@@ -25,7 +25,7 @@ class DatabaseSeeder extends Seeder
 		]);
 
 		Student::factory(10)->create();
-		Teacher::factory(10)->create();
-		ActivationCode::factory(10)->create();
+		Employee::factory(10)->create();
+		AccountAccess::factory(10)->create();
 	}
 }

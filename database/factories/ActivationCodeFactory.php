@@ -6,7 +6,7 @@ use App\Models\Student;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\ActivationCode>
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\AccountAccess>
  */
 class ActivationCodeFactory extends Factory
 {
