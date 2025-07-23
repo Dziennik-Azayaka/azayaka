@@ -29,6 +29,7 @@ Route::middleware(["auth", "auth.session"])->group(function () {
 	Route::patch("/api/user/password", [UserController::class, "updatePassword"]);
 
 	Route::get("/api/user/logs", [AccountLogController::class, "list"]);
+	Route::get("/api/user/logs/lastCredentialUpdate", [AccountLogController::class, "getDateOfLastUpdateToCredentials"]);
 
 	Route::get("/api/user", [AccountAccessesController::class, "list"]);
 });

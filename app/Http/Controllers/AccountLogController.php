@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\AccountEventType;
 use App\Models\AccountLog;
 use App\Utilities\ArrayCameliser;
 use Illuminate\Http\Request;
@@ -18,5 +19,13 @@ class AccountLogController extends Controller
 		]);
 
 		return ArrayCameliser::camelise($paginator->toArray());
+	}
+
+	public function getDateOfLastUpdateToCredentials(Request $request) {
+		return AccountLog::where("user_id", $request->user()->id)
+			->where("event_type", AccountEventType::CREDENTIALS_CHANGED->value)
+			->orderBy("created_at", "DESC")
+			->first()
+			->created_at;
 	}
 }
