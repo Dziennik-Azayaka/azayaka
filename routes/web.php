@@ -25,8 +25,8 @@ Route::middleware(["auth", "auth.session"])->group(function () {
 	Route::delete("/api/sessions/remove", [SessionController::class, "removeSession"]);
 	Route::delete("/api/sessions/removeAll", [SessionController::class, "logoutOtherDevices"]);
 
-	Route::patch("/api/user/email", [UserController::class, "updateEmailAddress"]);
-	Route::patch("/api/user/password", [UserController::class, "updatePassword"]);
+	Route::put("/api/user/email", [UserController::class, "updateEmailAddress"]);
+	Route::put("/api/user/password", [UserController::class, "updatePassword"]);
 
 	Route::get("/api/user/logs", [AccountLogController::class, "list"]);
 	Route::get("/api/user/logs/lastCredentialUpdate", [AccountLogController::class, "getDateOfLastUpdateToCredentials"]);
