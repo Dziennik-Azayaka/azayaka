@@ -52,12 +52,16 @@ class SessionController extends Controller
 
 	public function currentSessions(Request $request)
 	{
-		$data = DB::table("sessions")
+		$sessions = DB::table("sessions")
 			->where("user_id", "=", $request->user()->id)
 			->orderBy("last_activity", "desc")
 			->get(["id", "ip_address", "user_agent", "last_activity"]);
 
-		return ArrayCameliser::camelise($data);
+		foreach ($sessions as $session) {
+			$session->last_activity = date("Y-m-d\TH:i:s.u\Z", $session->last_activity);
+		}
+
+		return ArrayCameliser::camelise($sessions);
 	}
 
 	public function sessionInfo(Request $request) {
