@@ -14,6 +14,10 @@ class AccountAccess extends BaseModel
 		return $this->hasOne(Student::class, "id", "student_id");
 	}
 
+	public function guardian() {
+		return $this->hasOne(Guardian::class, "id", "guardian_id");
+	}
+
 	public function employee() {
 		return $this->hasOne(Employee::class, "id", "employee_id");
 	}

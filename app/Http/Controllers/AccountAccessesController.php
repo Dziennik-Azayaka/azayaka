@@ -169,21 +169,20 @@ class AccountAccessesController extends Controller
 
 	private function getFirstAndLastNameFromActivationCode(AccountAccess $activation_code)
 	{
-		$access_type = "student";
-
 		if ($activation_code->student) {
 			$first_name = $activation_code->student->first_name;
 			$last_name = $activation_code->student->last_name;
-		} else {
+		} else if ($activation_code->employee) {
 			$first_name = $activation_code->employee->first_name;
 			$last_name = $activation_code->employee->last_name;
-			$access_type = "employee";
+		} else {
+			$first_name = $activation_code->guardian->first_name;
+			$last_name = $activation_code->guardian->last_name;
 		}
 
 		return [
 			"firstName" => $first_name,
 			"lastName" => $last_name,
-			"accessType" => $access_type,
 			"id" => $activation_code->id,
 		];
 	}
@@ -195,16 +194,23 @@ class AccountAccessesController extends Controller
 		foreach ($accesses as $access) {
 			if ($access->student) {
 				$accessesWithPersonas[] = [
-					"actsAs" => $access->acts_as,
 					"student" => $access->student->first_name . " " . $access->student->last_name,
+					"guardian" => null,
 					"employee" => null,
+					"updatedAt" => $access->updated_at,
+				];
+			} else if ($access->employee) {
+				$accessesWithPersonas[] = [
+					"student" => null,
+					"guardian" => null,
+					"employee" => $access->employee->first_name . " " . $access->employee->last_name,
 					"updatedAt" => $access->updated_at,
 				];
 			} else {
 				$accessesWithPersonas[] = [
-					"actsAs" => $access->acts_as,
 					"student" => null,
-					"employee" => $access->employee->first_name . " " . $access->employee->last_name,
+					"guardian" => $access->guardian->first_name . " " . $access->guardian->last_name,
+					"employee" => null,
 					"updatedAt" => $access->updated_at,
 				];
 			}
