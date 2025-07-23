@@ -30,7 +30,7 @@ Route::middleware(["auth", "auth.session"])->group(function () {
 
 	Route::get("/api/user/logs", [AccountLogController::class, "list"]);
 
-	Route::get("/api/user/accesses", [AccountAccessesController::class, "list"]);
+	Route::get("/api/user", [AccountAccessesController::class, "list"]);
 });
 
 // Email Verification

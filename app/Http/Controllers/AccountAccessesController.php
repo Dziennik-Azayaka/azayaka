@@ -210,6 +210,9 @@ class AccountAccessesController extends Controller
 			}
 		}
 
-		return $accessesWithPersonas;
+		return [
+			"email" => $request->user()->email,
+			"accesses" => $accessesWithPersonas
+		];
 	}
 }
