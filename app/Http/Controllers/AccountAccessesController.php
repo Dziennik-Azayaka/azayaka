@@ -195,17 +195,17 @@ class AccountAccessesController extends Controller
 		foreach ($accesses as $access) {
 			if ($access->student) {
 				$accessesWithPersonas[] = [
-					"acts_as" => $access->acts_as,
+					"actsAs" => $access->acts_as,
 					"student" => $access->student->first_name . " " . $access->student->last_name,
 					"employee" => null,
-					"updated_at" => $access->updated_at,
+					"updatedAt" => $access->updated_at,
 				];
 			} else {
 				$accessesWithPersonas[] = [
-					"acts_as" => $access->acts_as,
+					"actsAs" => $access->acts_as,
 					"student" => null,
 					"employee" => $access->employee->first_name . " " . $access->employee->last_name,
-					"updated_at" => $access->updated_at,
+					"updatedAt" => $access->updated_at,
 				];
 			}
 		}

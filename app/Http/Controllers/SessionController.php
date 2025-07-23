@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Enums\AccountEventType;
 use App\Utilities\AccountEventLogger;
+use App\Utilities\ArrayCameliser;
 use DB;
 use Hash;
 use Illuminate\Auth\AuthenticationException;
@@ -51,10 +52,12 @@ class SessionController extends Controller
 
 	public function currentSessions(Request $request)
 	{
-		return DB::table("sessions")
+		$data = DB::table("sessions")
 			->where("user_id", "=", $request->user()->id)
 			->orderBy("last_activity", "desc")
 			->get(["id", "ip_address", "user_agent", "last_activity"]);
+
+		return ArrayCameliser::camelise($data);
 	}
 
 	public function sessionInfo(Request $request) {
