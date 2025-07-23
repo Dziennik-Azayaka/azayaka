@@ -1,11 +1,12 @@
 <script setup lang="ts">
+import { Button } from "#ui/components/ui/button";
 import {
     LucideAlertCircle,
     LucideHelpCircle,
     LucideLaptop,
     LucideLoaderCircle,
     LucideSmartphone,
-    RefreshCw
+    RefreshCw,
 } from "lucide-vue-next";
 import { onMounted, ref } from "vue";
 import { useI18n } from "vue-i18n";
@@ -13,7 +14,6 @@ import { useI18n } from "vue-i18n";
 import type { SessionListEntryEntity } from "@/api/entities/session-list-entry.ts";
 import SessionApiService from "@/api/services/session.ts";
 import PanelHeader from "@/components/PanelHeader.vue";
-import { Button } from "#ui/components/ui/button";
 
 const { t, d } = useI18n();
 
@@ -52,7 +52,7 @@ onMounted(getActiveSessions);
         <PanelHeader :breadcrumb-path="[{ href: '/', title: t('home') }]" />
         <main id="main-content">
             <h2 class="text-2xl font-semibold">{{ t("home") }}</h2>
-            <p class="text-foreground/70 mb-4 text-sm">{{ t('homeDescription') }}</p>
+            <p class="text-foreground/70 mb-4 text-sm">{{ t("homeDescription") }}</p>
             <section>
                 <h3 class="font-semibold my-3">{{ t("activeSessions") }}</h3>
                 <div class="h-96 content-center" v-if="loading">
@@ -97,7 +97,10 @@ onMounted(getActiveSessions);
                                     {{ session.device.os }}
                                     <template v-if="session.device.software">({{ session.device.software }}),</template>
                                     {{ t("ipAddress") }}: {{ session.device.ipAddress }}
-                                    <span class="px-1.5 py-1 rounded-md bg-primary text-primary-foreground text-xs" v-if="session.id === currentSessionId">
+                                    <span
+                                        class="px-1.5 py-1 rounded-md bg-primary text-primary-foreground text-xs"
+                                        v-if="session.id === currentSessionId"
+                                    >
                                         {{ t("yourCurrentSession") }}
                                     </span>
                                 </td>
