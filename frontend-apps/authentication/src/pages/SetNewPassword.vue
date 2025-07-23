@@ -21,7 +21,7 @@ const formSchema = toTypedSchema(
                     required_error: t("requiredPasswordError"),
                 })
                 .min(8, t("passwordMinLengthError"))
-                .max(128, t("passwordMaxLengthError")),
+                .max(255, t("passwordMaxLengthError")),
             repeatPassword: z.string({
                 required_error: t("requiredPasswordError"),
             }),
