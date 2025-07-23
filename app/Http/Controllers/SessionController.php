@@ -61,7 +61,10 @@ class SessionController extends Controller
 			$session->last_activity = date("Y-m-d\TH:i:s.u\Z", $session->last_activity);
 		}
 
-		return ArrayCameliser::camelise($sessions);
+		return ArrayCameliser::camelise([
+			"currentSession" => $request->session()->getId(),
+			"sessions" => $sessions
+		]);
 	}
 
 	public function sessionInfo(Request $request) {
