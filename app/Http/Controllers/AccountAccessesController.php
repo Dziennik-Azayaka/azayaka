@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\AccountEventType;
 use App\Models\AccountAccess;
 use App\Models\User;
+use App\Utilities\AccountEventLogger;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -85,10 +87,12 @@ class AccountAccessesController extends Controller
 
 	public function createAccountOrAttachAccess(Request $request)
 	{
+		$signedIn = Auth::check();
+
 		$validator = Validator::make($request->all(), [
 			"code" => "required|string",
-			"password" => "required|min:8|max:255",
-			"email" => "required|email|max:255"
+			"password" => $signedIn ? "nullable|exclude" : "required|min:8|max:255",
+			"email" => $signedIn ? "nullable|exclude" : "required|email|max:255"
 		]);
 
 		if ($validator->fails()) {
@@ -111,7 +115,7 @@ class AccountAccessesController extends Controller
 
 		$activation_code_info = $this->getFirstAndLastNameFromActivationCode($activation_code);
 
-		if (User::whereEmail($data["email"])->exists()) {
+		if (!$signedIn && User::whereEmail($data["email"])->exists()) {
 			$user = User::whereEmail($data["email"])->first();
 			if (!\Hash::check($data["password"], $user->password)) {
 				return Response::json([
@@ -131,11 +135,13 @@ class AccountAccessesController extends Controller
 		}
 
 		$activation_code->user_id = $user->id;
-		$activation_code->delete();
+		$activation_code->words = null;
+		$activation_code->save();
 		session(["activation_code" => "", "activation_step" => "not_started"]);
 
 		Auth::login($user);
 		$request->session()->regenerateToken();
+		AccountEventLogger::log($request, AccountEventType::SUCCESSFUL_LOGIN_ATTEMPT);
 
 		return [
 			"success" => true,
@@ -180,5 +186,30 @@ class AccountAccessesController extends Controller
 			"accessType" => $access_type,
 			"id" => $activation_code->id,
 		];
+	}
+
+	public function list(Request $request) {
+		$accesses = AccountAccess::where("user_id", $request->user()->id)->get();
+		$accessesWithPersonas = [];
+
+		foreach ($accesses as $access) {
+			if ($access->student) {
+				$accessesWithPersonas[] = [
+					"acts_as" => $access->acts_as,
+					"student" => $access->student->first_name . " " . $access->student->last_name,
+					"employee" => null,
+					"updated_at" => $access->updated_at,
+				];
+			} else {
+				$accessesWithPersonas[] = [
+					"acts_as" => $access->acts_as,
+					"student" => null,
+					"employee" => $access->employee->first_name . " " . $access->employee->last_name,
+					"updated_at" => $access->updated_at,
+				];
+			}
+		}
+
+		return $accessesWithPersonas;
 	}
 }

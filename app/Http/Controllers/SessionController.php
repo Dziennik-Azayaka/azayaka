@@ -2,9 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\AccountEventType;
+use App\Utilities\AccountEventLogger;
 use DB;
+use Hash;
+use Illuminate\Auth\AuthenticationException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Validator;
 use Response;
 
 class SessionController extends Controller
@@ -18,10 +23,12 @@ class SessionController extends Controller
 
 		if (Auth::attempt($credentials, true)) {
 			$request->session()->regenerateToken();
+			AccountEventLogger::log($request, AccountEventType::SUCCESSFUL_LOGIN_ATTEMPT);
 			return [
 				"success" => true
 			];
 		} else {
+			AccountEventLogger::log($request, AccountEventType::FAILED_LOGIN_ATTEMPT);
 			return Response::json([
 				"success" => false,
 				"errors" => [
@@ -33,6 +40,7 @@ class SessionController extends Controller
 
 	public function logout(Request $request)
 	{
+		AccountEventLogger::log($request, AccountEventType::LOGOUT);
 		Auth::logout();
 		$request->session()->invalidate();
 		$request->session()->regenerateToken();
@@ -46,7 +54,7 @@ class SessionController extends Controller
 		return DB::table("sessions")
 			->where("user_id", "=", $request->user()->id)
 			->orderBy("last_activity", "desc")
-			->get(["ip_address", "user_agent", "last_activity"]);
+			->get(["id", "ip_address", "user_agent", "last_activity"]);
 	}
 
 	public function sessionInfo(Request $request) {
@@ -62,5 +70,66 @@ class SessionController extends Controller
 				"loggedIn" => false
 			];
 		}
+	}
+
+	public function removeSession(Request $request) {
+		$validator = Validator::make($request->all(), [
+			"id" => "required|exists:sessions,id",
+			"password" => "required",
+		]);
+
+		if ($validator->fails()) {
+			return Response::json([
+				"success" => false,
+				"errors" => $validator->errors()
+			], 400);
+		}
+
+		if (!Hash::check($validator->validated()["password"], Auth::user()->password)) {
+			return Response::json([
+				"success" => false,
+				"errors" => [
+					"WRONG_PASSWORD"
+				]
+			], 401);
+		}
+
+		$sessionId = $validator->validated()["id"];
+
+		if ($sessionId == $request->session()->getId()) {
+			return Response::json([
+				"success" => false,
+				"errors" => [
+					"INVALID_SESSION_ID"
+				]
+			], 400);
+		}
+
+		DB::table("sessions")
+			->where("id", $sessionId)
+			->delete();
+
+		AccountEventLogger::log($request, AccountEventType::LOGGED_OUT_BY_ANOTHER_DEVICE);
+
+		return [
+			"success" => true
+		];
+	}
+
+	public function logoutOtherDevices(Request $request) {
+		try {
+			Auth::logoutOtherDevices($request->input("password"));
+		} catch (AuthenticationException) {
+			return Response::json([
+				"success" => false,
+				"errors" => [
+					"WRONG_PASSWORD"
+				]
+			], 401);
+		}
+		AccountEventLogger::log($request, AccountEventType::LOGGED_OUT_BY_ANOTHER_DEVICE);
+		return [
+			"success" => true
+		];
 	}
 }

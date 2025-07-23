@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\AccountAccess;
+use App\Models\AccountLog;
 use App\Models\Student;
 use App\Models\Employee;
 use App\Models\User;
@@ -27,5 +28,6 @@ class DatabaseSeeder extends Seeder
 		Student::factory(10)->create();
 		Employee::factory(10)->create();
 		AccountAccess::factory(10)->create();
+		AccountLog::factory(20)->create();
 	}
 }

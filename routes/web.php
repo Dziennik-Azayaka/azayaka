@@ -1,7 +1,9 @@
 <?php
 
 use App\Http\Controllers\AccountAccessesController;
+use App\Http\Controllers\AccountLogController;
 use App\Http\Controllers\SessionController;
+use App\Http\Controllers\UserController;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Support\Facades\Route;
 
@@ -18,8 +20,17 @@ Route::middleware(["throttle:16,1"])->group(function () {
 
 Route::get("/api/session", [SessionController::class, "sessionInfo"]);
 
-Route::middleware(["auth"])->group(function () {
+Route::middleware(["auth", "auth.session"])->group(function () {
 	Route::get("/api/sessions", [SessionController::class, "currentSessions"]);
+	Route::delete("/api/sessions/remove", [SessionController::class, "removeSession"]);
+	Route::delete("/api/sessions/removeAll", [SessionController::class, "logoutOtherDevices"]);
+
+	Route::patch("/api/user/email", [UserController::class, "updateEmailAddress"]);
+	Route::patch("/api/user/password", [UserController::class, "updatePassword"]);
+
+	Route::get("/api/user/logs", [AccountLogController::class, "list"]);
+
+	Route::get("/api/user/accesses", [AccountAccessesController::class, "list"]);
 });
 
 // Email Verification

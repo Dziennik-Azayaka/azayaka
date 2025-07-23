@@ -5,12 +5,13 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Employee extends Model
+class AccountLog extends Model
 {
-    /** @use HasFactory<\Database\Factories\EmployeeFactory> */
+    /** @use HasFactory<\Database\Factories\AccountLogFactory> */
     use HasFactory;
 
-	public function user() {
+	public function user()
+	{
 		return $this->belongsTo(User::class);
 	}
 }

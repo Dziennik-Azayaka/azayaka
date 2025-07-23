@@ -12,8 +12,9 @@ return new class extends Migration {
 	{
 		Schema::create("account_accesses", function (Blueprint $table) {
 			$table->id();
-			$table->string("words");
-			$table->enum("acts_as", ["student", "guardian", "employee"])->nullable();
+			$table->string("words")->nullable();
+			$table->enum("acts_as", ["student", "guardian",
+				"guest", "pedagogue", "teacher", "secretary", "principal", "administrator"])->nullable();
 			$table->foreignId("student_id")->nullable()->constrained("students")->cascadeOnDelete();
 			$table->foreignId("employee_id")->nullable()->constrained("employees")->cascadeOnDelete();
 			$table->foreignId("user_id")->nullable()->constrained("users")->cascadeOnDelete();
