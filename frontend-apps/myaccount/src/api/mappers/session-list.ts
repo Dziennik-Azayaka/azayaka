@@ -4,5 +4,5 @@ import { sessionListEntryDTOToEntity } from "@/api/mappers/session-list-entry.ts
 
 export const sessionListDTOToEntity = (dto: SessionListDTO): SessionListEntity => ({
     currentSessionId: dto.currentSession,
-    sessions: dto.sessions.map(sessionListEntryDTOToEntity),
-});
+    sessions: dto.sessions.map(sessionListEntryDTOToEntity)
+})
