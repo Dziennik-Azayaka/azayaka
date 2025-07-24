@@ -66,7 +66,7 @@ onMounted(getPage);
 
 <template>
     <div>
-        <PanelHeader :breadcrumb-path="[{ href: '/', title: t('activityHistory') }]" />
+        <PanelHeader :breadcrumb-path="[{ href: { name: 'activity' }, title: t('activityHistory') }]" />
         <main id="main-content">
             <h1 class="text-2xl font-semibold">{{ t("activityHistory") }}</h1>
             <p class="text-foreground/70 mb-4 text-sm">

@@ -1,16 +1,24 @@
 <script setup lang="ts">
 import { useTitle } from "@vueuse/core";
-import { LucideHistory, LucideHome, LucideIdCard } from "lucide-vue-next";
+import {
+    LucideAlertCircle,
+    LucideHistory,
+    LucideHome,
+    LucideIdCard,
+    LucideLoaderCircle,
+    RefreshCw,
+} from "lucide-vue-next";
 import { storeToRefs } from "pinia";
 import { configure } from "vee-validate";
-import { computed, watch } from "vue";
+import { computed, onBeforeMount, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
-import { useRoute } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 
 import { syncLocaleWithStore } from "@azayaka-frontend/i18n";
-import { PanelNavigation, PanelNavigationHeaderMenu } from "@azayaka-frontend/ui";
+import { Button, PanelNavigation, PanelNavigationHeaderMenu } from "@azayaka-frontend/ui";
 import { PanelLayout, PanelNavigationItem } from "@azayaka-frontend/ui";
 
+import SessionApiService from "@/api/services/session";
 import { useMainStore } from "@/stores/main.store";
 
 configure({
@@ -48,6 +56,7 @@ const user = { emailAddress: "jan@fakelog.cf" };
 syncLocaleWithStore(storeLocale, i18nLocale);
 
 const route = useRoute();
+const router = useRouter();
 
 useTitle(
     computed(() => `${t(route.meta.title as string)} - ${t("accountSettings")}`),
@@ -63,15 +72,49 @@ watch(
     { immediate: true },
 );
 
+const loading = ref(false);
+const error = ref(false);
+
+async function getSessionInfo() {
+    loading.value = true;
+    error.value = false;
+    try {
+        const result = await SessionApiService.getSessionInfo();
+        if (!result.loggedIn) return await router.push("/");
+        mainStore.emailAddress = result.emailAddress;
+    } catch {
+        error.value = true;
+    } finally {
+        loading.value = false;
+    }
+}
+
+onBeforeMount(getSessionInfo);
+
 const appVersion = import.meta.env.VITE_APP_VERSION;
 </script>
 
 <template>
-    <PanelLayout>
+    <div class="w-screen h-dvh flex flex-col items-center justify-center" v-if="loading || error">
+        <LucideLoaderCircle class="animate-spin mx-auto" :aria-label="t('pleaseWait')" v-if="loading" />
+        <template v-else>
+            <LucideAlertCircle class="mx-auto size-20" />
+            <p class="text-center mt-3 font-medium text-lg">{{ t("unknownError") }}</p>
+            <Button class="mx-auto mt-8" variant="outline" @click="getSessionInfo" size="lg">
+                <RefreshCw />
+                {{ t("tryAgain") }}
+            </Button>
+        </template>
+    </div>
+    <PanelLayout v-else>
         <template #navigation>
             <PanelNavigation v-model="mainStore.mobileNavOpen">
                 <template #header>
-                    <PanelNavigationHeaderMenu :title="t('accountSettings')" :subtitle="user.emailAddress" />
+                    <PanelNavigationHeaderMenu
+                        :title="t('accountSettings')"
+                        :subtitle="mainStore.emailAddress!"
+                        current-app="myAccount"
+                    />
                 </template>
                 <template #navigation-top>
                     <PanelNavigationItem
