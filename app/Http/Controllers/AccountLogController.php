@@ -27,7 +27,7 @@ class AccountLogController extends Controller
 			"success" => true,
 			"date" => AccountLog::where("user_id", $request->user()->id)
 				->where("event_type", AccountEventType::CREDENTIALS_CHANGED->value)
-				->orderBy("created_at", "DESC")
+				->orderBy("created_at", "ASC")
 				->first()
 				?->created_at
 		];
