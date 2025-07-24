@@ -2,7 +2,7 @@
 import PanelNavigationHeaderMenuTrigger from "./PanelNavigationHeaderMenuTrigger.vue";
 import { useMediaQuery } from "@vueuse/core";
 import { LucideUserCog } from "lucide-vue-next";
-import { type Component, ref } from "vue";
+import { type Component, computed, ref } from "vue";
 import { useI18n } from "vue-i18n";
 
 import { Button } from "#ui/components/ui/button";
@@ -24,21 +24,22 @@ import {
     DropdownMenuTrigger,
 } from "#ui/components/ui/dropdown-menu";
 
+type App = "myAccount";
+
 defineProps<{
     title: string;
     subtitle?: string;
+    currentApp: string;
 }>();
 
 const isMobile = useMediaQuery("(width < 80rem)");
 const { t } = useI18n();
 
-type App = "myAccount";
-
 const appIcons: Record<App, Component> = {
     myAccount: LucideUserCog,
 };
 const appRootURLs: Record<App, string> = {
-    myAccount: "http://localhost:5002",
+    myAccount: "/myaccount",
 };
 
 const userApps = ref<App[]>(["myAccount"]);
@@ -54,10 +55,11 @@ const userApps = ref<App[]>(["myAccount"]);
             <p class="px-2 py-1.5 text-xs font-medium text-muted-foreground">LO 23 Gdańsk</p>
             <DropdownMenuItem v-for="app in userApps" :key="app" as-child>
                 <a
-                    :href="appRootURLs[app]"
+                    :to="appRootURLs[app]"
                     target="_blank"
                     title="Odnośnik otwiera się w nowej karcie"
                     class="cursor-pointer"
+                    :class="{ '!bg-primary !text-primary-foreground *:!text-primary-foreground': currentApp === app }"
                 >
                     <component :is="appIcons[app]" class="text-foreground" />
                     {{ t(`apps.${app}`) }}

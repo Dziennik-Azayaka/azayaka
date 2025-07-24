@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { LucideMenu } from "lucide-vue-next";
 import { useI18n } from "vue-i18n";
+import type { RouteLocationAsPathGeneric, RouteLocationAsRelativeGeneric } from "vue-router";
 
 import {
     Breadcrumb,
@@ -16,7 +17,9 @@ import { useMainStore } from "@/stores/main.store";
 const mainStore = useMainStore();
 const { locale, t } = useI18n();
 
-defineProps<{ breadcrumbPath: { href: string; title: string }[] }>();
+defineProps<{
+    breadcrumbPath: { href: string | RouteLocationAsPathGeneric | RouteLocationAsRelativeGeneric; title: string }[];
+}>();
 </script>
 
 <template>
@@ -50,9 +53,11 @@ defineProps<{ breadcrumbPath: { href: string; title: string }[] }>();
         </Breadcrumb>
         <div class="flex-1" />
         <PanelAccountMenu
+            v-if="mainStore.emailAddress"
             v-model:theme="mainStore.colorMode"
             v-model:lang="locale"
             v-model:font-size="mainStore.fontSize"
+            :email-address="mainStore.emailAddress"
         />
     </div>
 </template>

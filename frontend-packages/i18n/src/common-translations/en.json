@@ -15,7 +15,11 @@
     "light": "Light",
     "logOut": "Log out",
     "next": "Next",
+    "nextPage": "Next page",
     "normal": "Normal",
+    "previousPage": "Previous page",
     "showPassword": "Show password",
-    "skipToContent": "Skip to main content"
+    "skipToContent": "Skip to main content",
+    "tryAgain": "Try again",
+    "unknownError": "An unexpected error has occurred, please try again later."
 }
