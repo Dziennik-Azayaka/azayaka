@@ -49,7 +49,7 @@ onMounted(getActiveSessions);
 
 <template>
     <div>
-        <PanelHeader :breadcrumb-path="[{ href: '/', title: t('home') }]" />
+        <PanelHeader :breadcrumb-path="[{ href: { name: 'home' }, title: t('home') }]" />
         <main id="main-content">
             <h2 class="text-2xl font-semibold">{{ t("home") }}</h2>
             <p class="text-foreground/70 mb-4 text-sm">{{ t("homeDescription") }}</p>
