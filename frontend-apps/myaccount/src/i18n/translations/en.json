@@ -12,6 +12,8 @@
     "activityHistory": "Activity history",
     "activityHistoryDescription": "Here you will find activity such as login attempts, logouts and access management.",
     "change": "Change",
+	"changeEmailAddress": "Chnage email address",
+	"changeEmailAddressDescription": "Set a new email address that you will use to log in to the register.",
     "currentPassword": "Current password",
     "date": "Date",
     "device": "Device",

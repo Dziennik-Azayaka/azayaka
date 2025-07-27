@@ -12,6 +12,8 @@
     "activityHistory": "Historia aktywności",
     "activityHistoryDescription": "Znajdziesz tu aktywność taką jak próby logowania, wylogowania czy zarządzania dostępami.",
     "change": "Zmień",
+	"changeEmailAddress": "Zmień adres e-mail",
+	"changeEmailAddressDescription": "Ustaw nowy adres e-mail, który będziesz używać do logowania się do dziennika.",
     "currentPassword": "Aktualne hasło",
     "date": "Data",
     "device": "Urządzenie",
