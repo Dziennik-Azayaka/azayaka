@@ -6,15 +6,15 @@ export class ApiError extends Error {
 }
 
 export class IncorrectPasswordError extends Error {
-	constructor() {
+    constructor() {
         super();
         this.name = "IncorrectPasswordError";
     }
 }
 
 export class AlreadyTakenEmailAddressError extends Error {
-	constructor() {
-		super();
-		this.name = "AlreadyTakenEmailAddressError"
-	}
+    constructor() {
+        super();
+        this.name = "AlreadyTakenEmailAddressError";
+    }
 }

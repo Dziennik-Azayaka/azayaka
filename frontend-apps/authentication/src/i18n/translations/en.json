@@ -25,7 +25,6 @@
     "password": "Password",
     "passwordMaxLengthError": "The password must contain at most 128 characters.",
     "passwordMinLengthError": "The password must contain at least 8 characters.",
-    "pleaseWait": "Please wait...",
     "privacyPolicy": "Privacy policy",
     "repeatPassword": "Repeat password",
     "repeatPasswordError": "The password must be the same in both fields.",
