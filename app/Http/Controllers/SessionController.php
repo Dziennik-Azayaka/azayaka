@@ -5,22 +5,28 @@ namespace App\Http\Controllers;
 use App\Enums\AccountEventType;
 use App\Utilities\AccountEventLogger;
 use App\Utilities\ArrayCameliser;
+use App\Utilities\ValidatorAssistant;
 use DB;
 use Hash;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Validator;
 use Response;
 
 class SessionController extends Controller
 {
 	public function authenticate(Request $request)
 	{
-		$credentials = $request->validate([
-			"email" => ["required"],
+		$validator = ValidatorAssistant::validate($request, [
+			"email" => ["required", "email"],
 			"password" => ["required"]
 		]);
+
+		if (!$validator["success"]) {
+			return $validator["errorResponse"];
+		}
+
+		$credentials = $validator["data"];
 
 		if (Auth::attempt($credentials, true)) {
 			$request->session()->regenerateToken();
@@ -45,9 +51,7 @@ class SessionController extends Controller
 		Auth::logout();
 		$request->session()->invalidate();
 		$request->session()->regenerateToken();
-		return [
-			"success" => true
-		];
+		return redirect("/authentication");
 	}
 
 	public function currentSessions(Request $request)
@@ -83,28 +87,16 @@ class SessionController extends Controller
 	}
 
 	public function removeSession(Request $request) {
-		$validator = Validator::make($request->all(), [
+		$validator = ValidatorAssistant::validate($request, [
 			"id" => "required|exists:sessions,id",
-			"password" => "required",
+			"password" => "required|current_password"
 		]);
 
-		if ($validator->fails()) {
-			return Response::json([
-				"success" => false,
-				"errors" => $validator->errors()
-			], 400);
+		if (!$validator["success"]) {
+			return $validator["errorResponse"];
 		}
 
-		if (!Hash::check($validator->validated()["password"], Auth::user()->password)) {
-			return Response::json([
-				"success" => false,
-				"errors" => [
-					"WRONG_PASSWORD"
-				]
-			], 401);
-		}
-
-		$sessionId = $validator->validated()["id"];
+		$sessionId = $validator["data"]["id"];
 
 		if ($sessionId == $request->session()->getId()) {
 			return Response::json([
