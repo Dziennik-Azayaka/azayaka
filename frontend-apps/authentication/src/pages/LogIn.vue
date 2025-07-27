@@ -50,6 +50,7 @@ const onSubmit = form.handleSubmit(async (values) => {
 
     try {
         await SessionApiService.logIn(values);
+		window.location.pathname = "/myaccount";
     } catch (reason: unknown) {
         if (reason instanceof IncorrectCredentialsError) error.value = "incorrectCredentialsError";
         else error.value = "unknownError";
