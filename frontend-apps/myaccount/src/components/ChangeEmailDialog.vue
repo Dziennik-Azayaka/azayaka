@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import PasswordInput from "#ui/components/ui/input/PasswordInput.vue";
+import ErrorBanner from "./ErrorBanner.vue";
 import { toTypedSchema } from "@vee-validate/zod";
+import { LucideLoader2 } from "lucide-vue-next";
 import { useForm } from "vee-validate";
 import { ref } from "vue";
 import { useI18n } from "vue-i18n";
@@ -23,10 +25,10 @@ import {
     FormMessage,
     Input,
 } from "@azayaka-frontend/ui";
-import UserApiService from "@/api/services/user";
+
 import { AlreadyTakenEmailAddressError, IncorrectPasswordError } from "@/api/errors";
+import UserApiService from "@/api/services/user";
 import { useMainStore } from "@/stores/main.store";
-import ErrorBanner from "./ErrorBanner.vue";
 
 const { t } = useI18n();
 const mainStore = useMainStore();
@@ -39,10 +41,9 @@ const formSchema = toTypedSchema(
                 required_error: t("requiredEmailAddressError"),
             })
             .email(t("invalidEmailAddressError")),
-		password: z
-			.string({
-                required_error: t("requiredPasswordError"),
-            })
+        password: z.string({
+            required_error: t("requiredPasswordError"),
+        }),
     }),
 );
 const form = useForm({
@@ -54,21 +55,19 @@ const error = ref<string | null>();
 
 const onSubmit = form.handleSubmit(async (values) => {
     isLoading.value = true;
-	error.value = null;
-	try {
-		await UserApiService.setNewEmailAddress(values.emailAddress, values.password);
-		mainStore.emailAddress = values.emailAddress;
-		showDialog.value = false;
-
-	} catch (reason) {
-		if (reason instanceof IncorrectPasswordError) error.value = "incorrectPasswordError";
-		else if (reason instanceof AlreadyTakenEmailAddressError) error.value = "alreadyTakenEmailAddressError"
-		else error.value = "unknownError";
-	} finally {
-		isLoading.value = false;
-	}
+    error.value = null;
+    try {
+        await UserApiService.setNewEmailAddress(values.emailAddress, values.password);
+        mainStore.emailAddress = values.emailAddress;
+        showDialog.value = false;
+    } catch (reason) {
+        if (reason instanceof IncorrectPasswordError) error.value = "incorrectPasswordError";
+        else if (reason instanceof AlreadyTakenEmailAddressError) error.value = "alreadyTakenEmailAddressError";
+        else error.value = "unknownError";
+    } finally {
+        isLoading.value = false;
+    }
 });
-
 </script>
 
 <template>
@@ -100,12 +99,15 @@ const onSubmit = form.handleSubmit(async (values) => {
                         <FormMessage />
                     </FormItem>
                 </FormField>
-				<ErrorBanner v-if="error" :description="error" />
+                <ErrorBanner v-if="error" :description="error" />
                 <DialogFooter>
                     <DialogClose as-child>
                         <Button variant="outline" type="button">{{ t("cancel") }}</Button>
                     </DialogClose>
-                    <Button type="submit">{{ t("confirm") }}</Button>
+                    <Button type="submit">
+                        <template v-if="!isLoading">{{ t("confirm") }}</template>
+                        <LucideLoader2 v-else class="animate-spin size-5" :aria-label="t('pleaseWait')" />
+                    </Button>
                 </DialogFooter>
             </form>
         </DialogContent>
