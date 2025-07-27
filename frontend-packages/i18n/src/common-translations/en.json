@@ -1,6 +1,7 @@
 {
     "apps.myAccount": "Account settings",
     "back": "Back",
+	"cancel": "Cancel",
     "changeFontSize": "Change font size",
     "changeLanguage": "Change language",
     "changeTheme": "Change theme",
