@@ -4,28 +4,25 @@ namespace App\Http\Controllers;
 
 use App\Enums\AccountEventType;
 use App\Utilities\AccountEventLogger;
+use App\Utilities\ValidatorAssistant;
 use Response;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Validator;
 
 class UserController extends Controller
 {
 	public function updateEmailAddress(Request $request) {
-		$validator = Validator::make($request->all(), [
+		$validator = ValidatorAssistant::validate($request, [
 			"email" => "required|unique:users,email",
 			"password" => "required",
 		]);
 
-		if ($validator->fails()) {
-			return Response::json([
-				"success" => false,
-				"errors" => $validator->errors()
-			], 400);
+		if (!$validator["success"]) {
+			return $validator["errorResponse"];
 		}
 
-		$validated = $validator->validated();
+		$validated = $validator["data"];
 
 		if (!Hash::check($validated["password"], $request->user()->password)) {
 			return Response::json([
@@ -36,9 +33,9 @@ class UserController extends Controller
 			], 400);
 		}
 
-		$request->user()->fill([
+		$request->user()->update([
 			"email" => $validated["email"]
-		]);
+		])->save();
 		$request->user()->save();
 
 		AccountEventLogger::log($request, AccountEventType::CREDENTIALS_CHANGED);
@@ -49,21 +46,18 @@ class UserController extends Controller
 	}
 
 	public function updatePassword(Request $request) {
-		$validator = Validator::make($request->all(), [
-			"old_password" => "required|current_password",
-			"new_password" => "required|min:8",
+		$validator = ValidatorAssistant::validate($request, [
+			"oldPassword" => "required|current_password",
+			"newPassword" => "required|min:8",
 		]);
 
-		if ($validator->fails()) {
-			return Response::json([
-				"success" => false,
-				"errors" => $validator->errors()
-			], 400);
+		if (!$validator["success"]) {
+			return $validator["errorResponse"];
 		}
 
-		$validated = $validator->validated();
+		$validated = $validator["data"];
 
-		if (!Hash::check($validated["old_password"], $request->user()->password)) {
+		if (!Hash::check($validated["oldPassword"], $request->user()->password)) {
 			return Response::json([
 				"success" => false,
 				"errors" => [
@@ -72,11 +66,12 @@ class UserController extends Controller
 			], 400);
 		}
 
-		Auth::logoutOtherDevices($request->input("old_password"));
+		Auth::logoutOtherDevices($request->input("oldPassword"));
 
-		$request->user()->fill([
-			"password" => Hash::make($validator->validated()["new_password"])
+		$request->user()->update([
+			"password" => Hash::make($validated["newPassword"])
 		]);
+		$request->user()->save();
 
 		AccountEventLogger::log($request, AccountEventType::CREDENTIALS_CHANGED);
 

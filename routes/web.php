@@ -24,6 +24,7 @@ Route::middleware(["auth", "auth.session"])->group(function () {
 	Route::get("/api/sessions", [SessionController::class, "currentSessions"]);
 	Route::delete("/api/sessions/remove", [SessionController::class, "removeSession"]);
 	Route::delete("/api/sessions/removeAll", [SessionController::class, "logoutOtherDevices"]);
+	Route::get("/api/logout", [SessionController::class, "logout"]);
 
 	Route::put("/api/user/email", [UserController::class, "updateEmailAddress"]);
 	Route::put("/api/user/password", [UserController::class, "updatePassword"]);
@@ -48,7 +49,7 @@ Route::post("/api/email/verification-notification", function (Request $request) 
 // SPA
 Route::view("/authentication{any?}", "authentication")->where("any", ".*")->name("login");
 
-Route::middleware(["auth"])->group(function () {
+Route::middleware(["auth", "auth.session"])->group(function () {
 	Route::view("/myaccount{any?}", "myaccount")->where("any", ".*");
 });
 

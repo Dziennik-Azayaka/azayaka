@@ -6,28 +6,25 @@ use App\Enums\AccountEventType;
 use App\Models\AccountAccess;
 use App\Models\User;
 use App\Utilities\AccountEventLogger;
+use App\Utilities\ValidatorAssistant;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Validator;
 use Response;
 
 class AccountAccessesController extends Controller
 {
 	public function lookup(Request $request)
 	{
-		$validator = Validator::make($request->all(), [
+		$validator = ValidatorAssistant::validate($request, [
 			"code" => "required|string"
 		]);
 
-		if ($validator->fails()) {
-			return Response::json([
-				"success" => false,
-				"errors" => $validator->errors()
-			], 400);
+		if (!$validator["success"]) {
+			return $validator["errorResponse"];
 		}
 
-		$code = $validator->validated()["code"];
+		$code = $validator["data"]["code"];
 
 		$activation_code = AccountAccess::where("words", $code)->first();
 
@@ -56,18 +53,15 @@ class AccountAccessesController extends Controller
 
 	public function checkEmailAvailability(Request $request)
 	{
-		$validator = Validator::make($request->all(), [
+		$validator = ValidatorAssistant::validate($request, [
 			"email" => "required|email"
 		]);
 
-		if ($validator->fails()) {
-			return Response::json([
-				"success" => false,
-				"errors" => $validator->errors()
-			], 400);
+		if (!$validator["success"]) {
+			return $validator["errorResponse"];
 		}
 
-		$email = $validator->validated()["email"];
+		$email = $validator["data"]["email"];
 
 		session(["activation_email" => $email]);
 		if (User::whereEmail($email)->exists()) {
@@ -89,20 +83,17 @@ class AccountAccessesController extends Controller
 	{
 		$signedIn = Auth::check();
 
-		$validator = Validator::make($request->all(), [
+		$validator = ValidatorAssistant::validate($request, [
 			"code" => "required|string",
 			"password" => $signedIn ? "nullable|exclude" : "required|min:8|max:255",
 			"email" => $signedIn ? "nullable|exclude" : "required|email|max:255"
 		]);
 
-		if ($validator->fails()) {
-			return Response::json([
-				"success" => false,
-				"errors" => $validator->errors()
-			], 400);
+		if (!$validator["success"]) {
+			return $validator["errorResponse"];
 		}
 
-		$data = $validator->validated();
+		$data = $validator["data"];
 
 		$activation_code = AccountAccess::where("words", $data["code"])->first();
 
