@@ -91,9 +91,11 @@ const { t } = useI18n();
                 </a>
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem variant="destructive">
-                <LucideLogOut />
-                {{ t("logOut") }}
+            <DropdownMenuItem variant="destructive" as-child>
+				<a href="/api/logout">
+					<LucideLogOut />
+					{{ t("logOut") }}
+				</a>
             </DropdownMenuItem>
         </DropdownMenuContent>
     </DropdownMenu>
