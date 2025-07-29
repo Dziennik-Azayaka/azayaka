@@ -198,12 +198,14 @@ class AccountAccessesController extends Controller
 					"updatedAt" => $access->updated_at,
 				];
 			} else {
-				$accessesWithPersonas[] = [
-					"student" => null,
-					"guardian" => $access->guardian->first_name . " " . $access->guardian->last_name,
-					"employee" => null,
-					"updatedAt" => $access->updated_at,
-				];
+				foreach ($access->guardian->students as $student) {
+					$accessesWithPersonas[] = [
+						"student" => $student->first_name . " " . $student->last_name,
+						"guardian" => $access->guardian->first_name . " " . $access->guardian->last_name,
+						"employee" => null,
+						"updatedAt" => $access->updated_at,
+					];
+				}
 			}
 		}
 

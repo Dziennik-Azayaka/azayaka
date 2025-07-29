@@ -9,4 +9,8 @@ class Guardian extends BaseModel
 {
     /** @use HasFactory<\Database\Factories\GuardianFactory> */
     use HasFactory;
+
+	function students() {
+		return $this->belongsToMany(Student::class);
+	}
 }
