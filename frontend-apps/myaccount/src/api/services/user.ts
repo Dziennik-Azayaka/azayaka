@@ -21,20 +21,20 @@ export default {
         axios.put("/user/email", { email: newEmailAddress, password }).catch((reason) => {
             if (reason instanceof AxiosError) {
                 const errors = reason.response?.data.errors;
-                if ("email" in errors && errors.email.includes("The email has already been taken."))
-                    throw new AlreadyTakenEmailAddressError();
                 if (Array.isArray(errors)) {
+                    if (errors.includes("EMAIL_TAKEN")) throw new AlreadyTakenEmailAddressError();
                     if (errors.includes("WRONG_PASSWORD")) throw new IncorrectPasswordError();
                 }
             }
             throw new ApiError(reason);
         }),
     setNewPassword: (currentPassword: string, newPassword: string) =>
-        axios.put("/user/password", { old_password: currentPassword, new_password: newPassword }).catch((reason) => {
+        axios.put("/user/password", { oldPassword: currentPassword, newPassword: newPassword }).catch((reason) => {
             if (reason instanceof AxiosError) {
                 const errors = reason.response?.data.errors;
-                if ("old_password" in errors && errors.old_password.includes("The password is incorrect."))
-                    throw new IncorrectPasswordError();
+                if (Array.isArray(errors)) {
+                    if (errors.includes("WRONG_PASSWORD")) throw new IncorrectPasswordError();
+                }
             }
             throw new ApiError(reason);
         }),

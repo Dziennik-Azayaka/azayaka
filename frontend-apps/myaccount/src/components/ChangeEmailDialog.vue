@@ -99,7 +99,7 @@ const onSubmit = form.handleSubmit(async (values) => {
                         <FormMessage />
                     </FormItem>
                 </FormField>
-                <ErrorBanner v-if="error" :description="error" />
+                <ErrorBanner v-if="error" :description="t(error)" />
                 <DialogFooter>
                     <DialogClose as-child>
                         <Button variant="outline" type="button">{{ t("cancel") }}</Button>

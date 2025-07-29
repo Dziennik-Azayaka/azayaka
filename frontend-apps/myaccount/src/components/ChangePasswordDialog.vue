@@ -57,13 +57,14 @@ const form = useForm({
 
 const isLoading = ref(false);
 const error = ref<string | null>(null);
+const showDialog = ref(false);
 
 const onSubmit = form.handleSubmit(async (values) => {
     isLoading.value = true;
     error.value = null;
     try {
         await UserApiService.setNewPassword(values.currentPassword, values.newPassword);
-        window.location.pathname = "/";
+        showDialog.value = false;
     } catch (reason) {
         if (reason instanceof IncorrectPasswordError) error.value = "incorrectPasswordError";
         else error.value = "unknownError";
@@ -74,7 +75,7 @@ const onSubmit = form.handleSubmit(async (values) => {
 </script>
 
 <template>
-    <Dialog>
+    <Dialog v-model:open="showDialog">
         <DialogTrigger as-child>
             <Button size="sm" variant="secondary">{{ t("change") }}</Button>
         </DialogTrigger>
@@ -111,7 +112,7 @@ const onSubmit = form.handleSubmit(async (values) => {
                         <FormMessage />
                     </FormItem>
                 </FormField>
-                <ErrorBanner v-if="error" :description="error" />
+                <ErrorBanner v-if="error" :description="t(error)" />
                 <DialogFooter>
                     <DialogClose as-child>
                         <Button variant="outline" type="button">Anuluj</Button>
