@@ -31,8 +31,7 @@ const mainStore = useMainStore();
                     </div>
                     <div class="contents not-first:*:first:border-t md:not-first:*:border-t">
                         <dt class="md:h-13 not-md:pt-4 content-center px-4 text-sm font-medium">{{ t("password") }}</dt>
-                        <dd class="md:h-13 not-md:pb-4 px-4 flex justify-between items-center">
-                            <span class="text-sm text-foreground/80">zmieniono 3 dni temu</span>
+                        <dd class="md:h-13 not-md:pb-4 px-4 flex justify-end items-center">
                             <ChangePasswordDialog />
                         </dd>
                     </div>
