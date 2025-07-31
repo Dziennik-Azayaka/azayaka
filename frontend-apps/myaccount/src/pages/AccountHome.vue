@@ -14,6 +14,7 @@ import { useI18n } from "vue-i18n";
 import type { SessionListEntryEntity } from "@/api/entities/session-list-entry.ts";
 import SessionApiService from "@/api/services/session.ts";
 import PanelHeader from "@/components/PanelHeader.vue";
+import RemoveSessionDialog from "@/components/RemoveSessionDialog.vue";
 
 const { t, d } = useI18n();
 
@@ -44,6 +45,10 @@ const getDeviceTypeByOS = (os: string) => {
     return "other";
 };
 
+function onSessionLogout(sessionId: string) {
+    if (activeSessions.value) activeSessions.value = activeSessions.value.filter((session) => session.id !== sessionId);
+}
+
 onMounted(getActiveSessions);
 </script>
 
@@ -72,6 +77,7 @@ onMounted(getActiveSessions);
                             <tr>
                                 <td class="px-4 py-3 text-sm font-medium">{{ t("device") }}</td>
                                 <td class="px-4 py-3 text-sm font-medium">{{ t("lastActivity") }}</td>
+                                <td class="px-4 py-3 text-sm font-medium w-min">{{ t("actions") }}</td>
                             </tr>
                         </thead>
                         <tbody>
@@ -107,6 +113,14 @@ onMounted(getActiveSessions);
                                 <td class="px-4 py-3 not-md:pt-0 text-sm text-foreground/70">
                                     <span class="md:hidden">{{ t("lastActivity") }}</span>
                                     {{ d(session.lastActivityDate, "hourMinute") }}
+                                </td>
+                                <td class="px-4 py-3 flex gap-2">
+                                    <RemoveSessionDialog
+                                        :session-id="session.id"
+                                        v-if="session.id !== currentSessionId"
+                                        @logout="onSessionLogout(session.id)"
+                                    />
+									<template v-else>-</template>
                                 </td>
                             </tr>
                         </tbody>

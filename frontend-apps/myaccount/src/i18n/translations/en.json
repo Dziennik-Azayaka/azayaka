@@ -28,6 +28,8 @@
     "incorrectPasswordError": "Password is incorrect.",
     "ipAddress": "IP address",
     "lastActivity": "Last activity",
+    "logOutSession": "Log out session",
+    "logOutSessionDescription": "Enter your password to log out the session.",
     "newEmailAddress": "New email address",
     "newPassword": "New password",
     "password": "Password",

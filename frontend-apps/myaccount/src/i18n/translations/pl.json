@@ -28,6 +28,8 @@
     "incorrectPasswordError": "Hasło jest nieprawidłowe.",
     "ipAddress": "adres IP",
     "lastActivity": "Ostatnia aktywność",
+    "logOutSession": "Wyloguj sesję",
+    "logOutSessionDescription": "Wpisz swoje hasło, aby wylogować sesję.",
     "newEmailAddress": "Nowy adres e-mail",
     "newPassword": "Nowe hasło",
     "password": "Hasło",
