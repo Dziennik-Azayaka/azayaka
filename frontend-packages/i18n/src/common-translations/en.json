@@ -1,6 +1,8 @@
 {
+    "actions": "Actions",
     "apps.myAccount": "Account settings",
     "back": "Back",
+    "cancel": "Cancel",
     "changeFontSize": "Change font size",
     "changeLanguage": "Change language",
     "changeTheme": "Change theme",
@@ -15,7 +17,12 @@
     "light": "Light",
     "logOut": "Log out",
     "next": "Next",
+    "nextPage": "Next page",
     "normal": "Normal",
+    "pleaseWait": "Please wait...",
+    "previousPage": "Previous page",
     "showPassword": "Show password",
-    "skipToContent": "Skip to main content"
+    "skipToContent": "Skip to main content",
+    "tryAgain": "Try again",
+    "unknownError": "An unexpected error has occurred, please try again later."
 }

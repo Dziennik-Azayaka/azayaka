@@ -22,16 +22,22 @@ import PanelAccountMenuTrigger from "#ui/layouts/panel/PanelAccountMenuTrigger.v
 const theme = defineModel<BasicColorSchema | "highContrast">("theme", { required: true });
 const lang = defineModel<string>("lang", { required: true });
 const fontSize = defineModel<"normal" | "large">("fontSize", { required: true });
+const props = defineProps<{
+    emailAddress: string;
+}>();
 const { t } = useI18n();
 </script>
 
 <template>
     <DropdownMenu>
         <DropdownMenuTrigger as-child>
-            <PanelAccountMenuTrigger email-address="jan@fakelog.cf" initials="JK" />
+            <PanelAccountMenuTrigger
+                :email-address="props.emailAddress"
+                :initials="props.emailAddress[0].toUpperCase()"
+            />
         </DropdownMenuTrigger>
         <DropdownMenuContent>
-            <DropdownMenuLabel>jan@fakelog.cf</DropdownMenuLabel>
+            <DropdownMenuLabel>{{ emailAddress }}</DropdownMenuLabel>
             <DropdownMenuSeparator />
 
             <DropdownMenuSub>
@@ -78,14 +84,18 @@ const { t } = useI18n();
                     </DropdownMenuSubContent>
                 </DropdownMenuPortal>
             </DropdownMenuSub>
-            <DropdownMenuItem>
-                <LucideSettings aria-hidden="true" />
-                {{ t("accountSettings") }}
+            <DropdownMenuItem as-child>
+                <a href="/myaccount">
+                    <LucideSettings aria-hidden="true" />
+                    {{ t("accountSettings") }}
+                </a>
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem variant="destructive">
-                <LucideLogOut />
-                {{ t("logOut") }}
+            <DropdownMenuItem variant="destructive" as-child>
+                <a href="/api/logout">
+                    <LucideLogOut />
+                    {{ t("logOut") }}
+                </a>
             </DropdownMenuItem>
         </DropdownMenuContent>
     </DropdownMenu>

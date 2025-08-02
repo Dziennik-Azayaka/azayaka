@@ -25,7 +25,6 @@
     "password": "Hasło",
     "passwordMaxLengthError": "Hasło musi zawierać co najwyżej 128 znaków.",
     "passwordMinLengthError": "Hasło musi zawierać co najmniej 8 znaków.",
-    "pleaseWait": "Proszę czekać...",
     "privacyPolicy": "Polityka prywatności",
     "repeatPassword": "Powtórz hasło",
     "repeatPasswordError": "Hasło musi być takie same w obu polach.",

@@ -35,7 +35,7 @@ class UserController extends Controller
 
 		$request->user()->update([
 			"email" => $validated["email"]
-		]);
+		])->save();
 		$request->user()->save();
 
 		AccountEventLogger::log($request, AccountEventType::CREDENTIALS_CHANGED);

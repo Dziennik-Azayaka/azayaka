@@ -23,24 +23,21 @@ import {
     FormItem,
     FormLabel,
     FormMessage,
-    Input,
 } from "@azayaka-frontend/ui";
 
-import { AlreadyTakenEmailAddressError, IncorrectPasswordError } from "@/api/errors";
-import UserApiService from "@/api/services/user";
+import { IncorrectPasswordError } from "@/api/errors";
+import SessionApiService from "@/api/services/session";
 import { useMainStore } from "@/stores/main.store";
 
 const { t } = useI18n();
 const mainStore = useMainStore();
 const showDialog = ref(false);
 
+const props = defineProps<{ sessionId: string }>();
+const emit = defineEmits(["logout"]);
+
 const formSchema = toTypedSchema(
     z.object({
-        emailAddress: z
-            .string({
-                required_error: t("requiredEmailAddressError"),
-            })
-            .email(t("invalidEmailAddressError")),
         password: z.string({
             required_error: t("requiredPasswordError"),
         }),
@@ -57,12 +54,11 @@ const onSubmit = form.handleSubmit(async (values) => {
     isLoading.value = true;
     error.value = null;
     try {
-        await UserApiService.setNewEmailAddress(values.emailAddress, values.password);
-        mainStore.emailAddress = values.emailAddress;
+        await SessionApiService.removeSessionById(props.sessionId, values.password);
+        emit("logout");
         showDialog.value = false;
     } catch (reason) {
         if (reason instanceof IncorrectPasswordError) error.value = "incorrectPasswordError";
-        else if (reason instanceof AlreadyTakenEmailAddressError) error.value = "alreadyTakenEmailAddressError";
         else error.value = "unknownError";
     } finally {
         isLoading.value = false;
@@ -73,26 +69,17 @@ const onSubmit = form.handleSubmit(async (values) => {
 <template>
     <Dialog v-model:open="showDialog">
         <DialogTrigger as-child>
-            <Button size="sm" variant="secondary">{{ t("change") }}</Button>
+            <Button size="sm" variant="secondary">{{ t("logOutSession") }}</Button>
         </DialogTrigger>
         <DialogContent>
             <form @submit="onSubmit" class="space-y-3">
                 <DialogHeader>
-                    <DialogTitle>{{ t("changeEmailAddress") }}</DialogTitle>
-                    <DialogDescription>{{ t("changeEmailAddressDescription") }}</DialogDescription>
+                    <DialogTitle>{{ t("logOutSession") }}</DialogTitle>
+                    <DialogDescription>{{ t("logOutSessionDescription") }}</DialogDescription>
                 </DialogHeader>
-                <FormField v-slot="{ componentField }" name="emailAddress">
-                    <FormItem>
-                        <FormLabel>{{ t("newEmailAddress") }}</FormLabel>
-                        <FormControl>
-                            <Input type="text" v-bind="componentField" :disabled="isLoading" autocapitalize="off" />
-                        </FormControl>
-                        <FormMessage />
-                    </FormItem>
-                </FormField>
                 <FormField v-slot="{ componentField }" name="password">
                     <FormItem>
-                        <FormLabel>{{ t("currentPassword") }}</FormLabel>
+                        <FormLabel>{{ t("password") }}</FormLabel>
                         <FormControl>
                             <PasswordInput v-bind="componentField" :disabled="isLoading" autocapitalize="off" />
                         </FormControl>

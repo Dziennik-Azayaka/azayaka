@@ -1,6 +1,8 @@
 {
+    "actions": "Akcje",
     "apps.myAccount": "Ustawienia konta",
     "back": "Wróć",
+    "cancel": "Anuluj",
     "changeFontSize": "Zmień rozmiar czcionki",
     "changeLanguage": "Zmień język",
     "changeTheme": "Zmień motyw",
@@ -15,7 +17,12 @@
     "light": "Jasny",
     "logOut": "Wyloguj się",
     "next": "Dalej",
+    "nextPage": "Następna strona",
     "normal": "Normalny",
+    "pleaseWait": "Proszę czekać...",
+    "previousPage": "Poprzednia strona",
     "showPassword": "Pokaż hasło",
-    "skipToContent": "Przejdź do głównej treści"
+    "skipToContent": "Przejdź do głównej treści",
+    "tryAgain": "Spróbuj ponownie",
+    "unknownError": "Wystąpił nieoczekiwany błąd, spróbuj ponownie później."
 }
