@@ -51,6 +51,9 @@ Route::view("/authentication{any?}", "authentication")->where("any", ".*")->name
 
 Route::middleware(["auth", "auth.session"])->group(function () {
 	Route::view("/myaccount{any?}", "myaccount")->where("any", ".*");
+
+	// TODO: Check if the user has an admin permission
+	Route::view("/administrator{any?}", "administrator")->where("any", ".*");
 });
 
 Route::redirect("/", "/myaccount");

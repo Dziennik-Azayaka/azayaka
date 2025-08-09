@@ -120,7 +120,7 @@ onMounted(getActiveSessions);
                                         v-if="session.id !== currentSessionId"
                                         @logout="onSessionLogout(session.id)"
                                     />
-									<template v-else>-</template>
+                                    <template v-else>-</template>
                                 </td>
                             </tr>
                         </tbody>

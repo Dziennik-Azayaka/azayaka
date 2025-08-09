@@ -87,7 +87,7 @@ const { t } = useI18n();
             <DropdownMenuItem as-child>
                 <a href="/myaccount">
                     <LucideSettings aria-hidden="true" />
-                    {{ t("accountSettings") }}
+                    {{ t("apps.myAccount") }}
                 </a>
             </DropdownMenuItem>
             <DropdownMenuSeparator />

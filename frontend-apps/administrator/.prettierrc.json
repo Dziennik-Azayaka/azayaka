@@ -1,0 +1,13 @@
+{
+  "$schema": "https://json.schemastore.org/prettierrc",
+  "semi": true,
+  "singleQuote": false,
+  "printWidth": 120,
+  "tabWidth": 4,
+  "endOfLine": "lf",
+  "importOrder": ["^@azayaka-frontend/(.*)$", "^@/(.*)$"],
+  "importOrderSeparation": true,
+  "importOrderSortSpecifiers": true,
+  "plugins": ["@trivago/prettier-plugin-sort-imports"],
+  "useTabs": false
+}

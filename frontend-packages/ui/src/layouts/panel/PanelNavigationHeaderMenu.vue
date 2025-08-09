@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import PanelNavigationHeaderMenuTrigger from "./PanelNavigationHeaderMenuTrigger.vue";
 import { useMediaQuery } from "@vueuse/core";
-import { LucideUserCog } from "lucide-vue-next";
-import { type Component, computed, ref } from "vue";
+import { LucideSettings2, LucideUserCog } from "lucide-vue-next";
+import { type Component, ref } from "vue";
 import { useI18n } from "vue-i18n";
 
 import { Button } from "#ui/components/ui/button";
@@ -24,12 +24,12 @@ import {
     DropdownMenuTrigger,
 } from "#ui/components/ui/dropdown-menu";
 
-type App = "myAccount";
+type App = "myAccount" | "administrator";
 
 defineProps<{
     title: string;
     subtitle?: string;
-    currentApp: string;
+    currentApp: App;
 }>();
 
 const isMobile = useMediaQuery("(width < 80rem)");
@@ -37,12 +37,14 @@ const { t } = useI18n();
 
 const appIcons: Record<App, Component> = {
     myAccount: LucideUserCog,
+    administrator: LucideSettings2,
 };
 const appRootURLs: Record<App, string> = {
     myAccount: "/myaccount",
+    administrator: "/administrator",
 };
 
-const userApps = ref<App[]>(["myAccount"]);
+const userApps = ref<App[]>(["myAccount", "administrator"]);
 </script>
 
 <template>
@@ -55,7 +57,7 @@ const userApps = ref<App[]>(["myAccount"]);
             <p class="px-2 py-1.5 text-xs font-medium text-muted-foreground">LO 23 Gdańsk</p>
             <DropdownMenuItem v-for="app in userApps" :key="app" as-child>
                 <a
-                    :to="appRootURLs[app]"
+                    :href="appRootURLs[app]"
                     target="_blank"
                     title="Odnośnik otwiera się w nowej karcie"
                     class="cursor-pointer"
