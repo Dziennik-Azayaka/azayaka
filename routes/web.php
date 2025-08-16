@@ -2,6 +2,8 @@
 
 use App\Http\Controllers\AccountAccessesController;
 use App\Http\Controllers\AccountLogController;
+use App\Http\Controllers\SchoolComplexController;
+use App\Http\Controllers\SchoolUnitController;
 use App\Http\Controllers\SessionController;
 use App\Http\Controllers\UserController;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
@@ -33,6 +35,14 @@ Route::middleware(["auth", "auth.session"])->group(function () {
 	Route::get("/api/user/logs/lastCredentialUpdate", [AccountLogController::class, "getDateOfLastUpdateToCredentials"]);
 
 	Route::get("/api/user", [AccountAccessesController::class, "list"]);
+
+	Route::get("/api/schoolcomplex", [SchoolComplexController::class, "list"]);
+	Route::post("/api/schoolcomplex", [SchoolComplexController::class, "create"]);
+	Route::put("/api/schoolcomplex/{schoolComplex}", [SchoolComplexController::class, "update"]);
+	Route::get("/api/schoolunits", [SchoolUnitController::class, "list"]);
+	Route::post("/api/schoolunits", [SchoolUnitController::class, "create"]);
+	Route::put("/api/schoolunits/{schoolUnit}", [SchoolUnitController::class, "update"]);
+	Route::delete("/api/schoolunits/{schoolUnit}", [SchoolUnitController::class, "delete"]);
 });
 
 // Email Verification

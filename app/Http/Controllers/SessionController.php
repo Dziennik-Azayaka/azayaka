@@ -111,6 +111,9 @@ class SessionController extends Controller
 			->where("id", $sessionId)
 			->delete();
 
+		$request->user()->remember_token = null;
+		$request->user()->save();
+
 		AccountEventLogger::log($request, AccountEventType::LOGGED_OUT_BY_ANOTHER_DEVICE);
 
 		return [

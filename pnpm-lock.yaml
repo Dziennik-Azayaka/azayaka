@@ -12,6 +12,109 @@ importers:
         specifier: ^2.5.4
         version: 2.5.4
 
+  frontend-apps/administrator:
+    dependencies:
+      '@azayaka-frontend/i18n':
+        specifier: 'workspace:'
+        version: link:../../frontend-packages/i18n
+      '@azayaka-frontend/ui':
+        specifier: 'workspace:'
+        version: link:../../frontend-packages/ui
+      '@tailwindcss/postcss':
+        specifier: ^4.1.10
+        version: 4.1.10
+      '@vee-validate/zod':
+        specifier: ^4.15.1
+        version: 4.15.1(vue@3.5.16(typescript@5.8.3))(zod@3.25.64)
+      '@vueuse/core':
+        specifier: ^13.3.0
+        version: 13.3.0(vue@3.5.16(typescript@5.8.3))
+      axios:
+        specifier: ^1.10.0
+        version: 1.10.0
+      lucide-vue-next:
+        specifier: ^0.514.0
+        version: 0.514.0(vue@3.5.16(typescript@5.8.3))
+      pinia:
+        specifier: ^3.0.1
+        version: 3.0.3(typescript@5.8.3)(vue@3.5.16(typescript@5.8.3))
+      postcss:
+        specifier: ^8.5.5
+        version: 8.5.5
+      tailwindcss:
+        specifier: ^4.1.10
+        version: 4.1.10
+      ua-parser-js:
+        specifier: ^2.0.4
+        version: 2.0.4
+      vee-validate:
+        specifier: ^4.15.1
+        version: 4.15.1(vue@3.5.16(typescript@5.8.3))
+      vue:
+        specifier: ^3.5.13
+        version: 3.5.16(typescript@5.8.3)
+      vue-i18n:
+        specifier: ^11.1.5
+        version: 11.1.5(vue@3.5.16(typescript@5.8.3))
+      vue-router:
+        specifier: ^4.5.0
+        version: 4.5.1(vue@3.5.16(typescript@5.8.3))
+      zod:
+        specifier: ^3.25.64
+        version: 3.25.64
+    devDependencies:
+      '@trivago/prettier-plugin-sort-imports':
+        specifier: ^5.2.2
+        version: 5.2.2(@vue/compiler-sfc@3.5.16)(prettier@3.5.3)
+      '@tsconfig/node22':
+        specifier: ^22.0.1
+        version: 22.0.2
+      '@types/node':
+        specifier: ^22.14.0
+        version: 22.15.31
+      '@vitejs/plugin-vue':
+        specifier: ^5.2.3
+        version: 5.2.4(vite@6.3.5(@types/node@22.15.31)(jiti@2.4.2)(lightningcss@1.30.1))(vue@3.5.16(typescript@5.8.3))
+      '@vue/eslint-config-prettier':
+        specifier: ^10.2.0
+        version: 10.2.0(eslint@9.28.0(jiti@2.4.2))(prettier@3.5.3)
+      '@vue/eslint-config-typescript':
+        specifier: ^14.5.0
+        version: 14.5.0(eslint-plugin-vue@10.0.1(eslint@9.28.0(jiti@2.4.2))(vue-eslint-parser@10.1.3(eslint@9.28.0(jiti@2.4.2))))(eslint@9.28.0(jiti@2.4.2))(typescript@5.8.3)
+      '@vue/tsconfig':
+        specifier: ^0.7.0
+        version: 0.7.0(typescript@5.8.3)(vue@3.5.16(typescript@5.8.3))
+      eslint:
+        specifier: ^9.22.0
+        version: 9.28.0(jiti@2.4.2)
+      eslint-plugin-vue:
+        specifier: ~10.0.0
+        version: 10.0.1(eslint@9.28.0(jiti@2.4.2))(vue-eslint-parser@10.1.3(eslint@9.28.0(jiti@2.4.2)))
+      jiti:
+        specifier: ^2.4.2
+        version: 2.4.2
+      laravel-vite-plugin:
+        specifier: ^1.3.0
+        version: 1.3.0(vite@6.3.5(@types/node@22.15.31)(jiti@2.4.2)(lightningcss@1.30.1))
+      npm-run-all2:
+        specifier: ^7.0.2
+        version: 7.0.2
+      prettier:
+        specifier: 3.5.3
+        version: 3.5.3
+      typescript:
+        specifier: ~5.8.0
+        version: 5.8.3
+      vite:
+        specifier: ^6.2.4
+        version: 6.3.5(@types/node@22.15.31)(jiti@2.4.2)(lightningcss@1.30.1)
+      vite-plugin-vue-devtools:
+        specifier: ^7.7.2
+        version: 7.7.6(rollup@4.43.0)(vite@6.3.5(@types/node@22.15.31)(jiti@2.4.2)(lightningcss@1.30.1))(vue@3.5.16(typescript@5.8.3))
+      vue-tsc:
+        specifier: ^2.2.8
+        version: 2.2.10(typescript@5.8.3)
+
   frontend-apps/authentication:
     dependencies:
       '@azayaka-frontend/i18n':
