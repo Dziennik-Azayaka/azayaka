@@ -10,12 +10,12 @@ const axiosInstance = axios.create({
 });
 
 axiosInstance.interceptors.response.use(
-	response => response,
-	(error) => {
-		if (isAxiosError(error) && error.response?.data.errors[0] === "ALREADY_LOGGED_IN") window.location.pathname = "/";
-		else return Promise.reject(error);
-	}
-)
-
+    (response) => response,
+    (error) => {
+        if (isAxiosError(error) && error.response?.data.errors[0] === "ALREADY_LOGGED_IN")
+            window.location.pathname = "/";
+        else return Promise.reject(error);
+    },
+);
 
 export default axiosInstance;

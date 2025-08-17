@@ -1,6 +1,6 @@
 <script setup lang="ts">
+import ErrorBanner from "#ui/components/ui/banner/ErrorBanner.vue";
 import PasswordInput from "#ui/components/ui/input/PasswordInput.vue";
-import ErrorBanner from "./ErrorBanner.vue";
 import { toTypedSchema } from "@vee-validate/zod";
 import { LucideLoader2 } from "lucide-vue-next";
 import { useForm } from "vee-validate";
@@ -27,10 +27,8 @@ import {
 
 import { IncorrectPasswordError } from "@/api/errors";
 import SessionApiService from "@/api/services/session";
-import { useMainStore } from "@/stores/main.store";
 
 const { t } = useI18n();
-const mainStore = useMainStore();
 const showDialog = ref(false);
 
 const props = defineProps<{ sessionId: string }>();

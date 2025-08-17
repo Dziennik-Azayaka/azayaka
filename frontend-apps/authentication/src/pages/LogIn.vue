@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import ErrorBanner from "#ui/components/ui/banner/ErrorBanner.vue";
 import { toTypedSchema } from "@vee-validate/zod";
 import { LucideLoader2 } from "lucide-vue-next";
 import { useForm } from "vee-validate";
@@ -20,7 +21,6 @@ import {
 import { IncorrectCredentialsError } from "@/api/errors";
 import SessionApiService from "@/api/services/session.ts";
 import ActivationBanner from "@/components/ActivationBanner.vue";
-import ErrorBanner from "@/components/ErrorBanner.vue";
 import FormHeader from "@/components/FormHeader.vue";
 
 const { t } = useI18n();

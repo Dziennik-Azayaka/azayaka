@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import ErrorBanner from "#ui/components/ui/banner/ErrorBanner.vue";
 import { LucideLoader2 } from "lucide-vue-next";
 import { ref } from "vue";
 import { useI18n } from "vue-i18n";
@@ -8,7 +9,6 @@ import { Button, Input } from "@azayaka-frontend/ui";
 
 import { IncorrectActivationCodeError } from "@/api/errors";
 import ActivationApiService from "@/api/services/activation";
-import ErrorBanner from "@/components/ErrorBanner.vue";
 import FormHeader from "@/components/FormHeader.vue";
 import { useActivationStore } from "@/stores/activation.store";
 

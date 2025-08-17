@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import ErrorBanner from "#ui/components/ui/banner/ErrorBanner.vue";
 import { toTypedSchema } from "@vee-validate/zod";
 import { LucideLoader2 } from "lucide-vue-next";
 import { useForm } from "vee-validate";
@@ -8,7 +9,6 @@ import * as z from "zod";
 
 import { Button, FormControl, FormField, FormItem, FormLabel, FormMessage, PasswordInput } from "@azayaka-frontend/ui";
 
-import ErrorBanner from "@/components/ErrorBanner.vue";
 import FormHeader from "@/components/FormHeader.vue";
 
 const { t } = useI18n();

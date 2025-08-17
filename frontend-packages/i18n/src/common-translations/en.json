@@ -1,5 +1,6 @@
 {
     "actions": "Actions",
+    "apps.administrator": "System administrator",
     "apps.myAccount": "Account settings",
     "back": "Back",
     "cancel": "Cancel",

@@ -1,16 +1,9 @@
 <script setup lang="ts">
 import { useTitle } from "@vueuse/core";
-import {
-    LucideAlertCircle,
-    LucideHistory,
-    LucideHome,
-    LucideIdCard,
-    LucideLoaderCircle,
-    RefreshCw,
-} from "lucide-vue-next";
+import { LucideAlertCircle, LucideHome, LucideLoaderCircle, RefreshCw } from "lucide-vue-next";
 import { storeToRefs } from "pinia";
 import { configure } from "vee-validate";
-import { computed, onBeforeMount, ref, watch } from "vue";
+import { computed, onMounted, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import { useRoute, useRouter } from "vue-router";
 
@@ -18,6 +11,7 @@ import { syncLocaleWithStore } from "@azayaka-frontend/i18n";
 import { Button, PanelNavigation, PanelNavigationHeaderMenu } from "@azayaka-frontend/ui";
 import { PanelLayout, PanelNavigationItem } from "@azayaka-frontend/ui";
 
+import SessionApiService from "@/api/services/session";
 import { useMainStore } from "@/stores/main.store";
 
 configure({
@@ -59,6 +53,22 @@ watch(
     { immediate: true },
 );
 
+async function getSessionInfo() {
+    loading.value = true;
+    error.value = false;
+    try {
+        const result = await SessionApiService.getSessionInfo();
+        if (!result.loggedIn) return await router.push("/");
+        mainStore.emailAddress = result.emailAddress;
+    } catch {
+        error.value = true;
+    } finally {
+        loading.value = false;
+    }
+}
+
+onMounted(getSessionInfo);
+
 const loading = ref(false);
 const error = ref(false);
 
@@ -66,11 +76,26 @@ const appVersion = import.meta.env.VITE_APP_VERSION;
 </script>
 
 <template>
+    <div class="w-screen h-dvh flex flex-col items-center justify-center" v-if="loading || error">
+        <LucideLoaderCircle class="animate-spin mx-auto" :aria-label="t('pleaseWait')" v-if="loading" />
+        <template v-else>
+            <LucideAlertCircle class="mx-auto size-20" />
+            <p class="text-center mt-3 font-medium text-lg">{{ t("unknownError") }}</p>
+            <Button class="mx-auto mt-8" variant="outline" @click="getSessionInfo" size="lg">
+                <RefreshCw />
+                {{ t("tryAgain") }}
+            </Button>
+        </template>
+    </div>
     <PanelLayout>
         <template #navigation>
             <PanelNavigation v-model="mainStore.mobileNavOpen">
                 <template #header>
-                    <PanelNavigationHeaderMenu :title="t('administrator')" current-app="administrator" />
+                    <PanelNavigationHeaderMenu
+                        :title="t('administrator')"
+                        :subtitle="mainStore.emailAddress!"
+                        current-app="administrator"
+                    />
                 </template>
                 <template #navigation-top>
                     <PanelNavigationItem
@@ -104,15 +129,3 @@ const appVersion = import.meta.env.VITE_APP_VERSION;
         </template>
     </PanelLayout>
 </template>
-
-<style lang="css" scoped>
-.fade-enter-active,
-.fade-leave-active {
-    transition: opacity 0.15s ease-in;
-}
-
-.fade-enter-from,
-.fade-leave-to {
-    opacity: 0;
-}
-</style>

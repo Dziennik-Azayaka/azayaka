@@ -51,8 +51,6 @@ const menuItems = [
     },
 ];
 
-const user = { emailAddress: "jan@fakelog.cf" };
-
 syncLocaleWithStore(storeLocale, i18nLocale);
 
 const route = useRoute();
@@ -148,15 +146,3 @@ const appVersion = import.meta.env.VITE_APP_VERSION;
         </template>
     </PanelLayout>
 </template>
-
-<style lang="css" scoped>
-.fade-enter-active,
-.fade-leave-active {
-    transition: opacity 0.15s ease-in;
-}
-
-.fade-enter-from,
-.fade-leave-to {
-    opacity: 0;
-}
-</style>

@@ -1,6 +1,6 @@
 <script setup lang="ts">
+import ErrorBanner from "#ui/components/ui/banner/ErrorBanner.vue";
 import PasswordInput from "#ui/components/ui/input/PasswordInput.vue";
-import ErrorBanner from "./ErrorBanner.vue";
 import { toTypedSchema } from "@vee-validate/zod";
 import { LucideLoader2 } from "lucide-vue-next";
 import { useForm } from "vee-validate";

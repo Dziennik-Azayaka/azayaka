@@ -1,27 +1,21 @@
 <script setup lang="ts">
-import { toTypedSchema } from "@vee-validate/zod";
 import { LucideLoader2 } from "lucide-vue-next";
-import { useForm } from "vee-validate";
 import { onBeforeMount, ref } from "vue";
 import { useI18n } from "vue-i18n";
 import { useRouter } from "vue-router";
-import * as z from "zod";
 
 import { Button } from "@azayaka-frontend/ui";
 
 import FormHeader from "@/components/FormHeader.vue";
-import { useActivationStore } from "@/stores/activation.store";
 
 const { t } = useI18n();
 const router = useRouter();
-const activationStore = useActivationStore();
 
 onBeforeMount(() => {
     // TODO
 });
 
 const isLoading = ref(false);
-const error = ref<string | null>(null);
 
 function back() {
     if (router.options.history.state["back"] === "/access-activation/set-password") router.back();

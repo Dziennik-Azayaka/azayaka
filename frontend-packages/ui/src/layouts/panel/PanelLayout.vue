@@ -11,3 +11,15 @@ import { A11ySkipToMain } from "#ui/components/ui/a11y";
         </div>
     </div>
 </template>
+
+<style lang="css">
+.fade-enter-active,
+.fade-leave-active {
+    transition: opacity 0.15s ease-in;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+    opacity: 0;
+}
+</style>

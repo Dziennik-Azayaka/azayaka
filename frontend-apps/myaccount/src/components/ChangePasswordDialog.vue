@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import ErrorBanner from "./ErrorBanner.vue";
+import ErrorBanner from "#ui/components/ui/banner/ErrorBanner.vue";
 import { toTypedSchema } from "@vee-validate/zod";
 import { LucideLoader2 } from "lucide-vue-next";
 import { useForm } from "vee-validate";
