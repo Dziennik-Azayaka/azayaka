@@ -11,7 +11,7 @@ class AccountLogController extends Controller
 {
 	public function list(Request $request)
 	{
-		$paginator = AccountLog::where("user_id", $request->user()->id)->paginate(50, [
+		$paginator = AccountLog::where("user_id", $request->user()->id)->orderBy("created_at", "DESC")->paginate(50, [
 			"event_type",
 			"ip",
 			"user_agent",

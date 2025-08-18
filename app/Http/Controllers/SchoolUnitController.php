@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Enums\SchoolType;
+use App\Enums\Voivodeship;
 use App\Models\SchoolUnit;
 use App\Utilities\ValidatorAssistant;
 use Illuminate\Http\Request;
@@ -26,7 +27,7 @@ class SchoolUnitController extends Controller
 		}
 		$data = $validator["data"];
 
-		if ($data["studentCategory"] != "childrenAndAdults" && $data["studentCategory"] != "adultsOnly") {
+		if ($data["studentCategory"] != "childrenAndYouths" && $data["studentCategory"] != "adultsOnly") {
 			return Response::json([
 				"success" => false,
 				"errors" => [
@@ -42,6 +43,7 @@ class SchoolUnitController extends Controller
 		$unit->municipality = $data["municipality"];
 		$unit->voivodeship = $data["voivodeship"];
 		$unit->district = $data["district"];
+		$unit->address = $data["address"];
 		$unit->school_complex_id = $data["school_complex_id"];
 		$unit->save();
 		return [
@@ -66,7 +68,7 @@ class SchoolUnitController extends Controller
 		}
 		$data = $validator["data"];
 
-		if ($data["studentCategory"] != "childrenAndAdults" && $data["studentCategory"] != "adultsOnly") {
+		if ($data["studentCategory"] != "childrenAndYouths" && $data["studentCategory"] != "adultsOnly") {
 			return Response::json([
 				"success" => false,
 				"errors" => [
@@ -81,6 +83,7 @@ class SchoolUnitController extends Controller
 		$unit->municipality = $data["municipality"];
 		$unit->voivodeship = $data["voivodeship"];
 		$unit->district = $data["district"];
+		$unit->address = $data["address"];
 		$unit->school_complex_id = $data["school_complex_id"];
 		$unit->save();
 
@@ -111,8 +114,9 @@ class SchoolUnitController extends Controller
 			"type" => ["required", Rule::enum(SchoolType::class)],
 			"studentCategory" => ["required"],
 			"municipality" => ["required", "max:255"],
-			"voivodeship" => ["required", "max:255"],
+			"voivodeship" => ["required", Rule::enum(Voivodeship::class)],
 			"district" => ["optional", "max:255"],
+			"address" => ["required", "max:255"],
 			"school_complex_id" => ["optional", "exists:school_complexes,id"]
 		]);
 	}

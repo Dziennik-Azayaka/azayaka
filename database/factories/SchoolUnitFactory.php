@@ -32,11 +32,12 @@ class SchoolUnitFactory extends Factory
         return [
             "name" => $schoolTypeName . " nr. " . rand(1, 100),
 			"type" => $schoolType,
-			"studentCategory" => "childrenAndAdults",
+			"studentCategory" => "childrenAndYouths",
 			"municipality" => "Łódź",
-			"voivodeship" => "Łódzkie",
+			"voivodeship" => rand(1, 16),
 			"district" => rand(0, 1) == 0 ? "Bałuty" : null,
-			"school_complex_id" => 1
+			"address" => "ul. Dzienniczkowa 23",
+			"school_complex_id" => 1,
         ];
     }
 }

@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\SchoolType;
+use App\Enums\Voivodeship;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -12,6 +13,7 @@ class SchoolUnit extends Model
     use HasFactory;
 
 	public $casts = [
-		"type" => SchoolType::class
+		"type" => SchoolType::class,
+		"voivodeship" => Voivodeship::class,
 	];
 }
