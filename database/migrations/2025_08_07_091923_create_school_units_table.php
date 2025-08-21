@@ -21,6 +21,7 @@ return new class extends Migration
 			$table->integer("voivodeship");
 			$table->string("district")->nullable();
 			$table->string("address");
+			$table->string("shortName");
 			$table->foreignId("school_complex_id")->nullable()->constrained("school_complexes")->cascadeOnDelete();
             $table->timestamps();
         });

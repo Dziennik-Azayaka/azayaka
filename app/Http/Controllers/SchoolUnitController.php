@@ -115,7 +115,7 @@ class SchoolUnitController extends Controller
 			"studentCategory" => ["required"],
 			"municipality" => ["required", "max:255"],
 			"voivodeship" => ["required", Rule::enum(Voivodeship::class)],
-			"district" => ["optional", "max:255"],
+			"district" => ["nullable", "max:255"],
 			"address" => ["required", "max:255"],
 			"school_complex_id" => ["optional", "exists:school_complexes,id"]
 		]);
