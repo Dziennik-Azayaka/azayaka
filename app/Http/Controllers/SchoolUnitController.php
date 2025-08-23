@@ -50,8 +50,8 @@ class SchoolUnitController extends Controller
 		];
 	}
 
-	public function update(Request $request, SchoolUnit $unit) {
-		if (!$unit->active) {
+	public function update(Request $request, SchoolUnit $schoolUnit) {
+		if (!$schoolUnit->active) {
 			return Response::json([
 				"success" => false,
 				"errors" => [
@@ -76,16 +76,16 @@ class SchoolUnitController extends Controller
 			], 400);
 		}
 
-		$unit->name = $data["name"];
-		$unit->type = $data["type"];
-		$unit->student_category = $data["studentCategory"];
-		$unit->municipality = $data["municipality"];
-		$unit->voivodeship = $data["voivodeship"];
-		$unit->district = $data["district"];
-		$unit->address = $data["address"];
-		$unit->short_name = $data["shortName"];
-		$unit->school_complex_id = $data["schoolComplexId"];
-		$unit->save();
+		$schoolUnit->name = $data["name"];
+		$schoolUnit->type = $data["type"];
+		$schoolUnit->student_category = $data["studentCategory"];
+		$schoolUnit->municipality = $data["municipality"];
+		$schoolUnit->voivodeship = $data["voivodeship"];
+		$schoolUnit->district = $data["district"];
+		$schoolUnit->address = $data["address"];
+		$schoolUnit->short_name = $data["shortName"];
+		$schoolUnit->school_complex_id = $data["schoolComplexId"];
+		$schoolUnit->save();
 
 		return [
 			"success" => true
