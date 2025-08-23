@@ -42,6 +42,7 @@ class SchoolUnitController extends Controller
 		$unit->voivodeship = $data["voivodeship"];
 		$unit->district = $data["district"];
 		$unit->address = $data["address"];
+		$unit->short_name = $data["shortName"];
 		$unit->school_complex_id = $data["schoolComplexId"];
 		$unit->save();
 		return [
@@ -82,6 +83,7 @@ class SchoolUnitController extends Controller
 		$unit->voivodeship = $data["voivodeship"];
 		$unit->district = $data["district"];
 		$unit->address = $data["address"];
+		$unit->short_name = $data["shortName"];
 		$unit->school_complex_id = $data["schoolComplexId"];
 		$unit->save();
 
@@ -115,6 +117,7 @@ class SchoolUnitController extends Controller
 			"voivodeship" => ["required", Rule::enum(Voivodeship::class)],
 			"district" => ["nullable", "max:255"],
 			"address" => ["required", "max:255"],
+			"shortName" => ["required", "max:255"],
 			"schoolComplexId" => ["nullable", "exists:school_complexes,id"]
 		]);
 	}
