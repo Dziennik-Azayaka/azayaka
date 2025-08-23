@@ -17,7 +17,8 @@ class SchoolUnitResource extends JsonResource
         return [
 			"id" => $this->id,
 			"name" => $this->name,
-			"active" => $this->active,
+			"active" => $this->active == 1,
+			"type" => $this->type,
 			"studentCategory" => $this->student_category,
 			"municipality" => $this->municipality,
 			"voivodeship" => $this->voivodeship,
