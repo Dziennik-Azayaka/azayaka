@@ -14,9 +14,7 @@ class SchoolUnitController extends Controller
 {
 	public function list()
 	{
-		return SchoolUnit::where("active", true)->get(
-			["id", "name", "type", "studentCategory", "municipality", "voivodeship", "district", "school_complex_id"]
-		);
+		return SchoolUnit::where("active", true)->get()->toResourceCollection();
 	}
 
 	public function create(Request $request) {
@@ -39,12 +37,12 @@ class SchoolUnitController extends Controller
 		$unit = new SchoolUnit();
 		$unit->name = $data["name"];
 		$unit->type = $data["type"];
-		$unit->studentCategory = $data["studentCategory"];
+		$unit->student_category = $data["studentCategory"];
 		$unit->municipality = $data["municipality"];
 		$unit->voivodeship = $data["voivodeship"];
 		$unit->district = $data["district"];
 		$unit->address = $data["address"];
-		$unit->school_complex_id = $data["school_complex_id"];
+		$unit->school_complex_id = $data["schoolComplexId"];
 		$unit->save();
 		return [
 			"success" => true
@@ -79,12 +77,12 @@ class SchoolUnitController extends Controller
 
 		$unit->name = $data["name"];
 		$unit->type = $data["type"];
-		$unit->studentCategory = $data["studentCategory"];
+		$unit->student_category = $data["studentCategory"];
 		$unit->municipality = $data["municipality"];
 		$unit->voivodeship = $data["voivodeship"];
 		$unit->district = $data["district"];
 		$unit->address = $data["address"];
-		$unit->school_complex_id = $data["school_complex_id"];
+		$unit->school_complex_id = $data["schoolComplexId"];
 		$unit->save();
 
 		return [
@@ -117,7 +115,7 @@ class SchoolUnitController extends Controller
 			"voivodeship" => ["required", Rule::enum(Voivodeship::class)],
 			"district" => ["nullable", "max:255"],
 			"address" => ["required", "max:255"],
-			"school_complex_id" => ["optional", "exists:school_complexes,id"]
+			"schoolComplexId" => ["nullable", "exists:school_complexes,id"]
 		]);
 	}
 }

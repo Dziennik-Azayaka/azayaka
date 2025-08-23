@@ -16,12 +16,12 @@ return new class extends Migration
 			$table->string("name");
 			$table->integer("type");
 			$table->boolean("active")->default(true);
-			$table->enum("studentCategory", ["childrenAndYouths", "adultsOnly"]);
+			$table->enum("student_category", ["childrenAndYouths", "adultsOnly"]);
 			$table->string("municipality");
 			$table->integer("voivodeship");
 			$table->string("district")->nullable();
 			$table->string("address");
-			$table->string("shortName");
+			$table->string("short_name");
 			$table->foreignId("school_complex_id")->nullable()->constrained("school_complexes")->cascadeOnDelete();
             $table->timestamps();
         });

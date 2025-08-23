@@ -21,22 +21,28 @@ class SchoolUnitFactory extends Factory
 		if ($schoolTypeNum == 1) {
 			$schoolType = SchoolType::LICEUM_OGOLNOKSZTALCACE;
 			$schoolTypeName = "Liceum Ogólnokształcące";
+			$schoolShortName = "LO";
 		} else if ($schoolTypeNum == 2) {
 			$schoolType = SchoolType::TECHNIKUM;
 			$schoolTypeName = "Technikum";
+			$schoolShortName = "TECH";
 		} else {
 			$schoolType = SchoolType::BRANZOWA_SZKOLA_I_STOPNIA;
 			$schoolTypeName = "Szkoła Branżowa I stopnia";
+			$schoolShortName = "BR";
 		}
 
+		$schoolNumber = rand(1, 100);
+
         return [
-            "name" => $schoolTypeName . " nr. " . rand(1, 100),
+            "name" => $schoolTypeName . " nr. " . $schoolNumber,
 			"type" => $schoolType,
-			"studentCategory" => "childrenAndYouths",
+			"student_category" => "childrenAndYouths",
 			"municipality" => "Łódź",
 			"voivodeship" => rand(1, 16),
 			"district" => rand(0, 1) == 0 ? "Bałuty" : null,
 			"address" => "ul. Dzienniczkowa 23",
+			"short_name" => $schoolNumber . " " . $schoolShortName,
 			"school_complex_id" => 1,
         ];
     }
