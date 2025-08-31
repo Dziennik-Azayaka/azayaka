@@ -62,6 +62,8 @@ class ValidatorAssistant
 						$errorCodes[] = strtoupper($field) . "_TAKEN";
 					} else if (str_contains($fieldError, "email")) {
 						$errorCodes[] = strtoupper($field) . "_MUST_BE_AN_EMAIL";
+					} else if (str_contains($fieldError, "true or false")) {
+						$errorCodes[] = strtoupper($field) . "_MUST_BE_A_BOOLEAN";
 					} else {
 						$errorCodes[] = self::toUppercaseWithUnderscores($field);
 					}

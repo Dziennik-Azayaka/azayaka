@@ -17,8 +17,7 @@ class SchoolComplexController extends Controller
 
 	public function create(Request $request) {
 		$validator = ValidatorAssistant::validate($request, [
-			"name" => ["required", "max:255"],
-			"type" => ["required", Rule::enum(SchoolType::class)]
+			"name" => ["required", "max:255"]
 		]);
 
 		if (!$validator["success"]) {
@@ -28,7 +27,7 @@ class SchoolComplexController extends Controller
 
 		$schoolComplex = new SchoolComplex();
 		$schoolComplex["name"] = $data["name"];
-		$schoolComplex["type"] = $data["type"];
+		$schoolComplex["type"] = SchoolType::ZESPOL_SZKOL_I_PLACOWEK_OSWIATOWYCH;
 		$schoolComplex->save();
 
 		return [
@@ -38,8 +37,7 @@ class SchoolComplexController extends Controller
 
 	public function update(Request $request, SchoolComplex $schoolComplex) {
 		$validator = ValidatorAssistant::validate($request, [
-			"name" => ["required", "max:255"],
-			"type" => ["required", Rule::enum(SchoolType::class)]
+			"name" => ["required", "max:255"]
 		]);
 
 		if (!$validator["success"]) {
@@ -47,7 +45,7 @@ class SchoolComplexController extends Controller
 		}
 		$data = $validator["data"];
 		$schoolComplex["name"] = $data["name"];
-		$schoolComplex["type"] = $data["type"];
+		$schoolComplex["type"] = SchoolType::ZESPOL_SZKOL_I_PLACOWEK_OSWIATOWYCH;
 		$schoolComplex->save();
 
 		return [

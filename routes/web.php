@@ -42,7 +42,7 @@ Route::middleware(["auth", "auth.session"])->group(function () {
 	Route::get("/api/schoolunits", [SchoolUnitController::class, "list"]);
 	Route::post("/api/schoolunits", [SchoolUnitController::class, "create"]);
 	Route::put("/api/schoolunits/{schoolUnit}", [SchoolUnitController::class, "update"]);
-	Route::delete("/api/schoolunits/{schoolUnit}", [SchoolUnitController::class, "delete"]);
+	Route::put("/api/schoolunits/{schoolUnit}/activity", [SchoolUnitController::class, "archive"]);
 });
 
 // Email Verification

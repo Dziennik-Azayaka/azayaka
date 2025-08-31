@@ -14,7 +14,7 @@ class SchoolUnitController extends Controller
 {
 	public function list()
 	{
-		return SchoolUnit::where("active", true)->get()->toResourceCollection();
+		return SchoolUnit::all()->toResourceCollection();
 	}
 
 	public function create(Request $request) {
@@ -92,16 +92,17 @@ class SchoolUnitController extends Controller
 		];
 	}
 
-	public function delete(Request $request, SchoolUnit $schoolUnit) {
+	public function archive(Request $request, SchoolUnit $schoolUnit) {
 		$validator = ValidatorAssistant::validate($request, [
-			"password" => "required|current_password"
+			"password" => "required|current_password",
+			"state" => "required|boolean"
 		]);
 
 		if (!$validator["success"]) {
 			return $validator["errorResponse"];
 		}
 
-		$schoolUnit->active = false;
+		$schoolUnit->active = $validator["data"]["state"];
 		$schoolUnit->save();
 		return [
 			"success" => true
