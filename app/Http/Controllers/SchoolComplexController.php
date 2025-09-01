@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Enums\SchoolType;
 use App\Models\SchoolComplex;
+use App\Models\SchoolUnit;
 use App\Utilities\ValidatorAssistant;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -29,6 +30,13 @@ class SchoolComplexController extends Controller
 		$schoolComplex["name"] = $data["name"];
 		$schoolComplex["type"] = SchoolType::ZESPOL_SZKOL_I_PLACOWEK_OSWIATOWYCH;
 		$schoolComplex->save();
+
+		if (SchoolUnit::count() > 0) {
+			SchoolUnit::all()->each(function (SchoolUnit $schoolUnit) use ($schoolComplex) {
+				$schoolUnit->school_complex_id = $schoolComplex->id;
+				$schoolUnit->save();
+			});
+		}
 
 		return [
 			"success" => true,

@@ -34,6 +34,15 @@ class SchoolUnitController extends Controller
 			], 400);
 		}
 
+		if (SchoolUnit::count() > 1 && $data["schoolComplexId"] == null) {
+			return Response::json([
+				"success" => false,
+				"errors" => [
+					"CANNOT_CREATE_MULTIPLE_SCHOOL_UNITS_WITHOUT_PARENT"
+				]
+			]);
+		}
+
 		$unit = new SchoolUnit();
 		$unit->name = $data["name"];
 		$unit->type = $data["type"];
