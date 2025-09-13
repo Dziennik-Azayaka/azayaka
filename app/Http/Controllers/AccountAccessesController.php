@@ -40,7 +40,6 @@ class AccountAccessesController extends Controller
 				"success" => true,
 				"firstName" => $activation_code_info["firstName"],
 				"lastName" => $activation_code_info["lastName"],
-				"accessType" => $activation_code_info["accessType"],
 			];
 		} else {
 			return Response::json([
