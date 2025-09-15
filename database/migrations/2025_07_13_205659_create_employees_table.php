@@ -15,6 +15,12 @@ return new class extends Migration
             $table->id();
 			$table->string("first_name");
 			$table->string("last_name");
+			$table->string("shortcut");
+			$table->boolean("active")->default(true);
+			$table->boolean("is_admin")->default(false);
+			$table->boolean("is_headmaster")->default(false);
+			$table->boolean("is_secretary")->default(false);
+			$table->boolean("is_teacher")->default(false);
             $table->timestamps();
         });
     }
