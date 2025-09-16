@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AccountAccessesController;
 use App\Http\Controllers\AccountLogController;
+use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\SchoolComplexController;
 use App\Http\Controllers\SchoolUnitController;
 use App\Http\Controllers\SessionController;
@@ -43,6 +44,10 @@ Route::middleware(["auth", "auth.session"])->group(function () {
 	Route::post("/api/schoolunits", [SchoolUnitController::class, "create"]);
 	Route::put("/api/schoolunits/{schoolUnit}", [SchoolUnitController::class, "update"]);
 	Route::put("/api/schoolunits/{schoolUnit}/activity", [SchoolUnitController::class, "archive"]);
+
+	Route::get("/api/employees", [EmployeeController::class, "list"]);
+	Route::post("/api/employees", [EmployeeController::class, "create"]);
+	Route::put("/api/employees/{employee}", [EmployeeController::class, "update"]);
 });
 
 // Email Verification

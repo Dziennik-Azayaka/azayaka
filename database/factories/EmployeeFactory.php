@@ -16,9 +16,12 @@ class EmployeeFactory extends Factory
      */
     public function definition(): array
     {
+		$firstName = $this->faker->firstName;
+		$lastName = $this->faker->lastName;
         return [
-			"first_name" => $this->faker->firstName,
-			"last_name" => $this->faker->lastName,
+			"first_name" => $firstName,
+			"last_name" => $lastName,
+			"shortcut" => substr($firstName, 0, 1) . substr($lastName, 0, 1)
         ];
     }
 }

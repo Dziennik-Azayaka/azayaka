@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
 			$table->string("first_name");
 			$table->string("last_name");
-			$table->string("shortcut");
+			$table->string("shortcut")->unique();
 			$table->boolean("active")->default(true);
 			$table->boolean("is_admin")->default(false);
 			$table->boolean("is_headmaster")->default(false);
