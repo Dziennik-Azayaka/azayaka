@@ -9,7 +9,7 @@ use Illuminate\Http\Request;
 class EmployeeController extends Controller
 {
 	public function list() {
-		$employees = Employee::all()git add . ->toResourceCollection();
+		$employees = Employee::all() ->toResourceCollection();
 		return $employees;
 	}
 
