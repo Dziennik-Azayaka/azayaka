@@ -1,5 +1,6 @@
 {
     "actions": "Akcje",
+    "add": "Dodaj",
     "apps.administrator": "Administrator systemu",
     "apps.myAccount": "Ustawienia konta",
     "back": "Wróć",
@@ -25,5 +26,8 @@
     "showPassword": "Pokaż hasło",
     "skipToContent": "Przejdź do głównej treści",
     "tryAgain": "Spróbuj ponownie",
-    "unknownError": "Wystąpił nieoczekiwany błąd, spróbuj ponownie później."
+    "unknownError": "Wystąpił nieoczekiwany błąd, spróbuj ponownie później.",
+    "continue": "Kontunuuj",
+    "password": "Hasło",
+    "incorrectPasswordError": "Hasło jest nieprawidłowe."
 }

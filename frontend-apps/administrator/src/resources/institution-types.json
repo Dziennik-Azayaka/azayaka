@@ -1,0 +1,17 @@
+[
+    { "id": 0, "nameTranslationId": "institutionType.vocationalSchoolStageOne" },
+    { "id": 1, "nameTranslationId": "institutionType.vocationalSchoolStageTwo" },
+    { "id": 2, "nameTranslationId": "institutionType.specialSchoolForWorkPreparation" },
+    { "id": 3, "nameTranslationId": "institutionType.postSecondaryMusicSchool" },
+    { "id": 4, "nameTranslationId": "institutionType.postSecondaryArtSchool" },
+    { "id": 5, "nameTranslationId": "institutionType.postSecondarySchool" },
+    { "id": 6, "nameTranslationId": "institutionType.generalSecondarySchool" },
+    { "id": 8, "nameTranslationId": "institutionType.complementaryGeneralSecondarySchoolForVocationalGraduates" },
+    { "id": 9, "nameTranslationId": "institutionType.schoolOfFineArts" },
+    { "id": 10, "nameTranslationId": "institutionType.technicalSecondarySchool" },
+    { "id": 11, "nameTranslationId": "institutionType.generalBalletSchool" },
+    { "id": 12, "nameTranslationId": "institutionType.generalMusicSchoolStageOne" },
+    { "id": 13, "nameTranslationId": "institutionType.generalMusicSchoolStageTwo" },
+    { "id": 24, "nameTranslationId": "institutionType.generalSchoolOfFineArts" },
+    { "id": 25, "nameTranslationId": "institutionType.primarySchool" }
+]

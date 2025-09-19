@@ -1,0 +1,10 @@
+[
+    {
+        "nameTranslationId": "studentCategory.childrenAndYouths",
+        "value": "childrenAndYouths"
+    },
+    {
+        "nameTranslationId": "studentCategory.adultsOnly",
+        "value": "adultsOnly"
+    }
+]

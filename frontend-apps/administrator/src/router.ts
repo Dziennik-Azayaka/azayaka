@@ -5,16 +5,16 @@ const router = createRouter({
     routes: [
         {
             path: "/",
-            name: "helloWorld",
-            component: () => import("@/pages/HelloWorld.vue"),
+            name: "schoolStructure",
+            component: () => import("@/pages/SchoolStructure.vue"),
             meta: {
-                title: "helloWorld",
+                title: "schoolStructure",
             },
         },
         {
             path: "/:pathMatch(.*)*",
             name: "notFound",
-            redirect: { name: "helloWorld" },
+            redirect: { name: "schoolStructure" },
         },
     ],
 });

@@ -7,5 +7,7 @@ export * from "./components/ui/form";
 export * from "./components/ui/input";
 export * from "./components/ui/label";
 export * from "./components/ui/pagination";
+export * from "./components/ui/select";
+export * from "./components/ui/banner";
 
 export * from "./layouts/panel";

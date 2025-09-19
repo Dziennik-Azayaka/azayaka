@@ -1,5 +1,6 @@
 {
     "actions": "Actions",
+    "add": "Add",
     "apps.administrator": "System administrator",
     "apps.myAccount": "Account settings",
     "back": "Back",
@@ -25,5 +26,8 @@
     "showPassword": "Show password",
     "skipToContent": "Skip to main content",
     "tryAgain": "Try again",
-    "unknownError": "An unexpected error has occurred, please try again later."
+    "unknownError": "An unexpected error has occurred, please try again later.",
+    "continue": "Continue",
+    "password": "Password",
+    "incorrectPasswordError": "The password is incorrect."
 }

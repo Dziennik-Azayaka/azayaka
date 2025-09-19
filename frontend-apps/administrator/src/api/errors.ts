@@ -11,10 +11,3 @@ export class IncorrectPasswordError extends Error {
         this.name = "IncorrectPasswordError";
     }
 }
-
-export class AlreadyTakenEmailAddressError extends Error {
-    constructor() {
-        super();
-        this.name = "AlreadyTakenEmailAddressError";
-    }
-}

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useTitle } from "@vueuse/core";
-import { LucideAlertCircle, LucideHome, LucideLoaderCircle, RefreshCw } from "lucide-vue-next";
+import { LucideAlertCircle, LucideBuilding, LucideLoaderCircle, RefreshCw } from "lucide-vue-next";
 import { storeToRefs } from "pinia";
 import { configure } from "vee-validate";
 import { computed, onMounted, ref, watch } from "vue";
@@ -28,9 +28,9 @@ const { locale: storeLocale } = storeToRefs(mainStore);
 
 const menuItems = [
     {
-        title: "helloWorld",
-        link: { name: "helloWorld" },
-        icon: LucideHome,
+        title: "schoolStructure",
+        link: { name: "schoolStructure" },
+        icon: LucideBuilding,
     },
 ];
 
