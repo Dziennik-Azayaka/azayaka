@@ -11,6 +11,8 @@
     "createSchoolComplex": "Create school complex",
     "editComplexData": "Edit school complex data",
     "editUnitData": "Edit unit data",
+	"employees": "Employees",
+	"employeesDescription": "This view allows you to manage employees—add them, change their data, manage their activity in the system, and manage their Internet access.",
     "institutionType": "Institution type",
     "institutionType.complementaryGeneralSecondarySchoolForVocationalGraduates": "Complementary general secondary school for vocational graduates",
     "institutionType.generalBalletSchool": "General ballet school",
