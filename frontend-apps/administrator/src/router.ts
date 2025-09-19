@@ -12,6 +12,14 @@ const router = createRouter({
             },
         },
         {
+            path: "/employees",
+            name: "employees",
+            component: () => import("@/pages/EmployeeList.vue"),
+            meta: {
+                title: "employees",
+            },
+        },
+        {
             path: "/:pathMatch(.*)*",
             name: "notFound",
             redirect: { name: "schoolStructure" },

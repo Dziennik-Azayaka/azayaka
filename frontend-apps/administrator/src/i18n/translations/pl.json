@@ -11,6 +11,8 @@
     "createSchoolComplex": "Stwórz zespół szkół",
     "editComplexData": "Edytuj dane zespołu",
     "editUnitData": "Edytuj dane jednostki",
+	"employees": "Pracownicy",
+	"employeesDescription": "Ten widok pozwala na zarządzanie pracownikami - dodawanie, zmienianie ich danych, zarządzanie ich aktywnością w systemie czy dostępem internetowym.",
     "institutionType": "Typ placówki",
     "institutionType.complementaryGeneralSecondarySchoolForVocationalGraduates": "Liceum ogólnokształcące uzupełniające dla absolwentów zasadniczych szkół zawodowych",
     "institutionType.generalBalletSchool": "Ogólnokształcąca szkoła baletowa",
