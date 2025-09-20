@@ -9,5 +9,6 @@ export * from "./components/ui/label";
 export * from "./components/ui/pagination";
 export * from "./components/ui/select";
 export * from "./components/ui/banner";
+export * from "./components/ui/table";
 
 export * from "./layouts/panel";

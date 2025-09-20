@@ -7,6 +7,7 @@ import { useI18n } from "vue-i18n";
 import type { Employee } from "@/api/entities/employee";
 import EmployeeService from "@/api/services/employee";
 import PanelHeader from "@/components/PanelHeader.vue";
+import EmployeesTable from "@/components/employees/EmployeesTable.vue";
 
 const { t } = useI18n();
 
@@ -49,7 +50,7 @@ onMounted(getEmployees);
         </div>
 
         <template v-else-if="employees">
-            {{ employees }}
+            <EmployeesTable :employees="employees" />
         </template>
     </div>
 </template>
