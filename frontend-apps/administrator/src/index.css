@@ -1,1 +1,9 @@
 @import url("@azayaka-frontend/ui/src/index.css");
+
+@layer base {
+	.high-contrast {
+		.employee-role {
+			@apply !border-foreground !text-foreground !bg-transparent;
+		}
+	}
+}
