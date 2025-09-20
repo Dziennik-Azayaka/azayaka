@@ -1,6 +1,7 @@
 <script lang="ts" setup>
+import { Input } from "#ui/components/ui/input";
 import { TableRow } from "#ui/components/ui/table";
-import { FlexRender, createColumnHelper, getCoreRowModel, useVueTable } from "@tanstack/vue-table";
+import { FlexRender, createColumnHelper, getCoreRowModel, getFilteredRowModel, useVueTable } from "@tanstack/vue-table";
 import { h } from "vue";
 import { useI18n } from "vue-i18n";
 
@@ -27,11 +28,21 @@ const table = useVueTable({
     data: employees,
     columns,
     getCoreRowModel: getCoreRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
 });
 </script>
 
 <template>
     <div class="w-full">
+        <div class="flex items-center py-4">
+            <Input
+                :aria-label="t('searchForEmployees')"
+                :model-value="table.getColumn('fullName')?.getFilterValue() as string"
+                :placeholder="t('searchForEmployees')"
+                class="max-w-sm"
+                @update:model-value="table.getColumn('fullName')?.setFilterValue($event)"
+            />
+        </div>
         <div class="rounded-md border overflow-hidden">
             <Table>
                 <TableHeader>
@@ -46,9 +57,16 @@ const table = useVueTable({
                     </TableRow>
                 </TableHeader>
                 <TableBody>
-                    <TableRow v-for="row in table.getRowModel().rows" :key="row.id">
-                        <TableCell v-for="cell in row.getVisibleCells()" :key="cell.id">
-                            <FlexRender :props="cell.getContext()" :render="cell.column.columnDef.cell" />
+                    <template v-if="table.getRowModel().rows.length">
+                        <TableRow v-for="row in table.getRowModel().rows" :key="row.id">
+                            <TableCell v-for="cell in row.getVisibleCells()" :key="cell.id">
+                                <FlexRender :props="cell.getContext()" :render="cell.column.columnDef.cell" />
+                            </TableCell>
+                        </TableRow>
+                    </template>
+                    <TableRow v-else>
+                        <TableCell :colspan="columns.length" class="h-18 text-center text-foreground/70">
+                            {{ t("noResults") }}
                         </TableCell>
                     </TableRow>
                 </TableBody>
