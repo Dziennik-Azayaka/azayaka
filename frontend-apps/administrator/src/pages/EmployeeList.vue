@@ -54,7 +54,7 @@ onMounted(getEmployees);
             <Tabs default-value="active">
                 <TabsList>
                     <TabsTrigger value="active">{{ t("currentEmployees") }}</TabsTrigger>
-                    <TabsTrigger value="not-active">{{t("archive")}}</TabsTrigger>
+                    <TabsTrigger value="not-active">{{ t("archive") }}</TabsTrigger>
                 </TabsList>
                 <TabsContent value="active">
                     <EmployeesTable :employees="employees.filter((employee) => employee.active)" />
