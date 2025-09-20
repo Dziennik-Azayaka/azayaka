@@ -35,8 +35,8 @@ const menuItems = [
     {
         title: "employees",
         link: { name: "employees" },
-        icon: LucideUsers
-    }
+        icon: LucideUsers,
+    },
 ];
 
 syncLocaleWithStore(storeLocale, i18nLocale);
