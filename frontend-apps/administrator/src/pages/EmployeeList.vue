@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { Button } from "#ui/components/ui/button";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "#ui/components/ui/tabs";
 import { LucideAlertCircle, LucideLoaderCircle, LucideRefreshCw } from "lucide-vue-next";
 import { onMounted, ref } from "vue";
 import { useI18n } from "vue-i18n";
@@ -50,7 +51,18 @@ onMounted(getEmployees);
         </div>
 
         <template v-else-if="employees">
-            <EmployeesTable :employees="employees" />
+            <Tabs default-value="active">
+                <TabsList>
+                    <TabsTrigger value="active">{{ t("currentEmployees") }}</TabsTrigger>
+                    <TabsTrigger value="not-active">{{t("archive")}}</TabsTrigger>
+                </TabsList>
+                <TabsContent value="active">
+                    <EmployeesTable :employees="employees.filter((employee) => employee.active)" />
+                </TabsContent>
+                <TabsContent value="not-active">
+                    <EmployeesTable :employees="employees.filter((employee) => !employee.active)" />
+                </TabsContent>
+            </Tabs>
         </template>
     </div>
 </template>
