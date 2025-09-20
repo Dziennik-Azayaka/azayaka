@@ -14,17 +14,9 @@ const { t } = useI18n();
 
 const columnHelper = createColumnHelper<Employee>();
 const columns = [
-    columnHelper.accessor("lastName", {
-        header: () => t("lastName"),
-        cell: ({ row }) => row.getValue("lastName"),
-    }),
-    columnHelper.accessor("firstName", {
-        header: () => t("firstName"),
-        cell: ({ row }) => row.getValue("firstName"),
-    }),
-    columnHelper.accessor("shortcut", {
-        header: () => t("short"),
-        cell: ({ row }) => row.getValue("shortcut"),
+    columnHelper.accessor((row) => `${row.lastName} ${row.firstName} (${row.shortcut})`, {
+        id: "fullName",
+        header: () => `${t("fullName")} (${t("short").toLocaleLowerCase()})`,
     }),
     columnHelper.accessor("roles", {
         header: () => t("roles"),
