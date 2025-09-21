@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\AccountAccess;
 use App\Models\Employee;
 use App\Utilities\ValidatorAssistant;
 use Illuminate\Http\Request;
@@ -11,8 +12,7 @@ class EmployeeController extends Controller
 {
 	public function list()
 	{
-		$employees = Employee::all()->toResourceCollection();
-		return $employees;
+		return Employee::all()->toResourceCollection();
 	}
 
 	public function create(Request $request)
@@ -34,6 +34,17 @@ class EmployeeController extends Controller
 			]);
 		}
 
+		if ($data["isAdmin"] == false) {
+			if (Employee::where("employees.is_admin", "true")->count() < 1) {
+				return Response::json([
+					"success" => false,
+					"errors" => [
+						"AT_LEAST_ONE_ADMIN_REQUIRED"
+					]
+				]);
+			}
+		}
+
 		$employee = new Employee();
 		$employee->first_name = $data["firstName"];
 		$employee->last_name = $data["lastName"];
@@ -45,8 +56,11 @@ class EmployeeController extends Controller
 		$employee->active = true;
 		$employee->save();
 
+		$accountAccess = $this->generateAccess($employee);
+
 		return [
-			"success" => true
+			"success" => true,
+			"words" => $accountAccess
 		];
 	}
 
@@ -69,6 +83,17 @@ class EmployeeController extends Controller
 			]);
 		}
 
+		if ($data["isAdmin"] == false) {
+			if (Employee::where("employees.is_admin", "true")->count() < 1) {
+				return Response::json([
+					"success" => false,
+					"errors" => [
+						"AT_LEAST_ONE_ADMIN_REQUIRED"
+					]
+				]);
+			}
+		}
+
 		$employee->first_name = $data["firstName"];
 		$employee->last_name = $data["lastName"];
 		$employee->shortcut = $shortcut;
@@ -84,7 +109,87 @@ class EmployeeController extends Controller
 		];
 	}
 
-	private function generateShortcut($firstName, $lastName): string|null
+	public function archive(Employee $employee, Request $request)
+	{
+		$validator = ValidatorAssistant::validate($request, [
+			"password" => "required|current_password",
+			"state" => "required|boolean"
+		]);
+
+		if (!$validator["success"]) {
+			return $validator["errorResponse"];
+		}
+
+		$employee->active = $validator["data"]["state"];
+		$employee->save();
+
+		AccountAccess::where("employee_id", $employee->id)->delete();
+
+		return [
+			"success" => true
+		];
+	}
+
+	public function checkDeletionEligibility(Employee $employee, Request $request) {
+		// TODO: Implement proper eligibility checking once classes have been figured out
+		return true;
+	}
+
+	public function delete(Employee $employee, Request $request) {
+		$validator = ValidatorAssistant::validate($request, [
+			"password" => "required|current_password"
+		]);
+
+		if (!$validator["success"]) {
+			return $validator["errorResponse"];
+		}
+
+		AccountAccess::where("employee_id", $employee->id)->delete();
+
+		$employee->delete();
+
+		return [
+			"success" => true
+		];
+	}
+
+	public function getEmployeeAccess(Employee $employee) {
+		return AccountAccess::where("employee_id", $employee->id)->get()->toResourceCollection();
+	}
+
+	public function revokeEmployeeAccess(Employee $employee, AccountAccess $accountAccess) {
+		if ($accountAccess->employee_id == $employee->id) {
+			$accountAccess->delete();
+			return [
+				"success" => true
+			];
+		}
+
+		return Response::json([
+			"success" => false,
+			"errors" => [
+				"EMPLOYEE_AND_ACCOUNT_ACCESS_MISMATCH"
+			]
+		]);
+	}
+
+	public function regenerateEmployeeAccess(Employee $employee) {
+		$accountAccess = $this->generateAccess($employee);
+		return [
+			"success" => true,
+			"words" => $accountAccess->words
+		];
+	}
+
+	private function generateAccess(Employee $employee): AccountAccess {
+		$accountAccess = new AccountAccess();
+		$accountAccess->employee_id = $employee->id;
+		$accountAccess->words = "1,2,3,4,5,6,7,8,9,10"; // TODO: Replace with a dictionary of polish words.
+		$accountAccess->save();
+		return $accountAccess;
+	}
+
+	private function generateShortcut(string $firstName, string $lastName): string|null
 	{
 		$firstName = strtoupper($firstName);
 		$lastName = strtoupper($lastName);
