@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Employee;
 use App\Utilities\ValidatorAssistant;
 use Illuminate\Http\Request;
+use Response;
 
 class EmployeeController extends Controller
 {
@@ -23,10 +24,20 @@ class EmployeeController extends Controller
 		}
 		$data = $validator["data"];
 
+		$shortcut = $data["shortcut"] ?? $this->generateShortcut($data["firstName"], $data["lastName"]);
+		if ($shortcut == null) {
+			return Response::json([
+				"success" => false,
+				"errors" => [
+					"FAILURE_GENERATING_SHORTCUT"
+				]
+			]);
+		}
+
 		$employee = new Employee();
 		$employee->first_name = $data["firstName"];
 		$employee->last_name = $data["lastName"];
-		$employee->shortcut = $data["shortcut"] ?? $this->generateShortcut($data["firstName"], $data["lastName"]);
+		$employee->shortcut = $shortcut;
 		$employee->is_admin = $data["isAdmin"];
 		$employee->is_headmaster = $data["isHeadmaster"];
 		$employee->is_secretary = $data["isSecretary"];
@@ -48,9 +59,19 @@ class EmployeeController extends Controller
 		}
 		$data = $validator["data"];
 
+		$shortcut = $data["shortcut"] ?? $this->generateShortcut($data["firstName"], $data["lastName"]);
+		if ($shortcut == null) {
+			return Response::json([
+				"success" => false,
+				"errors" => [
+					"FAILURE_GENERATING_SHORTCUT"
+				]
+			]);
+		}
+
 		$employee->first_name = $data["firstName"];
 		$employee->last_name = $data["lastName"];
-		$employee->shortcut = $data["shortcut"] ?? $this->generateShortcut($data["firstName"], $data["lastName"]);
+		$employee->shortcut = $shortcut;
 		$employee->is_admin = $data["isAdmin"];
 		$employee->is_headmaster = $data["isHeadmaster"];
 		$employee->is_secretary = $data["isSecretary"];
@@ -63,20 +84,44 @@ class EmployeeController extends Controller
 		];
 	}
 
-	private function generateShortcut($firstName, $lastName)
+	private function generateShortcut($firstName, $lastName): string|null
 	{
+		$firstName = strtoupper($firstName);
+		$lastName = strtoupper($lastName);
+
 		$firstNamePart = substr($firstName, 0, 1);
-		$lastNamePart = substr($lastName, 0, 3);
+
+		// Check the most likely shortcuts: first letter of the first name, and the first letter of the second name
+		// If that doesn't work, check 1F + 2L.
+		$firstShortcut = $firstNamePart . substr($lastName, 0, 1);
+		if (!Employee::where("shortcut", $firstShortcut)->exists()) {
+			return $firstShortcut;
+		}
+
+		if (strlen($lastName) > 1) {
+			$secondShortcut = $firstNamePart . substr($lastName, 1, 1);
+			if (!Employee::where("shortcut", $secondShortcut)->exists()) {
+				return $secondShortcut;
+			}
+		}
+
+		// If these are taken, try alternate shortcuts, which takes more compute resources.
 		$possibleShortcuts = [];
+
+		// Generate combinations of the first letter of the first name
+		// with different single letters from the last name (e.g., J + F, J + G, etc.)
+		for ($i = 2; $i < 3; $i++) {
+			$possibleShortcuts[] = $firstNamePart . substr($lastName, $i, 1);
+		}
 
 		// Generate F + L combos (e.g., J + N, J + NO, J + NOW)
 		// speeds up operations when there are a lot of employees with the same name
-		for ($i = 1; $i <= min(3, strlen($lastNamePart)); $i++) {
-			$possibleShortcuts[] = $firstNamePart . substr($lastNamePart, 0, $i);
+		for ($i = 2; $i <= min(3, strlen($lastName)); $i++) {
+			$possibleShortcuts[] = $firstNamePart . substr($lastName, 0, $i);
 		}
 
-		$existingShortcuts = Employee::whereIn('shortcut', $possibleShortcuts)
-			->pluck('shortcut')
+		$existingShortcuts = Employee::whereIn("shortcut", $possibleShortcuts)
+			->pluck("shortcut")
 			->toArray();
 
 		foreach ($possibleShortcuts as $shortcut) {
@@ -84,6 +129,8 @@ class EmployeeController extends Controller
 				return $shortcut;
 			}
 		}
+
+		return null;
 	}
 
 	private function validateEmployeeData(Request $request)
@@ -98,8 +145,8 @@ class EmployeeController extends Controller
 			"isTeacher" => ["required", "boolean"],
 		]);
 
-		if ($validator["data"]["isAdmin"] != true && $validator["data"]["isSecretary"] != true &&
-			$validator["data"]["isTeacher"] != true && $validator["data"]["isHeadmaster"] != true) {
+		if (!$validator["data"]["isAdmin"] && !$validator["data"]["isSecretary"] &&
+			!$validator["data"]["isTeacher"] && !$validator["data"]["isHeadmaster"]) {
 			return [
 				"success" => false,
 				"errors" => [
