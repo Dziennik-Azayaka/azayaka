@@ -1,5 +1,6 @@
 {
     "address": "Address",
+    "addEmployee": "Add an employee",
     "addUnit": "Add unit",
     "addUnitToComplex": "Add unit to school complex",
     "administrator": "Administrator",

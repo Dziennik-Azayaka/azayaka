@@ -19,6 +19,7 @@ const employees = ref<Employee[] | null>();
 async function getEmployees() {
     loading.value = true;
     error.value = false;
+    employees.value = [];
     try {
         employees.value = await EmployeeService.getAllEmployees();
     } catch {
@@ -57,10 +58,16 @@ onMounted(getEmployees);
                     <TabsTrigger value="not-active">{{ t("archive") }}</TabsTrigger>
                 </TabsList>
                 <TabsContent value="active">
-                    <EmployeesTable :employees="employees.filter((employee) => employee.active)" />
+                    <EmployeesTable
+                        :employees="employees.filter((employee) => employee.active)"
+                        @refresh-needed="getEmployees"
+                    />
                 </TabsContent>
                 <TabsContent value="not-active">
-                    <EmployeesTable :employees="employees.filter((employee) => !employee.active)" />
+                    <EmployeesTable
+                        :employees="employees.filter((employee) => !employee.active)"
+                        @refresh-needed="getEmployees"
+                    />
                 </TabsContent>
             </Tabs>
         </template>
