@@ -1,0 +1,129 @@
+<script lang="ts" setup>
+import { toTypedSchema } from "@vee-validate/zod";
+import { useForm } from "vee-validate";
+import { useI18n } from "vue-i18n";
+import z from "zod";
+
+import {
+    Checkbox,
+    ErrorBanner,
+    FormControl,
+    FormField,
+    FormItem,
+    FormLabel,
+    FormMessage,
+    Input,
+} from "@azayaka-frontend/ui";
+
+import type { EmployeeForm } from "@/types";
+
+const { t } = useI18n();
+const { currentData, errorMessage, loading } = defineProps<{
+    currentData?: EmployeeForm;
+    errorMessage: string | null;
+    loading: boolean;
+}>();
+const emit = defineEmits(["submit"]);
+
+const formSchema = toTypedSchema(
+    z.object({
+        lastName: z
+            .string({
+                required_error: t("requiredFieldError"),
+            })
+            .min(1, {
+                message: t("requiredFieldError"),
+            })
+            .max(255, t("fieldMaxLengthError", { number: 255 })),
+        firstName: z
+            .string({
+                required_error: t("requiredFieldError"),
+            })
+            .min(1, {
+                message: t("requiredFieldError"),
+            })
+            .max(255, t("fieldMaxLengthError", { number: 255 })),
+        shortcut: z
+            .string()
+            .max(255, t("fieldMaxLengthError", { number: 255 }))
+            .optional(),
+        roles: z
+            .array(z.string())
+            .refine((value) => !!value.length, t("requiredFieldError"))
+            .default([]),
+    }),
+);
+
+const form = useForm({
+    validationSchema: formSchema,
+    initialValues: currentData,
+});
+
+const roles = new Set<string>(["teacher", "secretary", "headmaster", "administrator"]);
+
+const onSubmit = form.handleSubmit((values) => {
+    emit("submit", values);
+});
+
+function handleRoleCheck(checked: boolean, role: string, values: string[], callback: (roles: string[]) => void) {
+    const newValue = checked ? [...values, role] : values.filter((v: string) => v !== role);
+    callback(newValue);
+}
+</script>
+
+<template>
+    <form class="space-y-3" @submit.prevent="onSubmit">
+        <div class="grid sm:grid-cols-7 gap-3">
+            <FormField v-slot="{ componentField }" name="lastName">
+                <FormItem class="sm:col-start-1 sm:col-end-4 h-min">
+                    <FormLabel>{{ t("lastName") }}<span class="text-destructive">*</span></FormLabel>
+                    <FormControl>
+                        <Input :disabled="loading" v-bind="componentField" />
+                    </FormControl>
+                    <FormMessage />
+                </FormItem>
+            </FormField>
+            <FormField v-slot="{ componentField }" name="firstName">
+                <FormItem class="sm:col-start-4 sm:col-end-7 h-min">
+                    <FormLabel>{{ t("firstName") }}<span class="text-destructive">*</span></FormLabel>
+                    <FormControl>
+                        <Input :disabled="loading" v-bind="componentField" />
+                    </FormControl>
+                    <FormMessage />
+                </FormItem>
+            </FormField>
+            <FormField v-slot="{ componentField }" name="shortcut">
+                <FormItem class="h-min">
+                    <FormLabel>{{ t("short") }}</FormLabel>
+                    <FormControl>
+                        <Input :disabled="loading" v-bind="componentField" />
+                    </FormControl>
+                    <FormMessage />
+                </FormItem>
+            </FormField>
+        </div>
+        <FormField v-slot="{ value, handleChange }" name="roles" as="fieldset">
+            <FormItem>
+                <legend
+                    class="flex items-center gap-0.5 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive-foreground"
+                >
+                    {{ t("roles") }} <span class="text-destructive">*</span>
+                </legend>
+                <div class="grid sm:grid-cols-1 gap-3 mt-2">
+                    <FormItem v-for="role in roles" :key="role" class="flex flex-row">
+                        <FormControl>
+                            <Checkbox
+                                :model-value="value?.includes(role)"
+                                @update:model-value="(checked) => handleRoleCheck(!!checked, role, value, handleChange)"
+                            />
+                        </FormControl>
+                        <FormLabel class="font-normal text-sm">{{ t(`role.${role}`) }}</FormLabel>
+                    </FormItem>
+                </div>
+                <FormMessage />
+            </FormItem>
+        </FormField>
+        <ErrorBanner v-if="errorMessage" :description="t(errorMessage)" />
+        <slot name="footer" />
+    </form>
+</template>
