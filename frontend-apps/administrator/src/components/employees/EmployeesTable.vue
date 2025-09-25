@@ -8,9 +8,11 @@ import { useI18n } from "vue-i18n";
 import { Table, TableBody, TableCell, TableHead, TableHeader } from "@azayaka-frontend/ui";
 
 import type { Employee, EmployeeRole } from "@/api/entities/employee.ts";
+import AddEmployeeDialog from "@/components/employees/AddEmployeeDialog.vue";
 import EmployeesTableRoles from "@/components/employees/EmployeesTableRoles.vue";
 
 const { employees } = defineProps<{ employees: Employee[] }>();
+const emit = defineEmits(["refreshNeeded"]);
 const { t } = useI18n();
 
 const columnHelper = createColumnHelper<Employee>();
@@ -42,6 +44,8 @@ const table = useVueTable({
                 class="max-w-sm"
                 @update:model-value="table.getColumn('fullName')?.setFilterValue($event)"
             />
+            <div class="flex-1" />
+            <AddEmployeeDialog @added="emit('refreshNeeded')" />
         </div>
         <div class="rounded-md border overflow-hidden">
             <Table>

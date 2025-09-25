@@ -1,5 +1,6 @@
 {
     "address": "Adres",
+    "addEmployee": "Dodaj pracownika",
     "addUnit": "Dodaj jednostkę",
     "addUnitToComplex": "Dodaj jednostkę do zespołu",
     "administrator": "Administrator",
