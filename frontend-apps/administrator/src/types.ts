@@ -12,3 +12,10 @@ export interface SchoolUnitForm {
 export interface SchoolComplexForm {
     name: string;
 }
+
+export interface EmployeeForm {
+    lastName: string;
+    firstName: string;
+    shortcut: string;
+    roles: string[];
+}
