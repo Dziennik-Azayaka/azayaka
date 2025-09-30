@@ -34,17 +34,6 @@ class EmployeeController extends Controller
 			]);
 		}
 
-		if ($data["isAdmin"] == false) {
-			if (Employee::where("employees.is_admin", "true")->count() < 1) {
-				return Response::json([
-					"success" => false,
-					"errors" => [
-						"AT_LEAST_ONE_ADMIN_REQUIRED"
-					]
-				]);
-			}
-		}
-
 		$employee = new Employee();
 		$employee->first_name = $data["firstName"];
 		$employee->last_name = $data["lastName"];
@@ -83,8 +72,8 @@ class EmployeeController extends Controller
 			]);
 		}
 
-		if ($data["isAdmin"] == false) {
-			if (Employee::where("employees.is_admin", "true")->count() < 1) {
+		if ($employee->is_admin == true && $data["isAdmin"] == false) {
+			if (Employee::where("employees.is_admin", "true")->count() < 2) {
 				return Response::json([
 					"success" => false,
 					"errors" => [
@@ -112,30 +101,33 @@ class EmployeeController extends Controller
 	public function archive(Employee $employee, Request $request)
 	{
 		$validator = ValidatorAssistant::validate($request, [
-			"password" => "required|current_password",
-			"state" => "required|boolean"
+			"password" => "required|current_password"
 		]);
 
 		if (!$validator["success"]) {
 			return $validator["errorResponse"];
 		}
 
-		$employee->active = $validator["data"]["state"];
+		$employee->active = !$employee->active;
 		$employee->save();
 
-		AccountAccess::where("employee_id", $employee->id)->delete();
+		if (!$employee->active) {
+			AccountAccess::where("employee_id", $employee->id)->delete();
+		}
 
 		return [
 			"success" => true
 		];
 	}
 
-	public function checkDeletionEligibility(Employee $employee, Request $request) {
+	public function checkDeletionEligibility(Employee $employee, Request $request)
+	{
 		// TODO: Implement proper eligibility checking once classes have been figured out
 		return true;
 	}
 
-	public function delete(Employee $employee, Request $request) {
+	public function delete(Employee $employee, Request $request)
+	{
 		$validator = ValidatorAssistant::validate($request, [
 			"password" => "required|current_password"
 		]);
@@ -153,27 +145,24 @@ class EmployeeController extends Controller
 		];
 	}
 
-	public function getEmployeeAccess(Employee $employee) {
+	public function getEmployeeAccess(Employee $employee)
+	{
 		return AccountAccess::where("employee_id", $employee->id)->get()->toResourceCollection();
 	}
 
-	public function revokeEmployeeAccess(Employee $employee, AccountAccess $accountAccess) {
-		if ($accountAccess->employee_id == $employee->id) {
-			$accountAccess->delete();
-			return [
-				"success" => true
-			];
-		}
-
-		return Response::json([
-			"success" => false,
-			"errors" => [
-				"EMPLOYEE_AND_ACCOUNT_ACCESS_MISMATCH"
-			]
-		]);
+	public function revokeEmployeeAccess(Employee $employee)
+	{
+		AccountAccess::where("employee_id", $employee->id)->delete();
+		return [
+			"success" => true
+		];
 	}
 
-	public function regenerateEmployeeAccess(Employee $employee) {
+	public function regenerateEmployeeAccess(Employee $employee)
+	{
+		$existingAccess = AccountAccess::where("employee_id", $employee->id)->first();
+		$existingAccess?->delete();
+
 		$accountAccess = $this->generateAccess($employee);
 		return [
 			"success" => true,
@@ -181,7 +170,8 @@ class EmployeeController extends Controller
 		];
 	}
 
-	private function generateAccess(Employee $employee): AccountAccess {
+	private function generateAccess(Employee $employee): AccountAccess
+	{
 		$accountAccess = new AccountAccess();
 		$accountAccess->employee_id = $employee->id;
 		$accountAccess->words = "1,2,3,4,5,6,7,8,9,10"; // TODO: Replace with a dictionary of polish words.

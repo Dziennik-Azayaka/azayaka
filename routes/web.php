@@ -53,7 +53,7 @@ Route::middleware(["auth", "auth.session"])->group(function () {
 	Route::delete("/api/employees/{employee}", [EmployeeController::class, "delete"]);
 	Route::get("/api/employees/{employee}/access", [EmployeeController::class, "getEmployeeAccess"]);
 	Route::get("/api/employees/{employee}/access/regenerate", [EmployeeController::class, "regenerateEmployeeAccess"]);
-	Route::delete("/api/employees/{employee}/access/{accountAccess}", [EmployeeController::class, "revokeEmployeeAccess"]);
+	Route::delete("/api/employees/{employee}/access", [EmployeeController::class, "revokeEmployeeAccess"]);
 });
 
 // Email Verification

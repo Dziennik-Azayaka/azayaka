@@ -19,7 +19,7 @@ class AccountAccessResource extends JsonResource
 			"studentId" => $this->student_id,
 			"guardianId" => $this->guardian_id,
 			"employeeId" => $this->employee_id,
-			"user_id" => $this->user_id,
+			"userId" => $this->user_id,
 			"words" => $this->words,
 			"active" => $this->words != null,
 			"createdAt" => $this->created_at,
