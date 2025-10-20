@@ -62,30 +62,32 @@ class EmployeeController extends Controller
 		}
 		$data = $validator["data"];
 
-		$shortcut = $data["shortcut"] ?? $this->generateShortcut($data["firstName"], $data["lastName"]);
-		if ($shortcut == null) {
-			return Response::json([
-				"success" => false,
-				"errors" => [
-					"FAILURE_GENERATING_SHORTCUT"
-				]
-			]);
-		}
-
-		if ($employee->is_admin == true && $data["isAdmin"] == false) {
-			if (Employee::where("employees.is_admin", "true")->count() < 2) {
+		if ($employee->first_name != $data["firstName"] && $employee->last_name != $data["lastName"]) {
+			$shortcut = $data["shortcut"] ?? $this->generateShortcut($data["firstName"], $data["lastName"]);
+			if ($shortcut == null) {
 				return Response::json([
 					"success" => false,
 					"errors" => [
-						"AT_LEAST_ONE_ADMIN_REQUIRED"
+						"FAILURE_GENERATING_SHORTCUT"
 					]
 				]);
 			}
+
+			if ($employee->is_admin == true && $data["isAdmin"] == false) {
+				if (Employee::where("employees.is_admin", "true")->count() < 2) {
+					return Response::json([
+						"success" => false,
+						"errors" => [
+							"AT_LEAST_ONE_ADMIN_REQUIRED"
+						]
+					]);
+				}
+			}
+			$employee->shortcut = $shortcut;
 		}
 
 		$employee->first_name = $data["firstName"];
 		$employee->last_name = $data["lastName"];
-		$employee->shortcut = $shortcut;
 		$employee->is_admin = $data["isAdmin"];
 		$employee->is_headmaster = $data["isHeadmaster"];
 		$employee->is_secretary = $data["isSecretary"];
