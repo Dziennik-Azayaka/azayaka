@@ -73,17 +73,18 @@ class EmployeeController extends Controller
 				]);
 			}
 
-			if ($employee->is_admin == true && $data["isAdmin"] == false) {
-				if (Employee::where("employees.is_admin", "true")->count() < 2) {
-					return Response::json([
-						"success" => false,
-						"errors" => [
-							"AT_LEAST_ONE_ADMIN_REQUIRED"
-						]
-					]);
-				}
-			}
 			$employee->shortcut = $shortcut;
+		}
+
+		if ($employee->is_admin == true && $data["isAdmin"] == false) {
+			if (Employee::where("employees.is_admin", "true")->count() < 2) {
+				return Response::json([
+					"success" => false,
+					"errors" => [
+						"AT_LEAST_ONE_ADMIN_REQUIRED"
+					]
+				]);
+			}
 		}
 
 		$employee->first_name = $data["firstName"];
