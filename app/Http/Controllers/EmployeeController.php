@@ -62,7 +62,7 @@ class EmployeeController extends Controller
 		}
 		$data = $validator["data"];
 
-		if ($employee->first_name != $data["firstName"] && $employee->last_name != $data["lastName"]) {
+		if ($employee->first_name != $data["firstName"] || $employee->last_name != $data["lastName"]) {
 			$shortcut = $data["shortcut"] ?? $this->generateShortcut($data["firstName"], $data["lastName"]);
 			if ($shortcut == null) {
 				return Response::json([
@@ -163,8 +163,7 @@ class EmployeeController extends Controller
 
 	public function regenerateEmployeeAccess(Employee $employee)
 	{
-		$existingAccess = AccountAccess::where("employee_id", $employee->id)->first();
-		$existingAccess?->delete();
+		$existingAccess = AccountAccess::where("employee_id", $employee->id)->delete();
 
 		$accountAccess = $this->generateAccess($employee);
 		return [
