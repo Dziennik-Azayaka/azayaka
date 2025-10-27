@@ -161,22 +161,20 @@ class EmployeeController extends Controller
 		];
 	}
 
-	public function regenerateEmployeeAccess(Employee $employee)
-	{
-		$existingAccess = AccountAccess::where("employee_id", $employee->id)->delete();
-
-		$accountAccess = $this->generateAccess($employee);
-		return [
-			"success" => true,
-			"words" => $accountAccess->words
-		];
-	}
-
 	private function generateAccess(Employee $employee): AccountAccess
 	{
 		$accountAccess = new AccountAccess();
 		$accountAccess->employee_id = $employee->id;
-		$accountAccess->words = "1,2,3,4,5,6,7,8,9,10"; // TODO: Replace with a dictionary of polish words.
+
+		$words = explode("\n", file_get_contents(resource_path("data/dictionary.txt")));
+		$keys = array_rand($words, 10);
+		$oneTimeWords = "";
+		foreach ($keys as $key) {
+			$oneTimeWords .= $words[$key] . ",";
+		}
+		$oneTimeWords = rtrim($oneTimeWords, ",");
+
+		$accountAccess->words = $oneTimeWords;
 		$accountAccess->save();
 		return $accountAccess;
 	}
@@ -228,6 +226,17 @@ class EmployeeController extends Controller
 		}
 
 		return null;
+	}
+
+	public function regenerateEmployeeAccess(Employee $employee)
+	{
+		$existingAccess = AccountAccess::where("employee_id", $employee->id)->delete();
+
+		$accountAccess = $this->generateAccess($employee);
+		return [
+			"success" => true,
+			"words" => $accountAccess->words
+		];
 	}
 
 	private function validateEmployeeData(Request $request)
