@@ -123,31 +123,6 @@ class EmployeeController extends Controller
 		];
 	}
 
-	public function checkDeletionEligibility(Employee $employee, Request $request)
-	{
-		// TODO: Implement proper eligibility checking once classes have been figured out
-		return true;
-	}
-
-	public function delete(Employee $employee, Request $request)
-	{
-		$validator = ValidatorAssistant::validate($request, [
-			"password" => "required|current_password"
-		]);
-
-		if (!$validator["success"]) {
-			return $validator["errorResponse"];
-		}
-
-		AccountAccess::where("employee_id", $employee->id)->delete();
-
-		$employee->delete();
-
-		return [
-			"success" => true
-		];
-	}
-
 	public function getEmployeeAccess(Employee $employee)
 	{
 		return AccountAccess::where("employee_id", $employee->id)->get()->toResourceCollection();

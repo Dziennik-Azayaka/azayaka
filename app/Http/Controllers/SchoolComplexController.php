@@ -32,10 +32,7 @@ class SchoolComplexController extends Controller
 		$schoolComplex->save();
 
 		if (SchoolUnit::count() > 0) {
-			SchoolUnit::all()->each(function (SchoolUnit $schoolUnit) use ($schoolComplex) {
-				$schoolUnit->school_complex_id = $schoolComplex->id;
-				$schoolUnit->save();
-			});
+			SchoolUnit::query()->update(['school_complex_id' => $schoolComplex->id]);
 		}
 
 		return [
