@@ -48,6 +48,10 @@ Route::middleware(["auth", "auth.session"])->group(function () {
 	Route::get("/api/employees", [EmployeeController::class, "list"]);
 	Route::post("/api/employees", [EmployeeController::class, "create"]);
 	Route::put("/api/employees/{employee}", [EmployeeController::class, "update"]);
+	Route::put("/api/employees/{employee}/activity", [EmployeeController::class, "archive"]);
+	Route::get("/api/employees/{employee}/access", [EmployeeController::class, "getEmployeeAccess"]);
+	Route::post("/api/employees/{employee}/access/regenerate", [EmployeeController::class, "regenerateEmployeeAccess"]);
+	Route::delete("/api/employees/{employee}/access", [EmployeeController::class, "revokeEmployeeAccess"]);
 });
 
 // Email Verification
