@@ -226,14 +226,16 @@ class EmployeeController extends Controller
 			"isTeacher" => ["required", "boolean"],
 		]);
 
-		if (!$validator["data"]["isAdmin"] && !$validator["data"]["isSecretary"] &&
-			!$validator["data"]["isTeacher"] && !$validator["data"]["isHeadmaster"]) {
-			return [
-				"success" => false,
-				"errors" => [
-					"EMPLOYEE_MUST_HAVE_AT_LEAST_ONE_ROLE_ASSIGNED"
-				]
-			];
+		if (!$validator["success"]) {
+			if (!$validator["data"]["isAdmin"] && !$validator["data"]["isSecretary"] &&
+				!$validator["data"]["isTeacher"] && !$validator["data"]["isHeadmaster"]) {
+				return [
+					"success" => false,
+					"errors" => [
+						"EMPLOYEE_MUST_HAVE_AT_LEAST_ONE_ROLE_ASSIGNED"
+					]
+				];
+			}
 		}
 
 		return $validator;
