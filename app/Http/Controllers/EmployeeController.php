@@ -226,7 +226,7 @@ class EmployeeController extends Controller
 			"isTeacher" => ["required", "boolean"],
 		]);
 
-		if (!$validator["success"]) {
+		if ($validator["success"]) {
 			if (!$validator["data"]["isAdmin"] && !$validator["data"]["isSecretary"] &&
 				!$validator["data"]["isTeacher"] && !$validator["data"]["isHeadmaster"]) {
 				return [
