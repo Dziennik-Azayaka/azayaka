@@ -6,6 +6,7 @@ use App\Models\AccountAccess;
 use App\Models\Employee;
 use App\Utilities\ValidatorAssistant;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 use Response;
 
 class EmployeeController extends Controller
@@ -55,7 +56,7 @@ class EmployeeController extends Controller
 
 	public function update(Employee $employee, Request $request)
 	{
-		$validator = $this->validateEmployeeData($request);
+		$validator = $this->validateEmployeeData($request, $employee->id);
 
 		if (!$validator["success"]) {
 			return $validator["errorResponse"];
@@ -214,12 +215,12 @@ class EmployeeController extends Controller
 		];
 	}
 
-	private function validateEmployeeData(Request $request)
+	private function validateEmployeeData(Request $request, Int $id)
 	{
 		$validator = ValidatorAssistant::validate($request, [
 			"firstName" => ["required", "max:255"],
 			"lastName" => ["required", "max:255"],
-			"shortcut" => ["nullable", "max:4", "unique:employees"],
+			"shortcut" => ["nullable", "max:4", $id != null ? Rule::unique("employees")->ignore($id) : "unique:employees"],
 			"isAdmin" => ["required", "boolean"],
 			"isHeadmaster" => ["required", "boolean"],
 			"isSecretary" => ["required", "boolean"],
