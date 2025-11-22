@@ -94,7 +94,6 @@ class EmployeeController extends Controller
 		$employee->is_headmaster = $data["isHeadmaster"];
 		$employee->is_secretary = $data["isSecretary"];
 		$employee->is_teacher = $data["isTeacher"];
-		$employee->active = true;
 		$employee->save();
 
 		return [
@@ -215,7 +214,7 @@ class EmployeeController extends Controller
 		];
 	}
 
-	private function validateEmployeeData(Request $request, Int $id = null)
+	private function validateEmployeeData(Request $request, ?Int $id = null)
 	{
 		$validator = ValidatorAssistant::validate($request, [
 			"firstName" => ["required", "max:255"],
