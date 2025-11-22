@@ -215,7 +215,7 @@ class EmployeeController extends Controller
 		];
 	}
 
-	private function validateEmployeeData(Request $request, Int $id)
+	private function validateEmployeeData(Request $request, Int $id = null)
 	{
 		$validator = ValidatorAssistant::validate($request, [
 			"firstName" => ["required", "max:255"],
