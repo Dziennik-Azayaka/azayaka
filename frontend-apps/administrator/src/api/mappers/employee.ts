@@ -1,7 +1,7 @@
 import type { EmployeeDTO } from "@/api/dto/employee";
-import type { Employee, EmployeeRole } from "@/api/entities/employee";
+import type { EmployeeEntity, EmployeeRole } from "@/api/entities/employee";
 
-export function employeeDTOToEntity(dto: EmployeeDTO): Employee {
+export function employeeDTOToEntity(dto: EmployeeDTO): EmployeeEntity {
     const roles = new Set<EmployeeRole>();
     if (dto.isAdmin) roles.add("administrator");
     if (dto.isSecretary) roles.add("secretary");

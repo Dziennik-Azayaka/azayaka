@@ -18,6 +18,7 @@ import {
 import EmployeeService from "@/api/services/employee";
 import EmployeeDialogForm from "@/components/employees/EmployeeDialogForm.vue";
 import type { EmployeeForm } from "@/types";
+import { TakenShortcutError } from "@/api/errors.ts";
 
 const { t } = useI18n();
 const showDialog = ref(false);
@@ -28,13 +29,13 @@ const emit = defineEmits(["added"]);
 async function onSubmit(values: EmployeeForm) {
     isLoading.value = true;
     error.value = null;
-    console.log(values);
     try {
         await EmployeeService.addEmployee(values);
         emit("added");
         showDialog.value = false;
-    } catch {
-        error.value = "unknownError";
+    } catch (reason) {
+        if (reason instanceof TakenShortcutError) error.value = 'takenShortcutError';
+        else error.value = "unknownError";
     } finally {
         isLoading.value = false;
     }
@@ -58,7 +59,7 @@ watch(showDialog, (value) => {
                 <DialogTitle>{{ t("addEmployee") }}</DialogTitle>
                 <DialogDescription>{{ t("requiredFieldsInfo") }}</DialogDescription>
             </DialogHeader>
-            <EmployeeDialogForm :error-message="error" :loading="isLoading" @submit="onSubmit" v-if="showDialog">
+            <EmployeeDialogForm :error-message="error" :loading="isLoading" @submit="onSubmit">
                 <template #footer>
                     <DialogFooter>
                         <DialogClose as-child>

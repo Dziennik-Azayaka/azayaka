@@ -1,6 +1,6 @@
 export type EmployeeRole = "teacher" | "administrator" | "secretary" | "headmaster";
 
-export interface Employee {
+export interface EmployeeEntity {
     id: number;
     firstName: string;
     lastName: string;

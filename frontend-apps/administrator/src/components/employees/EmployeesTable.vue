@@ -1,21 +1,29 @@
 <script lang="ts" setup>
 import { Input } from "#ui/components/ui/input";
 import { TableRow } from "#ui/components/ui/table";
-import { FlexRender, createColumnHelper, getCoreRowModel, getFilteredRowModel, useVueTable } from "@tanstack/vue-table";
+import {
+    FlexRender,
+    createColumnHelper,
+    getCoreRowModel,
+    getFilteredRowModel,
+    getSortedRowModel,
+    useVueTable,
+} from "@tanstack/vue-table";
 import { h } from "vue";
 import { useI18n } from "vue-i18n";
 
 import { Table, TableBody, TableCell, TableHead, TableHeader } from "@azayaka-frontend/ui";
 
-import type { Employee, EmployeeRole } from "@/api/entities/employee.ts";
-import AddEmployeeDialog from "@/components/employees/AddEmployeeDialog.vue";
+import type { EmployeeEntity, EmployeeRole } from "@/api/entities/employee.ts";
+import EmployeeAddDialog from "@/components/employees/EmployeeAddDialog.vue";
+import EmployeeEditDialog from "@/components/employees/EmployeeEditDialog.vue";
 import EmployeesTableRoles from "@/components/employees/EmployeesTableRoles.vue";
 
-const { employees } = defineProps<{ employees: Employee[] }>();
+const { employees } = defineProps<{ employees: EmployeeEntity[] }>();
 const emit = defineEmits(["refreshNeeded"]);
 const { t } = useI18n();
 
-const columnHelper = createColumnHelper<Employee>();
+const columnHelper = createColumnHelper<EmployeeEntity>();
 const columns = [
     columnHelper.accessor((row) => `${row.lastName} ${row.firstName} (${row.shortcut})`, {
         id: "fullName",
@@ -26,11 +34,21 @@ const columns = [
         cell: ({ row }) => h(EmployeesTableRoles, { roles: row.getValue("roles") as Set<EmployeeRole> }),
     }),
 ];
+
 const table = useVueTable({
     data: employees,
     columns,
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+    state: {
+        sorting: [
+            {
+                id: "fullName",
+                desc: false,
+            },
+        ],
+    },
 });
 </script>
 
@@ -45,7 +63,7 @@ const table = useVueTable({
                 @update:model-value="table.getColumn('fullName')?.setFilterValue($event)"
             />
             <div class="flex-1" />
-            <AddEmployeeDialog @added="emit('refreshNeeded')" />
+            <EmployeeAddDialog @added="emit('refreshNeeded')" />
         </div>
         <div class="rounded-md border overflow-hidden">
             <Table>
@@ -62,11 +80,18 @@ const table = useVueTable({
                 </TableHeader>
                 <TableBody>
                     <template v-if="table.getRowModel().rows.length">
-                        <TableRow v-for="row in table.getRowModel().rows" :key="row.id">
-                            <TableCell v-for="cell in row.getVisibleCells()" :key="cell.id">
-                                <FlexRender :props="cell.getContext()" :render="cell.column.columnDef.cell" />
-                            </TableCell>
-                        </TableRow>
+                        <EmployeeEditDialog
+                            :current-data="employees[row.index]"
+                            v-for="row in table.getRowModel().rows"
+                            :key="row.id"
+                            @edited="emit('refreshNeeded')"
+                        >
+                            <TableRow class="cursor-pointer">
+                                <TableCell v-for="cell in row.getVisibleCells()" :key="cell.id">
+                                    <FlexRender :props="cell.getContext()" :render="cell.column.columnDef.cell" />
+                                </TableCell>
+                            </TableRow>
+                        </EmployeeEditDialog>
                     </template>
                     <TableRow v-else>
                         <TableCell :colspan="columns.length" class="h-18 text-center text-foreground/70">
@@ -76,7 +101,5 @@ const table = useVueTable({
                 </TableBody>
             </Table>
         </div>
-        <!-- TODO: Remove it -->
-        <pre class="p-4 mt-5 rounded-md bg-accent text-foreground/70 text-xs overflow-hidden">{{ employees }}</pre>
     </div>
 </template>

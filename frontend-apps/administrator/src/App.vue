@@ -92,7 +92,7 @@ const appVersion = import.meta.env.VITE_APP_VERSION;
             </Button>
         </template>
     </div>
-    <PanelLayout>
+    <PanelLayout v-else>
         <template #navigation>
             <PanelNavigation v-model="mainStore.mobileNavOpen">
                 <template #header>

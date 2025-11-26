@@ -5,7 +5,7 @@ import { LucideAlertCircle, LucideLoaderCircle, LucideRefreshCw } from "lucide-v
 import { onMounted, ref } from "vue";
 import { useI18n } from "vue-i18n";
 
-import type { Employee } from "@/api/entities/employee";
+import type { EmployeeEntity } from "@/api/entities/employee";
 import EmployeeService from "@/api/services/employee";
 import PanelHeader from "@/components/PanelHeader.vue";
 import EmployeesTable from "@/components/employees/EmployeesTable.vue";
@@ -14,7 +14,8 @@ const { t } = useI18n();
 
 const loading = ref(true);
 const error = ref(false);
-const employees = ref<Employee[] | null>();
+const employees = ref<EmployeeEntity[] | null>();
+const tab = ref("active");
 
 async function getEmployees() {
     loading.value = true;
@@ -52,7 +53,7 @@ onMounted(getEmployees);
         </div>
 
         <template v-else-if="employees">
-            <Tabs default-value="active">
+            <Tabs v-model="tab">
                 <TabsList>
                     <TabsTrigger value="active">{{ t("currentEmployees") }}</TabsTrigger>
                     <TabsTrigger value="not-active">{{ t("archive") }}</TabsTrigger>

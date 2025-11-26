@@ -11,3 +11,10 @@ export class IncorrectPasswordError extends Error {
         this.name = "IncorrectPasswordError";
     }
 }
+
+export class TakenShortcutError extends Error {
+    constructor() {
+        super();
+        this.name = "TakenShortcutError";
+    }
+}
