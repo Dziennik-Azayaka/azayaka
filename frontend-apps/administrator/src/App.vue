@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useTitle } from "@vueuse/core";
-import { LucideAlertCircle, LucideBuilding, LucideLoaderCircle, RefreshCw } from "lucide-vue-next";
+import { LucideAlertCircle, LucideBuilding, LucideLoaderCircle, LucideUsers, RefreshCw } from "lucide-vue-next";
 import { storeToRefs } from "pinia";
 import { configure } from "vee-validate";
 import { computed, onMounted, ref, watch } from "vue";
@@ -31,6 +31,11 @@ const menuItems = [
         title: "schoolStructure",
         link: { name: "schoolStructure" },
         icon: LucideBuilding,
+    },
+    {
+        title: "employees",
+        link: { name: "employees" },
+        icon: LucideUsers,
     },
 ];
 
@@ -87,7 +92,7 @@ const appVersion = import.meta.env.VITE_APP_VERSION;
             </Button>
         </template>
     </div>
-    <PanelLayout>
+    <PanelLayout v-else>
         <template #navigation>
             <PanelNavigation v-model="mainStore.mobileNavOpen">
                 <template #header>

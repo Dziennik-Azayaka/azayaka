@@ -30,7 +30,7 @@ async function onSubmit(values: SchoolComplexForm) {
     error.value = null;
     try {
         await SchoolStructureService.createSchoolComplex(values);
-		emit("created");
+        emit("created");
         model.value = false;
     } catch {
         error.value = "unknownError";
