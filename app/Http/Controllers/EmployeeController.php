@@ -238,7 +238,7 @@ class EmployeeController extends Controller
 				"lastName" => $employee->last_name,
 				"accessCreated" => $access != null,
 				"accessWords" => $access?->words,
-				"activationDate" => $access?->updated_at,
+				"activationDate" => $access?->user_id != null ? $access?->updated_at : null,
 				"lastLoginDate" => $log?->created_at
 			];
 		}
