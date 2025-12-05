@@ -60,6 +60,8 @@
     "studentCategory": "Student category",
     "studentCategory.adultsOnly": "Adults",
     "studentCategory.childrenAndYouths": "Children and teenagers",
+    "systemAccess": "Access to system",
+    "systemAccessDescription": "In this view, you can manage user access to the system.",
     "takenShortcutError": "This shortcut is already taken.",
     "voivodeship": "Voivodeship",
     "requiredFieldsInfo": "Fields marked with * are required.",
