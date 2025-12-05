@@ -218,7 +218,7 @@ class EmployeeController extends Controller
 
 	public function listEmployeeAccesses()
 	{
-		$employees = Employee::all();
+		$employees = Employee::where("active", "=", "1")->get();
 		$accesses = AccountAccess::whereIn("employee_id", $employees->pluck("id"))->get();
 		$output = [];
 		foreach ($employees as $employee) {
