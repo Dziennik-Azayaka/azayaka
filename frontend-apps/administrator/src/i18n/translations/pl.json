@@ -60,6 +60,8 @@
     "studentCategory": "Kategoria uczniów",
     "studentCategory.adultsOnly": "Dorośli",
     "studentCategory.childrenAndYouths": "Dzieci i młodzież",
+    "systemAccess": "Dostęp do systemu",
+    "systemAccessDescription": "W tym widoku możesz zarządzać dostępem użytkowników do systemu.",
     "takenShortcutError": "Ten skrót jest już zajęty.",
     "voivodeship": "Województwo",
     "requiredFieldsInfo": "Pola oznaczone * są wymagane.",
