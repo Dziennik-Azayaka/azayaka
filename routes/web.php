@@ -77,5 +77,5 @@ Route::middleware(["auth", "auth.session"])->group(function () {
 	Route::view("/administrator{any?}", "administrator")->where("any", ".*");
 });
 
-Route:;redirect("/rejestracja", "/authentication/access-activation/code");
+Route::redirect("/rejestracja", "/authentication/access-activation/code");
 Route::redirect("/", "/myaccount");
