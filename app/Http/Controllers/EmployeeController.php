@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\AccountEventType;
 use App\Models\AccountAccess;
+use App\Models\AccountLog;
 use App\Models\Employee;
 use App\Utilities\ValidatorAssistant;
 use Illuminate\Http\Request;
@@ -205,7 +207,7 @@ class EmployeeController extends Controller
 
 	public function regenerateEmployeeAccess(Employee $employee)
 	{
-		$existingAccess = AccountAccess::where("employee_id", $employee->id)->delete();
+		AccountAccess::where("employee_id", $employee->id)->delete();
 
 		$accountAccess = $this->generateAccess($employee);
 		return [
@@ -214,7 +216,82 @@ class EmployeeController extends Controller
 		];
 	}
 
-	private function validateEmployeeData(Request $request, ?Int $id = null)
+	public function listEmployeeAccesses()
+	{
+		$employees = Employee::all();
+		$accesses = AccountAccess::whereIn("employee_id", $employees->pluck("id"))->get();
+		$output = [];
+		foreach ($employees as $employee) {
+			$access = $accesses->where("employee_id", $employee->id)->first();
+
+			$log = null;
+			if ($access) {
+				$log = AccountLog::where("user_id", $access->user_id)
+					->where("event_type", AccountEventType::SUCCESSFUL_LOGIN_ATTEMPT)
+					->latest()->first();
+			}
+
+			$output[] = [
+				"id" => $employee->id,
+				"shortcut" => $employee->shortcut,
+				"firstName" => $employee->first_name,
+				"lastName" => $employee->last_name,
+				"accessCreated" => $access != null,
+				"accessWords" => $access?->words,
+				"activationDate" => $access?->updated_at,
+				"lastLoginDate" => $log?->created_at
+			];
+		}
+		return $output;
+	}
+
+	public function massUpdateAccess(Request $request)
+	{
+		$validator = ValidatorAssistant::validate($request, [
+			"action" => ["required"],
+			"ids" => ["required", "array"],
+		]);
+
+		if (!$validator["success"]) {
+			return $validator["errorResponse"];
+		}
+
+		$data = $validator["data"];
+
+		if ($data["action"] == "revoke") {
+			AccountAccess::whereIn("employee_id", $data["ids"])->delete();
+		} else if ($data["action"] == "regenerate") {
+			// delete and generate new accesses for everybody
+			AccountAccess::whereIn("employee_id", $data["ids"])->delete();
+			$employees = Employee::whereIn("id", $data["ids"])->get();
+			foreach ($employees as $employee) {
+				$this->generateAccess($employee);
+			}
+		} else if ($data["action"] == "generate") {
+			// do not delete any existing accesses, only generate new ones for users without any
+			$accesses = AccountAccess::whereIn("employee_id", $data["ids"])->get();
+			$employees = Employee::whereIn("id", $data["ids"])->get();
+
+			foreach ($employees as $employee) {
+				if (!$accesses->contains("employee_id", $employee->id)) {
+					$this->generateAccess($employee);
+				}
+			}
+		} else {
+			return [
+				"success" => false,
+				"errors" => [
+					"INVALID_ACTION"
+				]
+			];
+		}
+
+		return [
+			"success" => true
+		];
+	}
+
+	private function validateEmployeeData(Request $request, ?int $id = null)
 	{
 		$validator = ValidatorAssistant::validate($request, [
 			"firstName" => ["required", "max:255"],

@@ -52,6 +52,8 @@ Route::middleware(["auth", "auth.session"])->group(function () {
 	Route::get("/api/employees/{employee}/access", [EmployeeController::class, "getEmployeeAccess"]);
 	Route::post("/api/employees/{employee}/access/regenerate", [EmployeeController::class, "regenerateEmployeeAccess"]);
 	Route::delete("/api/employees/{employee}/access", [EmployeeController::class, "revokeEmployeeAccess"]);
+	Route::get("/api/employees/accesses", [EmployeeController::class, "listEmployeeAccesses"]);
+	Route::patch("/api/employees/accesses", [EmployeeController::class, "massUpdateAccess"]);
 });
 
 // Email Verification
@@ -75,4 +77,5 @@ Route::middleware(["auth", "auth.session"])->group(function () {
 	Route::view("/administrator{any?}", "administrator")->where("any", ".*");
 });
 
+Route:;redirect("/rejestracja", "/authentication/access-activation/code");
 Route::redirect("/", "/myaccount");
