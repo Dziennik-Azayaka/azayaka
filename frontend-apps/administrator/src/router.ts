@@ -20,6 +20,14 @@ const router = createRouter({
             },
         },
         {
+            path: "/system-access",
+            name: "systemAccess",
+            component: () => import("@/pages/SystemAccess.vue"),
+            meta: {
+                title: "systemAccess",
+            },
+        },
+        {
             path: "/:pathMatch(.*)*",
             name: "notFound",
             redirect: { name: "schoolStructure" },

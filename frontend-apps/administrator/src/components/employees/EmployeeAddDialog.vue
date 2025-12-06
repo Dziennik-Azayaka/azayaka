@@ -15,10 +15,10 @@ import {
     DialogTrigger,
 } from "@azayaka-frontend/ui";
 
+import { TakenShortcutError } from "@/api/errors.ts";
 import EmployeeService from "@/api/services/employee";
 import EmployeeDialogForm from "@/components/employees/EmployeeDialogForm.vue";
 import type { EmployeeForm } from "@/types";
-import { TakenShortcutError } from "@/api/errors.ts";
 
 const { t } = useI18n();
 const showDialog = ref(false);
@@ -34,7 +34,7 @@ async function onSubmit(values: EmployeeForm) {
         emit("added");
         showDialog.value = false;
     } catch (reason) {
-        if (reason instanceof TakenShortcutError) error.value = 'takenShortcutError';
+        if (reason instanceof TakenShortcutError) error.value = "takenShortcutError";
         else error.value = "unknownError";
     } finally {
         isLoading.value = false;
