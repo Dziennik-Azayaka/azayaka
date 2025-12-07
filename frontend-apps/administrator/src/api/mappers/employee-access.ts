@@ -13,7 +13,7 @@ export function employeeAccessDTOToEntity(dto: EmployeeAccessDTO): EmployeeAcces
 
     const common = {
         id: dto.id,
-        fullName: `${dto.firstName} ${dto.lastName}`,
+        fullName: `${dto.lastName} ${dto.firstName}`,
         shortcut: dto.shortcut,
         status: status,
     };

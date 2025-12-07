@@ -1,4 +1,5 @@
-<script lang="ts" setup>
+<script setup lang="ts">
+import { LucideLogIn, LucideRectangleEllipsis, LucideUser, LucideX } from "lucide-vue-next";
 import { useI18n } from "vue-i18n";
 
 import { AccessStatus } from "@/api/entities/access.ts";
@@ -6,18 +7,59 @@ import { AccessStatus } from "@/api/entities/access.ts";
 defineProps<{ status: AccessStatus }>();
 
 const { t } = useI18n();
-
-const statusClasses: Record<AccessStatus, string> = {
-    unactive:
-        "bg-yellow-700/10 text-yellow-800 border-yellow-700/60 dark:bg-yellow-300/10 dark:text-yellow-300 dark:border-yellow-300/60",
-    codeGenerated:
-        "bg-blue-700/10 text-blue-800 border-blue-700/60 dark:bg-blue-300/10 dark:text-blue-300 dark:border-blue-300/60",
-    active: "bg-green-700/10 text-green-800 border-green-700/60 dark:bg-green-300/10 dark:text-green-300 dark:border-green-300/60",
-};
 </script>
 
 <template>
-    <div :class="statusClasses[status]" class="px-1.5 py-1 border rounded-md text-xs employee-role inline">
-        {{ t(`accessStatus.${status.toString()}`) }}
+    <div class="flex">
+        <div class="flex-1 flex flex-col gap-1 items-center relative">
+            <div class="size-12 rounded-full bg-primary text-primary-foreground flex items-center justify-center">
+                <LucideUser />
+            </div>
+            <div
+                class="absolute left-[calc(50%+25px)] right-[calc(-50%+10px)] top-6 block h-0.5 shrink-0 rounded-full bg-muted group-data-[state=completed]:bg-primary"
+            />
+            <div class="flex flex-col items-center">
+                <div class="text-sm font-medium">{{ t("userCreated") }}</div>
+            </div>
+        </div>
+        <div class="flex-1 flex flex-col gap-1 items-center relative">
+            <div
+                class="size-12 rounded-full bg-destructive text-primary-foreground flex items-center justify-center"
+                :class="{
+                    'bg-destructive': status === AccessStatus.UNACTIVE,
+                    'bg-primary': status !== AccessStatus.UNACTIVE,
+                }"
+            >
+                <LucideX v-if="status === AccessStatus.UNACTIVE" />
+                <LucideRectangleEllipsis v-else />
+            </div>
+            <div
+                class="absolute left-[calc(50%+25px)] right-[calc(-50%+25px)] top-6 block h-0.5 shrink-0 rounded-full bg-muted group-data-[state=completed]:bg-primary"
+            />
+            <div class="flex flex-col items-center">
+                <div class="text-sm font-medium">
+                    <template v-if="status === AccessStatus.UNACTIVE">{{ t("accessBlocked") }}</template>
+                    <template v-else>{{ t("codeGenerated") }}</template>
+                </div>
+            </div>
+        </div>
+        <div class="flex-1 flex flex-col gap-1 items-center">
+            <div
+                class="size-12 rounded-full flex items-center justify-center"
+                :class="{
+                    'bg-accent text-accent-foreground': status === AccessStatus.UNACTIVE,
+                    'bg-destructive text-primary-foreground': status === AccessStatus.CODE_GENERATED,
+                    'bg-primary text-primary-foreground': status === AccessStatus.ACTIVE,
+                }"
+            >
+                <LucideLogIn />
+            </div>
+            <div class="flex flex-col items-center">
+                <div class="text-sm font-medium text-center">
+                    <template v-if="status === AccessStatus.ACTIVE">{{ t("userActivatedAccess") }}</template>
+                    <template v-else>{{ t("userDidntActivateAccess") }}</template>
+                </div>
+            </div>
+        </div>
     </div>
 </template>

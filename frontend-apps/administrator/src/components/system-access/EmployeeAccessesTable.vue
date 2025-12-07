@@ -14,7 +14,8 @@ import { useI18n } from "vue-i18n";
 
 import { AccessStatus as AccessStatusEnum } from "@/api/entities/access.ts";
 import type { EmployeeAccessEntity } from "@/api/entities/employee-access.ts";
-import AccessStatus from "@/components/system-access/AccessStatus.vue";
+import AccessInfoDialog from "@/components/system-access/AccessInfoDialog.vue";
+import AccessStatusBadge from "@/components/system-access/AccessStatusBadge.vue";
 
 const { accesses } = defineProps<{ accesses: EmployeeAccessEntity[] }>();
 const { t, d } = useI18n();
@@ -34,6 +35,7 @@ const columns = [
                 modelValue: row.getIsSelected(),
                 "onUpdate:modelValue": (value) => row.toggleSelected(!!value),
                 ariaLabel: "Select row",
+                onClick: (event: Event) => event.stopPropagation(),
             }),
         enableSorting: false,
         enableHiding: false,
@@ -44,7 +46,7 @@ const columns = [
     }),
     columnHelper.accessor("status", {
         header: () => t("accessStatus"),
-        cell: ({ row }) => h(AccessStatus, { status: row.getValue("status") as AccessStatusEnum }),
+        cell: ({ row }) => h(AccessStatusBadge, { status: row.getValue("status") as AccessStatusEnum }),
     }),
     columnHelper.accessor((row) => (row.status === AccessStatusEnum.ACTIVE ? d(row.lastLoginAt, "long") : "-"), {
         id: "lastLoginAt",
@@ -89,11 +91,18 @@ const table = useVueTable({
             </TableHeader>
             <TableBody>
                 <template v-if="table.getRowModel().rows.length">
-                    <TableRow class="cursor-pointer" v-for="row in table.getRowModel().rows" :key="row.id">
-                        <TableCell v-for="cell in row.getVisibleCells()" :key="cell.id">
-                            <FlexRender :props="cell.getContext()" :render="cell.column.columnDef.cell" />
-                        </TableCell>
-                    </TableRow>
+                    <AccessInfoDialog
+                        v-for="row in table.getRowModel().rows"
+                        :key="row.id"
+                        :data="row.original"
+                        user-role="employee"
+                    >
+                        <TableRow class="cursor-pointer">
+                            <TableCell v-for="cell in row.getVisibleCells()" :key="cell.id">
+                                <FlexRender :props="cell.getContext()" :render="cell.column.columnDef.cell" />
+                            </TableCell>
+                        </TableRow>
+                    </AccessInfoDialog>
                 </template>
                 <TableRow v-else>
                     <TableCell :colspan="columns.length" class="h-18 text-center text-foreground/70">
