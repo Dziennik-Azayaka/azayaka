@@ -1,0 +1,64 @@
+@media print {
+    @page {
+        margin: 0;
+        size: A4 portrait;
+    }
+
+    * {
+        -webkit-print-color-adjust: exact !important;
+        color-adjust: exact !important;
+    }
+}
+
+body {
+    font-family:
+        ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol",
+        "Noto Color Emoji";
+    padding: 0;
+    margin: 0;
+}
+
+.code {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    width: max-content;
+    gap: 5px 25px;
+    list-style-position: inside;
+    margin: 0;
+    padding: 0;
+}
+
+.code li {
+    min-width: 135px;
+    font-weight: bold;
+}
+
+.access {
+    min-height: calc(100% / 3);
+    padding: 0.75cm 1cm;
+    border-bottom: 1px dashed black;
+    break-inside: avoid;
+    box-sizing: border-box;
+}
+
+.access:nth-child(3n) {
+    border: none;
+}
+
+h1 {
+    margin: 0.4cm 0;
+}
+
+h2 {
+    margin-bottom: 0;
+    font-weight: bold;
+    font-size: 18px;
+}
+
+.role {
+    padding: 5px 8px;
+    background: black;
+    color: white;
+    border-radius: 4px;
+    margin-right: 6px;
+}

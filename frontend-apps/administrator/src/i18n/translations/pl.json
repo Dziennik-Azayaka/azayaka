@@ -56,6 +56,8 @@
     "unarchive": "Odarchiwizuj",
     "name": "Nazwa",
     "noResults": "Brak wyników",
+    "printAlert": "Wydrukuj wygenerowane instrukcje lub zamknij w przeglądarce okno drukowania (w karcie z wydrukiem) aby kontynuować.",
+    "printInstructions": "Wydrukuj instrukcję",
     "requiredFieldError": "To pole jest wymagane.",
     "roles": "Role",
     "role.administrator": "Administrator",

@@ -56,6 +56,8 @@
     "unarchive": "Unarchive",
     "name": "Name",
     "noResults": "No results",
+    "printAlert": "Print the generated instructions or close the print window in your browser (in the print tab) to continue.",
+    "printInstructions": "Print instructions",
     "requiredFieldError": "This field is required.",
     "roles": "Roles",
     "role.administrator": "Administrator",
