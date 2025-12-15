@@ -6,6 +6,7 @@ use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\SchoolComplexController;
 use App\Http\Controllers\SchoolUnitController;
 use App\Http\Controllers\SessionController;
+use App\Http\Controllers\SubjectController;
 use App\Http\Controllers\UserController;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Support\Facades\Route;
@@ -54,6 +55,11 @@ Route::middleware(["auth", "auth.session"])->group(function () {
 	Route::delete("/api/employees/{employee}/access", [EmployeeController::class, "revokeEmployeeAccess"]);
 	Route::get("/api/employees/accesses", [EmployeeController::class, "listEmployeeAccesses"]);
 	Route::patch("/api/employees/accesses", [EmployeeController::class, "massUpdateAccess"]);
+
+	Route::get("/api/subjects", [SubjectController::class, "list"]);
+	Route::post("/api/subjects", [SubjectController::class, "create"]);
+	Route::put("/api/subjects/{subject}", [SubjectController::class, "update"]);
+	Route::put("/api/subjects/{subject}/activity", [SubjectController::class, "archive"]);
 });
 
 // Email Verification
