@@ -15,8 +15,8 @@ class SubjectController extends Controller
 
 	public function create(Request $request) {
 		$validator = ValidatorAssistant::validate($request, [
-			"name" => ["string", "max:255", "min:3"],
-			"shortcut" => ["string", "max:4", "unique:subjects"]
+			"name" => ["string", "max:255", "min:3", "required"],
+			"shortcut" => ["string", "max:4", "unique:subjects", "required"]
 		]);
 
 		if (!$validator["success"]) {

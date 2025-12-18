@@ -13,4 +13,9 @@ class Employee extends BaseModel
 	public function user() {
 		return $this->belongsTo(User::class);
 	}
+
+	public function classUnits()
+	{
+		return $this->belongsToMany(ClassUnit::class, "class_units_employees", "employee_id", "class_unit_id");
+	}
 }

@@ -17,7 +17,7 @@ return new class extends Migration
 			$table->string("alias");
 			$table->string("mark");
 			$table->integer("starting_school_year");
-			$table->integer("teaching_cycle_length_id");
+			$table->integer("teaching_cycle_length");
             $table->timestamps();
         });
 

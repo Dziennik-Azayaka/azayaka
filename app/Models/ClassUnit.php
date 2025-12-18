@@ -10,7 +10,8 @@ class ClassUnit extends Model
     /** @use HasFactory<\Database\Factories\ClassUnitFactory> */
     use HasFactory;
 
-	public function employees() {
-		return $this->hasMany(Employee::class);
+	public function employees()
+	{
+		return $this->belongsToMany(Employee::class, "class_units_employees", "class_unit_id", "employee_id");
 	}
 }
