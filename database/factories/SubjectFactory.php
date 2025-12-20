@@ -16,8 +16,15 @@ class SubjectFactory extends Factory
      */
     public function definition(): array
     {
+		$subjects = [
+			"Język Polski", "Język Angielski", "Język Niemiecki", "Muzyka", "Plastyka", "Historia", "Wiedza o Społeczeństwie",
+			"Przyroda", "Geografia", "Biologia", "Chemia", "Fizyka", "Matematyka", "Informatyka", "Technika",
+			"Wychowanie Fizyczne", "Edukacja dla bezpieczeństwa", "Zajęcia z Wychowawcą", "Religia", "Wychowanie do życia w rodzinie"
+		];
+
         return [
-            //
+            "name" => $this->faker->unique()->randomElement($subjects),
+			"shortcut" => chr(rand(65,90)) . chr(rand(65,90)) . chr(rand(65,90)) // P(A) = 1/17576
         ];
     }
 }

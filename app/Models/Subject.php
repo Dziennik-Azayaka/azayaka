@@ -9,4 +9,6 @@ class Subject extends Model
 {
     /** @use HasFactory<\Database\Factories\SubjectFactory> */
     use HasFactory;
+
+	protected $fillable = ["name", "shortcut"];
 }

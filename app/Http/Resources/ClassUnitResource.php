@@ -17,8 +17,8 @@ class ClassUnitResource extends JsonResource
         return [
 			"alias" => $this->alias,
 			"mark" => $this->mark,
-			"startingSchoolYear" => $this->startingSchoolYear,
-			"teachingCycleLength" => $this->teachingCycleLength
+			"startingSchoolYear" => $this->starting_school_year,
+			"teachingCycleLength" => $this->teaching_cycle_length
 		];
     }
 }

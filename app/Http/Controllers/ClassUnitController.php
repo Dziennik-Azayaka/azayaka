@@ -10,7 +10,8 @@ use Illuminate\Http\Request;
 
 class ClassUnitController extends Controller
 {
-	public function list(Request $request, Int $schoolUnitId) {
+	public function list(Request $request, int $schoolUnitId)
+	{
 		$classUnits = ClassUnit::where("school_unit_id", $schoolUnitId)->get();
 		$showInactive = $request->get("showInactive");
 		if ($showInactive != "true") {
@@ -28,7 +29,41 @@ class ClassUnitController extends Controller
 		return $classUnits->toResourceCollection();
 	}
 
-	public function create(Request $request, Int $schoolUnitId)
+	public function create(Request $request, int $schoolUnitId)
+	{
+		$validator = $this->validateClassUnit($request);
+		$validated = $validator["data"];
+
+		$classUnit = new ClassUnit();
+		$classUnit->school_unit_id = $schoolUnitId;
+		$classUnit->alias = $validated["alias"];
+		$classUnit->mark = $validated["mark"];
+		$classUnit->starting_school_year = $validated["startingSchoolYear"];
+		$classUnit->teaching_cycle_length = $validated["teachingCycleLength"];
+
+		$classUnit->save();
+
+		$classUnit->employees()->attach($validated["employeeIds"]);
+
+		return [
+			"success" => true
+		];
+	}
+
+	public function update(Request $request, int $schoolUnitId, ClassUnit $classUnit)
+	{
+		$validator = $this->validateClassUnit($request);
+		$validated = $validator["data"];
+
+		$classUnit->update($validated);
+
+		$classUnit->employees()->sync($validated["employeeIds"]);
+		return [
+			"success" => true
+		];
+	}
+
+	private function validateClassUnit(Request $request)
 	{
 		$validator = ValidatorAssistant::validate($request, [
 			"alias" => ["string", "max:64", "nullable"],
@@ -49,23 +84,28 @@ class ClassUnitController extends Controller
 		if ($existingCount !== count($employeeIds)) {
 			return [
 				"success" => false,
-				"errors" => [
-					"EMPLOYEE_IDS_NOT_FOUND"
+				"errorResponse" => [
+					\Response::json([
+							"success" => false,
+							"errors" => [
+								"EMPLOYEE_IDS_NOT_FOUND"
+							]
+						],
+						400
+					)
 				]
 			];
 		}
 
-		$classUnit = new ClassUnit();
-		$classUnit->school_unit_id = $schoolUnitId;
-		$classUnit->alias = $validated["alias"];
-		$classUnit->mark = $validated["mark"];
-		$classUnit->starting_school_year = $validated["startingSchoolYear"];
-		$classUnit->teaching_cycle_length = $validated["teachingCycleLength"];
+		return [
+			"data" => $validated,
+			"employee_ids" => $employeeIds
+		];
+	}
 
-		$classUnit->save();
-
-		$classUnit->employees()->attach($employeeIds);
-
+	public function delete(ClassUnit $classUnit) {
+		// TODO: Implement checks to make sure no grade books have been created for this class unit
+		$classUnit->delete();
 		return [
 			"success" => true
 		];

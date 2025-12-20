@@ -10,6 +10,7 @@ class ClassUnit extends Model
     /** @use HasFactory<\Database\Factories\ClassUnitFactory> */
     use HasFactory;
 
+	protected $fillable = ["alias", "school_unit_id", "mark", "starting_school_year", "teaching_cycle_length"];
 	public function employees()
 	{
 		return $this->belongsToMany(Employee::class, "class_units_employees", "class_unit_id", "employee_id");

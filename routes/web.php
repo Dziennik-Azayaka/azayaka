@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AccountAccessesController;
 use App\Http\Controllers\AccountLogController;
+use App\Http\Controllers\ClassUnitController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\SchoolComplexController;
 use App\Http\Controllers\SchoolUnitController;
@@ -60,6 +61,11 @@ Route::middleware(["auth", "auth.session"])->group(function () {
 	Route::post("/api/subjects", [SubjectController::class, "create"]);
 	Route::put("/api/subjects/{subject}", [SubjectController::class, "update"]);
 	Route::put("/api/subjects/{subject}/activity", [SubjectController::class, "archive"]);
+
+	Route::get("/api/classunits/bySchoolUnit/{schoolUnit}", [ClassUnitController::class, "list"]);
+	Route::post("/api/classunits/bySchoolUnit/{schoolUnit}", [ClassUnitController::class, "create"]);
+	Route::put("/api/classunits/bySchoolUnit/{schoolUnit}/{classUnit}", [ClassUnitController::class, "update"]);
+	Route::delete("/api/classunits/bySchoolUnit/{schoolUnit}/{classUnit}", [ClassUnitController::class, "delete"]);
 });
 
 // Email Verification
