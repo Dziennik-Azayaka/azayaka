@@ -5,6 +5,7 @@
     "accessBlocked": "Access blocked",
     "accessClick": "Click to show the activation code.",
     "accessStatus": "Access status",
+    "accessStatus.all": "All",
     "accessStatus.unactive": "Blocked",
     "accessStatus.codeGenerated": "Access code generated",
     "accessStatus.active": "Active",

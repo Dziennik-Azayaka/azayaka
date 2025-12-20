@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import { Checkbox } from "#ui/components/ui/checkbox";
+import { Input } from "#ui/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "#ui/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "#ui/components/ui/table";
 import {
     FlexRender,
@@ -47,6 +49,7 @@ const columns = [
     columnHelper.accessor("status", {
         header: () => t("accessStatus"),
         cell: ({ row }) => h(AccessStatusBadge, { status: row.getValue("status") as AccessStatusEnum }),
+        filterFn: (row, columnId, filterValue) => filterValue === "all" || row.getValue(columnId) === filterValue,
     }),
     columnHelper.accessor((row) => (row.status === AccessStatusEnum.ACTIVE ? d(row.lastLoginAt, "long") : "-"), {
         id: "lastLoginAt",
@@ -72,6 +75,32 @@ const table = useVueTable({
 </script>
 
 <template>
+    <div class="flex flex-wrap gap-3 items-center py-4">
+        <Input
+            :aria-label="t('searchForEmployees')"
+            :model-value="table.getColumn('fullName')?.getFilterValue() as string"
+            :placeholder="t('searchForEmployees')"
+            class="max-w-sm"
+            @update:model-value="table.getColumn('fullName')?.setFilterValue($event)"
+        />
+        <div class="flex-1" />
+        <Select
+            :model-value="table.getColumn('status')?.getFilterValue() ?? 'all'"
+            :aria-label="t('accessStatus')"
+            @update:model-value="table.getColumn('status')?.setFilterValue($event)"
+        >
+            <SelectTrigger>
+                <span class="text-muted-foreground">{{ t("accessStatus") }}: </span>
+                <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+                <SelectItem value="all">{{ t("accessStatus.all") }}</SelectItem>
+                <SelectItem value="unactive">{{ t("accessStatus.unactive") }}</SelectItem>
+                <SelectItem value="codeGenerated">{{ t("accessStatus.codeGenerated") }}</SelectItem>
+                <SelectItem value="active">{{ t("accessStatus.active") }}</SelectItem>
+            </SelectContent>
+        </Select>
+    </div>
     <div class="rounded-md border overflow-hidden">
         <Table>
             <TableHeader>
