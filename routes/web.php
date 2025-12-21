@@ -41,39 +41,41 @@ Route::middleware(["auth", "auth.session"])->group(function () {
 
 	Route::get("/api/user", [AccountAccessesController::class, "list"]);
 
-	Route::get("/api/schoolcomplex", [SchoolComplexController::class, "list"]);
-	Route::post("/api/schoolcomplex", [SchoolComplexController::class, "create"]);
-	Route::put("/api/schoolcomplex/{schoolComplex}", [SchoolComplexController::class, "update"]);
-	Route::get("/api/schoolunits", [SchoolUnitController::class, "list"]);
-	Route::post("/api/schoolunits", [SchoolUnitController::class, "create"]);
-	Route::put("/api/schoolunits/{schoolUnit}", [SchoolUnitController::class, "update"]);
-	Route::put("/api/schoolunits/{schoolUnit}/activity", [SchoolUnitController::class, "archive"]);
+	Route::middleware(["headmasters.admins"])->group(function () {
+		Route::get("/api/schoolcomplex", [SchoolComplexController::class, "list"]);
+		Route::post("/api/schoolcomplex", [SchoolComplexController::class, "create"]);
+		Route::put("/api/schoolcomplex/{schoolComplex}", [SchoolComplexController::class, "update"]);
+		Route::get("/api/schoolunits", [SchoolUnitController::class, "list"]);
+		Route::post("/api/schoolunits", [SchoolUnitController::class, "create"]);
+		Route::put("/api/schoolunits/{schoolUnit}", [SchoolUnitController::class, "update"]);
+		Route::put("/api/schoolunits/{schoolUnit}/activity", [SchoolUnitController::class, "archive"]);
 
-	Route::get("/api/employees", [EmployeeController::class, "list"]);
-	Route::post("/api/employees", [EmployeeController::class, "create"]);
-	Route::put("/api/employees/{employee}", [EmployeeController::class, "update"]);
-	Route::put("/api/employees/{employee}/activity", [EmployeeController::class, "archive"]);
-	Route::get("/api/employees/{employee}/access", [EmployeeController::class, "getEmployeeAccess"]);
-	Route::post("/api/employees/{employee}/access/regenerate", [EmployeeController::class, "regenerateEmployeeAccess"]);
-	Route::delete("/api/employees/{employee}/access", [EmployeeController::class, "revokeEmployeeAccess"]);
-	Route::get("/api/employees/accesses", [EmployeeController::class, "listEmployeeAccesses"]);
-	Route::patch("/api/employees/accesses", [EmployeeController::class, "massUpdateAccess"]);
+		Route::get("/api/employees", [EmployeeController::class, "list"]);
+		Route::post("/api/employees", [EmployeeController::class, "create"]);
+		Route::put("/api/employees/{employee}", [EmployeeController::class, "update"]);
+		Route::put("/api/employees/{employee}/activity", [EmployeeController::class, "archive"]);
+		Route::get("/api/employees/{employee}/access", [EmployeeController::class, "getEmployeeAccess"]);
+		Route::post("/api/employees/{employee}/access/regenerate", [EmployeeController::class, "regenerateEmployeeAccess"]);
+		Route::delete("/api/employees/{employee}/access", [EmployeeController::class, "revokeEmployeeAccess"]);
+		Route::get("/api/employees/accesses", [EmployeeController::class, "listEmployeeAccesses"]);
+		Route::patch("/api/employees/accesses", [EmployeeController::class, "massUpdateAccess"]);
 
-	Route::get("/api/subjects", [SubjectController::class, "list"]);
-	Route::post("/api/subjects", [SubjectController::class, "create"]);
-	Route::put("/api/subjects/{subject}", [SubjectController::class, "update"]);
-	Route::put("/api/subjects/{subject}/activity", [SubjectController::class, "archive"]);
+		Route::get("/api/subjects", [SubjectController::class, "list"]);
+		Route::post("/api/subjects", [SubjectController::class, "create"]);
+		Route::put("/api/subjects/{subject}", [SubjectController::class, "update"]);
+		Route::put("/api/subjects/{subject}/activity", [SubjectController::class, "archive"]);
 
-	Route::get("/api/classunits/bySchoolUnit/{schoolUnit}", [ClassUnitController::class, "list"]);
-	Route::post("/api/classunits/bySchoolUnit/{schoolUnit}", [ClassUnitController::class, "create"]);
-	Route::put("/api/classunits/bySchoolUnit/{schoolUnit}/{classUnit}", [ClassUnitController::class, "update"]);
-	Route::delete("/api/classunits/bySchoolUnit/{schoolUnit}/{classUnit}", [ClassUnitController::class, "delete"]);
+		Route::get("/api/classunits/bySchoolUnit/{schoolUnit}", [ClassUnitController::class, "list"]);
+		Route::post("/api/classunits/bySchoolUnit/{schoolUnit}", [ClassUnitController::class, "create"]);
+		Route::put("/api/classunits/bySchoolUnit/{schoolUnit}/{classUnit}", [ClassUnitController::class, "update"]);
+		Route::delete("/api/classunits/bySchoolUnit/{schoolUnit}/{classUnit}", [ClassUnitController::class, "delete"]);
 
-	Route::get("/api/classificationPeriods/defaults", [ClassificationPeriodDefaultsController::class, "list"]);
-	Route::post("/api/classificationPeriods/defaults/{schoolYear}/{schoolUnitId}", [ClassificationPeriodDefaultsController::class, "save"]);
-	Route::get("/api/classificationPeriods", [ClassificationPeriodController::class, "list"]);
-	Route::post("/api/classificationPeriods/{schoolYear}/{classUnitId}", [ClassificationPeriodController::class, "list"]);
-	Route::delete("/api/classificationPeriods/{schoolYear}/{classUnitId}", [ClassificationPeriodController::class, "list"]);
+		Route::get("/api/classificationPeriods/defaults", [ClassificationPeriodDefaultsController::class, "list"]);
+		Route::post("/api/classificationPeriods/defaults/{schoolYear}/{schoolUnitId}", [ClassificationPeriodDefaultsController::class, "save"]);
+		Route::get("/api/classificationPeriods", [ClassificationPeriodController::class, "list"]);
+		Route::post("/api/classificationPeriods/{schoolYear}/{classUnitId}", [ClassificationPeriodController::class, "list"]);
+		Route::delete("/api/classificationPeriods/{schoolYear}/{classUnitId}", [ClassificationPeriodController::class, "list"]);
+	});
 });
 
 // Email Verification
@@ -93,8 +95,7 @@ Route::view("/authentication{any?}", "authentication")->where("any", ".*")->name
 Route::middleware(["auth", "auth.session"])->group(function () {
 	Route::view("/myaccount{any?}", "myaccount")->where("any", ".*");
 
-	// TODO: Check if the user has an admin permission
-	Route::view("/administrator{any?}", "administrator")->where("any", ".*");
+	Route::view("/administrator{any?}", "administrator")->where("any", ".*")->middleware("headmasters.admins");
 });
 
 Route::redirect("/rejestracja", "/authentication/access-activation/code");
