@@ -2,6 +2,8 @@
 
 use App\Http\Controllers\AccountAccessesController;
 use App\Http\Controllers\AccountLogController;
+use App\Http\Controllers\ClassificationPeriodController;
+use App\Http\Controllers\ClassificationPeriodDefaultsController;
 use App\Http\Controllers\ClassUnitController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\SchoolComplexController;
@@ -66,6 +68,12 @@ Route::middleware(["auth", "auth.session"])->group(function () {
 	Route::post("/api/classunits/bySchoolUnit/{schoolUnit}", [ClassUnitController::class, "create"]);
 	Route::put("/api/classunits/bySchoolUnit/{schoolUnit}/{classUnit}", [ClassUnitController::class, "update"]);
 	Route::delete("/api/classunits/bySchoolUnit/{schoolUnit}/{classUnit}", [ClassUnitController::class, "delete"]);
+
+	Route::get("/api/classificationPeriods/defaults", [ClassificationPeriodDefaultsController::class, "list"]);
+	Route::post("/api/classificationPeriods/defaults/{schoolYear}/{schoolUnitId}", [ClassificationPeriodDefaultsController::class, "save"]);
+	Route::get("/api/classificationPeriods", [ClassificationPeriodController::class, "list"]);
+	Route::post("/api/classificationPeriods/{schoolYear}/{classUnitId}", [ClassificationPeriodController::class, "list"]);
+	Route::delete("/api/classificationPeriods/{schoolYear}/{classUnitId}", [ClassificationPeriodController::class, "list"]);
 });
 
 // Email Verification

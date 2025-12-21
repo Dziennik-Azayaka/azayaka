@@ -7,6 +7,5 @@ use Illuminate\Database\Eloquent\Model;
 
 class ClassificationPeriod extends Model
 {
-    /** @use HasFactory<\Database\Factories\ClassificationPeriodFactory> */
-    use HasFactory;
+    //
 }
