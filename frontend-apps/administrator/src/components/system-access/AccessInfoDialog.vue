@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { LucidePrinter } from "lucide-vue-next";
+import { ErrorBanner } from "#ui/components/ui/banner";
+import { LucideLock, LucidePrinter, LucideRefreshCw, LucideRotateCw } from "lucide-vue-next";
 import { ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 
@@ -16,14 +17,17 @@ import {
 
 import { AccessStatus as AccessStatusEnum } from "@/api/entities/access.ts";
 import type { EmployeeAccessEntity } from "@/api/entities/employee-access.ts";
+import AccessService from "@/api/services/access";
 import AccessCode from "@/components/system-access/AccessCode.vue";
 import AccessPrintableInstructions from "@/components/system-access/AccessPrintableInstructions.vue";
 import AccessStatus from "@/components/system-access/AccessStatus.vue";
 
 const props = defineProps<{ data: EmployeeAccessEntity; userRole: "employee" }>();
+const emit = defineEmits(["changedStatus"]);
 const { t, d } = useI18n();
 const showDialog = ref(false);
-const error = ref<string | null>(null);
+const loading = ref<"regenerate" | "generate" | "revoke" | null>(null);
+const error = ref(false);
 const instructionPrint = ref(false);
 
 function getInstructionData() {
@@ -36,8 +40,20 @@ function getInstructionData() {
 }
 
 watch(showDialog, (value) => {
-    if (value) error.value = null;
+    if (value) error.value = false;
 });
+
+async function update(action: "regenerate" | "generate" | "revoke") {
+    loading.value = action;
+    try {
+        await AccessService.updateEmployeeAccesses([props.data.id], action);
+        emit("changedStatus");
+    } catch {
+        error.value = true;
+    } finally {
+        loading.value = null;
+    }
+}
 </script>
 
 <template>
@@ -74,6 +90,13 @@ watch(showDialog, (value) => {
                 {{ t("accessCodeDescription") }}
             </p>
 
+            <p
+                class="rounded-md px-4 py-3.5 bg-primary text-primary-foreground text-sm"
+                v-if="data.status === AccessStatusEnum.UNACTIVE"
+            >
+                {{ t("blockedAccessInfo") }}
+            </p>
+
             <AccessPrintableInstructions
                 :accesses="[getInstructionData()]"
                 v-if="data.status === AccessStatusEnum.CODE_GENERATED && instructionPrint"
@@ -83,6 +106,8 @@ watch(showDialog, (value) => {
             <p class="rounded-md px-4 py-3.5 bg-destructive text-primary-foreground text-sm" v-if="instructionPrint">
                 {{ t("printAlert") }}
             </p>
+
+            <ErrorBanner :description="t('unknownError')" v-if="error" />
 
             <DialogFooter>
                 <Button
@@ -94,6 +119,37 @@ watch(showDialog, (value) => {
                     <LucidePrinter />
                     {{ t("printInstructions") }}
                 </Button>
+                <Button
+                    variant="default"
+                    type="button"
+                    v-if="data.status === AccessStatusEnum.UNACTIVE"
+                    @click="update('generate')"
+                    :disabled="loading"
+                >
+                    <LucideRefreshCw />
+                    {{ t("generateCode") }}
+                </Button>
+                <Button
+                    variant="outline"
+                    type="button"
+                    v-if="data.status === AccessStatusEnum.ACTIVE"
+                    @click="update('regenerate')"
+                    :disabled="loading"
+                >
+                    <LucideRotateCw />
+                    {{ t("resetAccess") }}
+                </Button>
+                <Button
+                    variant="destructive"
+                    type="button"
+                    v-if="data.status !== AccessStatusEnum.UNACTIVE"
+                    @click="update('revoke')"
+                    :disabled="loading"
+                >
+                    <LucideLock />
+                    {{ t("blockAccess") }}
+                </Button>
+                <div class="flex-1"></div>
                 <DialogClose as-child>
                     <Button variant="outline" type="button" @click="instructionPrint = false">{{ t("close") }}</Button>
                 </DialogClose>

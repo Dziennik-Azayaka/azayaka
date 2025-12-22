@@ -20,6 +20,7 @@ import AccessInfoDialog from "@/components/system-access/AccessInfoDialog.vue";
 import AccessStatusBadge from "@/components/system-access/AccessStatusBadge.vue";
 
 const { accesses } = defineProps<{ accesses: EmployeeAccessEntity[] }>();
+const emit = defineEmits(["refreshNeeded"]);
 const { t, d } = useI18n();
 
 const columnHelper = createColumnHelper<EmployeeAccessEntity>();
@@ -125,6 +126,7 @@ const table = useVueTable({
                         :key="row.id"
                         :data="row.original"
                         user-role="employee"
+                        @changed-status="emit('refreshNeeded')"
                     >
                         <TableRow class="cursor-pointer">
                             <TableCell v-for="cell in row.getVisibleCells()" :key="cell.id">

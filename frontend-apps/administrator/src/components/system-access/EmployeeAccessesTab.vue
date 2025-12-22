@@ -44,6 +44,6 @@ onMounted(getEmployeeAccesses);
     </div>
 
     <template v-else-if="accesses">
-        <EmployeeAccessesTable :accesses="accesses" />
+        <EmployeeAccessesTable :accesses="accesses" @refresh-needed="getEmployeeAccesses()" />
     </template>
 </template>
