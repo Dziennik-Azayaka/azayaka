@@ -143,5 +143,4 @@ const table = useVueTable({
             </TableBody>
         </Table>
     </div>
-    <pre class="p-5 rounded-md bg-accent font-mono text-xs mt-5 border">{{ accesses }}</pre>
 </template>
