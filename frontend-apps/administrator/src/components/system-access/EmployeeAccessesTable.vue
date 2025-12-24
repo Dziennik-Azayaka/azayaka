@@ -18,6 +18,7 @@ import { AccessStatus as AccessStatusEnum } from "@/api/entities/access.ts";
 import type { EmployeeAccessEntity } from "@/api/entities/employee-access.ts";
 import AccessInfoDialog from "@/components/system-access/AccessInfoDialog.vue";
 import AccessStatusBadge from "@/components/system-access/AccessStatusBadge.vue";
+import MassActionsPrint from "@/components/system-access/MassActionsPrint.vue";
 
 const { accesses } = defineProps<{ accesses: EmployeeAccessEntity[] }>();
 const emit = defineEmits(["refreshNeeded"]);
@@ -76,13 +77,13 @@ const table = useVueTable({
 </script>
 
 <template>
-    <div class="flex flex-wrap gap-3 items-center py-4">
+    <section class="flex flex-wrap gap-3 items-center py-4">
         <Input
             :aria-label="t('searchForEmployees')"
             :model-value="table.getColumn('fullName')?.getFilterValue() as string"
             :placeholder="t('searchForEmployees')"
-            class="max-w-sm"
-            @update:model-value="table.getColumn('fullName')?.setFilterValue($event)"
+            class="w-full lg:max-w-sm"
+            @update:model-value="table.getColumn('fullName')?.setFilterValue($event.trim())"
         />
         <div class="flex-1" />
         <Select
@@ -90,9 +91,11 @@ const table = useVueTable({
             :aria-label="t('accessStatus')"
             @update:model-value="table.getColumn('status')?.setFilterValue($event)"
         >
-            <SelectTrigger>
-                <span class="text-muted-foreground">{{ t("accessStatus") }}: </span>
-                <SelectValue />
+            <SelectTrigger class="not-lg:w-full">
+                <span class="space-x-0.5">
+                    <span class="text-muted-foreground">{{ t("accessStatus") }}: </span>
+                    <SelectValue />
+                </span>
             </SelectTrigger>
             <SelectContent>
                 <SelectItem value="all">{{ t("accessStatus.all") }}</SelectItem>
@@ -101,7 +104,13 @@ const table = useVueTable({
                 <SelectItem value="active">{{ t("accessStatus.active") }}</SelectItem>
             </SelectContent>
         </Select>
-    </div>
+
+        <MassActionsPrint
+            accesses-type="employee"
+            :selected-accesses="table.getSelectedRowModel().rows.map((row) => row.original)"
+        />
+    </section>
+
     <div class="rounded-md border overflow-hidden">
         <Table>
             <TableHeader>
