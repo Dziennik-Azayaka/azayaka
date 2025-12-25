@@ -83,7 +83,7 @@ const table = useVueTable({
             :model-value="table.getColumn('fullName')?.getFilterValue() as string"
             :placeholder="t('searchForEmployees')"
             class="w-full lg:max-w-sm"
-            @update:model-value="table.getColumn('fullName')?.setFilterValue($event.trim())"
+            @update:model-value="table.getColumn('fullName')?.setFilterValue(($event as string).trim())"
         />
         <div class="flex-1" />
         <Select

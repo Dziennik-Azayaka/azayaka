@@ -45,7 +45,7 @@ const onSubmit = form.handleSubmit(async (values) => {
             activationStore.status.email,
             values.password,
         );
-        window.location = "/";
+        window.location.assign("/");
     } catch (reason) {
         if (reason instanceof IncorrectActivationCodeError) error.value = "incorrectCodeError";
         else if (reason instanceof IncorrectCredentialsError) error.value = "incorrectCredentialsError";
