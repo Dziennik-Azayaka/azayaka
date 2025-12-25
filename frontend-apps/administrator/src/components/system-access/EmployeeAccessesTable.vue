@@ -99,7 +99,7 @@ const table = useVueTable({
             </SelectTrigger>
             <SelectContent>
                 <SelectItem value="all">{{ t("accessStatus.all") }}</SelectItem>
-                <SelectItem value="unactive">{{ t("accessStatus.unactive") }}</SelectItem>
+                <SelectItem value="inactive">{{ t("accessStatus.inactive") }}</SelectItem>
                 <SelectItem value="codeGenerated">{{ t("accessStatus.codeGenerated") }}</SelectItem>
                 <SelectItem value="active">{{ t("accessStatus.active") }}</SelectItem>
             </SelectContent>

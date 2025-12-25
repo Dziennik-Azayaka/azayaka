@@ -7,7 +7,7 @@
     "accessInstructionsWarning": "Część z zaznaczonych użytkowników ma już aktywowany dostęp lub jest on zablokowany. Ci użytkownicy zostaną pominięci w drukowaniu instrukcji.",
     "accessStatus": "Status dostępu",
     "accessStatus.all": "Wszystkie",
-    "accessStatus.unactive": "Zablokowany",
+    "accessStatus.inactive": "Zablokowany",
     "accessStatus.codeGenerated": "Wygenerowano kod aktywacji",
     "accessStatus.active": "Aktywny",
     "address": "Adres",

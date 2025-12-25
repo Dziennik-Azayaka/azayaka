@@ -7,7 +7,7 @@
     "accessInstructionsWarning": "Some of the selected users already have activated access or it is blocked. These users will be omitted from instructions printing.",
     "accessStatus": "Access status",
     "accessStatus.all": "All",
-    "accessStatus.unactive": "Blocked",
+    "accessStatus.inactive": "Blocked",
     "accessStatus.codeGenerated": "Access code generated",
     "accessStatus.active": "Active",
     "address": "Address",
