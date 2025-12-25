@@ -95,5 +95,5 @@
     "userActivatedAccess": "Użytkownik aktywował dostęp",
     "userActivationDate": "Data aktywacji przez użytkownika",
     "userCreated": "Użytkownik utworzony",
-    "userDidntActivateAccess": "Użytkownik nie aktywował dostępu"
+    "userHasntActivateAccess": "Użytkownik nie aktywował dostępu"
 }

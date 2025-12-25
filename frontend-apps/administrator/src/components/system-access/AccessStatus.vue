@@ -26,11 +26,11 @@ const { t } = useI18n();
             <div
                 class="size-12 rounded-full bg-destructive text-primary-foreground flex items-center justify-center"
                 :class="{
-                    'bg-destructive': status === AccessStatus.UNACTIVE,
-                    'bg-primary': status !== AccessStatus.UNACTIVE,
+                    'bg-destructive': status === AccessStatus.INACTIVE,
+                    'bg-primary': status !== AccessStatus.INACTIVE,
                 }"
             >
-                <LucideX v-if="status === AccessStatus.UNACTIVE" />
+                <LucideX v-if="status === AccessStatus.INACTIVE" />
                 <LucideRectangleEllipsis v-else />
             </div>
             <div
@@ -38,7 +38,7 @@ const { t } = useI18n();
             />
             <div class="flex flex-col items-center">
                 <div class="text-sm font-medium">
-                    <template v-if="status === AccessStatus.UNACTIVE">{{ t("accessBlocked") }}</template>
+                    <template v-if="status === AccessStatus.INACTIVE">{{ t("accessBlocked") }}</template>
                     <template v-else>{{ t("codeGenerated") }}</template>
                 </div>
             </div>
@@ -47,7 +47,7 @@ const { t } = useI18n();
             <div
                 class="size-12 rounded-full flex items-center justify-center"
                 :class="{
-                    'bg-accent text-accent-foreground': status === AccessStatus.UNACTIVE,
+                    'bg-accent text-accent-foreground': status === AccessStatus.INACTIVE,
                     'bg-destructive text-primary-foreground': status === AccessStatus.CODE_GENERATED,
                     'bg-primary text-primary-foreground': status === AccessStatus.ACTIVE,
                 }"
@@ -57,7 +57,7 @@ const { t } = useI18n();
             <div class="flex flex-col items-center">
                 <div class="text-sm font-medium text-center">
                     <template v-if="status === AccessStatus.ACTIVE">{{ t("userActivatedAccess") }}</template>
-                    <template v-else>{{ t("userDidntActivateAccess") }}</template>
+                    <template v-else>{{ t("userHasntActivateAccess") }}</template>
                 </div>
             </div>
         </div>

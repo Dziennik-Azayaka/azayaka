@@ -1,5 +1,5 @@
 export enum AccessStatus {
-    UNACTIVE = "unactive",
+    INACTIVE = "inactive",
     CODE_GENERATED = "codeGenerated",
     ACTIVE = "active",
 }

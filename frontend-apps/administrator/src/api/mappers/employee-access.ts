@@ -5,7 +5,7 @@ import type { EmployeeAccessEntity } from "@/api/entities/employee-access";
 function detectAccessStatus(dto: EmployeeAccessDTO) {
     if (dto.activationDate) return AccessStatus.ACTIVE;
     if (dto.accessWords) return AccessStatus.CODE_GENERATED;
-    return AccessStatus.UNACTIVE;
+    return AccessStatus.INACTIVE;
 }
 
 export function employeeAccessDTOToEntity(dto: EmployeeAccessDTO): EmployeeAccessEntity {

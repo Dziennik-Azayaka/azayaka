@@ -92,7 +92,7 @@ async function update(action: "regenerate" | "generate" | "revoke") {
 
             <p
                 class="rounded-md px-4 py-3.5 bg-primary text-primary-foreground text-sm"
-                v-if="data.status === AccessStatusEnum.UNACTIVE"
+                v-if="data.status === AccessStatusEnum.INACTIVE"
             >
                 {{ t("blockedAccessInfo") }}
             </p>
@@ -122,7 +122,7 @@ async function update(action: "regenerate" | "generate" | "revoke") {
                 <Button
                     variant="default"
                     type="button"
-                    v-if="data.status === AccessStatusEnum.UNACTIVE"
+                    v-if="data.status === AccessStatusEnum.INACTIVE"
                     @click="update('generate')"
                     :disabled="loading"
                 >
@@ -142,7 +142,7 @@ async function update(action: "regenerate" | "generate" | "revoke") {
                 <Button
                     variant="destructive"
                     type="button"
-                    v-if="data.status !== AccessStatusEnum.UNACTIVE"
+                    v-if="data.status !== AccessStatusEnum.INACTIVE"
                     @click="update('revoke')"
                     :disabled="loading"
                 >

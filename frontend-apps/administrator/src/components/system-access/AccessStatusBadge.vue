@@ -8,7 +8,7 @@ defineProps<{ status: AccessStatus }>();
 const { t } = useI18n();
 
 const statusClasses: Record<AccessStatus, string> = {
-    unactive:
+    inactive:
         "bg-red-700/10 text-red-800 border-red-700/60 dark:bg-red-300/10 dark:text-red-300 dark:border-red-300/60",
     codeGenerated:
         "bg-blue-700/10 text-blue-800 border-blue-700/60 dark:bg-blue-300/10 dark:text-blue-300 dark:border-blue-300/60",

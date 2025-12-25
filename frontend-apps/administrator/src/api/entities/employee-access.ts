@@ -5,7 +5,7 @@ export type EmployeeAccessEntity = {
     fullName: string;
     shortcut: string;
 } & (
-    | { status: AccessStatus.UNACTIVE }
+    | { status: AccessStatus.INACTIVE }
     | { status: AccessStatus.CODE_GENERATED; activationCode: string[] }
     | { status: AccessStatus.ACTIVE; activatedAt: Date; lastLoginAt: Date }
 );
