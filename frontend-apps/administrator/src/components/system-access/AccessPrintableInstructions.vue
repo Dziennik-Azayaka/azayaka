@@ -16,10 +16,16 @@ onMounted(() => {
             <title>Wydruk - Instrukcja aktywacji dostępu w systemie (Dziennik Azayaka)</title>
             <meta charset="utf-8">
             <style>${styles}</style>
+
+            <link rel="preconnect" href="https://fonts.googleapis.com">
+            <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+            <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&display=swap">
         `;
         printWindow.document.body.innerHTML = containerRef.value!.innerHTML;
-        printWindow.window?.print();
-        printWindow.close();
+        printWindow.document.fonts.ready.then(() => {
+            printWindow.window?.print();
+            printWindow.close();
+        });
     }
     emit("done");
 });
