@@ -27,6 +27,7 @@
     "skipToContent": "Skip to main content",
     "tryAgain": "Try again",
     "unknownError": "An unexpected error has occurred, please try again later.",
+    "warning": "Warning",
     "continue": "Continue",
     "password": "Password",
     "incorrectPasswordError": "The password is incorrect."

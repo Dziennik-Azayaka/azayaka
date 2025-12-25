@@ -16,11 +16,11 @@ import {
 } from "@azayaka-frontend/ui";
 
 import type { EmployeeEntity } from "@/api/entities/employee";
+import { TakenShortcutError } from "@/api/errors.ts";
 import EmployeeService from "@/api/services/employee";
 import EmployeeArchiveDialog from "@/components/employees/EmployeeArchiveDialog.vue";
 import EmployeeDialogForm from "@/components/employees/EmployeeDialogForm.vue";
 import type { EmployeeForm } from "@/types";
-import { TakenShortcutError } from "@/api/errors.ts";
 
 const { t } = useI18n();
 const showDialog = ref(false);
@@ -37,7 +37,7 @@ async function onSubmit(values: EmployeeForm) {
         emit("edited");
         showDialog.value = false;
     } catch (reason) {
-        if (reason instanceof TakenShortcutError) error.value = 'takenShortcutError';
+        if (reason instanceof TakenShortcutError) error.value = "takenShortcutError";
         else error.value = "unknownError";
     } finally {
         isLoading.value = false;

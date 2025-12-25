@@ -1,6 +1,13 @@
 <script setup lang="ts">
 import { useTitle } from "@vueuse/core";
-import { LucideAlertCircle, LucideBuilding, LucideLoaderCircle, LucideUsers, RefreshCw } from "lucide-vue-next";
+import {
+    LucideAlertCircle,
+    LucideBuilding,
+    LucideLoaderCircle,
+    LucideLogIn,
+    LucideUsers,
+    RefreshCw,
+} from "lucide-vue-next";
 import { storeToRefs } from "pinia";
 import { configure } from "vee-validate";
 import { computed, onMounted, ref, watch } from "vue";
@@ -36,6 +43,11 @@ const menuItems = [
         title: "employees",
         link: { name: "employees" },
         icon: LucideUsers,
+    },
+    {
+        title: "systemAccess",
+        link: { name: "systemAccess" },
+        icon: LucideLogIn,
     },
 ];
 
