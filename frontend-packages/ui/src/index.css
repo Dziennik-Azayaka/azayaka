@@ -1,13 +1,12 @@
 @import "tailwindcss";
 @import "tw-animate-css";
+@import "fonts.css";
 
 @source "./components/ui/";
 @source "./layouts/";
 
 @theme {
-    --font-sans:
-        "Geist", ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol",
-        "Noto Color Emoji";
+    --font-sans: "Geist", system-ui, sans-serif;
 }
 
 @custom-variant dark (&:is(.dark *));

@@ -12,18 +12,22 @@ const containerRef = useTemplateRef("container");
 onMounted(() => {
     const printWindow = window.open("about:blank", "_blank");
     if (printWindow) {
-        printWindow.document.head.innerHTML += `
-            <title>Wydruk - Instrukcja aktywacji dostępu w systemie (Dziennik Azayaka)</title>
-            <meta charset="utf-8">
-            <style>${styles}</style>
-
-            <link rel="preconnect" href="https://fonts.googleapis.com">
-            <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-            <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&display=swap">
-        `;
-        printWindow.document.body.innerHTML = containerRef.value!.innerHTML;
+        printWindow.document.open();
+        printWindow.document.write(`
+            <html>
+                <head>
+                    <title>Wydruk - Instrukcja aktywacji dostępu</title>
+                    <meta charset="utf-8">
+                    <style>${styles}</style>
+                </head>
+                <body>
+                    ${containerRef.value!.innerHTML}
+                </body>
+            </html>
+        `);
+        printWindow.document.close();
         printWindow.document.fonts.ready.then(() => {
-            printWindow.window?.print();
+            printWindow.print();
             printWindow.close();
         });
     }
@@ -43,7 +47,7 @@ onMounted(() => {
             <h1>Dostęp do dziennika elektronicznego</h1>
             <p>
                 Aby aktywować Twój dostęp do dziennika elektronicznego, wejdź na stronę
-                <strong>{{ getRegistrationUrl() }}</strong> i postępuj zgodnie z instrukcjami.
+                <strong style="text-wrap: nowrap;">{{ getRegistrationUrl() }}</strong> i postępuj zgodnie z instrukcjami.
             </p>
             <p>Twój <strong>kod aktywacji</strong>, który będzie Ci potrzebny do aktywacji dostępu do dziennika:</p>
             <ol class="code">

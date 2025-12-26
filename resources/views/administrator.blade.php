@@ -7,7 +7,9 @@
         <title>Dziennik Azayaka</title>
     </head>
     <body>
-        <div id="app"></div>
+        <div id="app">
+			<noscript>Ta aplikacja wymaga włączonej obsługi JavaScript.</noscript>
+		</div>
         {{Vite::useHotFile(public_path('hot-administrator'))
                 ->useBuildDirectory('build-administrator')
                 ->useManifestFilename('.vite/manifest.json')
