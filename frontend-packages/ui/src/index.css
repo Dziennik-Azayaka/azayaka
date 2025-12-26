@@ -6,7 +6,7 @@
 @source "./layouts/";
 
 @theme {
-    --font-sans: "Geist", ui-system, sans-serif;
+    --font-sans: "Geist", system-ui, sans-serif;
 }
 
 @custom-variant dark (&:is(.dark *));
