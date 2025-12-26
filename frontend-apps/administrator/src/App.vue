@@ -5,6 +5,7 @@ import {
     LucideBuilding,
     LucideLoaderCircle,
     LucideLogIn,
+    LucideShapes,
     LucideUsers,
     RefreshCw,
 } from "lucide-vue-next";
@@ -48,6 +49,11 @@ const menuItems = [
         title: "systemAccess",
         link: { name: "systemAccess" },
         icon: LucideLogIn,
+    },
+    {
+        title: "subjects",
+        link: { name: "subjects" },
+        icon: LucideShapes,
     },
 ];
 
