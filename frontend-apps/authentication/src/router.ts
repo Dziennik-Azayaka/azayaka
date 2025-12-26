@@ -2,7 +2,7 @@ import { useActivationStore } from "./stores/activation.store";
 import { createRouter, createWebHistory } from "vue-router";
 
 const router = createRouter({
-    history: createWebHistory(import.meta.env.BASE_URL),
+    history: createWebHistory("/authentication"),
     routes: [
         {
             path: "/log-in",
