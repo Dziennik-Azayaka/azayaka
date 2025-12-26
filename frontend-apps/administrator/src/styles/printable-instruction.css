@@ -34,7 +34,7 @@ body {
 }
 
 .access {
-    min-height: calc(100% / 3);
+    height: 33%;
     padding: 0.75cm 1cm;
     border-bottom: 1px dashed black;
     break-inside: avoid;
@@ -61,4 +61,8 @@ h2 {
     color: white;
     border-radius: 4px;
     margin-right: 6px;
+}
+
+p {
+	margin: 0.8em 0;
 }
