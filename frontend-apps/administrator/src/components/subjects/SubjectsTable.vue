@@ -21,13 +21,10 @@ const { t } = useI18n();
 const columnHelper = createColumnHelper<SubjectEntity>();
 const columns = [
     columnHelper.accessor("name", {
-        header: () => `${t("name")}`,
+        header: () => t("name"),
     }),
     columnHelper.accessor("shortcut", {
-        header: () => `${t("short")}`,
-    }),
-    columnHelper.accessor("active", {
-        header: () => `${t("activeSubject")}`
+        header: () =>t("short"),
     }),
 ];
 
