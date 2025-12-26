@@ -10,6 +10,7 @@
     "accessStatus.inactive": "Zablokowany",
     "accessStatus.codeGenerated": "Wygenerowano kod aktywacji",
     "accessStatus.active": "Aktywny",
+    "activeSubject": "Aktywny",
     "address": "Adres",
     "archiveEmployeeDialogTitle": "Czy na pewno chcesz przenieść tego pracownika do archiwum?",
     "archiveEmployeeDialogDescription": "Aby potwierdzić wpisz swoje hasło.",

@@ -10,6 +10,7 @@
     "accessStatus.inactive": "Blocked",
     "accessStatus.codeGenerated": "Access code generated",
     "accessStatus.active": "Active",
+    "activeSubject": "Active",
     "address": "Address",
     "archiveEmployeeDialogTitle": "Are you sure you want to move the employee to the archive?",
     "archiveEmployeeDialogDescription": "To confirm, enter your password.",
