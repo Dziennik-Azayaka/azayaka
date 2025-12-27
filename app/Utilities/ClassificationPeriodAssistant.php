@@ -8,6 +8,13 @@ class ClassificationPeriodAssistant
 {
 	public static function validate(Array $periodEnds): ?\Illuminate\Http\JsonResponse
 	{
+		if (count($periodEnds) > 5) {
+			return \Response::json([
+				"success" => false,
+				"errors" => ["TOO_MANY_PERIODS"]
+			]);
+		}
+
 		$schoolYear = (int) str_split($periodEnds[0], "-")[0];
 		$periodStart = Carbon::create($schoolYear, 9)->startOfDay();
 		$schoolYearEnd = $periodStart->copy();
