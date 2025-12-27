@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\ClassUnit;
 use App\Models\Employee;
+use App\Models\SchoolUnit;
 use App\Utilities\ValidatorAssistant;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -31,6 +32,15 @@ class ClassUnitController extends Controller
 
 	public function create(Request $request, int $schoolUnitId)
 	{
+		if (!SchoolUnit::where("id", $schoolUnitId)->exists()) {
+			return response()->json([
+				"success" => false,
+				"errors" => [
+					"SCHOOL_UNIT_NOT_FOUND"
+				]
+			]);
+		}
+
 		$validator = $this->validateClassUnit($request);
 		$validated = $validator["data"];
 

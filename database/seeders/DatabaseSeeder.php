@@ -65,8 +65,7 @@ class DatabaseSeeder extends Seeder
 			"school_year" => 2024,
 			"period_number" => 1,
 			"period_start" => "2024-09-01",
-			"period_end" => "2025-01-30",
-			"teaching_cycle_length" => 4
+			"period_end" => "2025-01-30"
 		]);
 
 		ClassificationPeriod::create([
@@ -74,8 +73,7 @@ class DatabaseSeeder extends Seeder
 			"school_year" => 2024,
 			"period_number" => 2,
 			"period_start" => "2025-02-01",
-			"period_end" => "2025-08-31",
-			"teaching_cycle_length" => 4
+			"period_end" => "2025-08-31"
 		]);
 	}
 }
