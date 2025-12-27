@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\ClassificationPeriodDefaults;
-use App\Utilities\ClassificationPeriodValidator;
+use App\Utilities\ClassificationPeriodAssistant;
 use App\Utilities\ValidatorAssistant;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -14,12 +14,7 @@ class ClassificationPeriodDefaultsController extends Controller
 	{
 		$schoolYear = $request->get("schoolYear");
 		if (!$schoolYear) {
-			$now = Carbon::now();
-			if ($now->month > 8) {
-				$schoolYear = $now->year;
-			} else {
-				$schoolYear = $now->year - 1;
-			}
+			$schoolYear = ClassificationPeriodAssistant::getCurrentSchoolYear();
 		}
 		return ClassificationPeriodDefaults::where("school_year", $schoolYear)
 			->get()
@@ -30,7 +25,6 @@ class ClassificationPeriodDefaultsController extends Controller
 	public function save(Request $request, Int $schoolYear, Int $schoolUnitId)
 	{
 		$validator = ValidatorAssistant::validate($request, [
-			"periodStart" => ["required", "array"],
 			"periodEnd" => ["required", "array"]
 		]);
 
@@ -40,7 +34,7 @@ class ClassificationPeriodDefaultsController extends Controller
 
 		$validated = $validator["data"];
 
-		$classificationPeriodValidatorResponse = ClassificationPeriodValidator::validate($validated);
+		$classificationPeriodValidatorResponse = ClassificationPeriodAssistant::validate($validated["periodEnd"]);
 		if ($classificationPeriodValidatorResponse) {
 			return $classificationPeriodValidatorResponse;
 		}
@@ -50,12 +44,12 @@ class ClassificationPeriodDefaultsController extends Controller
 		// laravel does not automatically generate timestamps when bulk inserting
 		$now = Carbon::now();
 
-		foreach ($validated["periodStart"] as $key => $periodStart) {
+		foreach ($validated["periodEnd"] as $key => $periodEnd) {
 			$newDefaults[] = [
 				"school_year" => $schoolYear,
 				"school_unit_id" => $schoolUnitId,
-				"period_start" => $periodStart,
-				"period_end" => $validated["periodEnd"][$key],
+				"period_start" => Carbon::parse($periodEnd)->subDay()->toDateString(),
+				"period_end" => $periodEnd,
 				"period_number" => $key + 1,
 				"created_at" => $now,
 				"updated_at" => $now,

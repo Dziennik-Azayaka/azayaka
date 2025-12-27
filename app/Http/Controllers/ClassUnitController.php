@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\ClassUnit;
 use App\Models\Employee;
 use App\Models\SchoolUnit;
+use App\Utilities\ClassificationPeriodAssistant;
 use App\Utilities\ValidatorAssistant;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -14,18 +15,22 @@ class ClassUnitController extends Controller
 	public function list(Request $request, int $schoolUnitId)
 	{
 		$classUnits = ClassUnit::where("school_unit_id", $schoolUnitId);
-		$showInactive = $request->get("showInactive");
+		$category = $request->get("category");
+		$currentSchoolYear = ClassificationPeriodAssistant::getCurrentSchoolYear();
 
-		if ($showInactive != "true") {
-			$now = Carbon::now();
-			$currentSchoolYear = $now->year;
-
-			if ($now->month <= 8) {
-				$currentSchoolYear = $now->year - 1;
-			}
-
-			$classUnits->whereRaw('starting_school_year + teaching_cycle_length >= ?', [$currentSchoolYear]);
+		switch ($category) {
+			case "future":
+				$classUnits = $classUnits->where("starting_school_year", ">", $currentSchoolYear);
+				break;
+			case "current":
+				$classUnits = $classUnits->where("starting_school_year", "<=", $currentSchoolYear)
+					->whereRaw("starting_school_year + teaching_cycle_length >= ?", [$currentSchoolYear]);
+				break;
+			case "archive":
+				$classUnits = $classUnits->whereRaw("starting_school_year + teaching_cycle_length < ?", [$currentSchoolYear]);
+				break;
 		}
+
 
 		return $classUnits->get()->toResourceCollection();
 	}
@@ -97,11 +102,11 @@ class ClassUnitController extends Controller
 				"success" => false,
 				"errorResponse" => [
 					\Response::json([
-							"success" => false,
-							"errors" => [
-								"EMPLOYEE_IDS_NOT_FOUND"
-							]
-						],
+						"success" => false,
+						"errors" => [
+							"EMPLOYEE_IDS_NOT_FOUND"
+						]
+					],
 						400
 					)
 				]
@@ -130,7 +135,8 @@ class ClassUnitController extends Controller
 		];
 	}
 
-	public function delete(ClassUnit $classUnit) {
+	public function delete(ClassUnit $classUnit)
+	{
 		// TODO: Implement checks to make sure no grade books have been created for this class unit
 		$classUnit->delete();
 		return [

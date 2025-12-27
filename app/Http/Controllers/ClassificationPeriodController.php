@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\ClassificationPeriod;
-use App\Utilities\ClassificationPeriodValidator;
+use App\Utilities\ClassificationPeriodAssistant;
 use App\Utilities\ValidatorAssistant;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -12,16 +12,6 @@ class ClassificationPeriodController extends Controller
 {
 	public function list(Request $request)
 	{
-		$schoolYear = $request->get("schoolYear");
-		if (!$schoolYear) {
-			$now = Carbon::now();
-			if ($now->month > 8) {
-				$schoolYear = $now->year;
-			} else {
-				$schoolYear = $now->year - 1;
-			}
-		}
-
 		return ClassificationPeriod::all()
 			->toResourceCollection()
 			->groupBy("class_unit_id");
@@ -30,7 +20,6 @@ class ClassificationPeriodController extends Controller
 	public function save(Request $request, Int $schoolYear, Int $classUnitId)
 	{
 		$validator = ValidatorAssistant::validate($request, [
-			"periodStart" => ["required", "array"],
 			"periodEnd" => ["required", "array"]
 		]);
 
@@ -40,7 +29,7 @@ class ClassificationPeriodController extends Controller
 
 		$validated = $validator["data"];
 
-		$classificationPeriodValidatorResponse = ClassificationPeriodValidator::validate($validated);
+		$classificationPeriodValidatorResponse = ClassificationPeriodAssistant::validate($validated["periodEnd"]);
 		if ($classificationPeriodValidatorResponse) {
 			return $classificationPeriodValidatorResponse;
 		}
@@ -50,12 +39,12 @@ class ClassificationPeriodController extends Controller
 		// laravel does not automatically generate timestamps when bulk inserting
 		$now = Carbon::now();
 
-		foreach ($validated["periodStart"] as $key => $periodStart) {
+		foreach ($validated["periodEnd"] as $key => $periodEnd) {
 			$newPeriodsForClass[] = [
 				"school_year" => $schoolYear,
 				"class_unit_id" => $classUnitId,
-				"period_start" => $periodStart,
-				"period_end" => $validated["periodEnd"][$key],
+				"period_start" => Carbon::parse($periodEnd)->subDay()->toDateString(),
+				"period_end" => $periodEnd,
 				"period_number" => $key + 1,
 				"created_at" => $now,
 				"updated_at" => $now,
