@@ -16,7 +16,7 @@ class SubjectController extends Controller
 	public function create(Request $request) {
 		$validator = ValidatorAssistant::validate($request, [
 			"name" => ["string", "max:255", "min:3", "required", "unique:subjects,name"],
-			"shortcut" => ["string", "max:4", "unique:subjects", "required"]
+			"shortcut" => ["string", "max:32", "unique:subjects", "required"]
 		]);
 
 		if (!$validator["success"]) {
@@ -37,8 +37,8 @@ class SubjectController extends Controller
 
 	public function update(Subject $subject, Request $request) {
 		$validator = ValidatorAssistant::validate($request, [
-			"name" => ["string", "max:255", "min:3", "unique:subjects,name"],
-			"shortcut" => ["string", "max:4", Rule::unique("subjects")->ignore($subject->id)]
+			"name" => ["string", "max:255", "min:3", Rule::unique("subjects", "name")->ignore($subject->id)],
+			"shortcut" => ["string", "max:32", Rule::unique("subjects")->ignore($subject->id)]
 		]);
 
 		if (!$validator["success"]) {

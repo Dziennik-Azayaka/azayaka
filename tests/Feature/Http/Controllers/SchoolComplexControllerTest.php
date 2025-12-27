@@ -3,6 +3,8 @@
 namespace Tests\Feature\Http\Controllers;
 
 use App\Enums\SchoolType;
+use App\Models\AccountAccess;
+use App\Models\Employee;
 use App\Models\SchoolComplex;
 use App\Models\SchoolUnit;
 use App\Models\User;
@@ -15,9 +17,16 @@ class SchoolComplexControllerTest extends TestCase
 
     private function actingUser(): User
     {
-        $user = User::factory()->create();
-        $this->be($user);
-        return $user;
+		$user = User::factory()->create();
+		$this->be($user);
+		$employee = Employee::factory()->create([
+			"is_admin" => true
+		]);
+		$accountAccess = AccountAccess::create();
+		$accountAccess->employee_id = $employee->id;
+		$accountAccess->user_id = $user->id;
+		$accountAccess->save();
+		return $user;
     }
 
     public function test_list_returns_complexes_with_expected_fields(): void

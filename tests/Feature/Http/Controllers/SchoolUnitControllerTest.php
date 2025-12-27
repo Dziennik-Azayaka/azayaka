@@ -4,6 +4,8 @@ namespace Tests\Feature\Http\Controllers;
 
 use App\Enums\SchoolType;
 use App\Enums\Voivodeship;
+use App\Models\AccountAccess;
+use App\Models\Employee;
 use App\Models\SchoolComplex;
 use App\Models\SchoolUnit;
 use App\Models\User;
@@ -16,9 +18,16 @@ class SchoolUnitControllerTest extends TestCase
 
     private function actingUser(): User
     {
-        $user = User::factory()->create();
-        $this->be($user);
-        return $user;
+		$user = User::factory()->create();
+		$this->be($user);
+		$employee = Employee::factory()->create([
+			"is_admin" => true
+		]);
+		$accountAccess = AccountAccess::create();
+		$accountAccess->employee_id = $employee->id;
+		$accountAccess->user_id = $user->id;
+		$accountAccess->save();
+		return $user;
     }
 
     private function validPayload(array $overrides = []): array
@@ -39,7 +48,6 @@ class SchoolUnitControllerTest extends TestCase
     public function test_list_returns_units_resource_collection(): void
     {
         $this->actingUser();
-        // create few units
         SchoolUnit::factory()->count(2)->create(["school_complex_id" => null]);
 
         $response = $this->get("/api/schoolunits");
@@ -101,13 +109,11 @@ class SchoolUnitControllerTest extends TestCase
     public function test_create_blocks_multiple_units_without_parent(): void
     {
         $this->actingUser();
-        // create more than one existing unit
         SchoolUnit::factory()->count(2)->create(["school_complex_id" => null]);
 
         $payload = $this->validPayload(["schoolComplexId" => null]);
         $response = $this->post("/api/schoolunits", $payload);
 
-        // Controller returns JSON without explicit error codes array structure besides the error code and no status, default 200
         $response->assertOk();
         $response->assertJson([
             "success" => false,
@@ -121,7 +127,6 @@ class SchoolUnitControllerTest extends TestCase
         $complex = SchoolComplex::factory()->create();
         $unit = SchoolUnit::factory()->create(["school_complex_id" => $complex->id]);
 
-        // Archive (set inactive)
         $response = $this->put("/api/schoolunits/{$unit->id}/activity", [
             "password" => "password", // current_password rule
             "state" => false,
@@ -133,7 +138,6 @@ class SchoolUnitControllerTest extends TestCase
             "active" => false,
         ]);
 
-        // Try to update inactive unit
         $updatePayload = $this->validPayload(["name" => "Updated Name", "schoolComplexId" => $complex->id]);
         $updateResponse = $this->put("/api/schoolunits/{$unit->id}", $updatePayload);
         $updateResponse->assertOk();
@@ -142,7 +146,6 @@ class SchoolUnitControllerTest extends TestCase
             "errors" => ["SCHOOL_UNIT_NOT_ACTIVE"],
         ]);
 
-        // Unarchive (set active)
         $response = $this->put("/api/schoolunits/{$unit->id}/activity", [
             "password" => "password",
             "state" => true,
@@ -153,7 +156,6 @@ class SchoolUnitControllerTest extends TestCase
             "active" => true,
         ]);
 
-        // Now update should succeed
         $updateResponse = $this->put("/api/schoolunits/{$unit->id}", $updatePayload);
         $updateResponse->assertOk();
         $updateResponse->assertJson(["success" => true]);

@@ -12,21 +12,21 @@ class ClassUnitController extends Controller
 {
 	public function list(Request $request, int $schoolUnitId)
 	{
-		$classUnits = ClassUnit::where("school_unit_id", $schoolUnitId)->get();
+		$classUnits = ClassUnit::where("school_unit_id", $schoolUnitId);
 		$showInactive = $request->get("showInactive");
+
 		if ($showInactive != "true") {
 			$now = Carbon::now();
 			$currentSchoolYear = $now->year;
+
 			if ($now->month <= 8) {
 				$currentSchoolYear = $now->year - 1;
 			}
-			$classUnits = $classUnits->filter(function ($item) use ($currentSchoolYear) {
-				$yearsDiff = $currentSchoolYear - $item->starting_school_year;
-				return $yearsDiff <= $item->teaching_cycle_length;
-			});
+
+			$classUnits->whereRaw('starting_school_year + teaching_cycle_length >= ?', [$currentSchoolYear]);
 		}
 
-		return $classUnits->toResourceCollection();
+		return $classUnits->get()->toResourceCollection();
 	}
 
 	public function create(Request $request, int $schoolUnitId)
@@ -80,7 +80,8 @@ class ClassUnitController extends Controller
 		$validated = $validator["data"];
 
 		$employeeIds = array_unique($validated["employeeIds"]);
-		$existingCount = Employee::whereIn("id", $employeeIds)->count();
+		$employees = Employee::whereIn("id", $employeeIds)->get();
+		$existingCount = $employees->count();
 		if ($existingCount !== count($employeeIds)) {
 			return [
 				"success" => false,
@@ -91,6 +92,22 @@ class ClassUnitController extends Controller
 								"EMPLOYEE_IDS_NOT_FOUND"
 							]
 						],
+						400
+					)
+				]
+			];
+		}
+
+		if ($employees->contains("active", false)) {
+			return [
+				"success" => false,
+				"errorResponse" => [
+					\Response::json([
+						"success" => false,
+						"errors" => [
+							"EMPLOYEES_MUST_BE_ACTIVE"
+						]
+					],
 						400
 					)
 				]
