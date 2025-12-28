@@ -24,8 +24,8 @@ return new class extends Migration
 		// form teachers
 		Schema::create("class_units_employees", function (Blueprint $table) {
 			$table->id();
-			$table->foreignId("class_unit_id")->constrained("class_units");
-			$table->foreignId("employee_id")->constrained("employees");
+			$table->foreignId("class_unit_id")->constrained("class_units")->onDelete("cascade");
+			$table->foreignId("employee_id")->constrained("employees")->onDelete("cascade");
 			$table->timestamps();
 		});
     }

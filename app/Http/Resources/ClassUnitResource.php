@@ -15,6 +15,7 @@ class ClassUnitResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
+			"id" => $this->id,
 			"alias" => $this->alias,
 			"mark" => $this->mark,
 			"startingSchoolYear" => $this->starting_school_year,

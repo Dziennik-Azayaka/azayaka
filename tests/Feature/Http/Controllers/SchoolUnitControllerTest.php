@@ -50,7 +50,7 @@ class SchoolUnitControllerTest extends TestCase
         $this->actingUser();
         SchoolUnit::factory()->count(2)->create(["school_complex_id" => null]);
 
-        $response = $this->get("/api/schoolunits");
+        $response = $this->get("/api/schoolUnits");
         $response->assertOk();
         $response->assertJsonIsArray();
         $response->assertJsonStructure([
@@ -76,7 +76,7 @@ class SchoolUnitControllerTest extends TestCase
         $complex = SchoolComplex::factory()->create();
 
         $payload = $this->validPayload(["schoolComplexId" => $complex->id]);
-        $response = $this->post("/api/schoolunits", $payload);
+        $response = $this->post("/api/schoolUnits", $payload);
 
         $response->assertOk();
         $response->assertJson(["success" => true]);
@@ -98,7 +98,7 @@ class SchoolUnitControllerTest extends TestCase
         $this->actingUser();
         $payload = $this->validPayload(["studentCategory" => "invalid-type"]);
 
-        $response = $this->post("/api/schoolunits", $payload);
+        $response = $this->post("/api/schoolUnits", $payload);
         $response->assertStatus(400);
         $response->assertJson([
             "success" => false,
@@ -112,7 +112,7 @@ class SchoolUnitControllerTest extends TestCase
         SchoolUnit::factory()->count(2)->create(["school_complex_id" => null]);
 
         $payload = $this->validPayload(["schoolComplexId" => null]);
-        $response = $this->post("/api/schoolunits", $payload);
+        $response = $this->post("/api/schoolUnits", $payload);
 
         $response->assertOk();
         $response->assertJson([
@@ -127,7 +127,7 @@ class SchoolUnitControllerTest extends TestCase
         $complex = SchoolComplex::factory()->create();
         $unit = SchoolUnit::factory()->create(["school_complex_id" => $complex->id]);
 
-        $response = $this->put("/api/schoolunits/{$unit->id}/activity", [
+        $response = $this->put("/api/schoolUnits/{$unit->id}/activity", [
             "password" => "password", // current_password rule
             "state" => false,
         ]);
@@ -139,14 +139,14 @@ class SchoolUnitControllerTest extends TestCase
         ]);
 
         $updatePayload = $this->validPayload(["name" => "Updated Name", "schoolComplexId" => $complex->id]);
-        $updateResponse = $this->put("/api/schoolunits/{$unit->id}", $updatePayload);
+        $updateResponse = $this->put("/api/schoolUnits/{$unit->id}", $updatePayload);
         $updateResponse->assertOk();
         $updateResponse->assertJson([
             "success" => false,
             "errors" => ["SCHOOL_UNIT_NOT_ACTIVE"],
         ]);
 
-        $response = $this->put("/api/schoolunits/{$unit->id}/activity", [
+        $response = $this->put("/api/schoolUnits/{$unit->id}/activity", [
             "password" => "password",
             "state" => true,
         ]);
@@ -156,7 +156,7 @@ class SchoolUnitControllerTest extends TestCase
             "active" => true,
         ]);
 
-        $updateResponse = $this->put("/api/schoolunits/{$unit->id}", $updatePayload);
+        $updateResponse = $this->put("/api/schoolUnits/{$unit->id}", $updatePayload);
         $updateResponse->assertOk();
         $updateResponse->assertJson(["success" => true]);
         $this->assertDatabaseHas("school_units", [

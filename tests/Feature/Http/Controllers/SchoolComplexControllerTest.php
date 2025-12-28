@@ -34,7 +34,7 @@ class SchoolComplexControllerTest extends TestCase
         $this->actingUser();
         SchoolComplex::factory()->count(2)->create();
 
-        $response = $this->get("/api/schoolcomplex");
+        $response = $this->get("/api/schoolComplex");
         $response->assertOk();
         $response->assertJsonStructure([
             "*" => ["id", "name", "type"],
@@ -44,7 +44,7 @@ class SchoolComplexControllerTest extends TestCase
     public function test_create_without_existing_units_creates_complex_with_correct_type(): void
     {
         $this->actingUser();
-        $response = $this->post("/api/schoolcomplex", [
+        $response = $this->post("/api/schoolComplex", [
             "name" => "Zespół Szkół im. Dzienniczkowców",
         ]);
 
@@ -62,7 +62,7 @@ class SchoolComplexControllerTest extends TestCase
         $this->actingUser();
         $units = SchoolUnit::factory()->count(3)->create(["school_complex_id" => null]);
 
-        $response = $this->post("/api/schoolcomplex", [
+        $response = $this->post("/api/schoolComplex", [
             "name" => "Zespół Szkół im. Dzienniczkowców",
         ]);
         $response->assertOk();
@@ -82,7 +82,7 @@ class SchoolComplexControllerTest extends TestCase
         $this->actingUser();
         $complex = SchoolComplex::factory()->create(["name" => "Old Name", "type" => SchoolType::LICEUM_OGOLNOKSZTALCACE->value]);
 
-        $response = $this->put("/api/schoolcomplex/{$complex->id}", [
+        $response = $this->put("/api/schoolComplex/{$complex->id}", [
             "name" => "Zespół Szkół im. Dzienniczkowców",
         ]);
         $response->assertOk();

@@ -72,9 +72,9 @@ Route::middleware(["auth", "auth.session"])->group(function () {
 
 		Route::get("/api/classificationPeriods/defaults", [ClassificationPeriodDefaultsController::class, "list"]);
 		Route::post("/api/classificationPeriods/defaults/{schoolYear}/{schoolUnitId}", [ClassificationPeriodDefaultsController::class, "save"]);
-		Route::get("/api/classificationPeriods", [ClassificationPeriodController::class, "list"]);
-		Route::post("/api/classUnits/{classUnitId}/classificationPeriods/{schoolYear}", [ClassificationPeriodController::class, "list"]);
-		Route::delete("/api/classUnits/{classUnitId}/classificationPeriods/{schoolYear}", [ClassificationPeriodController::class, "list"]);
+		Route::get("/api/classUnits/{classUnitId}/classificationPeriods/{schoolYear}", [ClassificationPeriodController::class, "list"]);
+		Route::post("/api/classUnits/{classUnitId}/classificationPeriods/{schoolYear}", [ClassificationPeriodController::class, "save"]);
+		Route::delete("/api/classUnits/{classUnitId}/classificationPeriods/{schoolYear}", [ClassificationPeriodController::class, "delete"]);
 	});
 });
 

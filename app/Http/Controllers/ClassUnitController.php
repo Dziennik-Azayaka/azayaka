@@ -47,6 +47,9 @@ class ClassUnitController extends Controller
 		}
 
 		$validator = $this->validateClassUnit($request);
+		if (!$validator["success"]) {
+			return $validator["errorResponse"];
+		}
 		$validated = $validator["data"];
 
 		$classUnit = new ClassUnit();
@@ -68,6 +71,9 @@ class ClassUnitController extends Controller
 	public function update(Request $request, int $schoolUnitId, ClassUnit $classUnit)
 	{
 		$validator = $this->validateClassUnit($request);
+		if (!$validator["success"]) {
+			return $validator["errorResponse"];
+		}
 		$validated = $validator["data"];
 
 		$classUnit->update($validated);
@@ -89,7 +95,7 @@ class ClassUnitController extends Controller
 		]);
 
 		if (!$validator["success"]) {
-			return $validator["errorResponse"];
+			return $validator;
 		}
 
 		$validated = $validator["data"];
@@ -100,42 +106,35 @@ class ClassUnitController extends Controller
 		if ($existingCount !== count($employeeIds)) {
 			return [
 				"success" => false,
-				"errorResponse" => [
-					\Response::json([
-						"success" => false,
-						"errors" => [
-							"EMPLOYEE_IDS_NOT_FOUND"
-						]
-					],
-						400
-					)
-				]
+				"errorResponse" => \Response::json([
+					"success" => false,
+					"errors" => [
+						"EMPLOYEE_IDS_NOT_FOUND"
+					]
+				], 400)
 			];
 		}
 
 		if ($employees->contains("active", false)) {
 			return [
 				"success" => false,
-				"errorResponse" => [
-					\Response::json([
-						"success" => false,
-						"errors" => [
-							"EMPLOYEES_MUST_BE_ACTIVE"
-						]
-					],
-						400
-					)
-				]
+				"errorResponse" => \Response::json([
+					"success" => false,
+					"errors" => [
+						"EMPLOYEES_MUST_BE_ACTIVE"
+					]
+				], 400)
 			];
 		}
 
 		return [
+			"success" => true,
 			"data" => $validated,
 			"employee_ids" => $employeeIds
 		];
 	}
 
-	public function delete(ClassUnit $classUnit)
+	public function delete(int $schoolUnitId, ClassUnit $classUnit)
 	{
 		// TODO: Implement checks to make sure no grade books have been created for this class unit
 		$classUnit->delete();
