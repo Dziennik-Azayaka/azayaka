@@ -9,13 +9,18 @@ use Illuminate\Validation\Rule;
 
 class SubjectController extends Controller
 {
-    public function list() {
+	public function list() {
 		return Subject::all(["id", "name", "shortcut", "active"]);
 	}
 
 	public function create(Request $request) {
+		$subjectName = $request->post("name");
 		$validator = ValidatorAssistant::validate($request, [
-			"name" => ["string", "max:255", "min:3", "required", "unique:subjects,name"],
+			"name" => ["string", "max:255", "min:3", "required", Rule::unique("subjects", "name")->where(
+				function ($query) use ($subjectName) {
+					return $query->whereRaw("LOWER(name) = ?", [strtolower($subjectName)]);
+				}
+			)],
 			"shortcut" => ["string", "max:32", "unique:subjects", "required"]
 		]);
 
@@ -37,7 +42,11 @@ class SubjectController extends Controller
 
 	public function update(Subject $subject, Request $request) {
 		$validator = ValidatorAssistant::validate($request, [
-			"name" => ["string", "max:255", "min:3", Rule::unique("subjects", "name")->ignore($subject->id)],
+			"name" => ["string", "max:255", "min:3", Rule::unique("subjects", "name")->where(
+				function ($query) use ($subject) {
+					return $query->whereRaw("LOWER(name) = ?", [strtolower($subject->name)]);
+				}
+			)->ignore($subject->id)],
 			"shortcut" => ["string", "max:32", Rule::unique("subjects")->ignore($subject->id)]
 		]);
 
