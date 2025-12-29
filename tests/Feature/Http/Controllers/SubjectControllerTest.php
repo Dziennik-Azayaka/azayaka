@@ -1,0 +1,108 @@
+<?php
+
+namespace Tests\Feature\Http\Controllers;
+
+use App\Models\AccountAccess;
+use App\Models\Employee;
+use App\Models\Subject;
+use App\Models\User;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\TestCase;
+
+class SubjectControllerTest extends TestCase
+{
+	use RefreshDatabase;
+
+	private function actingUser(): User
+	{
+		$user = User::factory()->create();
+		$this->be($user);
+		$employee = Employee::factory()->create([
+			"is_admin" => true
+		]);
+		$accountAccess = AccountAccess::create();
+		$accountAccess->employee_id = $employee->id;
+		$accountAccess->user_id = $user->id;
+		$accountAccess->save();
+		return $user;
+	}
+
+	public function test_can_list_subjects()
+	{
+		$this->actingUser();
+		Subject::factory()->count(10)->create();
+		$response = $this->get("/api/subjects");
+		$response->assertOk();
+		$response->assertJsonIsArray();
+		$response->assertJsonStructure([
+			"*" => [
+				"id",
+				"name",
+				"shortcut",
+				"active"
+			],
+		]);
+	}
+
+	public function test_can_create_subject()
+	{
+		$this->actingUser();
+		$response = $this->post("/api/subjects", [
+			"name" => "Test Subject",
+			"shortcut" => "TSubject"
+		]);
+
+		$response->assertOk();
+		$this->assertDatabaseHas("subjects", ["name" => "Test Subject", "shortcut" => "TSubject"]);
+	}
+
+	public function test_creating_subject_with_non_unique_shortcut_fails()
+	{
+		Subject::factory()->create([
+			"name" => "Colliding Subject",
+			"shortcut" => "CSubject"
+		]);
+
+		$this->actingUser();
+		$response = $this->post("/api/subjects", [
+			"name" => "Colliding Subject 2",
+			"shortcut" => "CSubject"
+		]);
+
+		$response->assertBadRequest();
+	}
+
+	public function test_can_update_subject() {
+		$this->actingUser();
+		$subject = Subject::factory()->create([
+			"name" => "Old Subject",
+			"shortcut" => "OSubject"
+		]);
+
+		$response = $this->put("/api/subjects/{$subject->id}", [
+			"name" => "New Subject",
+			"shortcut" => "NSubject"
+		]);
+		$response->assertOk();
+		$this->assertDatabaseHas("subjects", ["name" => "New Subject", "shortcut" => "NSubject"]);
+		$this->assertDatabaseMissing("subjects", ["name" => "Old Subject", "shortcut" => "OSubject"]);
+	}
+
+	public function test_can_archive_subject() {
+		$this->actingUser();
+		$subject = Subject::factory()->create();
+		$response = $this->put("/api/subjects/{$subject->id}/activity");
+		$response->assertOk();
+		$this->assertDatabaseHas("subjects", ["id" => $subject->id, "active" => false]);
+	}
+
+	public function test_can_unarchive_subject() {
+		$this->actingUser();
+		$subject = Subject::factory()->create([
+			"active" => false
+		]);
+		$response = $this->put("/api/subjects/{$subject->id}/activity");
+		$response->assertOk();
+		$this->assertDatabaseHas("subjects", ["id" => $subject->id, "active" => true]);
+	}
+}

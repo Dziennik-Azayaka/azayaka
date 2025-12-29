@@ -4,11 +4,15 @@ namespace Database\Seeders;
 
 use App\Models\AccountAccess;
 use App\Models\AccountLog;
+use App\Models\ClassificationPeriod;
+use App\Models\ClassificationPeriodDefaults;
+use App\Models\ClassUnit;
 use App\Models\Guardian;
 use App\Models\SchoolComplex;
 use App\Models\SchoolUnit;
 use App\Models\Student;
 use App\Models\Employee;
+use App\Models\Subject;
 use App\Models\User;
 
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
@@ -36,5 +40,40 @@ class DatabaseSeeder extends Seeder
 
 		SchoolComplex::factory(1)->create();
 		SchoolUnit::factory(5)->create();
+
+		Subject::factory(5)->create();
+		ClassUnit::factory(15)->create();
+
+		ClassificationPeriodDefaults::create([
+			"school_unit_id" => 1,
+			"school_year" => 2024,
+			"period_number" => 1,
+			"period_start" => "2024-09-01",
+			"period_end" => "2025-01-30"
+		]);
+
+		ClassificationPeriodDefaults::create([
+			"school_unit_id" => 1,
+			"school_year" => 2024,
+			"period_number" => 2,
+			"period_start" => "2025-02-01",
+			"period_end" => "2025-08-31"
+		]);
+
+		ClassificationPeriod::create([
+			"class_unit_id" => 1,
+			"school_year" => 2024,
+			"period_number" => 1,
+			"period_start" => "2024-09-01",
+			"period_end" => "2025-01-30"
+		]);
+
+		ClassificationPeriod::create([
+			"class_unit_id" => 1,
+			"school_year" => 2024,
+			"period_number" => 2,
+			"period_start" => "2025-02-01",
+			"period_end" => "2025-08-31"
+		]);
 	}
 }
