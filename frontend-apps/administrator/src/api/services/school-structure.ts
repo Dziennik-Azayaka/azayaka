@@ -11,8 +11,8 @@ export default {
     getStructure: async () => {
         try {
             const [{ data: complexes }, { data: units }] = await Promise.all([
-                axios.get<SchoolComplexDTO[]>("/schoolcomplex"),
-                axios.get<SchoolUnitDTO[]>("/schoolunits"),
+                axios.get<SchoolComplexDTO[]>("/schoolComplex"),
+                axios.get<SchoolUnitDTO[]>("/schoolUnits"),
             ]);
             return schoolStructureDTOsToEntity(complexes.length ? complexes[0] : null, units);
         } catch (reason) {
@@ -20,7 +20,7 @@ export default {
         }
     },
     createSchoolUnit: (unit: SchoolUnitForm, schoolComplexId: number) =>
-        axios.post("/schoolunits", {
+        axios.post("/schoolUnits", {
             name: unit.name,
             type: unit.typeId,
             studentCategory: unit.studentCategory,
@@ -32,7 +32,7 @@ export default {
             shortName: unit.shortName,
         }),
     editSchoolUnitData: (unit: SchoolUnitForm, schoolUnitId: number, schoolComplexId: number) =>
-        axios.put(`/schoolunits/${schoolUnitId}`, {
+        axios.put(`/schoolUnits/${schoolUnitId}`, {
             name: unit.name,
             type: unit.typeId,
             studentCategory: unit.studentCategory,
@@ -44,16 +44,16 @@ export default {
             shortName: unit.shortName,
         }),
     createSchoolComplex: (complex: SchoolComplexForm) =>
-        axios.post("/schoolcomplex", {
+        axios.post("/schoolComplex", {
             name: complex.name,
         }),
     editSchoolComplexData: (complex: SchoolComplexForm, id: number) =>
-        axios.put(`/schoolcomplex/${id}`, {
+        axios.put(`/schoolComplex/${id}`, {
             name: complex.name,
             type: 90,
         }),
     changeUnitActivity: (state: boolean, id: number, password: string) =>
-        axios.put(`/schoolunits/${id}/activity`, { state, password }).catch((reason) => {
+        axios.put(`/schoolUnits/${id}/activity`, { state, password }).catch((reason) => {
             if (reason instanceof AxiosError) {
                 const errors = reason.response?.data.errors;
                 if (Array.isArray(errors)) {
