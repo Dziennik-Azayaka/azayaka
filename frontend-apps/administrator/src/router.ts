@@ -1,5 +1,9 @@
 import { createRouter, createWebHistory } from "vue-router";
 
+
+
+
+
 const router = createRouter({
     history: createWebHistory("/administrator"),
     routes: [
@@ -25,6 +29,14 @@ const router = createRouter({
             component: () => import("@/pages/SystemAccess.vue"),
             meta: {
                 title: "systemAccess",
+            },
+        },
+        {
+            path: "/subjects",
+            name: "subjects",
+            component: () => import("@/pages/SubjectList.vue"),
+            meta: {
+                title: "subjects",
             },
         },
         {
