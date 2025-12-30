@@ -85,7 +85,7 @@
     "studentCategory.adultsOnly": "Adults",
     "studentCategory.childrenAndYouths": "Children and teenagers",
     "subjects": "Subjects",
-    "subjectsDescription": "Manage the list of items available in the register.",
+    "subjectsDescription": "Manage the list of subjects available in the register. To edit the subjects data, click on the table row.",
     "systemAccess": "Access to system",
     "systemAccessDescription": "In this view, you can manage user access to the system.",
     "takenNameError": "This name is already taken.",

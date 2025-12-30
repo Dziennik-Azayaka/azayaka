@@ -85,7 +85,7 @@
     "studentCategory.adultsOnly": "Dorośli",
     "studentCategory.childrenAndYouths": "Dzieci i młodzież",
     "subjects": "Przedmioty",
-    "subjectsDescription": "Zarządzaj listą przedmiotów dostępnych w dzienniku.",
+    "subjectsDescription": "Zarządzaj listą przedmiotów dostępnych w dzienniku. Aby edytować dane przedmiotu, kliknij na wiersz tabeli.",
     "systemAccess": "Dostęp do systemu",
     "systemAccessDescription": "W tym widoku możesz zarządzać dostępem użytkowników do systemu.",
     "takenNameError": "Ta nazwa jest już zajęta.",
