@@ -63,10 +63,16 @@ onMounted(getSubjects);
                     <SubjectAddDialog @added="getSubjects" />
                 </section>
                 <TabsContent value="active">
-                    <SubjectsTable :subjects="subjects.filter((subject) => subject.active)" />
+                    <SubjectsTable
+                        :subjects="subjects.filter((subject) => subject.active)"
+                        @refresh-needed="getSubjects"
+                    />
                 </TabsContent>
                 <TabsContent value="not-active">
-                    <SubjectsTable :subjects="subjects.filter((subject) => !subject.active)" />
+                    <SubjectsTable
+                        :subjects="subjects.filter((subject) => !subject.active)"
+                        @refresh-needed="getSubjects"
+                    />
                 </TabsContent>
             </Tabs>
         </div>

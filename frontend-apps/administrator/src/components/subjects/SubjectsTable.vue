@@ -13,6 +13,7 @@ import { useI18n } from "vue-i18n";
 import { Table, TableBody, TableCell, TableHead, TableHeader } from "@azayaka-frontend/ui";
 
 import type { SubjectEntity } from "@/api/entities/subject.ts";
+import SubjectEditDialog from "@/components/subjects/SubjectEditDialog.vue";
 
 const props = defineProps<{ subjects: SubjectEntity[] }>();
 const emit = defineEmits(["refreshNeeded"]);
@@ -62,16 +63,18 @@ const table = useVueTable({
                 </TableHeader>
                 <TableBody>
                     <template v-if="table.getRowModel().rows.length">
-                        <template
+                        <SubjectEditDialog
                             v-for="row in table.getRowModel().rows"
                             :key="row.id"
+                            :current-data="row.original"
+                            @edited="emit('refreshNeeded')"
                         >
-                            <TableRow>
+                            <TableRow class="cursor-pointer">
                                 <TableCell v-for="cell in row.getVisibleCells()" :key="cell.id">
                                     <FlexRender :props="cell.getContext()" :render="cell.column.columnDef.cell" />
                                 </TableCell>
                             </TableRow>
-                        </template>
+                        </SubjectEditDialog>
                     </template>
                     <TableRow v-else>
                         <TableCell :colspan="columns.length" class="h-18 text-center text-foreground/70">

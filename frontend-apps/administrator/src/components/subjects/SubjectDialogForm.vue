@@ -23,8 +23,8 @@ const formSchema = toTypedSchema(
             .string({
                 required_error: t("requiredFieldError"),
             })
-            .min(1, {
-                message: t("requiredFieldError"),
+            .min(3, {
+                message: t("fieldMinLengthError", { number: 3 }),
             })
             .max(255, t("fieldMaxLengthError", { number: 255 })),
         shortcut: z

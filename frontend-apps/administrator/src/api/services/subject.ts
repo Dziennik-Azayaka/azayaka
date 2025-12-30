@@ -19,4 +19,15 @@ export default {
             }
             throw new ApiError(reason);
         }),
+    editSubject: (id: number, subject: SubjectForm) =>
+        axios.put<SubjectDTO>(`/subjects/${id}`, subject).catch((reason) => {
+            if (reason instanceof AxiosError) {
+                const errors = reason.response?.data.errors;
+                if (Array.isArray(errors)) {
+                    if (errors.includes("SHORTCUT_TAKEN")) throw new TakenShortcutError();
+                    if (errors.includes("NAME_TAKEN")) throw new TakenNameError();
+                }
+            }
+            throw new ApiError(reason);
+        }),
 };

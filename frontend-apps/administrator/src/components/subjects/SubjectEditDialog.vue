@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { DialogTrigger } from "#ui/components/ui/dialog";
-import { LucideLoader2, LucidePlus } from "lucide-vue-next";
+import { LucideLoader2 } from "lucide-vue-next";
 import { ref } from "vue";
 import { useI18n } from "vue-i18n";
 
@@ -15,13 +15,15 @@ import {
     DialogTitle,
 } from "@azayaka-frontend/ui";
 
+import type { SubjectEntity } from "@/api/entities/subject.ts";
 import { TakenNameError, TakenShortcutError } from "@/api/errors.ts";
 import SubjectService from "@/api/services/subject";
 import SubjectDialogForm from "@/components/subjects/SubjectDialogForm.vue";
 import type { SubjectForm } from "@/types";
 
 const { t } = useI18n();
-const emit = defineEmits(["added"]);
+const emit = defineEmits(["edited"]);
+const props = defineProps<{ currentData: SubjectEntity }>();
 
 const showDialog = ref(false);
 const loading = ref(false);
@@ -31,8 +33,8 @@ async function onSubmit(values: SubjectForm) {
     loading.value = true;
     error.value = null;
     try {
-        await SubjectService.addSubject(values);
-        emit("added");
+        await SubjectService.editSubject(props.currentData.id, values);
+        emit("edited");
         showDialog.value = false;
     } catch (reason) {
         if (reason instanceof TakenNameError) error.value = "takenNameError";
@@ -48,10 +50,10 @@ async function onSubmit(values: SubjectForm) {
     <Dialog v-model:open="showDialog">
         <DialogContent class="!max-w-[40rem]">
             <DialogHeader>
-                <DialogTitle>{{ t("addSubject") }}</DialogTitle>
+                <DialogTitle>{{ t("editSubject") }}</DialogTitle>
                 <DialogDescription>{{ t("requiredFieldsInfo") }}</DialogDescription>
             </DialogHeader>
-            <SubjectDialogForm @submit="onSubmit" :error-message="error" :loading="loading">
+            <SubjectDialogForm @submit="onSubmit" :error-message="error" :loading="loading" :current-data="currentData">
                 <template #footer>
                     <DialogFooter>
                         <DialogClose as-child>
@@ -66,10 +68,7 @@ async function onSubmit(values: SubjectForm) {
             </SubjectDialogForm>
         </DialogContent>
         <DialogTrigger as-child>
-            <Button>
-                {{ t("addSubject") }}
-                <LucidePlus />
-            </Button>
+            <slot />
         </DialogTrigger>
     </Dialog>
 </template>
