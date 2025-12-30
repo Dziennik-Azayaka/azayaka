@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import LogoDark from "#ui/assets/azayaka-dark.svg";
 import { useElementSize, useTitle } from "@vueuse/core";
 import { storeToRefs } from "pinia";
 import { configure } from "vee-validate";
@@ -62,16 +63,10 @@ const appVersion = import.meta.env.VITE_APP_VERSION;
                 <header class="not-sm:flex-col flex gap-3 sm:items-center">
                     <div class="size-7 p-2 rounded-md bg-primary box-content" aria-hidden="true">
                         <img
-                            class="size-7"
-                            src="https://tailwindcss.com/plus-assets/img/logos/mark.svg?color=blue&shade=100"
-                            alt="Logo (tymczasowo tailwind)"
-                            v-if="mainStore.colorMode !== 'dark'"
-                        />
-                        <img
-                            class="size-7"
-                            src="https://tailwindcss.com/plus-assets/img/logos/mark.svg?color=zinc&shade=900"
-                            alt="Logo (tymczasowo tailwind)"
-                            v-else
+                            class="size-6.5"
+                            :class="{ 'brightness-0': mainStore.colorMode === 'dark' }"
+                            :src="LogoDark"
+                            alt="Logo"
                         />
                     </div>
                     <div>

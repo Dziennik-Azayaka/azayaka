@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import LogoDark from "#ui/assets/azayaka-dark.svg";
+import LogoLight from "#ui/assets/azayaka.svg";
 import { LucideMenu } from "lucide-vue-next";
 import { useI18n } from "vue-i18n";
 import type { RouteLocationAsPathGeneric, RouteLocationAsRelativeGeneric } from "vue-router";
@@ -27,19 +29,11 @@ defineProps<{
         <Button variant="ghost" size="icon" @click="mainStore.mobileNavOpen = true" class="xl:hidden">
             <LucideMenu />
         </Button>
-        <img
-            class="h-5 xl:hidden"
-            src="https://tailwindcss.com/plus-assets/img/logos/mark.svg?color=blue&shade=600"
-            alt="Logo (tymczasowo tailwind)"
-        />
+        <img class="h-6 xl:hidden logo" :src="mainStore.colorMode === 'dark' ? LogoDark : LogoLight" alt="Logo" />
         <Breadcrumb class="not-xl:hidden">
             <BreadcrumbList>
                 <BreadcrumbItem>
-                    <img
-                        class="h-5"
-                        src="https://tailwindcss.com/plus-assets/img/logos/mark.svg?color=blue&shade=600"
-                        alt="Logo (tymczasowo tailwind)"
-                    />
+                    <img class="h-6 logo" :src="mainStore.colorMode === 'dark' ? LogoDark : LogoLight" alt="Logo" />
                 </BreadcrumbItem>
                 <BreadcrumbSeparator />
                 <BreadcrumbItem> {{ t("administrator") }} </BreadcrumbItem>

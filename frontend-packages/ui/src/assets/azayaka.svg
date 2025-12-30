@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   width="38.148636"
+   height="36.23851"
+   viewBox="0 0 38.148636 36.23851"
+   fill="none"
+   version="1.1"
+   id="svg10"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <mask
+     id="mask0_0_43"
+     maskUnits="userSpaceOnUse"
+     x="0"
+     y="0"
+     width="40"
+     height="38">
+    <path
+       fill-rule="evenodd"
+       clip-rule="evenodd"
+       d="M 21.777,26.7743 29.2338,38 0,32.0297 8.97653,7.50414 14.1471,15.2881 10.7662,24.5255 Z M 14.1471,15.2881 19.7427,0 40,30.4959 21.777,26.7743 Z"
+       fill="#ffffff"
+       id="path1" />
+  </mask>
+  <defs
+     id="defs10">
+    <linearGradient
+       id="linearGradient23">
+      <stop
+         style="stop-color:#001fbe;stop-opacity:1;"
+         offset="0"
+         id="stop22" />
+      <stop
+         style="stop-color:#2360ff;stop-opacity:1;"
+         offset="1"
+         id="stop23" />
+    </linearGradient>
+    <linearGradient
+       xlink:href="#linearGradient23"
+       id="linearGradient22"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="translate(23.999999,-74.750002)"
+       x1="-19.956429"
+       y1="104.61256"
+       x2="10.105082"
+       y2="81.125923"
+       spreadMethod="pad" />
+  </defs>
+  <path
+     id="path10-6-1-2-7"
+     style="fill:url(#linearGradient22);fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:7.55906"
+     d="M 19.100933,1.8929748e-4 A 0.97540896,0.97540896 0 0 0 18.165393,0.6408093 l -4.92969,13.4687507 7.64453,11.50196 16.3125,3.33398 a 0.79565154,0.79565154 0 0 0 0.82227,-1.2207 L 19.893903,0.4357393 A 0.97540896,0.97540896 0 0 0 19.100933,1.8929748e-4 Z M 20.880233,25.61152 11.739603,23.74433 a 1.6590922,1.6590922 0 0 1 -1.22656,-2.19727 l 2.72266,-7.4375 -3.4570298,-5.2011707 a 1.5565689,1.5565689 0 0 0 -2.75977,0.32617 L 0.1614832,27.96894 a 2.6456426,2.6456426 0 0 0 1.95312,3.50195 l 23.2089898,4.74219 a 1.2682304,1.2682304 0 0 0 1.30859,-1.94531 z" />
+</svg>
