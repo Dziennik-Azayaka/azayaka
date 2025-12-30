@@ -30,4 +30,5 @@ export default {
             }
             throw new ApiError(reason);
         }),
+    changeSubjectActivity: (id: number) => axios.put(`/subjects/${id}/activity`)
 };
