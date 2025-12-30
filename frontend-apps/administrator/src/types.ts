@@ -19,3 +19,8 @@ export interface EmployeeForm {
     shortcut: string;
     roles: string[];
 }
+
+export interface SubjectForm {
+    name: string;
+    shortcut: string;
+}

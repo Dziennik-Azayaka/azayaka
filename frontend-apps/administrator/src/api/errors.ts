@@ -18,3 +18,11 @@ export class TakenShortcutError extends Error {
         this.name = "TakenShortcutError";
     }
 }
+
+export class TakenNameError extends Error {
+    constructor() {
+        super();
+        this.name = "TakenNameError";
+    }
+}
+

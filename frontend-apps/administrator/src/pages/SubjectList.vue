@@ -8,6 +8,7 @@ import { useI18n } from "vue-i18n";
 import type { SubjectEntity } from "@/api/entities/subject.ts";
 import SubjectService from "@/api/services/subject";
 import PanelHeader from "@/components/PanelHeader.vue";
+import SubjectAddDialog from "@/components/subjects/SubjectAddDialog.vue";
 import SubjectsTable from "@/components/subjects/SubjectsTable.vue";
 
 const { t } = useI18n();
@@ -51,17 +52,23 @@ onMounted(getSubjects);
             </Button>
         </div>
 
-        <Tabs v-model="tab" v-else-if="subjects">
-            <TabsList>
-                <TabsTrigger value="active">{{ t("currentSubjects") }}</TabsTrigger>
-                <TabsTrigger value="not-active">{{ t("archive") }}</TabsTrigger>
-            </TabsList>
-            <TabsContent value="active">
-                <SubjectsTable :subjects="subjects.filter((subject) => subject.active)" />
-            </TabsContent>
-            <TabsContent value="not-active">
-                <SubjectsTable :subjects="subjects.filter((subject) => !subject.active)" />
-            </TabsContent>
-        </Tabs>
+        <div v-else-if="subjects">
+            <Tabs v-model="tab">
+                <section class="flex justify-between gap-2 not-md:flex-col not-md:items-stretch">
+                    <TabsList>
+                        <TabsTrigger value="active">{{ t("currentSubjects") }}</TabsTrigger>
+                        <TabsTrigger value="not-active">{{ t("archive") }}</TabsTrigger>
+                    </TabsList>
+
+                    <SubjectAddDialog @added="getSubjects" />
+                </section>
+                <TabsContent value="active">
+                    <SubjectsTable :subjects="subjects.filter((subject) => subject.active)" />
+                </TabsContent>
+                <TabsContent value="not-active">
+                    <SubjectsTable :subjects="subjects.filter((subject) => !subject.active)" />
+                </TabsContent>
+            </Tabs>
+        </div>
     </div>
 </template>
