@@ -1,13 +1,23 @@
-# Dziennik Azayaka
+<p align="center">
+	<picture>
+	    <source media="(prefers-color-scheme: dark)" srcset="https://github.com/user-attachments/assets/db787f1c-51be-43bf-989b-b10b5f9b5a2f">
+	    <source media="(prefers-color-scheme: light)" srcset="https://github.com/user-attachments/assets/599489a7-28bd-4373-bb4c-eed06254fe67">
+	    <img alt="Logo" src="https://github.com/user-attachments/assets/599489a7-28bd-4373-bb4c-eed06254fe67" style="width: 180px">
+	</picture>
+</p>
 
-Projekt otwartoźrodłowego dziennika elektronicznego dla szkół podstawowych i ponadpodstawowych.
+<h1 align="center">Dziennik Azayaka</h1>
+
+<p align="center">
+	Projekt otwartoźrodłowego dziennika elektronicznego dla szkół podstawowych i ponadpodstawowych.
+</p>
 
 ## Funkcjonalność
 
 - [x] Podstawowa funkcjonalność kont
 - [ ] Podstawowe opisywanie organizacji szkoły w panelu administratora (WIP)
 - [ ] Podstawowa funkcjonalność modułu sekretariatu (zarządzanie uczniami w oddziałach, księga uczniów/słuchaczy, księga
-  ewidencji dzieci)
+  ewidencji dzieci)![Up<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 - [ ] Konfiguracja dzienników lekcyjnych (oddziałów)
 - [ ] Dokumentowanie realizacji zajęć
 - [ ] Frekwencja na zajęciach
