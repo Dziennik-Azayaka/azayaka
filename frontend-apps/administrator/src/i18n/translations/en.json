@@ -27,6 +27,8 @@
     "archiveUnit": "Archive the unit",
     "unarchiveUnit": "Unarchive the unit",
     "archivedUnit": "Archived unit",
+    "classes": "Classes",
+    "classesDescription": "Manage school classes.",
     "codeGenerated": "Code generated",
     "commune": "Commune",
     "currentEmployees": "Current",

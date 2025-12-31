@@ -27,6 +27,8 @@
     "archiveUnit": "Zarchiwizuj jednostkę",
     "unarchiveUnit": "Odarchiwizuj jednostkę",
     "archivedUnit": "Jednostka zarchiwizowana",
+    "classes": "Oddziały",
+    "classesDescription": "Zarządzaj oddziałami szkolnymi.",
     "codeGenerated": "Kod wygenerowany",
     "commune": "Gmina",
     "currentEmployees": "Obecni",

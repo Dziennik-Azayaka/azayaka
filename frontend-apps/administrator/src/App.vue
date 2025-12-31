@@ -3,6 +3,7 @@ import { useTitle } from "@vueuse/core";
 import {
     LucideAlertCircle,
     LucideBuilding,
+    LucideGrid2X2,
     LucideLoaderCircle,
     LucideLogIn,
     LucideShapes,
@@ -54,6 +55,11 @@ const menuItems = [
         title: "subjects",
         link: { name: "subjects" },
         icon: LucideShapes,
+    },
+    {
+        title: "classes",
+        link: { name: "classes" },
+        icon: LucideGrid2X2,
     },
 ];
 

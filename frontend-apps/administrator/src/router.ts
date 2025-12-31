@@ -40,6 +40,14 @@ const router = createRouter({
             },
         },
         {
+            path: "/classes",
+            name: "classes",
+            component: () => import("@/pages/ClassList.vue"),
+            meta: {
+                title: "classes",
+            },
+        },
+        {
             path: "/:pathMatch(.*)*",
             name: "notFound",
             redirect: { name: "schoolStructure" },
