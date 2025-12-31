@@ -17,7 +17,7 @@
 - [x] Podstawowa funkcjonalność kont
 - [ ] Podstawowe opisywanie organizacji szkoły w panelu administratora (WIP)
 - [ ] Podstawowa funkcjonalność modułu sekretariatu (zarządzanie uczniami w oddziałach, księga uczniów/słuchaczy, księga
-  ewidencji dzieci)![Up<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+  ewidencji dzieci)
 - [ ] Konfiguracja dzienników lekcyjnych (oddziałów)
 - [ ] Dokumentowanie realizacji zajęć
 - [ ] Frekwencja na zajęciach
