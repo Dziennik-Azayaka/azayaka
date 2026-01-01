@@ -16,6 +16,7 @@ class ClassUnitResource extends JsonResource
     {
         return [
 			"id" => $this->id,
+			"schoolUnitId" => $this->school_unit_id,
 			"alias" => $this->alias,
 			"mark" => $this->mark,
 			"startingSchoolYear" => $this->starting_school_year,

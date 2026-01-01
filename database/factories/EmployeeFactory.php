@@ -21,7 +21,7 @@ class EmployeeFactory extends Factory
         return [
 			"first_name" => $firstName,
 			"last_name" => $lastName,
-			"shortcut" => substr($firstName, 0, 1) . substr($lastName, 0, 1)
+			"shortcut" => substr($firstName, 0, 1) . substr($lastName, 0, 2)
         ];
     }
 }

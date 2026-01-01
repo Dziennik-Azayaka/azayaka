@@ -27,7 +27,7 @@ class DatabaseSeeder extends Seeder
 	{
 		// User::factory(10)->create();
 
-		User::factory()->create([
+		$rootUser = User::factory()->create([
 			"name" => "Test User",
 			"email" => "test@example.com",
 		]);
@@ -36,6 +36,16 @@ class DatabaseSeeder extends Seeder
 		Guardian::factory(10)->create();
 		Employee::factory(10)->create();
 		AccountAccess::factory(10)->create();
+
+		$rootEmployee = Employee::factory()->create([
+			"is_headmaster" => true,
+			"is_admin" => true,
+		]);
+		AccountAccess::factory()->create([
+			"employee_id" => $rootEmployee->id,
+			"user_id" => $rootUser->id,
+		]);
+
 		AccountLog::factory(20)->create();
 
 		SchoolComplex::factory(1)->create();
