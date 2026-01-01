@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\ClassUnitResource;
 use App\Models\ClassUnit;
 use App\Models\Employee;
 use App\Models\SchoolUnit;
@@ -35,8 +36,26 @@ class ClassUnitController extends Controller
 				break;
 		}
 
+		/* While the level could be calculated within the ClassUnitResource, as there is no way to pass arguments to the
+		toArray function we'd need to invoke the getCurrentSchoolYear function for every class unit, which is inefficient. */
+		$classUnitsResourceCollection = $classUnits->get()->toResourceCollection();
+		if ($category !== "future" && $category !== "archive") {
+			$classUnitsResourceCollection = $classUnitsResourceCollection
+				->collection
+				->map(function (ClassUnitResource $resource) use ($request, $currentSchoolYear) {
+					$classUnit = $resource->toArray($request);
+					// do not calculate the level for archival and future class units
+					if ($classUnit["startingSchoolYear"] > $currentSchoolYear ||
+						$classUnit["startingSchoolYear"] + $classUnit["teachingCycleLength"] < $currentSchoolYear) {
+						$classUnit["level"] = null;
+					} else {
+						$classUnit["level"] = $currentSchoolYear - $classUnit["startingSchoolYear"] + 1;
+					}
+					return $classUnit;
+				});
+		}
 
-		return $classUnits->get()->toResourceCollection();
+		return $classUnitsResourceCollection;
 	}
 
 	public function create(Request $request, int $schoolUnitId)
