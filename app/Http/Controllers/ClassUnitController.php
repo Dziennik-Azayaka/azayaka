@@ -12,9 +12,13 @@ use Illuminate\Http\Request;
 
 class ClassUnitController extends Controller
 {
-	public function list(Request $request, int $schoolUnitId)
+	public function list(Request $request, int|string $schoolUnitId)
 	{
-		$classUnits = ClassUnit::where("school_unit_id", $schoolUnitId);
+		if ($schoolUnitId === "all") {
+			$classUnits = ClassUnit::query();
+		} else {
+			$classUnits = ClassUnit::where("school_unit_id", $schoolUnitId);
+		}
 		$category = $request->get("category");
 		$currentSchoolYear = ClassificationPeriodAssistant::getCurrentSchoolYear();
 
