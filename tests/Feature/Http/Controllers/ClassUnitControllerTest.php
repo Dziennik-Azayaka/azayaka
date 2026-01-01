@@ -44,7 +44,7 @@ class ClassUnitControllerTest extends TestCase
 		$response->assertJsonStructure([
 			"*" => [
 				"id",
-				"classUnitId",
+				"schoolUnitId",
 				"alias",
 				"mark",
 				"startingSchoolYear",
