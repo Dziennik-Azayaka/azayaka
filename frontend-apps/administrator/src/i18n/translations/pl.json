@@ -28,6 +28,8 @@
     "archiveUnit": "Zarchiwizuj jednostkę",
     "unarchiveUnit": "Odarchiwizuj jednostkę",
     "archivedUnit": "Jednostka zarchiwizowana",
+    "class": "Oddział",
+    "classDetails": "Szczegóły oddziału",
     "classes": "Oddziały",
     "classesDescription": "Zarządzaj oddziałami szkolnymi.",
     "codeGenerated": "Kod wygenerowany",

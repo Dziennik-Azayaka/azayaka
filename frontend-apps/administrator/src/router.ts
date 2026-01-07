@@ -1,4 +1,4 @@
-import { createRouter, createWebHistory } from "vue-router";
+import { RouterView, createRouter, createWebHistory } from "vue-router";
 
 
 
@@ -42,10 +42,26 @@ const router = createRouter({
         {
             path: "/classes",
             name: "classes",
-            component: () => import("@/pages/ClassList.vue"),
-            meta: {
-                title: "classes",
-            },
+            component: RouterView,
+            children: [
+                {
+                    path: "",
+                    name: "classes.list",
+                    component: () => import("@/pages/ClassList.vue"),
+                    meta: {
+                        title: "classes",
+                    },
+                },
+                {
+                    path: ":id(\\d+)",
+                    name: "classes.details",
+                    component: () => import("@/pages/ClassDetails.vue"),
+                    meta: {
+                        title: "classDetails",
+                    },
+                    props: ({ params }) => ({ classId: Number(params.id) }),
+                },
+            ],
         },
         {
             path: "/:pathMatch(.*)*",

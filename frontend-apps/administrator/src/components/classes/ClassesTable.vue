@@ -26,10 +26,12 @@ import {
 
 import type { ClassEntity } from "@/api/entities/class.ts";
 import { schoolYearString } from "@/utils.ts";
+import { useRouter } from "vue-router";
 
 const props = defineProps<{ classes: ClassEntity[]; unitShorts: Map<number, string>; showCurrentLevel: boolean }>();
 const emit = defineEmits(["refreshNeeded"]);
 const { t } = useI18n();
+const router = useRouter();
 
 const columnHelper = createColumnHelper<ClassEntity>();
 const columns = [
@@ -71,6 +73,10 @@ const table = useVueTable({
     },
     getFacetedUniqueValues: getFacetedUniqueValues(),
 });
+
+async function seeClassDetails(classId: number) {
+    return await router.push({ name: 'classes.details', params: { id: classId } });
+}
 </script>
 
 <template>
@@ -133,7 +139,12 @@ const table = useVueTable({
                 </TableHeader>
                 <TableBody>
                     <template v-if="table.getRowModel().rows.length">
-                        <TableRow class="cursor-pointer" v-for="row in table.getRowModel().rows" :key="row.id">
+                        <TableRow
+                            class="cursor-pointer"
+                            v-for="row in table.getRowModel().rows"
+                            :key="row.id"
+                            @click="seeClassDetails(row.original.id)"
+                        >
                             <TableCell v-for="cell in row.getVisibleCells()" :key="cell.id">
                                 <FlexRender :props="cell.getContext()" :render="cell.column.columnDef.cell" />
                             </TableCell>

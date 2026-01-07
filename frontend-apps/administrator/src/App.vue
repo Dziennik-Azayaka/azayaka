@@ -58,7 +58,7 @@ const menuItems = [
     },
     {
         title: "classes",
-        link: { name: "classes" },
+        link: { name: "classes.list" },
         icon: LucideGrid2X2,
     },
 ];
@@ -69,7 +69,10 @@ const route = useRoute();
 const router = useRouter();
 
 useTitle(
-    computed(() => `${t(route.meta.title as string)} - ${t("administrator")}`),
+    computed(() => {
+        const title = route.meta.title;
+        return title ? `${t(title as string)} - ${t("administrator")}` : t("administrator");
+    }),
     { titleTemplate: "Dziennik Azyaka | %s" },
 );
 

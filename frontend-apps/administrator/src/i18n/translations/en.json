@@ -28,6 +28,8 @@
     "archiveUnit": "Archive the unit",
     "unarchiveUnit": "Unarchive the unit",
     "archivedUnit": "Archived unit",
+    "class": "Class",
+    "classDetails": "Class details",
     "classes": "Classes",
     "classesDescription": "Manage school classes.",
     "codeGenerated": "Code generated",
