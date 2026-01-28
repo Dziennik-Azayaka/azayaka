@@ -15,7 +15,7 @@ class ClassificationPeriodDefaultsControllerTest extends TestCase
 {
 	use RefreshDatabase;
 
-	private function actingUser(): User
+	private function actingUser(): array
 	{
 		$user = User::factory()->create();
 		$this->be($user);
@@ -26,12 +26,12 @@ class ClassificationPeriodDefaultsControllerTest extends TestCase
 		$accountAccess->employee_id = $employee->id;
 		$accountAccess->user_id = $user->id;
 		$accountAccess->save();
-		return $user;
+		return ["user" => $user, "access" => $accountAccess->id];
 	}
 
 	public function test_can_list_classification_period_defaults()
 	{
-		$this->actingUser();
+		$actingUser = $this->actingUser();
 		$complex = SchoolComplex::factory()->create();
 		$unit = SchoolUnit::factory()->create(["school_complex_id" => $complex->id]);
 		$periodOne = new ClassificationPeriodDefaults();
@@ -50,7 +50,7 @@ class ClassificationPeriodDefaultsControllerTest extends TestCase
 		$periodTwo->period_end = "2026-08-31";
 		$periodTwo->save();
 
-		$response = $this->get("/api/classificationPeriods/defaults");
+		$response = $this->get("/api/classificationPeriods/defaults", ["Access-ID" => $actingUser["access"]]);
 		$response->assertOk();
 		$response->assertJsonStructure([
 			"*" => [
@@ -67,7 +67,7 @@ class ClassificationPeriodDefaultsControllerTest extends TestCase
 	}
 
 	public function test_can_save_new_classification_period_defaults() {
-		$this->actingUser();
+		$actingUser = $this->actingUser();
 		$complex = SchoolComplex::factory()->create();
 		$unit = SchoolUnit::factory()->create(["school_complex_id" => $complex->id]);
 		$response = $this->post("/api/classificationPeriods/defaults/2025/{$unit->id}", [
@@ -75,7 +75,7 @@ class ClassificationPeriodDefaultsControllerTest extends TestCase
 				"2025-12-31",
 				"2026-03-01"
 			]
-		]);
+		], ["Access-ID" => $actingUser["access"]]);
 		$response->assertOk();
 		$this->assertDatabaseHas("classification_period_defaults", [
 			"school_year" => 2025,
@@ -103,7 +103,7 @@ class ClassificationPeriodDefaultsControllerTest extends TestCase
 	}
 
 	public function test_saving_invalid_period_defaults_fails() {
-		$this->actingUser();
+		$actingUser = $this->actingUser();
 		$complex = SchoolComplex::factory()->create();
 		$unit = SchoolUnit::factory()->create(["school_complex_id" => $complex->id]);
 		$response = $this->post("/api/classificationPeriods/defaults/2025/{$unit->id}", [
@@ -111,7 +111,7 @@ class ClassificationPeriodDefaultsControllerTest extends TestCase
 				"2025-12-31",
 				"2025-07-01"
 			]
-		]);
+		], ["Access-ID" => $actingUser["access"]]);
 		$response->assertBadRequest();
 		$this->assertDatabaseMissing("classification_period_defaults", [
 			"school_year" => 2025,

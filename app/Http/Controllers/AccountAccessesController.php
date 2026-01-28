@@ -3,7 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Enums\AccountEventType;
+use App\Enums\FrontendModule;
 use App\Models\AccountAccess;
+use App\Models\Employee;
+use App\Models\Guardian;
+use App\Models\Student;
 use App\Models\User;
 use App\Utilities\AccountEventLogger;
 use App\Utilities\ValidatorAssistant;
@@ -178,34 +182,42 @@ class AccountAccessesController extends Controller
 		];
 	}
 
-	public function list(Request $request) {
+	public function list(Request $request)
+	{
 		$accesses = AccountAccess::where("user_id", $request->user()->id)->get();
 		$accessesWithPersonas = [];
 
 		foreach ($accesses as $access) {
-			if ($access->student) {
-				$accessesWithPersonas[] = [
-					"student" => $access->student->first_name . " " . $access->student->last_name,
-					"guardian" => null,
-					"employee" => null,
-					"updatedAt" => $access->updated_at,
-				];
-			} else if ($access->employee) {
-				$accessesWithPersonas[] = [
-					"student" => null,
-					"guardian" => null,
-					"employee" => $access->employee->first_name . " " . $access->employee->last_name,
-					"updatedAt" => $access->updated_at,
-				];
-			} else {
+			if ($access->guardian) {
 				foreach ($access->guardian->students as $student) {
 					$accessesWithPersonas[] = [
-						"student" => $student->first_name . " " . $student->last_name,
-						"guardian" => $access->guardian->first_name . " " . $access->guardian->last_name,
-						"employee" => null,
+						"id" => $access->id,
+						"name" => $student->first_name . " " . $student->last_name,
+						"type" => "guardian",
 						"updatedAt" => $access->updated_at,
+						"modulesAvailable" => $this->getAvailableModules($student)
 					];
 				}
+			}
+
+			if ($access->student) {
+				$accessesWithPersonas[] = [
+					"id" => $access->id,
+					"name" => $access->student->first_name . " " . $access->student->last_name,
+					"type" => "student",
+					"updatedAt" => $access->updated_at,
+					"modulesAvailable" => $this->getAvailableModules($access->student)
+				];
+			}
+
+			if ($access->employee) {
+				$accessesWithPersonas[] = [
+					"id" => $access->id,
+					"name" => $access->employee->first_name . " " . $access->employee->last_name,
+					"type" => "employee",
+					"updatedAt" => $access->updated_at,
+					"modulesAvailable" => $this->getAvailableModules($access->employee)
+				];
 			}
 		}
 
@@ -213,5 +225,30 @@ class AccountAccessesController extends Controller
 			"email" => $request->user()->email,
 			"accesses" => $accessesWithPersonas
 		];
+	}
+
+	private function getAvailableModules(Student|Employee $entity)
+	{
+		$modules = [];
+
+		if ($entity instanceof Student) {
+			$modules[] = FrontendModule::STUDENT;
+		} else {
+			if ($entity->is_admin || $entity->is_headmaster || $entity->is_secretary) {
+				$modules[] = FrontendModule::SECRETARY;
+			}
+
+			if ($entity->is_admin || $entity->is_headmaster) {
+				$modules[] = FrontendModule::ADMINISTRATOR;
+			}
+
+			if ($entity->is_teacher) {
+				$modules[] = FrontendModule::TEACHER;
+				// TODO: Check if the teacher is a form tutor before assigning the register module.
+				$modules[] = FrontendModule::REGISTER;
+			}
+		}
+
+		return $modules;
 	}
 }

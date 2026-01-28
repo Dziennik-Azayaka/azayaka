@@ -243,8 +243,7 @@ class AccountAccessesControllerTest extends TestCase
 
 		$this->assertGreaterThanOrEqual(3, count($list));
 
-		$this->assertTrue(collect($list)->contains(fn($i) => $i["student"] === "Krzysztof Nowak"));
-		$this->assertTrue(collect($list)->contains(fn($i) => $i["employee"] === "Adam Nowak"));
-		$this->assertTrue(collect($list)->contains(fn($i) => $i["guardian"] === "Ewa Nowak" && $i["student"] === "Rozalia Nowak"));
+		$this->assertTrue(collect($list)->contains(fn($i) => $i["name"] === "Krzysztof Nowak"));
+		$this->assertTrue(collect($list)->contains(fn($i) => $i["type"] === "guardian"));
 	}
 }

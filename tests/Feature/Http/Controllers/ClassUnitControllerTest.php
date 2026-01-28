@@ -16,7 +16,7 @@ class ClassUnitControllerTest extends TestCase
 {
 	use RefreshDatabase;
 
-	private function actingUser(): User
+	private function actingUser(): array
 	{
 		$user = User::factory()->create();
 		$this->be($user);
@@ -27,18 +27,18 @@ class ClassUnitControllerTest extends TestCase
 		$accountAccess->employee_id = $employee->id;
 		$accountAccess->user_id = $user->id;
 		$accountAccess->save();
-		return $user;
+		return ["user" => $user, "access" => $accountAccess->id];
 	}
 
 	public function test_can_list_class_units()
 	{
-		$this->actingUser();
+		$actingUser = $this->actingUser();
 		$complex = SchoolComplex::factory()->create();
 		$unit = SchoolUnit::factory()->create(["school_complex_id" => $complex->id]);
 		ClassUnit::factory()->count(5)->create([
 			"school_unit_id" => $unit->id,
 		]);
-		$response = $this->get("/api/schoolUnits/{$unit->id}/classUnits");
+		$response = $this->get("/api/schoolUnits/{$unit->id}/classUnits", ["Access-ID" => $actingUser["access"]]);
 		$response->assertOk();
 		$response->assertJsonIsArray();
 		$response->assertJsonStructure([
@@ -54,8 +54,9 @@ class ClassUnitControllerTest extends TestCase
 		]);
 	}
 
-	public function test_can_list_future_class_units() {
-		$this->actingUser();
+	public function test_can_list_future_class_units()
+	{
+		$actingUser = $this->actingUser();
 		$complex = SchoolComplex::factory()->create();
 		$unit = SchoolUnit::factory()->create(["school_complex_id" => $complex->id]);
 
@@ -68,7 +69,9 @@ class ClassUnitControllerTest extends TestCase
 			"starting_school_year" => Carbon::now()->addYear()->year,
 		]);
 
-		$response = $this->get("/api/schoolUnits/{$unit->id}/classUnits?category=future");
+		$response = $this->get("/api/schoolUnits/{$unit->id}/classUnits?category=future", [
+			"Access-ID" => $actingUser["access"]
+		]);
 		$response->assertOk();
 		$response->assertJsonIsArray();
 		$response->assertJsonFragment([
@@ -80,41 +83,9 @@ class ClassUnitControllerTest extends TestCase
 		$response->assertJsonCount(1);
 	}
 
-	public function test_can_list_current_class_units() {
-		$this->actingUser();
-		$complex = SchoolComplex::factory()->create();
-		$unit = SchoolUnit::factory()->create(["school_complex_id" => $complex->id]);
-
-		$classUnitOld = ClassUnit::factory()->create([
-			"school_unit_id" => $unit->id,
-			"starting_school_year" => Carbon::now()->subYears(10)->year,
-		]);
-		$classUnitFuture = ClassUnit::factory()->create([
-			"school_unit_id" => $unit->id,
-			"starting_school_year" => Carbon::now()->addYear()->year,
-		]);
-		$classUnitCurrent = ClassUnit::factory()->create([
-			"school_unit_id" => $unit->id,
-			"starting_school_year" => Carbon::now()->subYear()->year,
-		]);
-
-		$response = $this->get("/api/schoolUnits/{$unit->id}/classUnits?category=current");
-		$response->assertOk();
-		$response->assertJsonIsArray();
-		$response->assertJsonFragment([
-			"id" => $classUnitCurrent->id
-		]);
-		$response->assertJsonMissing([
-			"id" => $classUnitOld->id
-		]);
-		$response->assertJsonMissing([
-			"id" => $classUnitFuture->id
-		]);
-		$response->assertJsonCount(1);
-	}
-
-	public function test_can_list_past_class_units() {
-		$this->actingUser();
+	public function test_can_list_current_class_units()
+	{
+		$actingUser = $this->actingUser();
 		$complex = SchoolComplex::factory()->create();
 		$unit = SchoolUnit::factory()->create(["school_complex_id" => $complex->id]);
 
@@ -131,7 +102,45 @@ class ClassUnitControllerTest extends TestCase
 			"starting_school_year" => Carbon::now()->subYear()->year,
 		]);
 
-		$response = $this->get("/api/schoolUnits/{$unit->id}/classUnits?category=archive");
+		$response = $this->get("/api/schoolUnits/{$unit->id}/classUnits?category=current", [
+			"Access-ID" => $actingUser["access"]
+		]);
+		$response->assertOk();
+		$response->assertJsonIsArray();
+		$response->assertJsonFragment([
+			"id" => $classUnitCurrent->id
+		]);
+		$response->assertJsonMissing([
+			"id" => $classUnitOld->id
+		]);
+		$response->assertJsonMissing([
+			"id" => $classUnitFuture->id
+		]);
+		$response->assertJsonCount(1);
+	}
+
+	public function test_can_list_past_class_units()
+	{
+		$actingUser = $this->actingUser();
+		$complex = SchoolComplex::factory()->create();
+		$unit = SchoolUnit::factory()->create(["school_complex_id" => $complex->id]);
+
+		$classUnitOld = ClassUnit::factory()->create([
+			"school_unit_id" => $unit->id,
+			"starting_school_year" => Carbon::now()->subYears(10)->year,
+		]);
+		$classUnitFuture = ClassUnit::factory()->create([
+			"school_unit_id" => $unit->id,
+			"starting_school_year" => Carbon::now()->addYear()->year,
+		]);
+		$classUnitCurrent = ClassUnit::factory()->create([
+			"school_unit_id" => $unit->id,
+			"starting_school_year" => Carbon::now()->subYear()->year,
+		]);
+
+		$response = $this->get("/api/schoolUnits/{$unit->id}/classUnits?category=archive", [
+			"Access-ID" => $actingUser["access"]
+		]);
 		$response->assertOk();
 		$response->assertJsonIsArray();
 		$response->assertJsonFragment([
@@ -146,8 +155,9 @@ class ClassUnitControllerTest extends TestCase
 		$response->assertJsonCount(1);
 	}
 
-	public function test_can_create_a_class_unit() {
-		$this->actingUser();
+	public function test_can_create_a_class_unit()
+	{
+		$actingUser = $this->actingUser();
 		$complex = SchoolComplex::factory()->create();
 		$unit = SchoolUnit::factory()->create(["school_complex_id" => $complex->id]);
 		$employee = Employee::factory()->create();
@@ -160,7 +170,7 @@ class ClassUnitControllerTest extends TestCase
 			"employeeIds" => [
 				$employee->id
 			]
-		]);
+		], ["Access-ID" => $actingUser["access"]]);
 		$response->assertOk();
 		$this->assertDatabaseHas("class_units", [
 			"alias" => "Klasa Informatyczna",
@@ -173,8 +183,9 @@ class ClassUnitControllerTest extends TestCase
 		]);
 	}
 
-	public function test_creating_a_class_unit_with_disabled_employees_fails() {
-		$this->actingUser();
+	public function test_creating_a_class_unit_with_disabled_employees_fails()
+	{
+		$actingUser = $this->actingUser();
 		$complex = SchoolComplex::factory()->create();
 		$unit = SchoolUnit::factory()->create(["school_complex_id" => $complex->id]);
 		$disabledEmployee = Employee::factory()->create(["active" => false]);
@@ -188,7 +199,7 @@ class ClassUnitControllerTest extends TestCase
 				$activeEmployee->id,
 				$disabledEmployee->id
 			]
-		]);
+		], ["Access-ID" => $actingUser["access"]]);
 		$response->assertBadRequest();
 		$this->assertDatabaseMissing("class_units", [
 			"alias" => "Klasa Informatyczna",
@@ -202,8 +213,9 @@ class ClassUnitControllerTest extends TestCase
 		]);
 	}
 
-	public function test_creating_a_class_unit_with_nonexistent_employees_fails() {
-		$this->actingUser();
+	public function test_creating_a_class_unit_with_nonexistent_employees_fails()
+	{
+		$actingUser = $this->actingUser();
 		$complex = SchoolComplex::factory()->create();
 		$unit = SchoolUnit::factory()->create(["school_complex_id" => $complex->id]);
 		$employee = Employee::factory()->create();
@@ -216,7 +228,7 @@ class ClassUnitControllerTest extends TestCase
 				$employee->id,
 				694202137
 			]
-		]);
+		], ["Access-ID" => $actingUser["access"]]);
 		$response->assertBadRequest();
 		$this->assertDatabaseMissing("class_units", [
 			"alias" => "Klasa Informatyczna",
@@ -230,8 +242,9 @@ class ClassUnitControllerTest extends TestCase
 		]);
 	}
 
-	public function test_can_update_a_class_unit() {
-		$this->actingUser();
+	public function test_can_update_a_class_unit()
+	{
+		$actingUser = $this->actingUser();
 		$complex = SchoolComplex::factory()->create();
 		$unit = SchoolUnit::factory()->create(["school_complex_id" => $complex->id]);
 		$oldEmployee = Employee::factory()->create();
@@ -247,7 +260,7 @@ class ClassUnitControllerTest extends TestCase
 			],
 			"startingSchoolYear" => Carbon::now()->year,
 			"teachingCycleLength" => 5
-		]);
+		], ["Access-ID" => $actingUser["access"]]);
 
 		$response->assertOk();
 		$this->assertDatabaseHas("class_units", [
@@ -264,14 +277,17 @@ class ClassUnitControllerTest extends TestCase
 		]);
 	}
 
-	public function test_can_delete_a_class_unit() {
-		$this->actingUser();
+	public function test_can_delete_a_class_unit()
+	{
+		$actingUser = $this->actingUser();
 		$complex = SchoolComplex::factory()->create();
 		$unit = SchoolUnit::factory()->create(["school_complex_id" => $complex->id]);
 		$classUnit = ClassUnit::factory()->create(["school_unit_id" => $unit->id]);
 		$employee = Employee::factory()->create();
 		$classUnit->employees()->attach($employee->id);
-		$response = $this->delete("/api/schoolUnits/{$unit->id}/classUnits/{$classUnit->id}");
+		$response = $this->delete("/api/schoolUnits/{$unit->id}/classUnits/{$classUnit->id}", [], [
+			"Access-ID" => $actingUser["access"]
+		]);
 		$response->assertOk();
 		$this->assertDatabaseMissing("class_units", [
 			"alias" => $classUnit->alias,

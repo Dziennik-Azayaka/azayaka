@@ -17,7 +17,7 @@ class ClassificationPeriodControllerTest extends TestCase
 {
 	use RefreshDatabase;
 
-	private function actingUser(): User
+	private function actingUser(): array
 	{
 		$user = User::factory()->create();
 		$this->be($user);
@@ -28,12 +28,12 @@ class ClassificationPeriodControllerTest extends TestCase
 		$accountAccess->employee_id = $employee->id;
 		$accountAccess->user_id = $user->id;
 		$accountAccess->save();
-		return $user;
+		return ["user" => $user, "access" => $accountAccess->id];
 	}
 
 	public function test_can_list_classification_periods()
 	{
-		$this->actingUser();
+		$actingUser = $this->actingUser();
 		$complex = SchoolComplex::factory()->create();
 		$schoolUnit = SchoolUnit::factory()->create(["school_complex_id" => $complex->id]);
 		$classUnit = ClassUnit::factory()->create(["school_unit_id" => $schoolUnit->id]);
@@ -53,7 +53,9 @@ class ClassificationPeriodControllerTest extends TestCase
 		$periodTwo->period_end = "2026-08-31";
 		$periodTwo->save();
 
-		$response = $this->get("/api/classUnits/$classUnit->id/classificationPeriods/2025");
+		$response = $this->get("/api/classUnits/$classUnit->id/classificationPeriods/2025", [
+			"Access-ID" => $actingUser["access"]
+		]);
 		$response->assertOk();
 		$response->assertJsonStructure([
 			"*" => [
@@ -69,7 +71,7 @@ class ClassificationPeriodControllerTest extends TestCase
 
 	public function test_can_save_new_classification_periods()
 	{
-		$this->actingUser();
+		$actingUser = $this->actingUser();
 		$complex = SchoolComplex::factory()->create();
 		$schoolUnit = SchoolUnit::factory()->create(["school_complex_id" => $complex->id]);
 		$classUnit = ClassUnit::factory()->create(["school_unit_id" => $schoolUnit->id]);
@@ -78,7 +80,7 @@ class ClassificationPeriodControllerTest extends TestCase
 				"2025-12-31",
 				"2026-03-01"
 			]
-		]);
+		], ["Access-ID" => $actingUser["access"]]);
 		$response->assertOk();
 		$this->assertDatabaseHas("classification_periods", [
 			"school_year" => 2025,
@@ -106,7 +108,7 @@ class ClassificationPeriodControllerTest extends TestCase
 	}
 
 	public function test_can_delete_classification_periods() {
-		$this->actingUser();
+		$actingUser = $this->actingUser();
 		$complex = SchoolComplex::factory()->create();
 		$schoolUnit = SchoolUnit::factory()->create(["school_complex_id" => $complex->id]);
 		$classUnit = ClassUnit::factory()->create(["school_unit_id" => $schoolUnit->id]);
@@ -126,7 +128,9 @@ class ClassificationPeriodControllerTest extends TestCase
 		$periodTwo->period_end = "2026-08-31";
 		$periodTwo->save();
 
-		$response = $this->delete("/api/classUnits/$classUnit->id/classificationPeriods/2025");
+		$response = $this->delete("/api/classUnits/$classUnit->id/classificationPeriods/2025", [], [
+			"Access-ID" => $actingUser["access"]
+		]);
 		$response->assertOk();
 		$this->assertDatabaseMissing("classification_periods", [
 			"school_year" => $periodOne->school_year,
