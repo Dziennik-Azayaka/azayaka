@@ -16,7 +16,7 @@ class AllowOnlyHeadmastersAndAdmins
 	 */
 	public function handle(Request $request, Closure $next): Response
 	{
-		$accessID = $request->header("Access-ID");
+		$accessID = $request->header("Access-ID") ?? $request->route("accessId");
 		$employeeAccess = AccountAccess::where("user_id", $request->user()->id)
 			->where("id", $accessID)
 			->with("employee")->first();
