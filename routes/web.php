@@ -70,11 +70,9 @@ Route::middleware(["auth", "auth.session"])->group(function () {
 		Route::put("/api/schoolUnits/{schoolUnit}/classUnits/{classUnit}", [ClassUnitController::class, "update"]);
 		Route::delete("/api/schoolUnits/{schoolUnit}/classUnits/{classUnit}", [ClassUnitController::class, "delete"]);
 
-		Route::get("/api/classificationPeriods/defaults", [ClassificationPeriodDefaultsController::class, "list"]);
-		Route::post("/api/classificationPeriods/defaults/{schoolYear}/{schoolUnitId}", [ClassificationPeriodDefaultsController::class, "save"]);
-		Route::get("/api/classUnits/{classUnitId}/classificationPeriods/{schoolYear}", [ClassificationPeriodController::class, "list"]);
-		Route::post("/api/classUnits/{classUnitId}/classificationPeriods/{schoolYear}", [ClassificationPeriodController::class, "save"]);
-		Route::delete("/api/classUnits/{classUnitId}/classificationPeriods/{schoolYear}", [ClassificationPeriodController::class, "delete"]);
+		Route::get("/api/schoolUnits/{schoolUnitId}/classificationPeriods/{schoolYear}", [ClassificationPeriodController::class, "list"]);
+		Route::post("/api/schoolUnits/{schoolUnitId}/classificationPeriods/{schoolYear}", [ClassificationPeriodController::class, "save"]);
+		Route::delete("/api/schoolUnits/{schoolUnitId}/classificationPeriods/{schoolYear}", [ClassificationPeriodController::class, "delete"]);
 	});
 });
 
@@ -95,7 +93,7 @@ Route::view("/authentication{any?}", "authentication")->where("any", ".*")->name
 Route::middleware(["auth", "auth.session"])->group(function () {
 	Route::view("/myaccount{any?}", "myaccount")->where("any", ".*");
 
-	Route::view("/administrator/{accessId}{any?}", "administrator")->where("any", ".*")->middleware("headmasters.admins");
+	Route::view("/administrator{any?}", "administrator")->where("any", ".*")->middleware("headmasters.admins");
 });
 
 Route::redirect("/rejestracja", "/authentication/access-activation/code");

@@ -21,7 +21,10 @@ class AllowOnlyHeadmastersAndAdmins
 			->where("id", $accessID)
 			->with("employee")->first();
 		if (!$employeeAccess || !($employeeAccess->employee->is_headmaster || $employeeAccess->employee->is_admin)) {
-			abort(Response::HTTP_FORBIDDEN);
+			return response()->json([
+				"success" => false,
+				"errors" => ["INVALID_ACCESS_ID_OR_INSUFFICIENT_PRIVILEGES"]
+			], 403);
 		}
 		return $next($request);
 	}
