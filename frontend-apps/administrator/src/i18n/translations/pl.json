@@ -27,6 +27,8 @@
     "archiveUnit": "Zarchiwizuj jednostkę",
     "unarchiveUnit": "Odarchiwizuj jednostkę",
     "archivedUnit": "Jednostka zarchiwizowana",
+	"classificationPeriods": "Okresy klasyfikacyjne",
+	"classificationPeriodsDescription": "Tu możesz zmienić czas trwania okresów klasyfikacyjnych oraz ich ilość w roku szkolnym.",
     "codeGenerated": "Kod wygenerowany",
     "commune": "Gmina",
     "currentEmployees": "Obecni",

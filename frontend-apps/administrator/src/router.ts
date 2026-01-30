@@ -40,6 +40,14 @@ const router = createRouter({
                         title: "subjects",
                     },
                 },
+				{
+					path: "classification-periods",
+					name: "classificationPeriods",
+					component: () => import("@/pages/ClassificationPeriods.vue"),
+					meta: {
+						title: "classificationPeriods"
+					}
+				},
                 {
                     path: ":pathMatch(.*)*",
                     name: "notFound",

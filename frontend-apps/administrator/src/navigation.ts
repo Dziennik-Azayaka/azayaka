@@ -1,4 +1,4 @@
-import { LucideBuilding, LucideLogIn, LucideShapes, LucideUsers } from "lucide-vue-next";
+import { LucideBuilding, LucideCalendarCog, LucideLogIn, LucideShapes, LucideUsers } from "lucide-vue-next";
 
 export const menuItems = [
     {
@@ -15,6 +15,11 @@ export const menuItems = [
         title: "systemAccess",
         link: { name: "systemAccess" },
         icon: LucideLogIn,
+    },
+	{
+        title: "classificationPeriods",
+        link: { name: "classificationPeriods" },
+        icon: LucideCalendarCog,
     },
     {
         title: "subjects",

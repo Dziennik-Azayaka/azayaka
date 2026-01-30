@@ -27,6 +27,8 @@
     "archiveUnit": "Archive the unit",
     "unarchiveUnit": "Unarchive the unit",
     "archivedUnit": "Archived unit",
+	"classificationPeriods": "Classification peridos",
+	"classificationPeriodsDescription": "Here you can change a duration of classification periods and their number in a school year.",
     "codeGenerated": "Code generated",
     "commune": "Commune",
     "currentEmployees": "Current",
