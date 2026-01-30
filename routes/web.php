@@ -93,7 +93,7 @@ Route::view("/authentication{any?}", "authentication")->where("any", ".*")->name
 Route::middleware(["auth", "auth.session"])->group(function () {
 	Route::view("/myaccount{any?}", "myaccount")->where("any", ".*");
 
-	Route::view("/administrator{any?}", "administrator")->where("any", ".*")->middleware("headmasters.admins");
+	Route::view("/administrator/{accessId}{any?}", "administrator")->where("any", ".*")->middleware("headmasters.admins");
 });
 
 Route::redirect("/rejestracja", "/authentication/access-activation/code");
