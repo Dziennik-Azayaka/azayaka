@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import SchoolComplexDialogForm from "./SchoolComplexDialogForm.vue";
+import { useMutation, useQueryClient } from "@tanstack/vue-query";
 import { LucideLoader2, LucidePencil } from "lucide-vue-next";
-import { ref } from "vue";
+import { ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 
 import {
@@ -17,30 +18,34 @@ import {
 } from "@azayaka-frontend/ui";
 
 import type { SchoolComplexEntity } from "@/api/entities/school-structure";
+import { ApiError } from "@/api/error";
 import SchoolStructureService from "@/api/services/school-structure";
-import type { SchoolComplexForm } from "@/types";
+
+const props = defineProps<{ currentData: SchoolComplexEntity }>();
 
 const { t } = useI18n();
-const showDialog = ref(false);
-const { currentData } = defineProps<{ currentData: SchoolComplexEntity }>();
-const emit = defineEmits(["edited"]);
+const queryClient = useQueryClient();
 
-const isLoading = ref(false);
+const showDialog = ref(false);
 const error = ref<string | null>(null);
 
-async function onSubmit(values: SchoolComplexForm) {
-    isLoading.value = true;
-    error.value = null;
-    try {
-        await SchoolStructureService.editSchoolComplexData(values, currentData.id);
-        emit("edited");
+const { isPending, mutate: onSubmit } = useMutation({
+    mutationKey: ["editSchoolComplex"],
+    mutationFn: async (form: SchoolComplexEntity) => {
+        await SchoolStructureService.editSchoolComplexData(form, props.currentData.id);
+    },
+    onSuccess: async () => {
         showDialog.value = false;
-    } catch {
-        error.value = "unknownError";
-    } finally {
-        isLoading.value = false;
-    }
-}
+        await queryClient.invalidateQueries({ queryKey: ["schoolStructure"] });
+    },
+    onError: (reason) => {
+        error.value = reason instanceof ApiError ? reason.getTranslationId() : "unknownError";
+    },
+});
+
+watch(showDialog, (value) => {
+    if (value) error.value = null;
+});
 </script>
 
 <template>
@@ -57,7 +62,7 @@ async function onSubmit(values: SchoolComplexForm) {
                 <DialogDescription>{{ t("requiredFieldsInfo") }}</DialogDescription>
             </DialogHeader>
             <SchoolComplexDialogForm
-                :loading="isLoading"
+                :loading="isPending"
                 :error-message="error"
                 @submit="onSubmit"
                 :current-data="currentData"
@@ -68,7 +73,7 @@ async function onSubmit(values: SchoolComplexForm) {
                             <Button variant="outline" type="button">{{ t("cancel") }}</Button>
                         </DialogClose>
                         <Button type="submit">
-                            <template v-if="!isLoading">{{ t("save") }}</template>
+                            <template v-if="!isPending">{{ t("save") }}</template>
                             <LucideLoader2 v-else class="animate-spin size-5" :aria-label="t('pleaseWait')" />
                         </Button>
                     </DialogFooter>

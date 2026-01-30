@@ -3,6 +3,10 @@
     "add": "Dodaj",
     "apps.administrator": "Administrator systemu",
     "apps.myAccount": "Ustawienia konta",
+    "apps.student": "Panel ucznia/rodzica",
+    "apps.secretary": "Sekretariat",
+    "apps.register": "Dziennik lekcyjny",
+    "apps.teacher": "Panel nauczyciela",
     "back": "Wróć",
     "cancel": "Anuluj",
     "changeFontSize": "Zmień rozmiar czcionki",
@@ -30,5 +34,9 @@
     "warning": "Ostrzeżenie",
     "continue": "Kontunuuj",
     "password": "Hasło",
-    "incorrectPasswordError": "Hasło jest nieprawidłowe."
+    "incorrectPasswordError": "Hasło jest nieprawidłowe.",
+    "student": "Uczeń",
+    "guardian": "Opiekun",
+    "employee": "Pracownik",
+    "openInNewCardInfo": "Odnośnik otwiera się w nowej karcie."
 }

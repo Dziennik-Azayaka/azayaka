@@ -19,8 +19,7 @@ import EmployeeAddDialog from "@/components/employees/EmployeeAddDialog.vue";
 import EmployeeEditDialog from "@/components/employees/EmployeeEditDialog.vue";
 import EmployeesTableRoles from "@/components/employees/EmployeesTableRoles.vue";
 
-const { employees } = defineProps<{ employees: EmployeeEntity[] }>();
-const emit = defineEmits(["refreshNeeded"]);
+const props = defineProps<{ employees: EmployeeEntity[] }>();
 const { t } = useI18n();
 
 const columnHelper = createColumnHelper<EmployeeEntity>();
@@ -36,7 +35,10 @@ const columns = [
 ];
 
 const table = useVueTable({
-    data: employees,
+    get data() {
+        return props.employees;
+    },
+    getRowId: (employee) => employee.id.toString(),
     columns,
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
@@ -63,7 +65,7 @@ const table = useVueTable({
                 @update:model-value="table.getColumn('fullName')?.setFilterValue($event)"
             />
             <div class="flex-1" />
-            <EmployeeAddDialog @added="emit('refreshNeeded')" />
+            <EmployeeAddDialog />
         </div>
         <div class="rounded-md border overflow-hidden">
             <Table>
@@ -81,10 +83,9 @@ const table = useVueTable({
                 <TableBody>
                     <template v-if="table.getRowModel().rows.length">
                         <EmployeeEditDialog
-                            :current-data="employees[row.index]"
+                            :current-data="row.original"
                             v-for="row in table.getRowModel().rows"
                             :key="row.id"
-                            @edited="emit('refreshNeeded')"
                         >
                             <TableRow class="cursor-pointer">
                                 <TableCell v-for="cell in row.getVisibleCells()" :key="cell.id">

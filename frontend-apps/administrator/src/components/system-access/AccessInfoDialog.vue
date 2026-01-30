@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { ErrorBanner } from "#ui/components/ui/banner";
+import { useMutation, useQueryClient } from "@tanstack/vue-query";
 import { LucideLock, LucidePrinter, LucideRefreshCw, LucideRotateCw } from "lucide-vue-next";
-import { ref, watch } from "vue";
+import { ref } from "vue";
 import { useI18n } from "vue-i18n";
 
 import {
@@ -23,11 +24,12 @@ import AccessPrintableInstructions from "@/components/system-access/AccessPrinta
 import AccessStatus from "@/components/system-access/AccessStatus.vue";
 
 const props = defineProps<{ data: EmployeeAccessEntity; userRole: "employee" }>();
-const emit = defineEmits(["changedStatus"]);
+
+const queryClient = useQueryClient();
 const { t, d } = useI18n();
+
 const showDialog = ref(false);
 const loading = ref<"regenerate" | "generate" | "revoke" | null>(null);
-const error = ref(false);
 const instructionPrint = ref(false);
 
 function getInstructionData() {
@@ -39,21 +41,17 @@ function getInstructionData() {
     };
 }
 
-watch(showDialog, (value) => {
-    if (value) error.value = false;
-});
-
-async function update(action: "regenerate" | "generate" | "revoke") {
-    loading.value = action;
-    try {
+const { isError, mutate: update } = useMutation({
+    mutationKey: ["addSubject"],
+    mutationFn: async (action: "regenerate" | "generate" | "revoke") => {
+        loading.value = action;
         await AccessService.updateEmployeeAccesses([props.data.id], action);
-        emit("changedStatus");
-    } catch {
-        error.value = true;
-    } finally {
+    },
+    onSuccess: async () => {
+        await queryClient.invalidateQueries({ queryKey: ["accesses", props.userRole] });
         loading.value = null;
-    }
-}
+    },
+});
 </script>
 
 <template>
@@ -107,7 +105,7 @@ async function update(action: "regenerate" | "generate" | "revoke") {
                 {{ t("printAlert") }}
             </p>
 
-            <ErrorBanner :description="t('unknownError')" v-if="error" />
+            <ErrorBanner :description="t('unknownError')" v-if="isError" />
 
             <DialogFooter>
                 <Button
