@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create("classification_period_defaults", function (Blueprint $table) {
+        Schema::create("classification_periods", function (Blueprint $table) {
             $table->id();
 			$table->foreignId("school_unit_id")->constrained("school_units");
 			$table->integer("school_year");
@@ -27,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists("classification_period_defaults");
+        Schema::dropIfExists("classification_periods");
     }
 };

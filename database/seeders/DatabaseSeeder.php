@@ -5,7 +5,6 @@ namespace Database\Seeders;
 use App\Models\AccountAccess;
 use App\Models\AccountLog;
 use App\Models\ClassificationPeriod;
-use App\Models\ClassificationPeriodDefaults;
 use App\Models\ClassUnit;
 use App\Models\Guardian;
 use App\Models\SchoolComplex;
@@ -54,7 +53,7 @@ class DatabaseSeeder extends Seeder
 		Subject::factory(5)->create();
 		ClassUnit::factory(15)->create();
 
-		ClassificationPeriodDefaults::create([
+		ClassificationPeriod::create([
 			"school_unit_id" => 1,
 			"school_year" => 2024,
 			"period_number" => 1,
@@ -62,24 +61,8 @@ class DatabaseSeeder extends Seeder
 			"period_end" => "2025-01-30"
 		]);
 
-		ClassificationPeriodDefaults::create([
+		ClassificationPeriod::create([
 			"school_unit_id" => 1,
-			"school_year" => 2024,
-			"period_number" => 2,
-			"period_start" => "2025-02-01",
-			"period_end" => "2025-08-31"
-		]);
-
-		ClassificationPeriod::create([
-			"class_unit_id" => 1,
-			"school_year" => 2024,
-			"period_number" => 1,
-			"period_start" => "2024-09-01",
-			"period_end" => "2025-01-30"
-		]);
-
-		ClassificationPeriod::create([
-			"class_unit_id" => 1,
 			"school_year" => 2024,
 			"period_number" => 2,
 			"period_start" => "2025-02-01",

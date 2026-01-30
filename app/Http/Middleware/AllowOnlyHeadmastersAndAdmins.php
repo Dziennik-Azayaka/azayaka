@@ -25,7 +25,6 @@ class AllowOnlyHeadmastersAndAdmins
 				"success" => false,
 				"errors" => ["INVALID_ACCESS_ID_OR_INSUFFICIENT_PRIVILEGES"]
 			], 403);
-			abort(Response::HTTP_FORBIDDEN);
 		}
 		return $next($request);
 	}
