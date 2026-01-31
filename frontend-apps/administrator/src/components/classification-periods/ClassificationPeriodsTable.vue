@@ -9,7 +9,7 @@ import type { SchoolUnitEntity } from "@/api/entities/school-structure";
 
 defineProps<{ unit: SchoolUnitEntity; showHeader: boolean; periods: ClassificationPeriodEntity[] }>();
 
-const { d } = useI18n();
+const { t, d } = useI18n();
 </script>
 
 <template>
@@ -22,21 +22,21 @@ const { d } = useI18n();
                             <span class="font-semibold text-base">{{ unit.name }}</span>
                             <Button variant="secondary">
                                 <LucidePencil />
-                                Zmień
+                                {{ t("periodsChange") }}
                             </Button>
                         </div>
                     </th>
                 </tr>
                 <tr class="*:font-medium *:px-3 *:sm:px-5 *:py-3 text-left bg-accent not-first:border-t">
-                    <th>Numer</th>
-                    <th>Data od</th>
-                    <th>Data do</th>
+                    <th>{{ t("periodNumber") }}</th>
+                    <th>{{ t("periodStart") }}</th>
+                    <th>{{ t("periodEnd") }}</th>
                 </tr>
             </thead>
             <tbody>
                 <tr v-if="!periods.length">
                     <td colspan="3" class="px-3 sm:px-5 py-3.5 text-center text-muted-foreground border-t">
-                        Brak okresów
+                        {{ t("noPeriods") }}
                     </td>
                 </tr>
                 <tr v-else class="border-t *:px-3 *:sm:px-5 *:py-3" v-for="period in periods" :key="period.id">

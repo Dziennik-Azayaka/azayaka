@@ -61,7 +61,7 @@ const { data, isError, refetch, fetchStatus } = useQuery({
             <div class="flex gap-3">
                 <Button variant="secondary" v-if="data && data.schoolUnits.length === 1">
                     <LucidePencil />
-                    Zmień
+                    {{ t("periodsChange") }}
                 </Button>
                 <Button variant="ghost" size="icon" @click="schoolYear--" :disabled="schoolYear <= 2000">
                     <LucideChevronLeft />
