@@ -11,7 +11,6 @@ export const useMainStore = defineStore("main", () => {
         },
     });
     const mobileNavOpen = ref(false);
-    const emailAddress = ref<string | null>(null);
 
-    return { fontSize, locale, colorMode, mobileNavOpen, emailAddress };
+    return { fontSize, locale, colorMode, mobileNavOpen };
 });

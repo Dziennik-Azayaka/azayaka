@@ -13,3 +13,4 @@ export * from "./components/ui/table";
 export * from "./components/ui/checkbox";
 
 export * from "./layouts/panel";
+export * from "./forms";

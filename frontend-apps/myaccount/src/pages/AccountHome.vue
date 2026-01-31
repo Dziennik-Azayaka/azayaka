@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { Button } from "#ui/components/ui/button";
+import { useQuery } from "@tanstack/vue-query";
 import {
     LucideAlertCircle,
     LucideHelpCircle,
@@ -8,36 +9,13 @@ import {
     LucideSmartphone,
     RefreshCw,
 } from "lucide-vue-next";
-import { onMounted, ref } from "vue";
 import { useI18n } from "vue-i18n";
 
-import type { SessionListEntryEntity } from "@/api/entities/session-list-entry.ts";
 import SessionApiService from "@/api/services/session.ts";
 import PanelHeader from "@/components/PanelHeader.vue";
 import RemoveSessionDialog from "@/components/RemoveSessionDialog.vue";
 
 const { t, d } = useI18n();
-
-const loading = ref(false);
-const error = ref(false);
-
-const currentSessionId = ref<string>();
-const activeSessions = ref<SessionListEntryEntity[] | null>(null);
-
-async function getActiveSessions() {
-    loading.value = true;
-    error.value = false;
-
-    try {
-        const result = await SessionApiService.getActiveSession();
-        currentSessionId.value = result.currentSessionId;
-        activeSessions.value = result.sessions;
-    } catch {
-        error.value = true;
-    } finally {
-        loading.value = false;
-    }
-}
 
 const getDeviceTypeByOS = (os: string) => {
     if (os.startsWith("iOS") || os.startsWith("Android")) return "mobile";
@@ -45,11 +23,12 @@ const getDeviceTypeByOS = (os: string) => {
     return "other";
 };
 
-function onSessionLogout(sessionId: string) {
-    if (activeSessions.value) activeSessions.value = activeSessions.value.filter((session) => session.id !== sessionId);
-}
-
-onMounted(getActiveSessions);
+const {
+    data: sessions,
+    isError,
+    isLoading,
+    refetch,
+} = useQuery({ queryKey: ["sessions"], queryFn: SessionApiService.getActiveSessions });
 </script>
 
 <template>
@@ -60,20 +39,20 @@ onMounted(getActiveSessions);
             <p class="text-foreground/70 mb-4 text-sm">{{ t("homeDescription") }}</p>
             <section>
                 <h3 class="font-semibold my-3">{{ t("activeSessions") }}</h3>
-                <div class="h-96 content-center" v-if="loading">
+                <div class="h-96 content-center" v-if="isLoading">
                     <LucideLoaderCircle class="animate-spin mx-auto" :aria-label="t('pleaseWait')" />
                 </div>
-                <div class="h-96 flex flex-col items-center justify-center" v-else-if="error">
+                <div class="h-96 flex flex-col items-center justify-center" v-else-if="isError">
                     <LucideAlertCircle class="mx-auto size-9" />
                     <p class="text-center mt-2 font-medium">{{ t("unknownError") }}</p>
-                    <Button class="mx-auto mt-3" variant="outline" @click="getActiveSessions">
+                    <Button class="mx-auto mt-3" variant="outline" @click="refetch">
                         <RefreshCw />
                         {{ t("tryAgain") }}
                     </Button>
                 </div>
-                <div class="mt-4 border rounded-md shadow-xs overflow-hidden" v-else-if="activeSessions">
+                <div class="mt-4 border rounded-md shadow-xs overflow-hidden" v-else-if="sessions">
                     <table class="w-full">
-                        <thead class="bg-accent not-md:hidden">
+                        <thead class="bg-accent not-md:sr-only">
                             <tr>
                                 <td class="px-4 py-3 text-sm font-medium">{{ t("device") }}</td>
                                 <td class="px-4 py-3 text-sm font-medium">{{ t("lastActivity") }}</td>
@@ -83,7 +62,7 @@ onMounted(getActiveSessions);
                         <tbody>
                             <tr
                                 class="border-t not-md:first:border-none not-md:block"
-                                v-for="(session, index) in activeSessions"
+                                v-for="(session, index) in sessions.sessions"
                                 :key="index"
                             >
                                 <td
@@ -105,7 +84,7 @@ onMounted(getActiveSessions);
                                     {{ t("ipAddress") }}: {{ session.device.ipAddress }}
                                     <span
                                         class="px-1.5 py-1 rounded-md bg-primary text-primary-foreground text-xs"
-                                        v-if="session.id === currentSessionId"
+                                        v-if="session.id === sessions.currentSessionId"
                                     >
                                         {{ t("yourCurrentSession") }}
                                     </span>
@@ -114,11 +93,13 @@ onMounted(getActiveSessions);
                                     <span class="md:hidden">{{ t("lastActivity") }}</span>
                                     {{ d(session.lastActivityDate, "hourMinute") }}
                                 </td>
-                                <td class="px-4 py-3 flex gap-2">
+                                <td
+                                    class="px-4 py-3 flex gap-2"
+                                    :class="{ 'not-md:hidden': session.id === sessions.currentSessionId }"
+                                >
                                     <RemoveSessionDialog
                                         :session-id="session.id"
-                                        v-if="session.id !== currentSessionId"
-                                        @logout="onSessionLogout(session.id)"
+                                        v-if="session.id !== sessions.currentSessionId"
                                     />
                                     <template v-else>-</template>
                                 </td>

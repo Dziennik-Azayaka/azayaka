@@ -6,7 +6,6 @@ import SchoolUnitAddDialog from "./SchoolUnitCreateDialog.vue";
 import type { SchoolComplexEntity } from "@/api/entities/school-structure";
 
 const { data } = defineProps<{ data: SchoolComplexEntity }>();
-const emit = defineEmits(["structureChanged"]);
 </script>
 
 <template>
@@ -14,13 +13,13 @@ const emit = defineEmits(["structureChanged"]);
         <div class="flex justify-between not-sm:flex-col sm:items-center gap-3">
             <h2 class="font-semibold">{{ data.name }}</h2>
             <div class="flex gap-3">
-                <SchoolUnitAddDialog :school-complex-id="data.id" @created="emit('structureChanged')" />
-                <SchoolComplexEditDialog :current-data="data" @edited="emit('structureChanged')" />
+                <SchoolUnitAddDialog :school-complex-id="data.id" />
+                <SchoolComplexEditDialog :current-data="data" />
             </div>
         </div>
 
         <ul class="space-y-6">
-            <SchoolUnitCard v-for="unit in data.units" :key="unit.id" :data="unit" @edited="emit('structureChanged')" />
+            <SchoolUnitCard v-for="unit in data.units" :key="unit.id" :data="unit" />
         </ul>
     </li>
 </template>

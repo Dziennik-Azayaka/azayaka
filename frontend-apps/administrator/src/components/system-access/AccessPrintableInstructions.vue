@@ -47,7 +47,7 @@ onMounted(() => {
             <h1>Dostęp do dziennika elektronicznego</h1>
             <p>
                 Aby aktywować Twój dostęp do dziennika elektronicznego, wejdź na stronę
-                <strong style="text-wrap: nowrap;">{{ getRegistrationUrl() }}</strong> i postępuj zgodnie z instrukcjami.
+                <strong style="text-wrap: nowrap">{{ getRegistrationUrl() }}</strong> i postępuj zgodnie z instrukcjami.
             </p>
             <p>Twój <strong>kod aktywacji</strong>, który będzie Ci potrzebny do aktywacji dostępu do dziennika:</p>
             <ol class="code">

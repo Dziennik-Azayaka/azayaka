@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import SchoolUnitDialogForm from "./SchoolUnitDialogForm.vue";
+import { useMutation, useQueryClient } from "@tanstack/vue-query";
 import { LucideLoader2, LucidePencil } from "lucide-vue-next";
 import { ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
@@ -7,6 +8,7 @@ import { useI18n } from "vue-i18n";
 import {
     Button,
     Dialog,
+    DialogClose,
     DialogContent,
     DialogDescription,
     DialogFooter,
@@ -16,39 +18,31 @@ import {
 } from "@azayaka-frontend/ui";
 
 import type { SchoolUnitEntity } from "@/api/entities/school-structure";
+import { ApiError } from "@/api/error";
 import SchoolStructureService from "@/api/services/school-structure";
 import type { SchoolUnitForm } from "@/types";
 
-const { t } = useI18n();
-const showDialog = ref(false);
 const props = defineProps<{ currentData: SchoolUnitEntity }>();
-const emit = defineEmits(["edited"]);
 
-const isLoading = ref(false);
+const { t } = useI18n();
+const queryClient = useQueryClient();
+
+const showDialog = ref(false);
 const error = ref<string | null>(null);
 
-async function onSubmit(values: SchoolUnitForm) {
-    console.log(values);
-    isLoading.value = true;
-    error.value = null;
-    try {
-        await SchoolStructureService.editSchoolUnitData(
-            values,
-            props.currentData.id,
-            props.currentData.schoolComplexId,
-        );
-        emit("edited");
+const { isPending, mutate: onSubmit } = useMutation({
+    mutationKey: ["editUnit"],
+    mutationFn: async (form: SchoolUnitForm) => {
+        await SchoolStructureService.editSchoolUnitData(form, props.currentData.id, props.currentData.schoolComplexId);
+    },
+    onSuccess: async () => {
         showDialog.value = false;
-    } catch {
-        error.value = "unknownError";
-    } finally {
-        isLoading.value = false;
-    }
-}
-
-const onClose = () => {
-    showDialog.value = false;
-};
+        await queryClient.invalidateQueries({ queryKey: ["schoolStructure"] });
+    },
+    onError: (reason) => {
+        error.value = reason instanceof ApiError ? reason.getTranslationId() : "unknownError";
+    },
+});
 
 watch(showDialog, (value) => {
     if (value) error.value = null;
@@ -71,14 +65,16 @@ watch(showDialog, (value) => {
             <SchoolUnitDialogForm
                 :current-data="currentData"
                 :error-message="error"
-                :loading="isLoading"
+                :loading="isPending"
                 @submit="onSubmit"
             >
                 <template #footer>
                     <DialogFooter>
-                        <Button variant="outline" type="button" @click="onClose">{{ t("cancel") }}</Button>
+                        <DialogClose as-child>
+                            <Button variant="outline" type="button">{{ t("cancel") }}</Button>
+                        </DialogClose>
                         <Button type="submit">
-                            <template v-if="!isLoading">{{ t("save") }}</template>
+                            <template v-if="!isPending">{{ t("save") }}</template>
                             <LucideLoader2 v-else class="animate-spin size-5" :aria-label="t('pleaseWait')" />
                         </Button>
                     </DialogFooter>

@@ -16,7 +16,6 @@ import type { SubjectEntity } from "@/api/entities/subject.ts";
 import SubjectEditDialog from "@/components/subjects/SubjectEditDialog.vue";
 
 const props = defineProps<{ subjects: SubjectEntity[] }>();
-const emit = defineEmits(["refreshNeeded"]);
 const { t } = useI18n();
 
 const columnHelper = createColumnHelper<SubjectEntity>();
@@ -25,12 +24,15 @@ const columns = [
         header: () => t("name"),
     }),
     columnHelper.accessor("shortcut", {
-        header: () =>t("short"),
+        header: () => t("short"),
     }),
 ];
 
 const table = useVueTable({
-    data: props.subjects,
+    get data() {
+        return props.subjects;
+    },
+    getRowId: (subject) => subject.id.toString(),
     columns,
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
@@ -67,7 +69,6 @@ const table = useVueTable({
                             v-for="row in table.getRowModel().rows"
                             :key="row.id"
                             :current-data="row.original"
-                            @edited="emit('refreshNeeded')"
                         >
                             <TableRow class="cursor-pointer">
                                 <TableCell v-for="cell in row.getVisibleCells()" :key="cell.id">

@@ -1,3 +1,4 @@
+import { useUserStore } from "./stores/user.store";
 import { createRouter, createWebHistory } from "vue-router";
 
 const router = createRouter({
@@ -33,6 +34,11 @@ const router = createRouter({
             redirect: { name: "home" },
         },
     ],
+});
+
+router.beforeEach(() => {
+    const userStore = useUserStore();
+    if (!userStore.user) userStore.fetchUser();
 });
 
 export default router;

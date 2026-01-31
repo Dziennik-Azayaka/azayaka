@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { DialogTrigger } from "#ui/components/ui/dialog";
+import { useMutation, useQueryClient } from "@tanstack/vue-query";
 import { LucideArchive, LucideLoader2 } from "lucide-vue-next";
-import { ref } from "vue";
+import { ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 
 import {
@@ -16,48 +17,57 @@ import {
 } from "@azayaka-frontend/ui";
 
 import type { SubjectEntity } from "@/api/entities/subject.ts";
-import { TakenNameError, TakenShortcutError } from "@/api/errors.ts";
+import { ApiError } from "@/api/error";
 import SubjectService from "@/api/services/subject";
 import SubjectDialogForm from "@/components/subjects/SubjectDialogForm.vue";
 import type { SubjectForm } from "@/types";
 
-const { t } = useI18n();
-const emit = defineEmits(["edited"]);
 const props = defineProps<{ currentData: SubjectEntity }>();
+
+const { t } = useI18n();
+const queryClient = useQueryClient();
 
 const showDialog = ref(false);
 const loading = ref<"edit" | "change-activity" | null>(null);
 const error = ref<string | null>(null);
 
-async function onSubmit(values: SubjectForm) {
-    loading.value = "edit";
-    error.value = null;
-    try {
-        await SubjectService.editSubject(props.currentData.id, values);
-        emit("edited");
+const { mutate: onSubmit } = useMutation({
+    mutationKey: ["editSubject"],
+    mutationFn: async (form: SubjectForm) => {
+        loading.value = "edit";
+        await SubjectService.editSubject(props.currentData.id, form);
+    },
+    onSuccess: async () => {
         showDialog.value = false;
-    } catch (reason) {
-        if (reason instanceof TakenNameError) error.value = "takenNameError";
-        else if (reason instanceof TakenShortcutError) error.value = "takenShortcutError";
-        else error.value = "unknownError";
-    } finally {
+        await queryClient.invalidateQueries({ queryKey: ["subjects"] });
         loading.value = null;
-    }
-}
+    },
+    onError: (reason) => {
+        error.value = reason instanceof ApiError ? reason.getTranslationId() : "unknownError";
+        loading.value = null;
+    },
+});
 
-async function changeActivity() {
-    loading.value = "change-activity";
-    error.value = null;
-    try {
+const { mutate: changeActivity } = useMutation({
+    mutationKey: ["archiveSubject"],
+    mutationFn: async () => {
+        loading.value = "change-activity";
         await SubjectService.changeSubjectActivity(props.currentData.id);
-        emit("edited");
+    },
+    onSuccess: async () => {
         showDialog.value = false;
-    } catch {
-        error.value = "unknownError";
-    } finally {
+        await queryClient.invalidateQueries({ queryKey: ["subjects"] });
         loading.value = null;
-    }
-}
+    },
+    onError: (reason) => {
+        error.value = reason instanceof ApiError ? reason.getTranslationId() : "unknownError";
+        loading.value = null;
+    },
+});
+
+watch(showDialog, (value) => {
+    if (value) error.value = null;
+});
 </script>
 
 <template>
@@ -79,6 +89,7 @@ async function changeActivity() {
                             type="button"
                             :variant="currentData.active ? 'destructive' : 'outline'"
                             @click="changeActivity"
+                            :disabled="loading"
                         >
                             <template v-if="loading !== 'change-activity'">
                                 <LucideArchive aria-hidden="true" />
@@ -91,7 +102,7 @@ async function changeActivity() {
                         <DialogClose as-child>
                             <Button variant="outline" type="button">{{ t("cancel") }}</Button>
                         </DialogClose>
-                        <Button type="submit">
+                        <Button type="submit" :disabled="loading">
                             <template v-if="loading !== 'edit'">{{ t("save") }}</template>
                             <LucideLoader2 v-else class="animate-spin size-5" :aria-label="t('pleaseWait')" />
                         </Button>

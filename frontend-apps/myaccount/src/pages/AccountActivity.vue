@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { Button } from "#ui/components/ui/button";
+import { useQuery } from "@tanstack/vue-query";
 import { LucideAlertCircle, LucideLoaderCircle, RefreshCw } from "lucide-vue-next";
-import { onMounted, ref, watch } from "vue";
+import { ref } from "vue";
 import { useI18n } from "vue-i18n";
 
 import {
@@ -20,8 +21,6 @@ import PanelHeader from "@/components/PanelHeader.vue";
 const { t, d } = useI18n();
 
 const activities = ref<ActivityLogEntryEntity[] | null>(null);
-const loading = ref(true);
-const error = ref(false);
 
 const paginationInfo = ref({
     page: 1,
@@ -30,21 +29,15 @@ const paginationInfo = ref({
 });
 const paginationModel = ref(1);
 
-watch(paginationModel, getPage);
-
-async function getPage() {
-    loading.value = true;
-    error.value = false;
-    try {
+const { isLoading, isError, refetch } = useQuery({
+    queryKey: ["activity", paginationModel],
+    queryFn: async () => {
         const result = await UserApiService.getActivityLog(paginationModel.value);
         paginationInfo.value = result.pagination;
         activities.value = result.data;
-    } catch {
-        error.value = true;
-    } finally {
-        loading.value = false;
-    }
-}
+        return null;
+    },
+});
 
 const activityNameTranslationId = (type: ActivityLogEntryEntity["type"]) => {
     switch (type) {
@@ -60,8 +53,6 @@ const activityNameTranslationId = (type: ActivityLogEntryEntity["type"]) => {
             return "activity.loggedIn";
     }
 };
-
-onMounted(getPage);
 </script>
 
 <template>
@@ -72,13 +63,13 @@ onMounted(getPage);
             <p class="text-foreground/70 mb-4 text-sm">
                 {{ t("activityHistoryDescription") }}
             </p>
-            <div class="h-96 content-center" v-if="loading">
+            <div class="h-96 content-center" v-if="isLoading">
                 <LucideLoaderCircle class="animate-spin mx-auto" :aria-label="t('pleaseWait')" />
             </div>
-            <div class="h-96 flex flex-col items-center justify-center" v-else-if="error">
+            <div class="h-96 flex flex-col items-center justify-center" v-else-if="isError">
                 <LucideAlertCircle class="mx-auto size-9" />
                 <p class="text-center mt-2 font-medium">{{ t("unknownError") }}</p>
-                <Button class="mx-auto mt-3" variant="outline" @click="getPage">
+                <Button class="mx-auto mt-3" variant="outline" @click="refetch">
                     <RefreshCw />
                     {{ t("tryAgain") }}
                 </Button>

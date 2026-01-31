@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import ErrorBanner from "#ui/components/ui/banner/ErrorBanner.vue";
+import { useMutation, useQueryClient } from "@tanstack/vue-query";
 import { toTypedSchema } from "@vee-validate/zod";
 import { LucideArchive, LucideLoader2 } from "lucide-vue-next";
 import { useForm } from "vee-validate";
-import { ref } from "vue";
+import { ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import z from "zod";
 
@@ -22,30 +23,23 @@ import {
     FormItem,
     FormLabel,
     PasswordInput,
+    requiredStringField,
 } from "@azayaka-frontend/ui";
 
-import { IncorrectPasswordError } from "@/api/errors";
-import EmployeeApiService from "@/api/services/employee";
+import { ApiError } from "@/api/error";
+import EmployeeService from "@/api/services/employee";
 
 const props = defineProps<{ archived: boolean; employeeId: number }>();
-const emit = defineEmits(["changed"]);
 
 const { t } = useI18n();
-const showDialog = ref(false);
+const queryClient = useQueryClient();
 
-const isLoading = ref(false);
+const showDialog = ref(false);
 const error = ref<string | null>(null);
 
 const formSchema = toTypedSchema(
     z.object({
-        password: z
-            .string({
-                required_error: t("requiredFieldError"),
-            })
-            .min(1, {
-                message: t("requiredFieldError"),
-            })
-            .max(255, t("fieldMaxLengthError", { number: 255 })),
+        password: requiredStringField(t),
     }),
 );
 
@@ -53,20 +47,24 @@ const form = useForm({
     validationSchema: formSchema,
 });
 
-const onSubmit = form.handleSubmit(async ({ password }) => {
-    isLoading.value = true;
-    error.value = null;
+const onSubmit = form.handleSubmit(async ({ password }) => mutate(password));
 
-    try {
-        await EmployeeApiService.changeEmployeeActivity(props.archived, props.employeeId, password);
-        emit("changed");
+const { isPending, mutate } = useMutation({
+    mutationKey: ["archiveEmployee"],
+    mutationFn: async (password: string) => {
+        await EmployeeService.changeEmployeeActivity(props.archived, props.employeeId, password);
+    },
+    onSuccess: async () => {
+        await queryClient.invalidateQueries({ queryKey: ["employees"] });
         showDialog.value = false;
-    } catch (reason) {
-        if (reason instanceof IncorrectPasswordError) error.value = "incorrectPasswordError";
-        else error.value = "unknownError";
-    } finally {
-        isLoading.value = false;
-    }
+    },
+    onError: (reason) => {
+        error.value = reason instanceof ApiError ? reason.getTranslationId() : "unknownError";
+    },
+});
+
+watch(showDialog, (value) => {
+    if (value) error.value = null;
 });
 </script>
 
@@ -93,7 +91,7 @@ const onSubmit = form.handleSubmit(async ({ password }) => {
                     <FormLabel>{{ t("password") }}</FormLabel>
                     <FormControl>
                         <FormItem>
-                            <PasswordInput v-bind="componentField" :disabled="isLoading" />
+                            <PasswordInput v-bind="componentField" :disabled="isPending" />
                         </FormItem>
                     </FormControl>
                 </FormField>
@@ -105,7 +103,7 @@ const onSubmit = form.handleSubmit(async ({ password }) => {
                         <Button variant="outline" type="button">{{ t("cancel") }}</Button>
                     </DialogClose>
                     <Button @click="onSubmit" variant="destructive">
-                        <template v-if="!isLoading">{{ t("confirm") }}</template>
+                        <template v-if="!isPending">{{ t("confirm") }}</template>
                         <LucideLoader2 v-else class="animate-spin size-5" :aria-label="t('pleaseWait')" />
                     </Button>
                 </DialogFooter>

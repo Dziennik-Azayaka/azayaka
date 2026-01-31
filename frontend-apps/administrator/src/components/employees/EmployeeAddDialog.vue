@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useMutation, useQueryClient } from "@tanstack/vue-query";
 import { LucideLoader2, LucidePlus } from "lucide-vue-next";
 import { ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
@@ -15,34 +16,33 @@ import {
     DialogTrigger,
 } from "@azayaka-frontend/ui";
 
-import { TakenShortcutError } from "@/api/errors.ts";
+import { ApiError } from "@/api/error";
 import EmployeeService from "@/api/services/employee";
 import EmployeeDialogForm from "@/components/employees/EmployeeDialogForm.vue";
 import type { EmployeeForm } from "@/types";
 
 const { t } = useI18n();
-const showDialog = ref(false);
-const isLoading = ref(false);
-const error = ref<string | null>(null);
-const emit = defineEmits(["added"]);
+const queryClient = useQueryClient();
 
-async function onSubmit(values: EmployeeForm) {
-    isLoading.value = true;
-    error.value = null;
-    try {
-        await EmployeeService.addEmployee(values);
-        emit("added");
-        showDialog.value = false;
-    } catch (reason) {
-        if (reason instanceof TakenShortcutError) error.value = "takenShortcutError";
-        else error.value = "unknownError";
-    } finally {
-        isLoading.value = false;
-    }
-}
+const showDialog = ref(false);
+const error = ref<string | null>(null);
 
 watch(showDialog, (value) => {
     if (value) error.value = null;
+});
+
+const { isPending, mutate: onSubmit } = useMutation({
+    mutationKey: ["addEmployee"],
+    mutationFn: async (form: EmployeeForm) => {
+        await EmployeeService.addEmployee(form);
+    },
+    onSuccess: async () => {
+        showDialog.value = false;
+        await queryClient.invalidateQueries({ queryKey: ["employees"] });
+    },
+    onError: (reason) => {
+        error.value = reason instanceof ApiError ? reason.getTranslationId() : "unknownError";
+    },
 });
 </script>
 
@@ -59,14 +59,14 @@ watch(showDialog, (value) => {
                 <DialogTitle>{{ t("addEmployee") }}</DialogTitle>
                 <DialogDescription>{{ t("requiredFieldsInfo") }}</DialogDescription>
             </DialogHeader>
-            <EmployeeDialogForm :error-message="error" :loading="isLoading" @submit="onSubmit">
+            <EmployeeDialogForm :error-message="error" :loading="isPending" @submit="onSubmit">
                 <template #footer>
                     <DialogFooter>
                         <DialogClose as-child>
                             <Button variant="outline" type="button">{{ t("cancel") }}</Button>
                         </DialogClose>
                         <Button type="submit">
-                            <template v-if="!isLoading">{{ t("add") }}</template>
+                            <template v-if="!isPending">{{ t("add") }}</template>
                             <LucideLoader2 v-else class="animate-spin size-5" :aria-label="t('pleaseWait')" />
                         </Button>
                     </DialogFooter>

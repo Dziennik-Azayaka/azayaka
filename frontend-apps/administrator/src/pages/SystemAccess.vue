@@ -7,6 +7,7 @@ import PanelHeader from "@/components/PanelHeader.vue";
 import EmployeeAccessesTab from "@/components/system-access/EmployeeAccessesTab.vue";
 
 const { t } = useI18n();
+
 const tab = ref("employees");
 </script>
 

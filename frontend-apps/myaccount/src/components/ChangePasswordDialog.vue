@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import ErrorBanner from "#ui/components/ui/banner/ErrorBanner.vue";
+import { useMutation } from "@tanstack/vue-query";
 import { toTypedSchema } from "@vee-validate/zod";
 import { LucideLoader2 } from "lucide-vue-next";
 import { useForm } from "vee-validate";
@@ -25,7 +26,7 @@ import {
     PasswordInput,
 } from "@azayaka-frontend/ui";
 
-import { IncorrectPasswordError } from "@/api/errors";
+import { ApiError } from "@/api/error";
 import UserApiService from "@/api/services/user";
 
 const { t } = useI18n();
@@ -55,23 +56,23 @@ const form = useForm({
     validationSchema: formSchema,
 });
 
-const isLoading = ref(false);
 const error = ref<string | null>(null);
 const showDialog = ref(false);
 
-const onSubmit = form.handleSubmit(async (values) => {
-    isLoading.value = true;
-    error.value = null;
-    try {
-        await UserApiService.setNewPassword(values.currentPassword, values.newPassword);
+const { isPending, mutate } = useMutation({
+    mutationKey: ["changePassword"],
+    mutationFn: async ({ currentPassword, newPassword }: { currentPassword: string; newPassword: string }) => {
+        await UserApiService.setNewPassword(currentPassword, newPassword);
+    },
+    onSuccess: () => {
         showDialog.value = false;
-    } catch (reason) {
-        if (reason instanceof IncorrectPasswordError) error.value = "incorrectPasswordError";
-        else error.value = "unknownError";
-    } finally {
-        isLoading.value = false;
-    }
+    },
+    onError: (reason) => {
+        error.value = reason instanceof ApiError ? reason.getTranslationId() : "unknownError";
+    },
 });
+
+const onSubmit = form.handleSubmit(async (values) => mutate(values));
 </script>
 
 <template>
@@ -89,7 +90,7 @@ const onSubmit = form.handleSubmit(async (values) => {
                     <FormItem>
                         <FormLabel>{{ t("currentPassword") }}</FormLabel>
                         <FormControl>
-                            <PasswordInput v-bind="componentField" :disabled="isLoading" />
+                            <PasswordInput v-bind="componentField" :disabled="isPending" />
                         </FormControl>
                         <FormMessage />
                     </FormItem>
@@ -98,7 +99,7 @@ const onSubmit = form.handleSubmit(async (values) => {
                     <FormItem>
                         <FormLabel>{{ t("newPassword") }}</FormLabel>
                         <FormControl>
-                            <PasswordInput v-bind="componentField" :disabled="isLoading" />
+                            <PasswordInput v-bind="componentField" :disabled="isPending" />
                         </FormControl>
                         <FormMessage />
                     </FormItem>
@@ -107,7 +108,7 @@ const onSubmit = form.handleSubmit(async (values) => {
                     <FormItem>
                         <FormLabel>{{ t("repeatPassword") }}</FormLabel>
                         <FormControl>
-                            <PasswordInput v-bind="componentField" :disabled="isLoading" />
+                            <PasswordInput v-bind="componentField" :disabled="isPending" />
                         </FormControl>
                         <FormMessage />
                     </FormItem>
@@ -118,7 +119,7 @@ const onSubmit = form.handleSubmit(async (values) => {
                         <Button variant="outline" type="button">Anuluj</Button>
                     </DialogClose>
                     <Button type="submit">
-                        <template v-if="!isLoading">{{ t("confirm") }}</template>
+                        <template v-if="!isPending">{{ t("confirm") }}</template>
                         <LucideLoader2 v-else class="animate-spin size-5" :aria-label="t('pleaseWait')" />
                     </Button>
                 </DialogFooter>

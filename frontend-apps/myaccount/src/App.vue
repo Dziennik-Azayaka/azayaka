@@ -1,66 +1,33 @@
 <script setup lang="ts">
 import { useTitle } from "@vueuse/core";
-import {
-    LucideAlertCircle,
-    LucideHistory,
-    LucideHome,
-    LucideIdCard,
-    LucideLoaderCircle,
-    RefreshCw,
-} from "lucide-vue-next";
+import { LucideLoaderCircle } from "lucide-vue-next";
 import { storeToRefs } from "pinia";
-import { configure } from "vee-validate";
-import { computed, onBeforeMount, ref, watch } from "vue";
+import { computed, watch } from "vue";
 import { useI18n } from "vue-i18n";
-import { useRoute, useRouter } from "vue-router";
+import { useRoute } from "vue-router";
 
 import { syncLocaleWithStore } from "@azayaka-frontend/i18n";
-import { Button, PanelNavigation, PanelNavigationHeaderMenu } from "@azayaka-frontend/ui";
+import { PanelNavigation, PanelNavigationHeaderMenu } from "@azayaka-frontend/ui";
 import { PanelLayout, PanelNavigationItem } from "@azayaka-frontend/ui";
 
-import SessionApiService from "@/api/services/session";
+import { menuItems } from "@/navigation";
 import { useMainStore } from "@/stores/main.store";
+import { useUserStore } from "@/stores/user.store";
 
-configure({
-    validateOnBlur: false,
-    validateOnChange: false,
-    validateOnInput: false,
-    validateOnModelUpdate: false,
-});
+const appVersion = import.meta.env.VITE_APP_VERSION;
 
 const mainStore = useMainStore();
+const userStore = useUserStore();
 const { t, locale: i18nLocale } = useI18n();
+const route = useRoute();
 
 const { locale: storeLocale } = storeToRefs(mainStore);
 
-const menuItems = [
-    {
-        title: "home",
-        link: { name: "home" },
-        icon: LucideHome,
-    },
-    {
-        title: "accountData",
-        link: { name: "data" },
-        icon: LucideIdCard,
-    },
-    {
-        title: "activityHistory",
-        link: { name: "activity" },
-        icon: LucideHistory,
-    },
-];
-
 syncLocaleWithStore(storeLocale, i18nLocale);
-
-const route = useRoute();
-const router = useRouter();
-
 useTitle(
     computed(() => `${t(route.meta.title as string)} - ${t("accountSettings")}`),
     { titleTemplate: "Dziennik Azyaka | %s" },
 );
-
 watch(
     () => mainStore.fontSize,
     () => {
@@ -69,40 +36,11 @@ watch(
     },
     { immediate: true },
 );
-
-const loading = ref(false);
-const error = ref(false);
-
-async function getSessionInfo() {
-    loading.value = true;
-    error.value = false;
-    try {
-        const result = await SessionApiService.getSessionInfo();
-        if (!result.loggedIn) return await router.push("/");
-        mainStore.emailAddress = result.emailAddress;
-    } catch {
-        error.value = true;
-    } finally {
-        loading.value = false;
-    }
-}
-
-onBeforeMount(getSessionInfo);
-
-const appVersion = import.meta.env.VITE_APP_VERSION;
 </script>
 
 <template>
-    <div class="w-screen h-dvh flex flex-col items-center justify-center" v-if="loading || error">
-        <LucideLoaderCircle class="animate-spin mx-auto" :aria-label="t('pleaseWait')" v-if="loading" />
-        <template v-else>
-            <LucideAlertCircle class="mx-auto size-20" />
-            <p class="text-center mt-3 font-medium text-lg">{{ t("unknownError") }}</p>
-            <Button class="mx-auto mt-8" variant="outline" @click="getSessionInfo" size="lg">
-                <RefreshCw />
-                {{ t("tryAgain") }}
-            </Button>
-        </template>
+    <div class="w-screen h-dvh flex flex-col items-center justify-center" v-if="!userStore.user">
+        <LucideLoaderCircle class="animate-spin mx-auto" :aria-label="t('pleaseWait')" />
     </div>
     <PanelLayout v-else>
         <template #navigation>
@@ -110,8 +48,9 @@ const appVersion = import.meta.env.VITE_APP_VERSION;
                 <template #header>
                     <PanelNavigationHeaderMenu
                         :title="t('accountSettings')"
-                        :subtitle="mainStore.emailAddress!"
+                        :subtitle="userStore.user.emailAddress"
                         current-app="myAccount"
+                        :accesses="userStore.user.accesses"
                     />
                 </template>
                 <template #navigation-top>

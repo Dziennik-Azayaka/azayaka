@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import SchoolComplexDialogForm from "./SchoolComplexDialogForm.vue";
+import { useMutation, useQueryClient } from "@tanstack/vue-query";
 import { LucideLoader2 } from "lucide-vue-next";
-import { ref } from "vue";
+import { ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 
 import {
@@ -15,29 +16,34 @@ import {
     DialogTitle,
 } from "@azayaka-frontend/ui";
 
+import { ApiError } from "@/api/error";
 import SchoolStructureService from "@/api/services/school-structure";
 import type { SchoolComplexForm } from "@/types";
 
-const { t } = useI18n();
 const model = defineModel({ default: false });
-const emit = defineEmits(["created"]);
 
-const isLoading = ref(false);
+const { t } = useI18n();
+const queryClient = useQueryClient();
+
 const error = ref<string | null>(null);
 
-async function onSubmit(values: SchoolComplexForm) {
-    isLoading.value = true;
-    error.value = null;
-    try {
-        await SchoolStructureService.createSchoolComplex(values);
-        emit("created");
+const { isPending, mutate: onSubmit } = useMutation({
+    mutationKey: ["createUnitComplex"],
+    mutationFn: async (form: SchoolComplexForm) => {
+        await SchoolStructureService.createSchoolComplex(form);
+    },
+    onSuccess: async () => {
         model.value = false;
-    } catch {
-        error.value = "unknownError";
-    } finally {
-        isLoading.value = false;
-    }
-}
+        await queryClient.invalidateQueries({ queryKey: ["schoolStructure"] });
+    },
+    onError: (reason) => {
+        error.value = reason instanceof ApiError ? reason.getTranslationId() : "unknownError";
+    },
+});
+
+watch(model, (value) => {
+    if (value) error.value = null;
+});
 </script>
 
 <template>
@@ -47,14 +53,14 @@ async function onSubmit(values: SchoolComplexForm) {
                 <DialogTitle>{{ t("createSchoolComplex") }}</DialogTitle>
                 <DialogDescription>{{ t("requiredFieldsInfo") }}</DialogDescription>
             </DialogHeader>
-            <SchoolComplexDialogForm @submit="onSubmit" :error-message="error" :loading="isLoading">
+            <SchoolComplexDialogForm @submit="onSubmit" :error-message="error" :loading="isPending">
                 <template #footer>
                     <DialogFooter>
                         <DialogClose as-child>
                             <Button variant="outline" type="button">{{ t("cancel") }}</Button>
                         </DialogClose>
                         <Button type="submit">
-                            <template v-if="!isLoading">{{ t("save") }}</template>
+                            <template v-if="!isPending">{{ t("save") }}</template>
                             <LucideLoader2 v-else class="animate-spin size-5" :aria-label="t('pleaseWait')" />
                         </Button>
                     </DialogFooter>

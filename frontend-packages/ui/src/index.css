@@ -65,12 +65,12 @@
     --destructive-foreground: rgb(150, 0, 0) !important;
     --sidebar-accent: rgb(255, 255, 0) !important;
     .text-foreground\/70 {
-		color: var(--foreground) !important;
-	}
+        color: var(--foreground) !important;
+    }
 }
 
 .high-contrast .logo {
-	filter: brightness(0);
+    filter: brightness(0);
 }
 
 :root {
