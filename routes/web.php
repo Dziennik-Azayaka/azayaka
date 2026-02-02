@@ -41,7 +41,7 @@ Route::middleware(["auth", "auth.session"])->group(function () {
 
 	Route::get("/api/user", [AccountAccessesController::class, "list"]);
 
-	Route::middleware(["headmasters.admins"])->group(function () {
+	Route::middleware(["employee.role:administrator"])->group(function () {
 		Route::get("/api/schoolComplex", [SchoolComplexController::class, "list"]);
 		Route::post("/api/schoolComplex", [SchoolComplexController::class, "create"]);
 		Route::put("/api/schoolComplex/{schoolComplex}", [SchoolComplexController::class, "update"]);
@@ -93,7 +93,7 @@ Route::view("/authentication{any?}", "authentication")->where("any", ".*")->name
 Route::middleware(["auth", "auth.session"])->group(function () {
 	Route::view("/myaccount{any?}", "myaccount")->where("any", ".*");
 
-	Route::view("/administrator/{accessId}{any?}", "administrator")->where("any", ".*")->middleware("headmasters.admins");
+	Route::view("/administrator/{accessId}{any?}", "administrator")->where("any", ".*")->middleware("employee.role:administrator");
 });
 
 Route::redirect("/rejestracja", "/authentication/access-activation/code");

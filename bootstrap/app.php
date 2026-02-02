@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Middleware\AllowOnlyHeadmastersAndAdmins;
+use App\Http\Middleware\EnsureEmployeeHasRole;
 use App\Http\Middleware\CustomThrottleRequests;
 use App\Http\Middleware\DenyIfAuthenticated;
 use Illuminate\Foundation\Application;
@@ -19,7 +19,7 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->alias([
 			"auth.deny" => DenyIfAuthenticated::class,
-			"headmasters.admins" => AllowOnlyHeadmastersAndAdmins::class,
+			"employee.role" => EnsureEmployeeHasRole::class,
 			"throttle" => CustomThrottleRequests::class
 		]);
 			$middleware->validateCsrfTokens(except: [
