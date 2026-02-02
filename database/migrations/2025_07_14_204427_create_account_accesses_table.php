@@ -17,6 +17,7 @@ return new class extends Migration {
 			$table->foreignId("guardian_id")->nullable()->constrained("guardians")->cascadeOnDelete();
 			$table->foreignId("employee_id")->nullable()->constrained("employees")->cascadeOnDelete();
 			$table->foreignId("user_id")->nullable()->constrained("users")->cascadeOnDelete();
+			$table->index("user_id");
 			$table->timestamps();
 		});
 	}

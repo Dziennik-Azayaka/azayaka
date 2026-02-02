@@ -6,7 +6,7 @@ defineProps<{ title: string; subtitle?: string }>();
 
 <template>
     <button
-        class="flex w-full text-start gap-3 items-center px-3 md:px-2.5 py-2 rounded-md hover:bg-accent transition-colors cursor-pointer"
+        class="flex w-full text-start gap-3 items-center px-3 md:px-2.5 py-2 rounded-md hover:bg-accent transition-colors cursor-pointer focus-visible:outline-3 outline-foreground -outline-offset-3"
     >
         <div class="flex-1 overflow-hidden">
             <h1 class="font-semibold">{{ title }}</h1>

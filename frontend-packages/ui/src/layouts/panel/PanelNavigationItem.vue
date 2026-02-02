@@ -13,8 +13,8 @@ defineProps<{
     <li>
         <RouterLink
             :to="link"
-            class="flex gap-3 px-3.5 md:px-2.5 py-2.5 md:py-1.5 rounded-md items-center hover:bg-sidebar-accent transition-colors text-foreground/90"
-            active-class="!bg-primary !text-primary-foreground"
+            class="flex gap-3 px-3.5 md:px-2.5 py-2.5 md:py-1.5 rounded-md items-center hover:bg-sidebar-accent transition-colors text-foreground/90 outline-foreground -outline-offset-3 focus-visible:outline-3"
+            active-class="!bg-primary !text-primary-foreground !outline-background -outline-offset-4"
         >
             <component :is="icon" aria-hidden="true" class="w-5" />
             <span class="font-medium text-sm">{{ title }}</span>

@@ -10,15 +10,15 @@ use Illuminate\Http\Request;
 
 class ClassificationPeriodController extends Controller
 {
-	public function list(Int $classUnitId, Int $schoolYear)
+	public function list(int $schoolUnitId, int $schoolYear)
 	{
-		return ClassificationPeriod::where("class_unit_id", $classUnitId)
+		return ClassificationPeriod::where("school_unit_id", $schoolUnitId)
 			->where("school_year", $schoolYear)
 			->get()
 			->toResourceCollection();
 	}
 
-	public function save(Request $request, Int $classUnitId, Int $schoolYear)
+	public function save(Request $request, int $schoolUnitId, int $schoolYear)
 	{
 		$validator = ValidatorAssistant::validate($request, [
 			"periodEnd" => ["required", "array"]
@@ -35,7 +35,7 @@ class ClassificationPeriodController extends Controller
 			return $classificationPeriodValidatorResponse;
 		}
 
-		$newPeriodsForClass = [];
+		$newPeriods = [];
 
 		// laravel does not automatically generate timestamps when bulk inserting
 		$now = Carbon::now();
@@ -47,9 +47,9 @@ class ClassificationPeriodController extends Controller
 				$periodStart = Carbon::parse($validated["periodEnd"][$key - 1])->addDay()->toDateString();
 			}
 
-			$newPeriodsForClass[] = [
+			$newPeriods[] = [
 				"school_year" => $schoolYear,
-				"class_unit_id" => $classUnitId,
+				"school_unit_id" => $schoolUnitId,
 				"period_start" => $periodStart,
 				"period_end" => $periodEnd,
 				"period_number" => $key + 1,
@@ -58,22 +58,22 @@ class ClassificationPeriodController extends Controller
 			];
 		}
 
-		$newPeriodsForClass[] = [
+		$newPeriods[] = [
 			"school_year" => $schoolYear,
-			"class_unit_id" => $classUnitId,
-			"period_start" => Carbon::parse(end($newPeriodsForClass)["period_end"])->addDay()->toDateString(),
+			"school_unit_id" => $schoolUnitId,
+			"period_start" => Carbon::parse(end($newPeriods)["period_end"])->addDay()->toDateString(),
 			"period_end" => $schoolYear + 1 . "-08-31",
-			"period_number" => count($newPeriodsForClass) + 1,
+			"period_number" => count($newPeriods) + 1,
 			"created_at" => $now,
 			"updated_at" => $now,
 		];
 
 		ClassificationPeriod::where("school_year", $schoolYear)
-			->where("class_unit_id", $classUnitId)
+			->where("school_unit_id", $schoolUnitId)
 			->delete();
 
-		if (!empty($newPeriodsForClass)) {
-			ClassificationPeriod::insert($newPeriodsForClass);
+		if (!empty($newPeriods)) {
+			ClassificationPeriod::insert($newPeriods);
 		}
 
 		return [
@@ -81,10 +81,11 @@ class ClassificationPeriodController extends Controller
 		];
 	}
 
-	public function delete(Int $classUnitId, Int $schoolYear) {
+	public function delete(int $schoolUnitId, int $schoolYear)
+	{
 		// TODO: Implement checks to make sure no grade books have been created for this year
 		ClassificationPeriod::where("school_year", $schoolYear)
-			->where("class_unit_id", $classUnitId)
+			->where("school_unit_id", $schoolUnitId)
 			->delete();
 
 		return [

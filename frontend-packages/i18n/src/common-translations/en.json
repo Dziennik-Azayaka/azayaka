@@ -3,6 +3,10 @@
     "add": "Add",
     "apps.administrator": "System administrator",
     "apps.myAccount": "Account settings",
+    "apps.student": "Student and parent panel",
+    "apps.secretary": "Secretary",
+    "apps.register": "Register",
+    "apps.teacher": "Teacher panel",
     "back": "Back",
     "cancel": "Cancel",
     "changeFontSize": "Change font size",
@@ -30,5 +34,9 @@
     "warning": "Warning",
     "continue": "Continue",
     "password": "Password",
-    "incorrectPasswordError": "The password is incorrect."
+    "incorrectPasswordError": "The password is incorrect.",
+    "student": "Student",
+    "guardian": "Guardian",
+    "employee": "Employee",
+    "openInNewCardInfo": "The link opens in a new tab."
 }

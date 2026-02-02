@@ -1,0 +1,24 @@
+import { LucideBuilding, LucideLogIn, LucideShapes, LucideUsers } from "lucide-vue-next";
+
+export const menuItems = [
+    {
+        title: "schoolStructure",
+        link: { name: "schoolStructure" },
+        icon: LucideBuilding,
+    },
+    {
+        title: "employees",
+        link: { name: "employees" },
+        icon: LucideUsers,
+    },
+    {
+        title: "systemAccess",
+        link: { name: "systemAccess" },
+        icon: LucideLogIn,
+    },
+    {
+        title: "subjects",
+        link: { name: "subjects" },
+        icon: LucideShapes,
+    },
+];

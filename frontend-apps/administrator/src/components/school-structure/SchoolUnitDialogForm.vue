@@ -17,6 +17,8 @@ import {
     SelectItem,
     SelectTrigger,
     SelectValue,
+    optionalStringField,
+    requiredStringField,
 } from "@azayaka-frontend/ui";
 
 import type { SchoolUnitEntity } from "@/api/entities/school-structure";
@@ -35,45 +37,15 @@ const emit = defineEmits(["submit"]);
 
 const formSchema = toTypedSchema(
     z.object({
-        name: z
-            .string({
-                required_error: t("requiredFieldError"),
-            })
-            .min(1, {
-                message: t("requiredFieldError"),
-            })
-            .max(255, t("fieldMaxLengthError", { number: 255 })),
-        shortName: z
-            .string({
-                required_error: t("requiredFieldError"),
-            })
-            .min(1, {
-                message: t("requiredFieldError"),
-            })
-            .max(255, t("fieldMaxLengthError", { number: 255 })),
+        name: requiredStringField(t),
+        shortName: requiredStringField(t),
         typeId: z.number({
             required_error: t("requiredFieldError"),
         }),
-        address: z
-            .string({
-                required_error: t("requiredFieldError"),
-            })
-            .min(1, {
-                message: t("requiredFieldError"),
-            })
-            .max(255, t("fieldMaxLengthError", { number: 255 })),
+        address: requiredStringField(t),
         voivodeshipId: z.number({ required_error: t("requiredFieldError") }),
-        commune: z
-            .string({ required_error: t("requiredFieldError") })
-            .min(1, {
-                message: t("requiredFieldError"),
-            })
-            .max(255, t("fieldMaxLengthError", { number: 255 })),
-        district: z
-            .string()
-            .max(255, t("fieldMaxLengthError", { number: 255 }))
-            .nullable()
-            .optional(),
+        commune: requiredStringField(t),
+        district: optionalStringField(t),
         studentCategory: z.string({ required_error: t("requiredFieldError") }),
     }),
 );

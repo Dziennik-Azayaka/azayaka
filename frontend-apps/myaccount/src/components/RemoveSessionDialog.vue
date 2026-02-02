@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import ErrorBanner from "#ui/components/ui/banner/ErrorBanner.vue";
 import PasswordInput from "#ui/components/ui/input/PasswordInput.vue";
+import { useMutation, useQueryClient } from "@tanstack/vue-query";
 import { toTypedSchema } from "@vee-validate/zod";
 import { LucideLoader2 } from "lucide-vue-next";
 import { useForm } from "vee-validate";
@@ -25,14 +26,13 @@ import {
     FormMessage,
 } from "@azayaka-frontend/ui";
 
-import { IncorrectPasswordError } from "@/api/errors";
+import { ApiError } from "@/api/error";
 import SessionApiService from "@/api/services/session";
 
 const { t } = useI18n();
 const showDialog = ref(false);
 
 const props = defineProps<{ sessionId: string }>();
-const emit = defineEmits(["logout"]);
 
 const formSchema = toTypedSchema(
     z.object({
@@ -45,23 +45,22 @@ const form = useForm({
     validationSchema: formSchema,
 });
 
-const isLoading = ref(false);
-const error = ref<string | null>();
+const error = ref<string | null>(null);
+const queryClient = useQueryClient();
 
-const onSubmit = form.handleSubmit(async (values) => {
-    isLoading.value = true;
-    error.value = null;
-    try {
-        await SessionApiService.removeSessionById(props.sessionId, values.password);
-        emit("logout");
+const { isPending, mutate } = useMutation({
+    mutationKey: ["removeSession"],
+    mutationFn: (password: string) => SessionApiService.removeSessionById(props.sessionId, password),
+    onSuccess: async () => {
         showDialog.value = false;
-    } catch (reason) {
-        if (reason instanceof IncorrectPasswordError) error.value = "incorrectPasswordError";
-        else error.value = "unknownError";
-    } finally {
-        isLoading.value = false;
-    }
+        await queryClient.invalidateQueries({ queryKey: ["sessions"] });
+    },
+    onError: (reason) => {
+        error.value = reason instanceof ApiError ? reason.getTranslationId() : "unknownError";
+    },
 });
+
+const onSubmit = form.handleSubmit((values) => mutate(values.password));
 </script>
 
 <template>
@@ -79,7 +78,7 @@ const onSubmit = form.handleSubmit(async (values) => {
                     <FormItem>
                         <FormLabel>{{ t("password") }}</FormLabel>
                         <FormControl>
-                            <PasswordInput v-bind="componentField" :disabled="isLoading" autocapitalize="off" />
+                            <PasswordInput v-bind="componentField" :disabled="isPending" autocapitalize="off" />
                         </FormControl>
                         <FormMessage />
                     </FormItem>
@@ -90,7 +89,7 @@ const onSubmit = form.handleSubmit(async (values) => {
                         <Button variant="outline" type="button">{{ t("cancel") }}</Button>
                     </DialogClose>
                     <Button type="submit">
-                        <template v-if="!isLoading">{{ t("confirm") }}</template>
+                        <template v-if="!isPending">{{ t("confirm") }}</template>
                         <LucideLoader2 v-else class="animate-spin size-5" :aria-label="t('pleaseWait')" />
                     </Button>
                 </DialogFooter>

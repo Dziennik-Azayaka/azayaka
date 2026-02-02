@@ -1,5 +1,7 @@
 import axios, { isAxiosError } from "axios";
 
+import { ApiError } from "@/api/error";
+
 const apiOrigin = import.meta.env.VITE_API_URL;
 
 if (!apiOrigin || apiOrigin === "") throw new Error('Missing "VITE_API_URL" variable!');
@@ -12,10 +14,20 @@ const axiosInstance = axios.create({
 axiosInstance.interceptors.response.use(
     (response) => response,
     (error) => {
-        if (isAxiosError(error) && error.response?.data.errors[0] === "USER_NOT_LOGGED_IN")
-            window.location.pathname = "/";
-        else return Promise.reject(error);
+        if (isAxiosError(error)) {
+            const apiError = ApiError.fromAxiosError(error);
+            if (apiError.code === "USER_NOT_LOGGED_IN") window.location.href = "/";
+            console.warn(apiError);
+            return Promise.reject(apiError);
+        }
+        return Promise.reject(error);
     },
 );
+
+axiosInstance.interceptors.request.use((config) => {
+    config.headers.AccessId = "TODO";
+
+    return config;
+});
 
 export default axiosInstance;
