@@ -18,7 +18,8 @@ return new class extends Migration
 			$table->string("second_name")->nullable();
 			$table->string("phone_number")->nullable();
 			$table->string("email")->nullable();
-            $table->timestamps();
+			$table->foreignId("residence_address_id")->nullable()->constrained("residence_addresses")->nullOnDelete();
+			$table->timestamps();
         });
     }
 

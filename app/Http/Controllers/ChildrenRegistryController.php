@@ -18,8 +18,7 @@ class ChildrenRegistryController extends Controller
 		$validator = ValidatorAssistant::validate($request, [
 			"schoolUnitId" => "required|integer|exists:school_units,id"
 		]);
-		if (!$validator["success"]) return $validator["errorResponse"];
-		$schoolUnitId = $validator["data"]["schoolUnitId"];
+		$schoolUnitId = $validator["schoolUnitId"];
 		if (ChildrenRegistry::where("school_unit_id", $schoolUnitId)->exists()) {
 			return \Response::json([
 				"success" => false,

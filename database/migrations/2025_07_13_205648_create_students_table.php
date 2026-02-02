@@ -25,7 +25,8 @@ return new class extends Migration
 			$table->date("admission_date");
 			$table->date("leave_date")->nullable();
 			$table->string("leave_reason")->nullable();
-            $table->timestamps();
+			$table->foreignId("residence_address_id")->nullable()->constrained("residence_addresses")->nullOnDelete();
+			$table->timestamps();
         });
     }
 
