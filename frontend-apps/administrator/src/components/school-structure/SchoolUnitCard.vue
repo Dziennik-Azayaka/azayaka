@@ -10,7 +10,6 @@ import Voivodeships from "@/resources/voivodeships.json";
 
 const { t } = useI18n();
 defineProps<{ data: SchoolUnitEntity }>();
-const emit = defineEmits(["edited"]);
 </script>
 
 <template>
@@ -21,8 +20,8 @@ const emit = defineEmits(["edited"]);
                 <template v-if="data.archived">({{ t("archivedUnit") }})</template>
             </h2>
             <div class="flex gap-3">
-                <SchoolUnitEditDialog :current-data="data" @edited="emit('edited')" v-if="!data.archived" />
-                <SchoolUnitArchiveDialog :archived="data.archived" :unit-id="data.id" @changed="emit('edited')" />
+                <SchoolUnitEditDialog :current-data="data" v-if="!data.archived" />
+                <SchoolUnitArchiveDialog :archived="data.archived" :unit-id="data.id" />
             </div>
         </div>
         <dl :class="{ 'opacity-75': data.archived }">

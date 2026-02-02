@@ -1,8 +1,15 @@
 <script setup lang="ts">
 import PanelNavigationHeaderMenuTrigger from "./PanelNavigationHeaderMenuTrigger.vue";
 import { useMediaQuery } from "@vueuse/core";
-import { LucideSettings2, LucideUserCog } from "lucide-vue-next";
-import { type Component, ref } from "vue";
+import {
+    LucideBookCopy,
+    LucideBookMarked,
+    LucideBuilding,
+    LucideGraduationCap,
+    LucideSettings2,
+    LucideUserCog,
+} from "lucide-vue-next";
+import { type Component } from "vue";
 import { useI18n } from "vue-i18n";
 
 import { Button } from "#ui/components/ui/button";
@@ -10,7 +17,6 @@ import {
     Dialog,
     DialogClose,
     DialogContent,
-    DialogDescription,
     DialogFooter,
     DialogHeader,
     DialogTitle,
@@ -24,27 +30,42 @@ import {
     DropdownMenuTrigger,
 } from "#ui/components/ui/dropdown-menu";
 
-type App = "myAccount" | "administrator";
+type Module = "myAccount" | "administrator" | "secretary" | "register" | "student" | "teacher";
+
+interface Access {
+    id: number;
+    name: string;
+    type: "employee" | "guardian" | "student";
+    modules: Module[];
+}
 
 defineProps<{
     title: string;
     subtitle?: string;
-    currentApp: App;
+    accesses: Access[];
 }>();
 
 const isMobile = useMediaQuery("(width < 80rem)");
 const { t } = useI18n();
 
-const appIcons: Record<App, Component> = {
+const moduleIcons: Record<Module, Component> = {
     myAccount: LucideUserCog,
     administrator: LucideSettings2,
+    secretary: LucideBuilding,
+    register: LucideBookCopy,
+    student: LucideGraduationCap,
+    teacher: LucideBookMarked,
 };
-const appRootURLs: Record<App, string> = {
+const moduleRootURLs: Record<Module, string> = {
     myAccount: "/myaccount",
     administrator: "/administrator",
+    secretary: "/secretary",
+    register: "/register",
+    student: "/student",
+    teacher: "/teacher",
 };
 
-const userApps = ref<App[]>(["myAccount", "administrator"]);
+const getLocation = () => window.location.pathname;
 </script>
 
 <template>
@@ -54,19 +75,43 @@ const userApps = ref<App[]>(["myAccount", "administrator"]);
         </DropdownMenuTrigger>
         <DropdownMenuContent class="w-[21.875rem]">
             <DropdownMenuLabel>{{ t("goTo") }}</DropdownMenuLabel>
-            <p class="px-2 py-1.5 text-xs font-medium text-muted-foreground">LO 23 Gdańsk</p>
-            <DropdownMenuItem v-for="app in userApps" :key="app" as-child>
+            <DropdownMenuItem as-child>
                 <a
-                    :href="appRootURLs[app]"
+                    :href="moduleRootURLs['myAccount']"
                     target="_blank"
-                    title="Odnośnik otwiera się w nowej karcie"
+                    :title="t('openInNewCardInfo')"
                     class="cursor-pointer"
-                    :class="{ '!bg-primary !text-primary-foreground *:!text-primary-foreground': currentApp === app }"
+                    :class="{
+                        '!bg-primary !text-primary-foreground *:!text-primary-foreground': getLocation().startsWith(
+                            moduleRootURLs['myAccount'],
+                        ),
+                    }"
                 >
-                    <component :is="appIcons[app]" class="text-foreground" />
-                    {{ t(`apps.${app}`) }}
+                    <component :is="moduleIcons['myAccount']" class="text-foreground" />
+                    {{ t(`apps.myAccount`) }}
                 </a>
             </DropdownMenuItem>
+            <template v-for="access in accesses" :key="access.id">
+                <p class="px-2 py-1.5 text-xs font-medium text-muted-foreground">
+                    {{ access.name }} ({{ t(access.type) }})
+                </p>
+                <DropdownMenuItem v-for="module in access.modules" :key="module" as-child>
+                    <a
+                        :href="`${moduleRootURLs[module]}/${access.id}`"
+                        target="_blank"
+                        :title="t('openInNewCardInfo')"
+                        class="cursor-pointer"
+                        :class="{
+                            '!bg-primary !text-primary-foreground *:!text-primary-foreground': getLocation().startsWith(
+                                `${moduleRootURLs[module]}/${access.id}`,
+                            ),
+                        }"
+                    >
+                        <component :is="moduleIcons[module]" class="text-foreground" />
+                        {{ t(`apps.${module}`) }}
+                    </a>
+                </DropdownMenuItem>
+            </template>
         </DropdownMenuContent>
     </DropdownMenu>
     <Dialog v-else>
@@ -76,19 +121,36 @@ const userApps = ref<App[]>(["myAccount", "administrator"]);
         <DialogContent>
             <DialogHeader>
                 <DialogTitle>{{ t("goTo") }}</DialogTitle>
-                <DialogDescription>LO 23 Gdańsk</DialogDescription>
             </DialogHeader>
-            <ul class="space-y-0.5">
-                <li v-for="app in userApps" :key="app">
+            <ul class="space-y-1.5">
+                <li>
                     <a
-                        :href="appRootURLs[app]"
+                        :href="moduleRootURLs['myAccount']"
                         target="_blank"
-                        title="Odnośnik otwiera się w nowej karcie"
+                        :title="t('openInNewCardInfo')"
                         class="px-4 py-3 rounded-md flex items-center gap-3 font-medium text-sm hover:bg-accent transition-colors"
                     >
-                        <component :is="appIcons[app]" class="text-foreground" />
-                        {{ t(`apps.${app}`) }}
+                        <component :is="moduleIcons['myAccount']" class="text-foreground" />
+                        {{ t(`apps.myAccount`) }}
                     </a>
+                </li>
+                <li v-for="access in accesses" :key="access.id">
+                    <p class="px-2 py-1.5 text-sm font-medium text-muted-foreground">
+                        {{ access.name }} ({{ t(access.type) }})
+                    </p>
+                    <ul class="space-y-0.5">
+                        <li v-for="module in access.modules" :key="module">
+                            <a
+                                :href="`${moduleRootURLs[module]}/${access.id}`"
+                                target="_blank"
+                                :title="t('openInNewCardInfo')"
+                                class="px-4 py-3 rounded-md flex items-center gap-3 font-medium text-sm hover:bg-accent transition-colors"
+                            >
+                                <component :is="moduleIcons[module]" class="text-foreground" />
+                                {{ t(`apps.${module}`) }}
+                            </a>
+                        </li>
+                    </ul>
                 </li>
             </ul>
             <DialogFooter>

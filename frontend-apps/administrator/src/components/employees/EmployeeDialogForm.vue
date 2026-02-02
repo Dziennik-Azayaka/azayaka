@@ -13,6 +13,8 @@ import {
     FormLabel,
     FormMessage,
     Input,
+    optionalStringField,
+    requiredStringField,
 } from "@azayaka-frontend/ui";
 
 import type { EmployeeForm } from "@/types";
@@ -27,26 +29,9 @@ const emit = defineEmits(["submit"]);
 
 const formSchema = toTypedSchema(
     z.object({
-        lastName: z
-            .string({
-                required_error: t("requiredFieldError"),
-            })
-            .min(1, {
-                message: t("requiredFieldError"),
-            })
-            .max(255, t("fieldMaxLengthError", { number: 255 })),
-        firstName: z
-            .string({
-                required_error: t("requiredFieldError"),
-            })
-            .min(1, {
-                message: t("requiredFieldError"),
-            })
-            .max(255, t("fieldMaxLengthError", { number: 255 })),
-        shortcut: z
-            .string()
-            .max(255, t("fieldMaxLengthError", { number: 255 }))
-            .optional(),
+        lastName: requiredStringField(t),
+        firstName: requiredStringField(t),
+        shortcut: optionalStringField(t),
         roles: z
             .array(z.string())
             .refine((value) => !!value.length, t("requiredFieldError"))

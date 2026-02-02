@@ -4,7 +4,16 @@ import { useForm } from "vee-validate";
 import { useI18n } from "vue-i18n";
 import z from "zod";
 
-import { ErrorBanner, FormControl, FormField, FormItem, FormLabel, FormMessage, Input } from "@azayaka-frontend/ui";
+import {
+    ErrorBanner,
+    FormControl,
+    FormField,
+    FormItem,
+    FormLabel,
+    FormMessage,
+    Input,
+    requiredStringField,
+} from "@azayaka-frontend/ui";
 
 import type { SubjectEntity } from "@/api/entities/subject.ts";
 
@@ -19,22 +28,8 @@ const emit = defineEmits(["submit"]);
 
 const formSchema = toTypedSchema(
     z.object({
-        name: z
-            .string({
-                required_error: t("requiredFieldError"),
-            })
-            .min(3, {
-                message: t("fieldMinLengthError", { number: 3 }),
-            })
-            .max(255, t("fieldMaxLengthError", { number: 255 })),
-        shortcut: z
-            .string({
-                required_error: t("requiredFieldError"),
-            })
-            .min(1, {
-                message: t("requiredFieldError"),
-            })
-            .max(32, t("fieldMaxLengthError", { number: 32 })),
+        name: requiredStringField(t, { minLength: 3 }),
+        shortcut: requiredStringField(t, { maxLength: 32 }),
     }),
 );
 const form = useForm({

@@ -15,8 +15,10 @@ import {
 } from "@azayaka-frontend/ui";
 
 import { useMainStore } from "@/stores/main.store";
+import { useUserStore } from "@/stores/user.store";
 
 const mainStore = useMainStore();
+const userStore = useUserStore();
 const { locale, t } = useI18n();
 
 defineProps<{
@@ -47,11 +49,11 @@ defineProps<{
         </Breadcrumb>
         <div class="flex-1" />
         <PanelAccountMenu
-            v-if="mainStore.emailAddress"
+            v-if="userStore.user"
             v-model:theme="mainStore.colorMode"
             v-model:lang="locale"
             v-model:font-size="mainStore.fontSize"
-            :email-address="mainStore.emailAddress"
+            :email-address="userStore.user.emailAddress"
         />
     </div>
 </template>
