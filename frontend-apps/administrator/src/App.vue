@@ -24,10 +24,10 @@ const { locale: storeLocale } = storeToRefs(mainStore);
 
 useQueryClient();
 syncLocaleWithStore(storeLocale, i18nLocale);
-useTitle(
+/*useTitle(
     computed(() => `${t(route.meta.title as string)} - ${t("administrator")}`),
     { titleTemplate: "Dziennik Azyaka | %s" },
-);
+);*/
 watch(
     () => mainStore.fontSize,
     () => {

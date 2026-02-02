@@ -29,7 +29,6 @@ import { schoolYearString } from "@/utils.ts";
 import { useRouter } from "vue-router";
 
 const props = defineProps<{ classes: ClassEntity[]; unitShorts: Map<number, string>; showCurrentLevel: boolean }>();
-const emit = defineEmits(["refreshNeeded"]);
 const { t } = useI18n();
 const router = useRouter();
 
