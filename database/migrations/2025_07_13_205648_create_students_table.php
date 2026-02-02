@@ -15,6 +15,17 @@ return new class extends Migration
             $table->id();
 			$table->string("first_name");
 			$table->string("last_name");
+			$table->string("second_name")->nullable();
+			$table->string("pesel")->nullable();
+			$table->string("alternate_identity_document")->nullable();
+			$table->date("birthdate");
+			$table->string("birthplace")->nullable();
+			$table->string("gender")->nullable();
+			$table->string("last_modified_by")->nullable();
+			$table->date("admission_date");
+			$table->date("leave_date")->nullable();
+			$table->string("leave_reason")->nullable();
+			$table->foreignId("residence_address_id")->nullable()->constrained("residence_addresses")->nullOnDelete();
             $table->timestamps();
         });
     }
