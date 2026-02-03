@@ -11,8 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create("students", function (Blueprint $table) {
-            $table->id();
+		Schema::create("students", function (Blueprint $table) {
+			$table->id();
 			$table->string("first_name");
 			$table->string("last_name");
 			$table->string("second_name")->nullable();
@@ -25,7 +25,6 @@ return new class extends Migration
 			$table->date("admission_date");
 			$table->date("leave_date")->nullable();
 			$table->string("leave_reason")->nullable();
-			$table->foreignId("residence_address_id")->nullable()->constrained("residence_addresses")->nullOnDelete();
             $table->timestamps();
         });
     }
