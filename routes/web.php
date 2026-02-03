@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AccountAccessesController;
 use App\Http\Controllers\AccountLogController;
+use App\Http\Controllers\ChildrenRegistryController;
 use App\Http\Controllers\ClassificationPeriodController;
 use App\Http\Controllers\ClassificationPeriodDefaultsController;
 use App\Http\Controllers\ClassUnitController;
@@ -9,6 +10,7 @@ use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\SchoolComplexController;
 use App\Http\Controllers\SchoolUnitController;
 use App\Http\Controllers\SessionController;
+use App\Http\Controllers\StudentController;
 use App\Http\Controllers\StudentRegistryController;
 use App\Http\Controllers\SubjectController;
 use App\Http\Controllers\UserController;
@@ -78,6 +80,10 @@ Route::middleware(["auth", "auth.session"])->group(function () {
 
 	Route::middleware(["employee.role:secretary"])->group(function () {
 		Route::get("/api/studentRegistries", [StudentRegistryController::class, "list"]);
+		Route::post("/api/schoolUnits/{schoolUnitId}/studentRegistry", [StudentRegistryController::class, "create"]);
+		Route::post("/api/schoolUnits/{schoolUnitId}/studentRegistry/{studentRegistry}", [StudentController::class, "create"]);
+		Route::get("/api/childrenRegistries", [ChildrenRegistryController::class, "list"]);
+		Route::post("/api/schoolUnits/{schoolUnitId}/childrenRegistry", [ChildrenRegistryController::class, "create"]);
 	});
 });
 

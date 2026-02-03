@@ -16,8 +16,8 @@ return new class extends Migration
 			$table->string("first_name");
 			$table->string("last_name");
 			$table->string("second_name")->nullable();
-			$table->string("pesel")->nullable();
-			$table->string("alternate_identity_document")->nullable();
+			$table->string("pesel")->nullable()->unique();
+			$table->string("alternate_identity_document")->nullable()->unique();
 			$table->date("birthdate");
 			$table->string("birthplace")->nullable();
 			$table->string("gender")->nullable();
