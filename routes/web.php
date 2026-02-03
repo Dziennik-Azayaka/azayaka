@@ -9,6 +9,7 @@ use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\SchoolComplexController;
 use App\Http\Controllers\SchoolUnitController;
 use App\Http\Controllers\SessionController;
+use App\Http\Controllers\StudentRegistryController;
 use App\Http\Controllers\SubjectController;
 use App\Http\Controllers\UserController;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
@@ -73,6 +74,10 @@ Route::middleware(["auth", "auth.session"])->group(function () {
 		Route::get("/api/schoolUnits/{schoolUnitId}/classificationPeriods/{schoolYear}", [ClassificationPeriodController::class, "list"]);
 		Route::post("/api/schoolUnits/{schoolUnitId}/classificationPeriods/{schoolYear}", [ClassificationPeriodController::class, "save"]);
 		Route::delete("/api/schoolUnits/{schoolUnitId}/classificationPeriods/{schoolYear}", [ClassificationPeriodController::class, "delete"]);
+	});
+
+	Route::middleware(["employee.role:secretary"])->group(function () {
+		Route::get("/api/studentRegistries", [StudentRegistryController::class, "list"]);
 	});
 });
 

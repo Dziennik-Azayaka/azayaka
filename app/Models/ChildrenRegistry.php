@@ -4,9 +4,18 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class ChildrenRegistry extends Model
 {
-    /** @use HasFactory<\Database\Factories\ChildrenRegistryFactory> */
-    use HasFactory;
+	public function schoolUnit(): BelongsTo
+	{
+		return $this->belongsTo(SchoolUnit::class);
+	}
+
+	public function students(): BelongsToMany
+	{
+		return $this->belongsToMany(Student::class, "children_registry_student")->withPivot("id");
+	}
 }
