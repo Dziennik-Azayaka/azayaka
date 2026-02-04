@@ -9,4 +9,9 @@ class ResidenceAddress extends Model
 {
     /** @use HasFactory<\Database\Factories\ResidenceAddressFactory> */
     use HasFactory;
+
+	public function students()
+	{
+		return $this->hasMany(Student::class, 'residence_address_id');
+	}
 }
