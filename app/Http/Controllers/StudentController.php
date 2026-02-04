@@ -2,23 +2,31 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\StudentResource;
 use App\Models\ChildrenRegistry;
 use App\Models\ResidenceAddress;
 use App\Models\Student;
 use App\Models\StudentRegistry;
 use App\Utilities\ValidatorAssistant;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class StudentController extends Controller
 {
+	public function list(StudentRegistry $studentRegistry) {
+		return $studentRegistry->students()->with("residenceAddress")->get()->toResourceCollection();
+	}
+
 	public function create(Request $request, StudentRegistry $studentRegistry)
 	{
 		$validator = ValidatorAssistant::validate($request, [
 			"firstName" => "required|max:255",
 			"lastName" => "required|max:255",
 			"secondName" => "nullable|max:255",
-			"pesel" => "required|size:11|unique:students,pesel",
-			"alternateIdentityDocument" => "nullable|max:255|unique:students,alternate_identity_document",
+			Rule::anyOf([
+				"pesel" => "size:11|unique:students,pesel",
+				"alternateIdentityDocument" => "max:255|unique:students,alternate_identity_document",
+			]),
 			"birthdate" => "required|date",
 			"birthplace" => "required|max:255",
 			"gender" => "required|in:male,female",
@@ -69,4 +77,30 @@ class StudentController extends Controller
 			"success" => true
 		], 201);
     }
+
+	public function update(Request $request, Student $student) {
+		$validator = ValidatorAssistant::validate($request, [
+			"firstName" => "required|max:255",
+			"lastName" => "required|max:255",
+			"secondName" => "nullable|max:255",
+			Rule::anyOf([
+				"pesel" => "size:11|unique:students,pesel",
+				"alternateIdentityDocument" => "max:255|unique:students,alternate_identity_document",
+			]),
+			"birthdate" => "required|date",
+			"birthplace" => "required|max:255",
+			"gender" => "required|in:male,female",
+			"admissionDate" => "required|date"
+		]);
+
+		if (!$validator["success"]) {
+			return $validator["errorResponse"];
+		}
+
+		$validated = $validator["data"];
+		$student->update($validated);
+		return [
+			"success" => true
+		];
+	}
 }

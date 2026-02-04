@@ -16,6 +16,6 @@ class StudentRegistry extends Model
 
 	public function students(): BelongsToMany
 	{
-		return $this->belongsToMany(Student::class, "student_registry_student")->withPivot("id");
+		return $this->belongsToMany(Student::class, "student_registry_student");
 	}
 }
