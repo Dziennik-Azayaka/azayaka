@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\ResidenceAddress;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -32,7 +33,7 @@ class StudentFactory extends Factory
 			"admission_date" => "2025-09-01",
 			"leave_date" => $leftSchool ? null : "2025-12-31",
 			"leave_reason" => $leftSchool ? "Przeniesienie do innej placówki edukacyjnej." : null,
-			"residence_address_id" => rand(1, 10),
+			"residence_address_id" => ResidenceAddress::factory()->create()->id,
 		];
 	}
 }

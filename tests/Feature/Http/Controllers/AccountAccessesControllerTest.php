@@ -6,6 +6,7 @@ use App\Models\AccountAccess;
 use App\Models\AccountLog;
 use App\Models\Employee;
 use App\Models\Guardian;
+use App\Models\ResidenceAddress;
 use App\Models\Student;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;

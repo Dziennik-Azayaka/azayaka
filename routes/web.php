@@ -80,10 +80,11 @@ Route::middleware(["auth", "auth.session"])->group(function () {
 
 	Route::middleware(["employee.role:secretary"])->group(function () {
 		Route::get("/api/studentRegistries", [StudentRegistryController::class, "list"]);
-		Route::post("/api/schoolUnits/{schoolUnitId}/studentRegistry", [StudentRegistryController::class, "create"]);
-		Route::post("/api/schoolUnits/{schoolUnitId}/studentRegistry/{studentRegistry}", [StudentController::class, "create"]);
+		Route::post("/api/studentRegistry", [StudentRegistryController::class, "create"]);
+		Route::get("/api/studentRegistry/{studentRegistry}", [StudentController::class, "list"]);
+		Route::post("/api/studentRegistry/{studentRegistry}", [StudentController::class, "create"]);
 		Route::get("/api/childrenRegistries", [ChildrenRegistryController::class, "list"]);
-		Route::post("/api/schoolUnits/{schoolUnitId}/childrenRegistry", [ChildrenRegistryController::class, "create"]);
+		Route::post("/api/childrenRegistry", [ChildrenRegistryController::class, "create"]);
 	});
 });
 
