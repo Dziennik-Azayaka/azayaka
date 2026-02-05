@@ -86,9 +86,9 @@ class ClassUnitController extends Controller
 
 		$classUnit->employees()->attach($validated["employeeIds"]);
 
-		return [
+		return \Response::json([
 			"success" => true
-		];
+		], 201);
 	}
 
 	public function update(Request $request, int $schoolUnitId, ClassUnit $classUnit)

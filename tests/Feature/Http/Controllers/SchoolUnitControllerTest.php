@@ -78,7 +78,7 @@ class SchoolUnitControllerTest extends TestCase
 		$payload = $this->validPayload(["schoolComplexId" => $complex->id]);
 		$response = $this->post("/api/schoolUnits", $payload, ["Access-ID" => $actingUser["access"]]);
 
-		$response->assertOk();
+		$response->assertCreated();
 		$response->assertJson(["success" => true]);
 		$this->assertDatabaseHas("school_units", [
 			"name" => $payload["name"],

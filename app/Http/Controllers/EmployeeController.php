@@ -50,10 +50,10 @@ class EmployeeController extends Controller
 
 		$accountAccess = $this->generateAccess($employee);
 
-		return [
+		return \Response::json([
 			"success" => true,
 			"words" => $accountAccess
-		];
+		], 201);
 	}
 
 	public function update(Employee $employee, Request $request)

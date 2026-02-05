@@ -35,9 +35,9 @@ class SchoolComplexController extends Controller
 			SchoolUnit::query()->update(['school_complex_id' => $schoolComplex->id]);
 		}
 
-		return [
-			"success" => true,
-		];
+		return \Response::json([
+			"success" => true
+		], 201);
 	}
 
 	public function update(Request $request, SchoolComplex $schoolComplex) {

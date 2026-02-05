@@ -48,7 +48,7 @@ class SchoolComplexControllerTest extends TestCase
 			"name" => "Zespół Szkół im. Dzienniczkowców",
 		], ["Access-ID" => $actingUser["access"]]);
 
-		$response->assertOk();
+		$response->assertCreated();
 		$response->assertJson(["success" => true]);
 
 		$this->assertDatabaseCount("school_complexes", 1);
@@ -65,7 +65,7 @@ class SchoolComplexControllerTest extends TestCase
 		$response = $this->post("/api/schoolComplex", [
 			"name" => "Zespół Szkół im. Dzienniczkowców",
 		], ["Access-ID" => $actingUser["access"]]);
-		$response->assertOk();
+		$response->assertCreated();
 		$response->assertJson(["success" => true]);
 
 		$complex = SchoolComplex::first();
