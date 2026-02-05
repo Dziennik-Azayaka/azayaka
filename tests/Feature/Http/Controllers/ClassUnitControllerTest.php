@@ -355,7 +355,7 @@ final class ClassUnitControllerTest extends TestCase
 			],
 			"promoteEvery" => "semester"
 		], ["Access-ID" => $actingUser["access"]]);
-		$response->assertOk();
+		$response->assertCreated();
 		$this->assertDatabaseHas("class_units", [
 			"alias" => "Klasa Informatyczna",
 			"mark" => "a",
