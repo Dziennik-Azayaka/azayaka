@@ -138,9 +138,9 @@ class AccountAccessesController extends Controller
 		$request->session()->regenerateToken();
 		AccountEventLogger::log($request, AccountEventType::SUCCESSFUL_LOGIN_ATTEMPT);
 
-		return [
-			"success" => true,
-		];
+		return \Response::json([
+			"success" => true
+		], 201);
 	}
 
 	public function status()

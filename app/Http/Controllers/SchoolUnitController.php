@@ -54,9 +54,9 @@ class SchoolUnitController extends Controller
 		$unit->short_name = $data["shortName"];
 		$unit->school_complex_id = $data["schoolComplexId"];
 		$unit->save();
-		return [
+		return \Response::json([
 			"success" => true
-		];
+		], 201);
 	}
 
 	public function update(Request $request, SchoolUnit $schoolUnit) {

@@ -52,7 +52,7 @@ class SubjectControllerTest extends TestCase
 			"shortcut" => "TSubject"
 		], ["Access-ID" => $actingUser["access"]]);
 
-		$response->assertOk();
+		$response->assertCreated();
 		$this->assertDatabaseHas("subjects", ["name" => "Test Subject", "shortcut" => "TSubject"]);
 	}
 

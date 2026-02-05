@@ -35,9 +35,9 @@ class SubjectController extends Controller
 		$subject->shortcut = $validated["shortcut"];
 		$subject->save();
 
-		return [
+		return \Response::json([
 			"success" => true
-		];
+		], 201);
 	}
 
 	public function update(Subject $subject, Request $request) {
