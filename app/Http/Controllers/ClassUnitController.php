@@ -93,9 +93,9 @@ class ClassUnitController extends Controller
 
 		ClassUnitPeriod::insert($pivotEntries);
 
-		return [
+		return \Response::json([
 			"success" => true
-		];
+		], 201);
 	}
 
 	public function update(Request $request, int $schoolUnitId, ClassUnit $classUnit)

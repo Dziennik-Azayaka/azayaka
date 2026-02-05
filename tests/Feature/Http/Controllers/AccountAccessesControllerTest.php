@@ -85,7 +85,7 @@ final class AccountAccessesControllerTest extends TestCase
 			"password" => "password"
 		]);
 
-		$response->assertOk();
+		$response->assertCreated();
 		$response->assertJson(["success" => true]);
 
 		$this->assertAuthenticated();
@@ -131,7 +131,7 @@ final class AccountAccessesControllerTest extends TestCase
 			"email" => "tadeusz.nowak@example.com",
 			"password" => "password",
 		]);
-		$responseOk->assertOk();
+		$responseOk->assertCreated();
 		$responseOk->assertJson(["success" => true]);
 
 		$this->assertAuthenticatedAs($existing->fresh());
