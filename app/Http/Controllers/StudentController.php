@@ -7,37 +7,37 @@ use App\Models\ChildrenRegistry;
 use App\Models\ResidenceAddress;
 use App\Models\Student;
 use App\Models\StudentRegistry;
+use App\Rules\Pesel;
 use App\Utilities\ValidatorAssistant;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
 class StudentController extends Controller
 {
-	public function list(StudentRegistry $studentRegistry) {
+	public function list(StudentRegistry $studentRegistry)
+	{
 		return $studentRegistry->students()->with("residenceAddress")->get()->toResourceCollection();
 	}
 
 	public function create(Request $request, StudentRegistry $studentRegistry)
 	{
 		$validator = ValidatorAssistant::validate($request, [
-			"firstName" => "required|max:255",
-			"lastName" => "required|max:255",
-			"secondName" => "nullable|max:255",
-			Rule::anyOf([
-				"pesel" => "size:11|unique:students,pesel",
-				"alternateIdentityDocument" => "max:255|unique:students,alternate_identity_document",
-			]),
-			"birthdate" => "required|date",
-			"birthplace" => "required|max:255",
-			"gender" => "required|in:male,female",
-			"admissionDate" => "required|date",
-			"residenceAddressCountry" => "required|max:255",
-			"residenceAddressCommune" => "nullable|max:255",
-			"residenceAddressTown" => "nullable|max:255",
-			"residenceAddressPostalCode" => "nullable|max:255",
-			"residenceAddressHouseNumber" => "nullable|max:255",
-			"residenceAddressStreet" => "nullable|max:255",
-			"childrenRegistryId" => "nullable|exists:children_registries,id"
+			"firstName" => ["required", "max:255"],
+			"lastName" => ["required", "max:255"],
+			"secondName" => ["nullable", "max:255"],
+			"pesel" => ["required_without:alternateIdentityDocument", "unique:students,pesel", new Pesel],
+			"alternateIdentityDocument" => ["required_without:pesel", "max:255", "unique:students,alternate_identity_document"],
+			"birthdate" => ["required", "date"],
+			"birthplace" => ["required", "max:255"],
+			"gender" => ["required", "in:male,female"],
+			"admissionDate" => ["required", "date"],
+			"residenceAddressCountry" => ["required", "max:255"],
+			"residenceAddressCommune" => ["nullable", "max:255"],
+			"residenceAddressTown" => ["nullable", "max:255"],
+			"residenceAddressPostalCode" => ["nullable", "max:255"],
+			"residenceAddressHouseNumber" => ["nullable", "max:255"],
+			"residenceAddressStreet" => ["nullable", "max:255"],
+			"childrenRegistryId" => ["nullable", "exists:children_registries,id"]
 		]);
 
 		if (!$validator["success"]) {
@@ -59,13 +59,20 @@ class StudentController extends Controller
 		$student->first_name = $validated["firstName"];
 		$student->last_name = $validated["lastName"];
 		$student->second_name = $validated["secondName"];
-		$student->pesel = $validated["pesel"];
-		$student->alternate_identity_document = $validated["alternateIdentityDocument"];
+		$student->pesel = $validated["pesel"] ?? null;
+		$student->alternate_identity_document = $validated["alternateIdentityDocument"] ?? null;
 		$student->birthdate = $validated["birthdate"];
 		$student->birthplace = $validated["birthplace"];
 		$student->gender = $validated["gender"];
 		$student->admission_date = $validated["admissionDate"];
 		$student->residence_address_id = $residenceAddress->id;
+
+		try {
+			$student->saveOrFail();
+		} catch (\Throwable) {
+			// Saving the student failed, so we need to delete the residence address
+			$residenceAddress->delete();
+		}
 
 		$studentRegistry->students()->attach($student);
 
@@ -76,9 +83,10 @@ class StudentController extends Controller
 		return \Response::json([
 			"success" => true
 		], 201);
-    }
+	}
 
-	public function update(Request $request, Student $student) {
+	public function update(Request $request, Student $student)
+	{
 		$validator = ValidatorAssistant::validate($request, [
 			"firstName" => "required|max:255",
 			"lastName" => "required|max:255",

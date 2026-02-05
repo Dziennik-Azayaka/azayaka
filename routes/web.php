@@ -83,6 +83,7 @@ Route::middleware(["auth", "auth.session"])->group(function () {
 		Route::post("/api/studentRegistry", [StudentRegistryController::class, "create"]);
 		Route::get("/api/studentRegistry/{studentRegistry}", [StudentController::class, "list"]);
 		Route::post("/api/studentRegistry/{studentRegistry}", [StudentController::class, "create"]);
+		Route::post("/api/studentRegistry/{studentRegistry}/{student}", [StudentController::class, "update"]);
 		Route::get("/api/childrenRegistries", [ChildrenRegistryController::class, "list"]);
 		Route::post("/api/childrenRegistry", [ChildrenRegistryController::class, "create"]);
 	});

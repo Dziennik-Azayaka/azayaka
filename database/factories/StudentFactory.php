@@ -17,7 +17,7 @@ class StudentFactory extends Factory
 	 */
 	public function definition(): array
 	{
-		$hasPolishCitizenship = rand(1, 10) > 8;
+		$hasPolishCitizenship = rand(1, 10) > 3;
 		$leftSchool = rand(1, 10) > 8;
 
 		return [

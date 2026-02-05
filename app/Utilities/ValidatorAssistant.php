@@ -65,7 +65,7 @@ class ValidatorAssistant
 					} else if (str_contains($fieldError, "true or false")) {
 						$errorCodes[] = strtoupper($field) . "_MUST_BE_A_BOOLEAN";
 					} else {
-						$errorCodes[] = self::toUppercaseWithUnderscores($field);
+						$errorCodes[] = self::toUppercaseWithUnderscores($field) . "_" . self::toUppercaseWithUnderscores($fieldError);
 					}
 				}
 			}

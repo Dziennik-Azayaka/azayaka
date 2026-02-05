@@ -16,7 +16,7 @@ class ResidenceAddressFactory extends Factory
      */
     public function definition(): array
     {
-		$hasPolishResidency = rand(1, 10) > 8;
+		$hasPolishResidency = rand(1, 10) > 3;
         return [
             "country" => $hasPolishResidency ? "PL" : $this->faker->countryCode(),
 			"commune" => $hasPolishResidency ? $this->faker->city() : null,
