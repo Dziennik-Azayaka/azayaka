@@ -56,7 +56,7 @@ const { data, isError, refetch, fetchStatus } = useQuery({
 
         <section class="px-3 sm:px-5 py-3 gap-2 border rounded-md flex justify-between items-center">
             <p class="font-semibold">
-                <span class="not-md:hidden">Rok szkolny</span> {{ getSchoolYearString(schoolYear) }}
+                <span class="not-md:hidden">{{ t("schoolYear") }}</span> {{ getSchoolYearString(schoolYear) }}
             </p>
             <div class="flex gap-3">
                 <ClassificationPeriodsChangeDialog
