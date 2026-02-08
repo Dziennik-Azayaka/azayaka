@@ -1,4 +1,4 @@
-import { LucideBuilding, LucideCalendarCog, LucideLogIn, LucideShapes, LucideUsers } from "lucide-vue-next";
+import { LucideBuilding, LucideLogIn, LucideShapes, LucideUsers } from "lucide-vue-next";
 
 export const menuItems = [
     {
