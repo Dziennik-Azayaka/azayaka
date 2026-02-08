@@ -1,3 +1,5 @@
+import type { Module } from "@azayaka-frontend/ui";
+
 export interface UserDTO {
     email: string;
     accesses: UserAccessDTO[];
@@ -8,5 +10,5 @@ export type UserAccessDTO = {
     name: string;
     type: "employee" | "student" | "guardian";
     updatedAt: string;
-    modulesAvailable: ("student" | "secretary" | "administrator" | "teacher" | "secretary")[];
+    modulesAvailable: Module[];
 };
