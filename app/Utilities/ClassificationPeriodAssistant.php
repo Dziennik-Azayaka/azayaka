@@ -6,16 +6,15 @@ use Carbon\Carbon;
 
 class ClassificationPeriodAssistant
 {
-	public static function validate(array $periodEnds): ?\Illuminate\Http\JsonResponse
+	public static function validate(array $periodEnds, Int $schoolYear): ?\Illuminate\Http\JsonResponse
 	{
-		if (count($periodEnds) > 5) {
+		if (count($periodEnds) > 4) {
 			return \Response::json([
 				"success" => false,
 				"errors" => ["TOO_MANY_PERIODS"]
 			], 400);
 		}
 
-		$schoolYear = (int)explode("-", $periodEnds[0])[0];
 		$periodStart = Carbon::create($schoolYear, 9)->startOfDay();
 		$schoolYearEnd = $periodStart->copy();
 		$schoolYearEnd->addYear()->month(8)->day(31);
@@ -30,7 +29,7 @@ class ClassificationPeriodAssistant
 				], 400);
 			}
 
-			if ($periodEnd->lt($periodStart)) {
+			if ($periodEnd->lessThanOrEqualTo($periodStart)) {
 				return \Response::json([
 					"success" => false,
 					"errors" => ["PERIODS_OVERLAP"]

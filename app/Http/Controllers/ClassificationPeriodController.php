@@ -30,7 +30,7 @@ class ClassificationPeriodController extends Controller
 
 		$validated = $validator["data"];
 
-		$classificationPeriodValidatorResponse = ClassificationPeriodAssistant::validate($validated["periodEnd"]);
+		$classificationPeriodValidatorResponse = ClassificationPeriodAssistant::validate($validated["periodEnd"], $schoolYear);
 		if ($classificationPeriodValidatorResponse) {
 			return $classificationPeriodValidatorResponse;
 		}
