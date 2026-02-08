@@ -5,7 +5,6 @@ import {
     LucideChevronLeft,
     LucideChevronRight,
     LucideLoaderCircle,
-    LucidePencil,
     LucideRefreshCw,
 } from "lucide-vue-next";
 import { ref } from "vue";
@@ -16,6 +15,7 @@ import { Button } from "@azayaka-frontend/ui";
 import ClassificationPeriodService from "@/api/services/classification-period";
 import SchoolStructureService from "@/api/services/school-structure";
 import PanelHeader from "@/components/PanelHeader.vue";
+import ClassificationPeriodsChangeDialog from "@/components/classification-periods/ClassificationPeriodsChangeDialog.vue";
 import ClassificationPeriodsTable from "@/components/classification-periods/ClassificationPeriodsTable.vue";
 import { getCurrentSchoolYear, getSchoolYearString } from "@/utils";
 
@@ -59,10 +59,13 @@ const { data, isError, refetch, fetchStatus } = useQuery({
                 <span class="not-md:hidden">Rok szkolny</span> {{ getSchoolYearString(schoolYear) }}
             </p>
             <div class="flex gap-3">
-                <Button variant="secondary" v-if="data && data.schoolUnits.length === 1">
-                    <LucidePencil />
-                    {{ t("periodsChange") }}
-                </Button>
+                <ClassificationPeriodsChangeDialog
+                    v-if="data && data.schoolUnits.length === 1"
+                    :unit="data.schoolUnits[0]"
+                    :periods="data.classificationPeriods.get(data.schoolUnits[0].id)!!"
+                    :show-unit-name="false"
+                    :school-year="schoolYear"
+                />
                 <Button variant="ghost" size="icon" @click="schoolYear--" :disabled="schoolYear <= 2000">
                     <LucideChevronLeft />
                 </Button>

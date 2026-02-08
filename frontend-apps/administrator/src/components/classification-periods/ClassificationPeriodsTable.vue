@@ -1,8 +1,6 @@
 <script setup lang="ts">
-import { LucidePencil } from "lucide-vue-next";
+import ClassificationPeriodsChangeDialog from "./ClassificationPeriodsChangeDialog.vue";
 import { useI18n } from "vue-i18n";
-
-import { Button } from "@azayaka-frontend/ui";
 
 import type { ClassificationPeriodEntity } from "@/api/entities/classification-period";
 import type { SchoolUnitEntity } from "@/api/entities/school-structure";
@@ -20,10 +18,12 @@ const { t, d } = useI18n();
                     <th colspan="3" class="px-3 sm:px-5 py-3 text-left">
                         <div class="flex justify-between items-center">
                             <span class="font-semibold text-base">{{ unit.name }}</span>
-                            <Button variant="secondary">
-                                <LucidePencil />
-                                {{ t("periodsChange") }}
-                            </Button>
+                            <ClassificationPeriodsChangeDialog
+                                :unit="unit"
+                                :show-unit-name="showHeader"
+                                :periods="periods"
+                                :school-year="2025"
+                            />
                         </div>
                     </th>
                 </tr>

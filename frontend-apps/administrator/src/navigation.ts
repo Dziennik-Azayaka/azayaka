@@ -16,7 +16,7 @@ export const menuItems = [
         link: { name: "systemAccess" },
         icon: LucideLogIn,
     },
-	{
+    {
         title: "classificationPeriods",
         link: { name: "classificationPeriods" },
         icon: LucideCalendarCog,
