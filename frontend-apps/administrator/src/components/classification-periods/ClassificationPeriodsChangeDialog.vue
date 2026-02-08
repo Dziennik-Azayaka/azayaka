@@ -49,7 +49,7 @@ const { mutate: onSubmit, isPending, isError } = useMutation({
     <Dialog v-model:open="showDialog">
         <DialogTrigger>
             <Button variant="secondary">
-                <LucidePencil />
+                <LucidePencil aria-hidden />
                 {{ t("periodsChange") }}
             </Button>
         </DialogTrigger>

@@ -67,10 +67,10 @@ const { data, isError, refetch, fetchStatus } = useQuery({
                     :school-year="schoolYear"
                 />
                 <Button variant="ghost" size="icon" @click="schoolYear--" :disabled="schoolYear <= 2000">
-                    <LucideChevronLeft />
+                    <LucideChevronLeft :aria-label="t('previousYear')" />
                 </Button>
                 <Button variant="ghost" size="icon" @click="schoolYear++" :disabled="schoolYear >= 2100">
-                    <LucideChevronRight />
+                    <LucideChevronRight :aria-label="t('nextYear')" />
                 </Button>
             </div>
         </section>
