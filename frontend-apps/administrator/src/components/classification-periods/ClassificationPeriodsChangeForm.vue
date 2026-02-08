@@ -9,6 +9,7 @@ import * as z from "zod";
 
 import {
     DialogFooter,
+    ErrorBanner,
     FormControl,
     FormField,
     FormFieldArray,
@@ -23,8 +24,10 @@ import type { ClassificationPeriodEntity } from "@/api/entities/classification-p
 const props = defineProps<{
     periods: ClassificationPeriodEntity[];
     schoolYear: number;
+	loading: boolean;
+	error: boolean;
 }>();
-const emit = defineEmits<{ submit: [periodStarts: Date[]] }>();
+const emit = defineEmits<{ submit: [periodStarts: CalendarDate[]] }>();
 
 const { t } = useI18n();
 
@@ -84,7 +87,7 @@ function maxValue(periodIndex: number): CalendarDate | undefined {
 }
 
 const onSubmit = form.handleSubmit((values) => {
-    const starts = values.periods.map((period) => period.start?.toDate(getLocalTimeZone()));
+    const starts = values.periods.map((period) => period.start);
     emit("submit", starts);
 });
 
@@ -109,7 +112,7 @@ onMounted(() => {
                 <FormItem class="contents">
                     <FormLabel>{{ t("periodsNumber") }}</FormLabel>
                     <FormControl>
-                        <Input type="number" v-bind="componentField" @input="onPeriodsNumberChange" />
+                        <Input type="number" v-bind="componentField" @input="onPeriodsNumberChange" :disabled="loading" />
                     </FormControl>
                     <FormMessage class="md:col-start-2 md:col-end-3" />
                 </FormItem>
@@ -123,9 +126,11 @@ onMounted(() => {
                     :index="index"
                     :min="minValue(index)"
                     :max="maxValue(index)"
+					:disabled="!index || loading"
                 />
             </FormFieldArray>
         </div>
+		<ErrorBanner :description="t('unknownError')" v-if="error" />
         <DialogFooter>
             <slot name="footer" />
         </DialogFooter>

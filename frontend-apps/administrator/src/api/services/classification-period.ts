@@ -8,4 +8,6 @@ export default {
         axios
             .get<ClassificationPeriodDTO[]>(`/schoolUnits/${unitId}/classificationPeriods/${schoolYear}`)
             .then(({ data }) => data.map(classificationPeriodDTOToEntity)),
+    changeClassificationPeriodsForUnit: (unitId: number, schoolYear: number, ends: string[]) =>
+        axios.post(`/schoolUnits/${unitId}/classificationPeriods/${schoolYear}`, { periodEnd: ends }),
 };

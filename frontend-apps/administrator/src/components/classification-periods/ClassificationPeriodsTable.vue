@@ -5,7 +5,7 @@ import { useI18n } from "vue-i18n";
 import type { ClassificationPeriodEntity } from "@/api/entities/classification-period";
 import type { SchoolUnitEntity } from "@/api/entities/school-structure";
 
-defineProps<{ unit: SchoolUnitEntity; showHeader: boolean; periods: ClassificationPeriodEntity[] }>();
+defineProps<{ unit: SchoolUnitEntity; showHeader: boolean; periods: ClassificationPeriodEntity[]; schoolYear: number }>();
 
 const { t, d } = useI18n();
 </script>
@@ -22,7 +22,7 @@ const { t, d } = useI18n();
                                 :unit="unit"
                                 :show-unit-name="showHeader"
                                 :periods="periods"
-                                :school-year="2025"
+                                :school-year="schoolYear"
                             />
                         </div>
                     </th>

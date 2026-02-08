@@ -95,6 +95,7 @@ const { data, isError, refetch, fetchStatus } = useQuery({
                 :unit="unit"
                 :show-header="data.schoolUnits.length !== 1"
                 :periods="data.classificationPeriods.get(unit.id)!!"
+				:school-year="schoolYear"
             />
         </template>
     </div>
