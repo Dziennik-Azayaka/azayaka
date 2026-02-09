@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\ClassUnitCategory;
 use App\Http\Resources\ClassUnitResource;
 use App\Models\ClassUnit;
 use App\Models\Employee;
@@ -20,26 +21,17 @@ class ClassUnitController extends Controller
 		} else {
 			$classUnits = ClassUnit::where("school_unit_id", $schoolUnitId);
 		}
-		$category = $request->get("category");
 		$currentSchoolYear = ClassificationPeriodAssistant::getCurrentSchoolYear();
 
-		switch ($category) {
-			case "future":
-				$classUnits = $classUnits->where("starting_school_year", ">", $currentSchoolYear);
-				break;
-			case "current":
-				$classUnits = $classUnits->where("starting_school_year", "<=", $currentSchoolYear)
-					->whereRaw("starting_school_year + teaching_cycle_length >= ?", [$currentSchoolYear]);
-				break;
-			case "archive":
-				$classUnits = $classUnits->whereRaw("starting_school_year + teaching_cycle_length < ?", [$currentSchoolYear]);
-				break;
+		$category = $request->get("category");
+		if (isset($category) && !in_array($category, ClassUnitCategory::cases(), true)) {
+			$category = ClassUnitCategory::from($request->get("category"));
+			$classUnits->filterByCategory($category, $currentSchoolYear);
 		}
-
 		/* While the level could be calculated within the ClassUnitResource, as there is no way to pass arguments to the
 		toArray function we'd need to invoke the getCurrentSchoolYear function for every class unit, which is inefficient. */
 		$classUnitsResourceCollection = $classUnits->get()->toResourceCollection();
-		if ($category !== "future" && $category !== "archive") {
+		if ($category !== ClassUnitCategory::FUTURE && $category !== ClassUnitCategory::ARCHIVE) {
 			$classUnitsResourceCollection = $classUnitsResourceCollection
 				->collection
 				->map(function (ClassUnitResource $resource) use ($request, $currentSchoolYear) {
