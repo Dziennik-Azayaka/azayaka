@@ -7,9 +7,10 @@ const router = createRouter({
         {
             path: "/:accessId(\\d+)",
             component: RouterView,
+			redirect: { name: "schoolStructure" },
             children: [
                 {
-                    path: "",
+                    path: "school-structure",
                     name: "schoolStructure",
                     component: () => import("@/pages/SchoolStructure.vue"),
                     meta: {
@@ -47,6 +48,36 @@ const router = createRouter({
                 },
             ],
         },
+		{
+            path: "/:accessId(\\d+)/classes",
+			name: "classes",
+            component: RouterView,
+			redirect: { name: "classes.list" },
+            children: [
+                {
+                    path: "",
+                    name: "classes.list",
+                    component: () => import("@/pages/ClassList.vue"),
+                    meta: {
+                        title: "classes",
+                    },
+                },
+                {
+                    path: ":id(\\d+)",
+                    name: "classes.details",
+                    component: () => import("@/pages/ClassDetails.vue"),
+                    meta: {
+                        title: "classes",
+                    },
+					props: ({ params }) => ({ classId: Number(params.id) }),
+                },
+                {
+                    path: ":pathMatch(.*)*",
+                    name: "notFound",
+                    redirect: { name: "schoolStructure" },
+                },
+            ],
+        },
     ],
 });
 
@@ -64,6 +95,9 @@ router.beforeEach(async (to) => {
     }
 
     userStore.setAccess(access);
+
+	console.log(userStore.access);
+	return true;
 });
 
 export default router;
