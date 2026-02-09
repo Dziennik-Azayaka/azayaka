@@ -35,8 +35,9 @@ export default defineConfig({
         ],
     },
     server: {
-        port: 5002,
-        host: "localhost",
+		hmr: {
+			host: "localhost",
+		},
     },
     build: {
         outDir: path.resolve(__dirname, "../../public/build-myaccount"),
