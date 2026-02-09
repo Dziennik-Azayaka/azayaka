@@ -24,10 +24,4 @@ axiosInstance.interceptors.response.use(
     },
 );
 
-axiosInstance.interceptors.request.use((config) => {
-    config.headers.AccessId = "TODO";
-
-    return config;
-});
-
 export default axiosInstance;
