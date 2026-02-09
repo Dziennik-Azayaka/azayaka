@@ -30,8 +30,8 @@
 |            | Minimalna wersja | Zalecana wersja |
 |------------|------------------|-----------------|
 | PHP        | 8.2+             | 8.4+            |
-| Node.js	   | 22+              | 24+             |
-| PostgreSQL | 10.0+            | 10.0+           |
+| Node.js	 | 22+              | 24+             |
+| MariaDB    | 11.8             | 12.1+           |
 | Composer   | 2.0+             | 2.0+            |
 | pnpm       | 10.x             | 10.x            |
 
@@ -61,6 +61,8 @@ php artisan key:generate
 ```
 
 ### Baza danych
+
+> Przed wykonaniem następnych kroków należy utworzyć bazę danych o nazwie ustawionej w pliku `.env`.
 
 1. Uruchamianie migracji
 

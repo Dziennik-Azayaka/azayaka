@@ -5,10 +5,6 @@ import path from "path";
 import { defineConfig } from "vite";
 import vueDevTools from "vite-plugin-vue-devtools";
 
-
-
-
-
 // https://vite.dev/config/
 export default defineConfig({
     plugins: [
@@ -39,8 +35,9 @@ export default defineConfig({
         ],
     },
     server: {
-        port: 5001,
-        host: "localhost",
+		hmr: {
+			host: "localhost",
+		},
     },
     build: {
         outDir: path.resolve(__dirname, "../../public/build-authentication"),
