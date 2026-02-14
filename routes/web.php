@@ -79,12 +79,13 @@ Route::middleware(["auth", "auth.session"])->group(function () {
 	});
 
 	Route::middleware(["employee.role:secretary"])->group(function () {
-		Route::get("/api/studentRegistries", [StudentRegistryController::class, "list"]);
+		Route::get("/api/studentRegistry", [StudentRegistryController::class, "list"]);
 		Route::post("/api/studentRegistry", [StudentRegistryController::class, "create"]);
 		Route::get("/api/studentRegistry/{studentRegistry}", [StudentController::class, "list"]);
 		Route::post("/api/studentRegistry/{studentRegistry}", [StudentController::class, "create"]);
-		Route::post("/api/studentRegistry/{studentRegistry}/{student}", [StudentController::class, "update"]);
-		Route::get("/api/childrenRegistries", [ChildrenRegistryController::class, "list"]);
+		Route::post("/api/studentRegistry/{studentRegistry}/massCreate", [StudentController::class, "massCreateFromCSV"]);
+		Route::put("/api/studentRegistry/{studentRegistry}/{student}", [StudentController::class, "update"]);
+		Route::get("/api/childrenRegistry", [ChildrenRegistryController::class, "list"]);
 		Route::post("/api/childrenRegistry", [ChildrenRegistryController::class, "create"]);
 	});
 });
