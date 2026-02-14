@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\ChildrenRegistry;
+use App\Utilities\ValidatorAssistant;
 use Illuminate\Http\Request;
 
 class ChildrenRegistryController extends Controller
@@ -12,8 +13,13 @@ class ChildrenRegistryController extends Controller
 		return ChildrenRegistry::all()->toResourceCollection();
 	}
 
-	public function create(Request $request, Int $schoolUnitId)
+	public function create(Request $request)
 	{
+		$validator = ValidatorAssistant::validate($request, [
+			"schoolUnitId" => "required|integer|exists:school_units,id"
+		]);
+		if (!$validator["success"]) return $validator["errorResponse"];
+		$schoolUnitId = $validator["data"]["schoolUnitId"];
 		if (ChildrenRegistry::where("school_unit_id", $schoolUnitId)->exists()) {
 			return \Response::json([
 				"success" => false,

@@ -36,9 +36,13 @@ class ValidatorAssistant
 	}
 
 
-	static function validate(Request $request, array $rules): array
+	static function validate(Request|array $data, array $rules): array
 	{
-		$validator = Validator::make($request->all(), $rules);
+		if ($data instanceof Request) {
+			$data = $data->all();
+		}
+
+		$validator = Validator::make($data, $rules);
 
 		if ($validator->fails()) {
 			$errors = $validator->errors()->toArray();

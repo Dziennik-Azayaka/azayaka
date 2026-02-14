@@ -14,6 +14,8 @@ class Pesel implements ValidationRule
 	 */
 	public function validate(string $attribute, mixed $value, Closure $fail): void
 	{
+		if ($value == null) return;
+
 		$length = strlen($value);
 		if ($length !== 11) {
 			$fail("PESEL_MUST_BE_11_CHARACTERS_LONG");
