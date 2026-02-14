@@ -40,7 +40,7 @@ class ClassificationPeriodController extends Controller
 
 		foreach ($validated["periodEnd"] as $key => $periodEnd) {
 			if ($key == 0) {
-				$periodStart = "{$schoolYear}-09-01";
+				$periodStart = "$schoolYear-09-01";
 			} else {
 				$periodStart = Carbon::parse($validated["periodEnd"][$key - 1])->addDay()->toDateString();
 			}
