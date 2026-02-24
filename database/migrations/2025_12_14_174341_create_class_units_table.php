@@ -18,6 +18,7 @@ return new class extends Migration
 			$table->string("mark");
 			$table->integer("starting_school_year");
 			$table->integer("teaching_cycle_length");
+			$table->string("promote_every")->default("year");
             $table->timestamps();
         });
 

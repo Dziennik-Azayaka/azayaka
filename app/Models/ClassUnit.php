@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use App\Enums\ClassUnitCategory;
+use App\Utilities\ClassificationPeriodAssistant;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -18,16 +20,38 @@ class ClassUnit extends Model
 		return $this->belongsToMany(Employee::class, "class_units_employees", "class_unit_id", "employee_id");
 	}
 
-	public function scopeFilterByCategory($query, ClassUnitCategory $category, int $schoolYear)
+	public function schoolUnit() {
+		return $this->belongsTo(SchoolUnit::class);
+	}
+
+	public function periods() {
+		return $this->belongsToMany(ClassificationPeriod::class, "class_units_periods",
+			"class_unit_id", "classification_period_id")
+			->using(ClassUnitPeriod::class)
+			->withPivot("level", "id");
+	}
+
+	public function currentPeriodEntry()
 	{
-		switch ($category) {
-			case ClassUnitCategory::FUTURE:
-				return $query->where("starting_school_year", ">", $schoolYear);
-			case ClassUnitCategory::CURRENT:
-				return $query->where("starting_school_year", "<=", $schoolYear)
-					->whereRaw("starting_school_year + teaching_cycle_length >= ?", [$schoolYear]);
-			case ClassUnitCategory::ARCHIVE:
-				return $query->whereRaw("starting_school_year + teaching_cycle_length < ?", [$schoolYear]);
-		}
+		$now = now();
+		return $this->periods()->where("period_start", "<=", $now)->where("period_end", ">=", $now)->first();
+	}
+
+	public function getCurrentLevelAttribute() {
+		return $this->currentPeriodEntry()->pivot->level ?? null;
+	}
+
+	public function scopeFilterByCategory($query, ClassUnitCategory $category)
+	{
+		return match ($category) {
+			ClassUnitCategory::CURRENT => $query->whereHas("periods", function ($query) {
+				$query->active();
+			}),
+			ClassUnitCategory::ARCHIVE => $query->whereHas("periods")
+				->whereDoesntHave("periods", function ($query) {
+				$query->where("period_end", ">=", now());
+			}),
+			ClassUnitCategory::FUTURE => $query->where("starting_school_year", ">", ClassificationPeriodAssistant::getCurrentSchoolYear())
+		};
 	}
 }
