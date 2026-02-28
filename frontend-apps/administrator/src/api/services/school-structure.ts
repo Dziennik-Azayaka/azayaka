@@ -1,7 +1,7 @@
 import axios from "@/api";
 import type { SchoolComplexDTO } from "@/api/dto/school-complex";
 import type { SchoolUnitDTO } from "@/api/dto/school-unit";
-import { schoolStructureDTOsToEntity } from "@/api/mappers/school-structure";
+import { schoolStructureDTOsToEntity, schoolUnitDTOToEntity } from "@/api/mappers/school-structure";
 import type { SchoolComplexForm, SchoolUnitForm } from "@/types";
 
 export default {
@@ -12,6 +12,9 @@ export default {
         ]);
         return schoolStructureDTOsToEntity(complexes.length ? complexes[0] : null, units);
     },
+    getUnits: () => axios
+        .get<SchoolUnitDTO[]>("/schoolUnits")
+        .then(({ data }) => data.map((dto) => schoolUnitDTOToEntity(dto))),
     createSchoolUnit: (unit: SchoolUnitForm, schoolComplexId: number) =>
         axios.post("/schoolUnits", {
             name: unit.name,
