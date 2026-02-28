@@ -13,6 +13,7 @@
         ]
     },
     "dependencies": {
+        "@internationalized/date": "^3.11.0",
         "@tailwindcss/postcss": "^4.1.10",
         "@tanstack/vue-table": "^8.21.3",
         "@vee-validate/zod": "^4.15.1",
