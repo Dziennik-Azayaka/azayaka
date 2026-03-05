@@ -3,6 +3,7 @@
 namespace Tests\Feature\Http\Controllers;
 
 use App\Models\AccountAccess;
+use App\Models\ClassificationPeriod;
 use App\Models\ClassUnit;
 use App\Models\Employee;
 use App\Models\SchoolComplex;
@@ -102,6 +103,18 @@ class ClassUnitControllerTest extends TestCase
 			"starting_school_year" => Carbon::now()->subYear()->year,
 		]);
 
+		$currentPeriod = new ClassificationPeriod();
+		$currentPeriod->school_unit_id = $unit->id;
+		$currentPeriod->school_year = Carbon::now()->year;
+		$currentPeriod->period_number = 1;
+		$currentPeriod->period_start = Carbon::now()->subYear()->startOfYear()->format("Y-m-d");
+		$currentPeriod->period_end = Carbon::now()->addYear()->startOfYear()->format("Y-m-d");
+		$currentPeriod->save();
+		$periodData = [
+			$currentPeriod->id => ["level" => 3]
+		];
+		$classUnitCurrent->periods()->sync($periodData);
+
 		$response = $this->get("/api/schoolUnits/{$unit->id}/classUnits?category=current", [
 			"Access-ID" => $actingUser["access"]
 		]);
@@ -137,6 +150,18 @@ class ClassUnitControllerTest extends TestCase
 			"school_unit_id" => $unit->id,
 			"starting_school_year" => Carbon::now()->subYear()->year,
 		]);
+
+		$currentPeriod = new ClassificationPeriod();
+		$currentPeriod->school_unit_id = $unit->id;
+		$currentPeriod->school_year = Carbon::now()->year;
+		$currentPeriod->period_number = 1;
+		$currentPeriod->period_start = Carbon::now()->subYears(2)->startOfYear()->format("Y-m-d");
+		$currentPeriod->period_end = Carbon::now()->subYear()->startOfYear()->format("Y-m-d");
+		$currentPeriod->save();
+		$periodData = [
+			$currentPeriod->id => ["level" => 3]
+		];
+		$classUnitOld->periods()->sync($periodData);
 
 		$response = $this->get("/api/schoolUnits/{$unit->id}/classUnits?category=archive", [
 			"Access-ID" => $actingUser["access"]

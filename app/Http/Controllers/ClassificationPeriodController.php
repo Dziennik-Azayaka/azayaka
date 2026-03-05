@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\ClassificationPeriod;
+use App\Models\ClassUnit;
+use App\Models\ClassUnitPeriod;
 use App\Utilities\ClassificationPeriodAssistant;
 use App\Utilities\ValidatorAssistant;
 use Carbon\Carbon;
@@ -35,10 +37,11 @@ class ClassificationPeriodController extends Controller
 			return $classificationPeriodValidatorResponse;
 		}
 
-		$newPeriods = [];
+		ClassificationPeriod::where("school_year", $schoolYear)
+			->where("school_unit_id", $schoolUnitId)
+			->delete();
 
-		// laravel does not automatically generate timestamps when bulk inserting
-		$now = Carbon::now();
+		$newPeriods = [];
 
 		foreach ($validated["periodEnd"] as $key => $periodEnd) {
 			if ($key == 0) {
@@ -47,34 +50,55 @@ class ClassificationPeriodController extends Controller
 				$periodStart = Carbon::parse($validated["periodEnd"][$key - 1])->addDay()->toDateString();
 			}
 
-			$newPeriods[] = [
+			$period = ClassificationPeriod::create([
 				"school_year" => $schoolYear,
 				"school_unit_id" => $schoolUnitId,
 				"period_start" => $periodStart,
 				"period_end" => $periodEnd,
-				"period_number" => $key + 1,
-				"created_at" => $now,
-				"updated_at" => $now,
-			];
+				"period_number" => $key + 1
+			]);
+			$period->save();
+			$newPeriods[] = $period;
 		}
 
-		$newPeriods[] = [
+		$finalPeriod = ClassificationPeriod::create([
 			"school_year" => $schoolYear,
 			"school_unit_id" => $schoolUnitId,
 			"period_start" => Carbon::parse(end($newPeriods)["period_end"])->addDay()->toDateString(),
 			"period_end" => $schoolYear + 1 . "-08-31",
 			"period_number" => count($newPeriods) + 1,
-			"created_at" => $now,
-			"updated_at" => $now,
-		];
+		]);
+		$finalPeriod->save();
+		$newPeriods[] = $finalPeriod;
 
-		ClassificationPeriod::where("school_year", $schoolYear)
-			->where("school_unit_id", $schoolUnitId)
-			->delete();
+		$pivotEntries = [];
+		// Classification periods have been created, create appropriate records for class_units_periods
+		ClassUnit::where("school_unit_id", $schoolUnitId)->with("periods")->get()->each(
+			function (ClassUnit $classUnit) use ($newPeriods, $schoolYear, &$pivotEntries) {
+				if ($classUnit->current_level >= $classUnit->teaching_cycle_length) return;
+				if ($classUnit->promote_every == "year") {
+					for ($i = 0; $i < count($newPeriods); $i++) {
+						$pivotEntries[] = [
+							"class_unit_id" => $classUnit->id,
+							"classification_period_id" => $newPeriods[$i]->id,
+							"level" => $classUnit->current_level + 1
+						];
+					}
+				} else {
+					$level = $classUnit->current_level;
+					for ($i = 0; $i < count($newPeriods); $i++) {
+						$level++;
+						$pivotEntries[] = [
+							"class_unit_id" => $classUnit->id,
+							"classification_period_id" => $newPeriods[$i]->id,
+							"level" => $level
+						];
+					}
+				}
+			}
+		);
 
-		if (!empty($newPeriods)) {
-			ClassificationPeriod::insert($newPeriods);
-		}
+		ClassUnitPeriod::insert($pivotEntries);
 
 		return [
 			"success" => true

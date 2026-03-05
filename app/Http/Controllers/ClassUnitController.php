@@ -28,26 +28,7 @@ class ClassUnitController extends Controller
 			$category = ClassUnitCategory::from($request->get("category"));
 			$classUnits->filterByCategory($category, $currentSchoolYear);
 		}
-		/* While the level could be calculated within the ClassUnitResource, as there is no way to pass arguments to the
-		toArray function we'd need to invoke the getCurrentSchoolYear function for every class unit, which is inefficient. */
-		$classUnitsResourceCollection = $classUnits->get()->toResourceCollection();
-		if ($category !== ClassUnitCategory::FUTURE && $category !== ClassUnitCategory::ARCHIVE) {
-			$classUnitsResourceCollection = $classUnitsResourceCollection
-				->collection
-				->map(function (ClassUnitResource $resource) use ($request, $currentSchoolYear) {
-					$classUnit = $resource->toArray($request);
-					// do not calculate the level for archival and future class units
-					if ($classUnit["startingSchoolYear"] > $currentSchoolYear ||
-						$classUnit["startingSchoolYear"] + $classUnit["teachingCycleLength"] < $currentSchoolYear) {
-						$classUnit["level"] = null;
-					} else {
-						$classUnit["level"] = $currentSchoolYear - $classUnit["startingSchoolYear"] + 1;
-					}
-					return $classUnit;
-				});
-		}
-
-		return $classUnitsResourceCollection;
+		return $classUnits->get()->toResourceCollection();
 	}
 
 	public function create(Request $request, int $schoolUnitId)
