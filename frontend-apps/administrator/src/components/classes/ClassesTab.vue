@@ -12,7 +12,7 @@ const props = defineProps<{ tab: "future" | "current" | "archive"; unitsPromise:
 const emit = defineEmits(["unitsLoadFailed"]);
 const { t } = useI18n();
 
-function getUnitShorts(units: SchoolUnitEntity[]) {
+function getSchoolUnitshorts(units: SchoolUnitEntity[]) {
     const shorts = new Map<number, string>();
     units.forEach((unit) => shorts.set(unit.id, unit.shortName));
     return shorts;
@@ -49,7 +49,7 @@ const { data, fetchStatus, isError, refetch } = useQuery({
 
     <ClassesTable
         :classes="data.classes"
-        :unit-shorts="getUnitShorts(data.schoolUnits)"
+        :unit-shorts="getSchoolUnitshorts(data.schoolUnits)"
         v-else-if="data"
         :show-current-level="tab === 'current'"
     />

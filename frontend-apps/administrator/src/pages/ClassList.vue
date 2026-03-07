@@ -9,11 +9,11 @@ import ClassesTab from "@/components/classes/ClassesTab.vue";
 
 const { t } = useI18n();
 
-const unitsPromise = ref(SchoolStructureService.getUnits());
+const unitsPromise = ref(SchoolStructureService.getSchoolUnits());
 const tab = ref("current");
 
 function refreshUnitsPromise() {
-    unitsPromise.value = SchoolStructureService.getUnits();
+    unitsPromise.value = SchoolStructureService.getSchoolUnits();
 }
 </script>
 
