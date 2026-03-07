@@ -112,7 +112,7 @@ onMounted(() => {
                 <FormItem class="contents">
                     <FormLabel>{{ t("periodsNumber") }}</FormLabel>
                     <FormControl>
-                        <Input type="number" v-bind="componentField" @input="onPeriodsNumberChange" :disabled="loading" />
+                        <Input type="number" v-bind="componentField" @input="onPeriodsNumberChange" :disabled="loading" :max="4" />
                     </FormControl>
                     <FormMessage class="md:col-start-2 md:col-end-3" />
                 </FormItem>
