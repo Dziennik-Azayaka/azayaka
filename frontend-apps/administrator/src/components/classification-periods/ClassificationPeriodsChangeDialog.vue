@@ -19,7 +19,7 @@ import {
 
 import type { ClassificationPeriodEntity } from "@/api/entities/classification-period";
 import type { SchoolUnitEntity } from "@/api/entities/school-structure";
-import { getSchoolYearString } from "@/utils";
+import { schoolYearString } from "@/utils";
 import ClassificationPeriodService from "@/api/services/classification-period";
 
 const props = defineProps<{
@@ -55,7 +55,7 @@ const { mutate: onSubmit, isPending, isError } = useMutation({
         </DialogTrigger>
         <DialogContent>
             <DialogHeader>
-                <DialogTitle>{{ t("changePeriods", { schoolYear: getSchoolYearString(schoolYear) }) }}</DialogTitle>
+                <DialogTitle>{{ t("changePeriods", { schoolYear: schoolYearString(schoolYear) }) }}</DialogTitle>
                 <DialogDescription v-if="showUnitName">{{ unit.name }}</DialogDescription>
             </DialogHeader>
             <ClassificationPeriodsChangeForm :school-year="schoolYear" :periods="periods" @submit="onSubmit" :loading="isPending" :error="isError">
