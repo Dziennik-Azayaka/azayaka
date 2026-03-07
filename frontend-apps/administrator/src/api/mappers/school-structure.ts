@@ -2,7 +2,7 @@ import type { SchoolComplexDTO } from "../dto/school-complex";
 import type { SchoolUnitDTO } from "../dto/school-unit";
 import type { SchoolComplexEntity, SchoolStructureEntity, SchoolUnitEntity } from "../entities/school-structure";
 
-const schoolUnitDTOToEntity = (dto: SchoolUnitDTO): SchoolUnitEntity => ({
+export const schoolUnitDTOToEntity = (dto: SchoolUnitDTO): SchoolUnitEntity => ({
     id: dto.id,
     name: dto.name,
     typeId: dto.type,
