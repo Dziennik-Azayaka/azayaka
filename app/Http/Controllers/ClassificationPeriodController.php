@@ -37,6 +37,10 @@ class ClassificationPeriodController extends Controller
 			return $classificationPeriodValidatorResponse;
 		}
 
+		$oldClassificationPeriods = ClassificationPeriod::where("school_year", $schoolYear)
+			->where("school_unit_id", $schoolUnitId)
+			->get("id");
+		ClassUnitPeriod::whereIn("classification_period_id", $oldClassificationPeriods)->delete();
 		ClassificationPeriod::where("school_year", $schoolYear)
 			->where("school_unit_id", $schoolUnitId)
 			->delete();

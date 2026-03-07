@@ -12,9 +12,8 @@ export default {
         ]);
         return schoolStructureDTOsToEntity(complexes.length ? complexes[0] : null, units);
     },
-    getUnits: () => axios
-        .get<SchoolUnitDTO[]>("/schoolUnits")
-        .then(({ data }) => data.map((dto) => schoolUnitDTOToEntity(dto))),
+    getSchoolUnits: () =>
+        axios.get<SchoolUnitDTO[]>("/schoolUnits").then(({ data }) => data.map(schoolUnitDTOToEntity)),
     createSchoolUnit: (unit: SchoolUnitForm, schoolComplexId: number) =>
         axios.post("/schoolUnits", {
             name: unit.name,

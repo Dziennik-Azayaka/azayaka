@@ -1,5 +1,4 @@
-import { LucideBuilding, LucideGrid2X2, LucideLogIn, LucideShapes, LucideUsers } from "lucide-vue-next";
-
+import { LucideBuilding, LucideCalendarCog, LucideGrid2X2, LucideLogIn, LucideShapes, LucideUsers } from "lucide-vue-next";
 export const menuItems = [
     {
         title: "schoolStructure",
@@ -21,6 +20,11 @@ export const menuItems = [
 		link: { name: "classes" },
 		icon: LucideGrid2X2
 	},
+    {
+        title: "classificationPeriods",
+        link: { name: "classificationPeriods" },
+        icon: LucideCalendarCog,
+    },
     {
         title: "subjects",
         link: { name: "subjects" },

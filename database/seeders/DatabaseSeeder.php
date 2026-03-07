@@ -51,9 +51,9 @@ class DatabaseSeeder extends Seeder
 		SchoolUnit::factory(5)->create();
 
 		Subject::factory(5)->create();
-		ClassUnit::factory(15)->create();
+		$classUnits = ClassUnit::factory(15)->create();
 
-		ClassificationPeriod::create([
+		$classificationPeriod1 = ClassificationPeriod::create([
 			"school_unit_id" => 1,
 			"school_year" => 2024,
 			"period_number" => 1,
@@ -61,12 +61,19 @@ class DatabaseSeeder extends Seeder
 			"period_end" => "2025-01-30"
 		]);
 
-		ClassificationPeriod::create([
+		$classificationPeriod2 = ClassificationPeriod::create([
 			"school_unit_id" => 1,
 			"school_year" => 2024,
 			"period_number" => 2,
 			"period_start" => "2025-02-01",
 			"period_end" => "2025-08-31"
 		]);
+
+		$classUnits->each(function ($classUnit) use ($classificationPeriod1, $classificationPeriod2) {
+			$classUnit->periods()->sync([
+				$classificationPeriod1->id => ["level" => rand(1, 8)],
+				$classificationPeriod2->id => ["level" => rand(1, 8)],
+			]);
+		});
 	}
 }
