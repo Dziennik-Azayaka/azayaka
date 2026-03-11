@@ -74,28 +74,5 @@ class DatabaseSeeder extends Seeder
 			"period_start" => "2025-02-01",
 			"period_end" => "2025-08-31"
 		]);
-
-		$classUnits->each(function ($classUnit) use ($classificationPeriod1, $classificationPeriod2) {
-			$classUnit->periods()->sync([
-				$classificationPeriod1->id => ["level" => rand(1, 8)],
-				$classificationPeriod2->id => ["level" => rand(1, 8)],
-			]);
-		});
-
-		$studentRegistry = StudentRegistry::create([
-			"school_unit_id" => 1,
-			"created_at" => "2024-09-01"
-		]);
-
-		$studentRegistry->students()->attach(Student::all());
-
-		$childrenRegistry = ChildrenRegistry::create([
-			"school_unit_id" => 1,
-			"created_at" => "2024-09-01"
-		]);
-
-		$childrenRegistry->students()->attach(Student::all());
-
-		CompulsoryEducationFulfillment::factory(10)->create();
 	}
 }
