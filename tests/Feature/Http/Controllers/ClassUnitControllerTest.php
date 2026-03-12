@@ -187,6 +187,22 @@ class ClassUnitControllerTest extends TestCase
 		$unit = SchoolUnit::factory()->create(["school_complex_id" => $complex->id]);
 		$employee = Employee::factory()->create();
 		$currentYear = Carbon::now()->year;
+		$classificationPeriod1 = new ClassificationPeriod();
+		$classificationPeriod1->school_unit_id = $unit->id;
+		$classificationPeriod1->school_year = $currentYear;
+		$classificationPeriod1->period_number = 1;
+		$classificationPeriod1->period_start = Carbon::create($currentYear, 9);
+		$classificationPeriod1->period_end = Carbon::create($currentYear + 1, 2);
+		$classificationPeriod1->save();
+
+		$classificationPeriod2 = new ClassificationPeriod();
+		$classificationPeriod2->school_unit_id = $unit->id;
+		$classificationPeriod2->school_year = $currentYear;
+		$classificationPeriod2->period_number = 2;
+		$classificationPeriod2->period_start = Carbon::create($currentYear + 1, 2, 2);
+		$classificationPeriod2->period_end = Carbon::create($currentYear + 1, 8, 31);
+		$classificationPeriod2->save();
+
 		$response = $this->post("/api/schoolUnits/{$unit->id}/classUnits", [
 			"alias" => "Klasa Informatyczna",
 			"mark" => "a",
@@ -194,17 +210,83 @@ class ClassUnitControllerTest extends TestCase
 			"teachingCycleLength" => 5,
 			"employeeIds" => [
 				$employee->id
-			]
+			],
+			"promoteEvery" => "year"
 		], ["Access-ID" => $actingUser["access"]]);
 		$response->assertOk();
 		$this->assertDatabaseHas("class_units", [
 			"alias" => "Klasa Informatyczna",
 			"mark" => "a",
 			"starting_school_year" => $currentYear,
-			"teaching_cycle_length" => 5
+			"teaching_cycle_length" => 5,
+			"promote_every" => "year"
 		]);
 		$this->assertDatabaseHas("class_units_employees", [
 			"employee_id" => $employee->id
+		]);
+
+		$this->assertDatabaseHas("class_units_periods", [
+			"classification_period_id" => $classificationPeriod1->id,
+			"level" => 1
+		]);
+		$this->assertDatabaseHas("class_units_periods", [
+			"classification_period_id" => $classificationPeriod2->id,
+			"level" => 1
+		]);
+	}
+
+	public function test_can_create_a_class_unit_with_promotion_every_semester()
+	{
+		$actingUser = $this->actingUser();
+		$complex = SchoolComplex::factory()->create();
+		$unit = SchoolUnit::factory()->create(["school_complex_id" => $complex->id]);
+		$employee = Employee::factory()->create();
+		$currentYear = Carbon::now()->year;
+		$classificationPeriod1 = new ClassificationPeriod();
+		$classificationPeriod1->school_unit_id = $unit->id;
+		$classificationPeriod1->school_year = $currentYear;
+		$classificationPeriod1->period_number = 1;
+		$classificationPeriod1->period_start = Carbon::create($currentYear, 9);
+		$classificationPeriod1->period_end = Carbon::create($currentYear + 1, 2);
+		$classificationPeriod1->save();
+
+		$classificationPeriod2 = new ClassificationPeriod();
+		$classificationPeriod2->school_unit_id = $unit->id;
+		$classificationPeriod2->school_year = $currentYear;
+		$classificationPeriod2->period_number = 2;
+		$classificationPeriod2->period_start = Carbon::create($currentYear + 1, 2, 2);
+		$classificationPeriod2->period_end = Carbon::create($currentYear + 1, 8, 31);
+		$classificationPeriod2->save();
+
+		$response = $this->post("/api/schoolUnits/{$unit->id}/classUnits", [
+			"alias" => "Klasa Informatyczna",
+			"mark" => "a",
+			"startingSchoolYear" => $currentYear,
+			"teachingCycleLength" => 5,
+			"employeeIds" => [
+				$employee->id
+			],
+			"promoteEvery" => "semester"
+		], ["Access-ID" => $actingUser["access"]]);
+		$response->assertOk();
+		$this->assertDatabaseHas("class_units", [
+			"alias" => "Klasa Informatyczna",
+			"mark" => "a",
+			"starting_school_year" => $currentYear,
+			"teaching_cycle_length" => 5,
+			"promote_every" => "semester"
+		]);
+		$this->assertDatabaseHas("class_units_employees", [
+			"employee_id" => $employee->id
+		]);
+
+		$this->assertDatabaseHas("class_units_periods", [
+			"classification_period_id" => $classificationPeriod1->id,
+			"level" => 1
+		]);
+		$this->assertDatabaseHas("class_units_periods", [
+			"classification_period_id" => $classificationPeriod2->id,
+			"level" => 2
 		]);
 	}
 
