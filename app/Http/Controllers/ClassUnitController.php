@@ -54,7 +54,7 @@ class ClassUnitController extends Controller
 		$classUnit->school_unit_id = $schoolUnitId;
 		$classUnit->alias = $validated["alias"];
 		$classUnit->mark = $validated["mark"];
-		$classUnit->starting_school_year = $validated["startingSchoolYear"];
+		$classUnit->starting_classification_period_id = $validated["startingClassificationPeriodId"];
 		$classUnit->teaching_cycle_length = $validated["teachingCycleLength"];
 		$classUnit->promote_every = $validated["promoteEvery"];
 
@@ -62,23 +62,23 @@ class ClassUnitController extends Controller
 
 		$classUnit->employees()->attach($validated["employeeIds"]);
 
-		$periods = ClassificationPeriod
-			::where("period_start", ">=", Carbon::create($classUnit->starting_school_year, 9));
+		$startingPeriod = ClassificationPeriod::find($classUnit->starting_classification_period_id)->first();
+		$periods = ClassificationPeriod::where("period_start", ">=", $startingPeriod->period_start);
 
 		if ($classUnit->promote_every == "year") {
-			$periods->where("school_year", "<=", $classUnit->starting_school_year + $classUnit->teaching_cycle_length - 1);
+			$periods->where("school_year", "<=", $startingPeriod->school_year + $classUnit->teaching_cycle_length - 1);
 		} else {
 			$periods->orderBy("period_start")->limit($classUnit->teaching_cycle_length);
 		}
 
 		$pivotEntries = [];
 		$level = 0;
-		$periods->get()->each(function ($period) use ($classUnit, &$level, &$pivotEntries) {
+		$periods->get()->each(function ($period) use ($classUnit, $startingPeriod, &$level, &$pivotEntries) {
 			if ($classUnit->promote_every == "year") {
 				$pivotEntries[] = [
 					"class_unit_id" => $classUnit->id,
 					"classification_period_id" => $period->id,
-					"level" => $period->school_year - $classUnit->starting_school_year + 1
+					"level" => $period->school_year - $startingPeriod->school_year + 1
 				];
 			} else {
 				$level++;
@@ -118,7 +118,7 @@ class ClassUnitController extends Controller
 		$validator = ValidatorAssistant::validate($request, [
 			"alias" => ["string", "max:64", "nullable"],
 			"mark" => ["string", "max:3", "required"],
-			"startingSchoolYear" => ["integer", "required"],
+			"startingClassificationPeriodId" => ["integer", "required", "exists:classification_periods,id"],
 			"teachingCycleLength" => ["integer", "required", "between:2,8"],
 			"promoteEvery" => ["string", "in:year,semester"],
 			"employeeIds" => ["array", "required"],

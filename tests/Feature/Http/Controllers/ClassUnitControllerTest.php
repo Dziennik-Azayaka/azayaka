@@ -48,7 +48,7 @@ class ClassUnitControllerTest extends TestCase
 				"schoolUnitId",
 				"alias",
 				"mark",
-				"startingSchoolYear",
+				"startingClassificationPeriodId",
 				"teachingCycleLength",
 				"level"
 			],
@@ -61,13 +61,28 @@ class ClassUnitControllerTest extends TestCase
 		$complex = SchoolComplex::factory()->create();
 		$unit = SchoolUnit::factory()->create(["school_complex_id" => $complex->id]);
 
+		$oldPeriod = ClassificationPeriod::create([
+			"school_unit_id" => $unit->id,
+			"school_year" => Carbon::now()->subYears(10)->year,
+			"period_number" => 1,
+			"period_start" => Carbon::now()->subYears(10)->startOfYear(),
+			"period_end" => Carbon::now()->subYears(9)->endOfYear(),
+		]);
+		$futurePeriod = ClassificationPeriod::create([
+			"school_unit_id" => $unit->id,
+			"school_year" => Carbon::now()->addYear()->year,
+			"period_number" => 1,
+			"period_start" => Carbon::now()->addYear()->startOfYear(),
+			"period_end" => Carbon::now()->addYears(2)->startOfYear()->subDay(),
+		]);
+
 		$classUnitOld = ClassUnit::factory()->create([
 			"school_unit_id" => $unit->id,
-			"starting_school_year" => Carbon::now()->subYears(10)->year,
+			"starting_classification_period_id" => $oldPeriod->id,
 		]);
 		$classUnitFuture = ClassUnit::factory()->create([
 			"school_unit_id" => $unit->id,
-			"starting_school_year" => Carbon::now()->addYear()->year,
+			"starting_classification_period_id" => $futurePeriod->id,
 		]);
 
 		$response = $this->get("/api/schoolUnits/{$unit->id}/classUnits?category=future", [
@@ -90,17 +105,39 @@ class ClassUnitControllerTest extends TestCase
 		$complex = SchoolComplex::factory()->create();
 		$unit = SchoolUnit::factory()->create(["school_complex_id" => $complex->id]);
 
+		$oldStart = ClassificationPeriod::create([
+			"school_unit_id" => $unit->id,
+			"school_year" => Carbon::now()->subYears(10)->year,
+			"period_number" => 1,
+			"period_start" => Carbon::now()->subYears(10)->startOfYear(),
+			"period_end" => Carbon::now()->subYears(9)->endOfYear(),
+		]);
+		$futureStart = ClassificationPeriod::create([
+			"school_unit_id" => $unit->id,
+			"school_year" => Carbon::now()->addYear()->year,
+			"period_number" => 1,
+			"period_start" => Carbon::now()->addYear()->startOfYear(),
+			"period_end" => Carbon::now()->addYears(2)->startOfYear()->subDay(),
+		]);
+		$currentStart = ClassificationPeriod::create([
+			"school_unit_id" => $unit->id,
+			"school_year" => Carbon::now()->subYear()->year,
+			"period_number" => 1,
+			"period_start" => Carbon::now()->subYear()->startOfYear(),
+			"period_end" => Carbon::now()->subYear()->endOfYear(),
+		]);
+
 		$classUnitOld = ClassUnit::factory()->create([
 			"school_unit_id" => $unit->id,
-			"starting_school_year" => Carbon::now()->subYears(10)->year,
+			"starting_classification_period_id" => $oldStart->id,
 		]);
 		$classUnitFuture = ClassUnit::factory()->create([
 			"school_unit_id" => $unit->id,
-			"starting_school_year" => Carbon::now()->addYear()->year,
+			"starting_classification_period_id" => $futureStart->id,
 		]);
 		$classUnitCurrent = ClassUnit::factory()->create([
 			"school_unit_id" => $unit->id,
-			"starting_school_year" => Carbon::now()->subYear()->year,
+			"starting_classification_period_id" => $currentStart->id,
 		]);
 
 		$currentPeriod = new ClassificationPeriod();
@@ -138,17 +175,39 @@ class ClassUnitControllerTest extends TestCase
 		$complex = SchoolComplex::factory()->create();
 		$unit = SchoolUnit::factory()->create(["school_complex_id" => $complex->id]);
 
+		$oldStart = ClassificationPeriod::create([
+			"school_unit_id" => $unit->id,
+			"school_year" => Carbon::now()->subYears(10)->year,
+			"period_number" => 1,
+			"period_start" => Carbon::now()->subYears(10)->startOfYear(),
+			"period_end" => Carbon::now()->subYears(9)->endOfYear(),
+		]);
+		$futureStart = ClassificationPeriod::create([
+			"school_unit_id" => $unit->id,
+			"school_year" => Carbon::now()->addYear()->year,
+			"period_number" => 1,
+			"period_start" => Carbon::now()->addYear()->startOfYear(),
+			"period_end" => Carbon::now()->addYears(2)->startOfYear()->subDay(),
+		]);
+		$currentStart = ClassificationPeriod::create([
+			"school_unit_id" => $unit->id,
+			"school_year" => Carbon::now()->subYear()->year,
+			"period_number" => 1,
+			"period_start" => Carbon::now()->subYear()->startOfYear(),
+			"period_end" => Carbon::now()->subYear()->endOfYear(),
+		]);
+
 		$classUnitOld = ClassUnit::factory()->create([
 			"school_unit_id" => $unit->id,
-			"starting_school_year" => Carbon::now()->subYears(10)->year,
+			"starting_classification_period_id" => $oldStart->id,
 		]);
 		$classUnitFuture = ClassUnit::factory()->create([
 			"school_unit_id" => $unit->id,
-			"starting_school_year" => Carbon::now()->addYear()->year,
+			"starting_classification_period_id" => $futureStart->id,
 		]);
 		$classUnitCurrent = ClassUnit::factory()->create([
 			"school_unit_id" => $unit->id,
-			"starting_school_year" => Carbon::now()->subYear()->year,
+			"starting_classification_period_id" => $currentStart->id,
 		]);
 
 		$currentPeriod = new ClassificationPeriod();
@@ -206,7 +265,7 @@ class ClassUnitControllerTest extends TestCase
 		$response = $this->post("/api/schoolUnits/{$unit->id}/classUnits", [
 			"alias" => "Klasa Informatyczna",
 			"mark" => "a",
-			"startingSchoolYear" => $currentYear,
+			"startingClassificationPeriodId" => $classificationPeriod1->id,
 			"teachingCycleLength" => 5,
 			"employeeIds" => [
 				$employee->id
@@ -217,7 +276,7 @@ class ClassUnitControllerTest extends TestCase
 		$this->assertDatabaseHas("class_units", [
 			"alias" => "Klasa Informatyczna",
 			"mark" => "a",
-			"starting_school_year" => $currentYear,
+			"starting_classification_period_id" => $classificationPeriod1->id,
 			"teaching_cycle_length" => 5,
 			"promote_every" => "year"
 		]);
@@ -261,7 +320,7 @@ class ClassUnitControllerTest extends TestCase
 		$response = $this->post("/api/schoolUnits/{$unit->id}/classUnits", [
 			"alias" => "Klasa Informatyczna",
 			"mark" => "a",
-			"startingSchoolYear" => $currentYear,
+			"startingClassificationPeriodId" => $classificationPeriod1->id,
 			"teachingCycleLength" => 5,
 			"employeeIds" => [
 				$employee->id
@@ -272,7 +331,7 @@ class ClassUnitControllerTest extends TestCase
 		$this->assertDatabaseHas("class_units", [
 			"alias" => "Klasa Informatyczna",
 			"mark" => "a",
-			"starting_school_year" => $currentYear,
+			"starting_classification_period_id" => $classificationPeriod1->id,
 			"teaching_cycle_length" => 5,
 			"promote_every" => "semester"
 		]);
@@ -297,10 +356,17 @@ class ClassUnitControllerTest extends TestCase
 		$unit = SchoolUnit::factory()->create(["school_complex_id" => $complex->id]);
 		$disabledEmployee = Employee::factory()->create(["active" => false]);
 		$activeEmployee = Employee::factory()->create();
+		$period = ClassificationPeriod::create([
+			"school_unit_id" => $unit->id,
+			"school_year" => Carbon::now()->year,
+			"period_number" => 1,
+			"period_start" => Carbon::now()->startOfYear(),
+			"period_end" => Carbon::now()->endOfYear(),
+		]);
 		$response = $this->post("/api/schoolUnits/{$unit->id}/classUnits", [
 			"alias" => "Klasa Informatyczna",
 			"mark" => "a",
-			"startingSchoolYear" => Carbon::now()->year,
+			"startingClassificationPeriodId" => $period->id,
 			"teachingCycleLength" => 5,
 			"employeeIds" => [
 				$activeEmployee->id,
@@ -326,10 +392,17 @@ class ClassUnitControllerTest extends TestCase
 		$complex = SchoolComplex::factory()->create();
 		$unit = SchoolUnit::factory()->create(["school_complex_id" => $complex->id]);
 		$employee = Employee::factory()->create();
+		$period = ClassificationPeriod::create([
+			"school_unit_id" => $unit->id,
+			"school_year" => Carbon::now()->year,
+			"period_number" => 1,
+			"period_start" => Carbon::now()->startOfYear(),
+			"period_end" => Carbon::now()->endOfYear(),
+		]);
 		$response = $this->post("/api/schoolUnits/{$unit->id}/classUnits", [
 			"alias" => "Klasa Informatyczna",
 			"mark" => "a",
-			"startingSchoolYear" => Carbon::now()->year,
+			"startingClassificationPeriodId" => $period->id,
 			"teachingCycleLength" => 5,
 			"employeeIds" => [
 				$employee->id,
@@ -359,13 +432,21 @@ class ClassUnitControllerTest extends TestCase
 		$classUnit = ClassUnit::factory()->create(["school_unit_id" => $unit->id]);
 		$classUnit->employees()->attach($oldEmployee->id);
 
+		$period = ClassificationPeriod::create([
+			"school_unit_id" => $unit->id,
+			"school_year" => Carbon::now()->year,
+			"period_number" => 1,
+			"period_start" => Carbon::now()->startOfYear(),
+			"period_end" => Carbon::now()->endOfYear(),
+		]);
+
 		$response = $this->put("/api/schoolUnits/{$classUnit->id}/classUnits/{$classUnit->id}", [
 			"alias" => "Klasa Informatyczna",
 			"mark" => "y",
 			"employeeIds" => [
 				$newEmployee->id
 			],
-			"startingSchoolYear" => Carbon::now()->year,
+			"startingClassificationPeriodId" => $period->id,
 			"teachingCycleLength" => 5
 		], ["Access-ID" => $actingUser["access"]]);
 

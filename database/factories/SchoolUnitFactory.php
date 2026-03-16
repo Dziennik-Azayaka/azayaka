@@ -34,7 +34,7 @@ class SchoolUnitFactory extends Factory
 
 		$schoolNumber = rand(1, 100);
 
-        return [
+		return [
             "name" => $schoolTypeName . " nr. " . $schoolNumber,
 			"type" => $schoolType,
 			"student_category" => "childrenAndYouths",
@@ -43,7 +43,7 @@ class SchoolUnitFactory extends Factory
 			"district" => rand(0, 1) == 0 ? "Bałuty" : null,
 			"address" => "ul. Dzienniczkowa 23",
 			"short_name" => $schoolNumber . " " . $schoolShortName,
-			"school_complex_id" => 1,
-        ];
+			"school_complex_id" => null,
+		];
     }
 }
