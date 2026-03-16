@@ -19,7 +19,7 @@ class ClassUnitResource extends JsonResource
 			"schoolUnitId" => $this->school_unit_id,
 			"alias" => $this->alias,
 			"mark" => $this->mark,
-			"startingSchoolYear" => $this->starting_school_year,
+			"startingClassificationPeriodId" => $this->starting_classification_period_id,
 			"teachingCycleLength" => $this->teaching_cycle_length,
 			"level" => $this->currentLevel
 		];

@@ -16,7 +16,7 @@ return new class extends Migration
 			$table->foreignId("school_unit_id")->constrained("school_units");
 			$table->string("alias");
 			$table->string("mark");
-			$table->integer("starting_school_year");
+			$table->foreignId("starting_classification_period_id");
 			$table->integer("teaching_cycle_length");
 			$table->string("promote_every")->default("year");
             $table->timestamps();
