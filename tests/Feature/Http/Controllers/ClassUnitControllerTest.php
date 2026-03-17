@@ -39,7 +39,7 @@ class ClassUnitControllerTest extends TestCase
 		ClassUnit::factory()->count(5)->create([
 			"school_unit_id" => $unit->id,
 		]);
-		$response = $this->get("/api/schoolUnits/{$unit->id}/classUnits", ["Access-ID" => $actingUser["access"]]);
+		$response = $this->get("/api/schoolUnits/$unit->id/classUnits", ["Access-ID" => $actingUser["access"]]);
 		$response->assertOk();
 		$response->assertJsonIsArray();
 		$response->assertJsonStructure([
@@ -85,7 +85,7 @@ class ClassUnitControllerTest extends TestCase
 			"starting_classification_period_id" => $futurePeriod->id,
 		]);
 
-		$response = $this->get("/api/schoolUnits/{$unit->id}/classUnits?category=future", [
+		$response = $this->get("/api/schoolUnits/$unit->id/classUnits?category=future", [
 			"Access-ID" => $actingUser["access"]
 		]);
 		$response->assertOk();
@@ -152,7 +152,7 @@ class ClassUnitControllerTest extends TestCase
 		];
 		$classUnitCurrent->periods()->sync($periodData);
 
-		$response = $this->get("/api/schoolUnits/{$unit->id}/classUnits?category=current", [
+		$response = $this->get("/api/schoolUnits/$unit->id/classUnits?category=current", [
 			"Access-ID" => $actingUser["access"]
 		]);
 		$response->assertOk();
@@ -222,7 +222,7 @@ class ClassUnitControllerTest extends TestCase
 		];
 		$classUnitOld->periods()->sync($periodData);
 
-		$response = $this->get("/api/schoolUnits/{$unit->id}/classUnits?category=archive", [
+		$response = $this->get("/api/schoolUnits/$unit->id/classUnits?category=archive", [
 			"Access-ID" => $actingUser["access"]
 		]);
 		$response->assertOk();
@@ -262,7 +262,7 @@ class ClassUnitControllerTest extends TestCase
 		$classificationPeriod2->period_end = Carbon::create($currentYear + 1, 8, 31);
 		$classificationPeriod2->save();
 
-		$response = $this->post("/api/schoolUnits/{$unit->id}/classUnits", [
+		$response = $this->post("/api/schoolUnits/$unit->id/classUnits", [
 			"alias" => "Klasa Informatyczna",
 			"mark" => "a",
 			"startingClassificationPeriodId" => $classificationPeriod1->id,
@@ -317,7 +317,7 @@ class ClassUnitControllerTest extends TestCase
 		$classificationPeriod2->period_end = Carbon::create($currentYear + 1, 8, 31);
 		$classificationPeriod2->save();
 
-		$response = $this->post("/api/schoolUnits/{$unit->id}/classUnits", [
+		$response = $this->post("/api/schoolUnits/$unit->id/classUnits", [
 			"alias" => "Klasa Informatyczna",
 			"mark" => "a",
 			"startingClassificationPeriodId" => $classificationPeriod1->id,
@@ -363,7 +363,7 @@ class ClassUnitControllerTest extends TestCase
 			"period_start" => Carbon::now()->startOfYear(),
 			"period_end" => Carbon::now()->endOfYear(),
 		]);
-		$response = $this->post("/api/schoolUnits/{$unit->id}/classUnits", [
+		$response = $this->post("/api/schoolUnits/$unit->id/classUnits", [
 			"alias" => "Klasa Informatyczna",
 			"mark" => "a",
 			"startingClassificationPeriodId" => $period->id,
@@ -399,7 +399,7 @@ class ClassUnitControllerTest extends TestCase
 			"period_start" => Carbon::now()->startOfYear(),
 			"period_end" => Carbon::now()->endOfYear(),
 		]);
-		$response = $this->post("/api/schoolUnits/{$unit->id}/classUnits", [
+		$response = $this->post("/api/schoolUnits/$unit->id/classUnits", [
 			"alias" => "Klasa Informatyczna",
 			"mark" => "a",
 			"startingClassificationPeriodId" => $period->id,
@@ -440,7 +440,7 @@ class ClassUnitControllerTest extends TestCase
 			"period_end" => Carbon::now()->endOfYear(),
 		]);
 
-		$response = $this->put("/api/schoolUnits/{$classUnit->id}/classUnits/{$classUnit->id}", [
+		$response = $this->put("/api/schoolUnits/$classUnit->id/classUnits/$classUnit->id", [
 			"alias" => "Klasa Informatyczna",
 			"mark" => "y",
 			"employeeIds" => [
@@ -473,7 +473,7 @@ class ClassUnitControllerTest extends TestCase
 		$classUnit = ClassUnit::factory()->create(["school_unit_id" => $unit->id]);
 		$employee = Employee::factory()->create();
 		$classUnit->employees()->attach($employee->id);
-		$response = $this->delete("/api/schoolUnits/{$unit->id}/classUnits/{$classUnit->id}", [], [
+		$response = $this->delete("/api/schoolUnits/$unit->id/classUnits/$classUnit->id", [], [
 			"Access-ID" => $actingUser["access"]
 		]);
 		$response->assertOk();

@@ -36,10 +36,12 @@ class ClassUnit extends Model
 			->withPivot("level", "id");
 	}
 
-	public function currentPeriodEntry()
+	public function currentPeriodEntry($date = null)
 	{
-		$now = now();
-		return $this->periods()->where("period_start", "<=", $now)->where("period_end", ">=", $now)->first();
+		if ($date == null) {
+			$date = now();
+		}
+		return $this->periods()->where("period_start", "<=", $date)->where("period_end", ">=", $date)->first();
 	}
 
 	public function getCurrentLevelAttribute() {
