@@ -9,6 +9,7 @@ use App\Utilities\ClassificationPeriodAssistant;
 use App\Utilities\ValidatorAssistant;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class ClassificationPeriodController extends Controller
 {
@@ -37,13 +38,9 @@ class ClassificationPeriodController extends Controller
 			return $classificationPeriodValidatorResponse;
 		}
 
-		$oldClassificationPeriods = ClassificationPeriod::where("school_year", $schoolYear)
+		$oldClassificationPeriodIds = ClassificationPeriod::where("school_year", $schoolYear)
 			->where("school_unit_id", $schoolUnitId)
-			->get("id");
-		ClassUnitPeriod::whereIn("classification_period_id", $oldClassificationPeriods)->delete();
-		ClassificationPeriod::where("school_year", $schoolYear)
-			->where("school_unit_id", $schoolUnitId)
-			->delete();
+			->pluck("id");
 
 		$newPeriods = [];
 
@@ -75,26 +72,61 @@ class ClassificationPeriodController extends Controller
 		$finalPeriod->save();
 		$newPeriods[] = $finalPeriod;
 
+		$futurePeriods = ClassificationPeriod::where("school_year", ">", $schoolYear)
+			->where("school_unit_id", $schoolUnitId)
+			->orderBy("school_year")
+			->orderBy("period_start")
+			->get();
+
+		$futurePeriodIds = $futurePeriods->pluck("id");
+
 		$pivotEntries = [];
-		// Classification periods have been created, create appropriate records for class_units_periods
+		$processedClassUnitIds = [];
+
 		ClassUnit::where("school_unit_id", $schoolUnitId)->with("periods")->get()->each(
-			function (ClassUnit $classUnit) use ($newPeriods, $schoolYear, &$pivotEntries) {
-				if ($classUnit->current_level >= $classUnit->teaching_cycle_length) return;
+			function (ClassUnit $classUnit) use (
+				$newPeriods, $schoolYear, &$pivotEntries, $futurePeriods, &$processedClassUnitIds
+			) {
+				$processedClassUnitIds[] = $classUnit->id;
+
+				// Update starting period
+				if ($classUnit->startingPeriod && $classUnit->startingPeriod->school_year == $schoolYear) {
+					foreach ($newPeriods as $newPeriod) {
+						if ($classUnit->startingPeriod->period_start->between($newPeriod->period_start, $newPeriod->period_end)) {
+							$classUnit->starting_classification_period_id = $newPeriod->id;
+							$classUnit->save();
+							break;
+						}
+					}
+				}
+
+				$level = $classUnit->currentPeriodEntry(Carbon::create($schoolYear, 8, 31))?->pivot?->level ?? 0;
+
+				if ($level >= $classUnit->teaching_cycle_length) return;
+
 				if ($classUnit->promote_every == "year") {
-					for ($i = 0; $i < count($newPeriods); $i++) {
+					foreach ($newPeriods as $newPeriod) {
 						$pivotEntries[] = [
 							"class_unit_id" => $classUnit->id,
-							"classification_period_id" => $newPeriods[$i]->id,
-							"level" => $classUnit->current_level + 1
+							"classification_period_id" => $newPeriod->id,
+							"level" => $level + 1
 						];
 					}
 				} else {
-					$level = $classUnit->current_level;
-					for ($i = 0; $i < count($newPeriods); $i++) {
+					foreach ($newPeriods as $newPeriod) {
 						$level++;
 						$pivotEntries[] = [
 							"class_unit_id" => $classUnit->id,
-							"classification_period_id" => $newPeriods[$i]->id,
+							"classification_period_id" => $newPeriod->id,
+							"level" => $level
+						];
+					}
+
+					foreach ($futurePeriods as $futurePeriod) {
+						$level++;
+						$pivotEntries[] = [
+							"class_unit_id" => $classUnit->id,
+							"classification_period_id" => $futurePeriod->id,
 							"level" => $level
 						];
 					}
@@ -102,7 +134,26 @@ class ClassificationPeriodController extends Controller
 			}
 		);
 
-		ClassUnitPeriod::insert($pivotEntries);
+		try {
+			DB::transaction(function () use ($oldClassificationPeriodIds, $futurePeriodIds, $processedClassUnitIds, $schoolYear, $schoolUnitId, $pivotEntries) {
+				ClassUnitPeriod::whereIn("classification_period_id", $oldClassificationPeriodIds)->delete();
+				ClassUnitPeriod::whereIn("classification_period_id", $futurePeriodIds)
+					->whereIn("class_unit_id", $processedClassUnitIds)
+					->delete();
+
+				ClassificationPeriod::whereIn("id", $oldClassificationPeriodIds)->delete();
+
+				foreach (array_chunk($pivotEntries, 500) as $chunk) {
+					ClassUnitPeriod::insert($chunk);
+				}
+			});
+		} catch (\Throwable) {
+			return \Response::json([
+				"success" => false,
+				"errors" => ["INTERNAL_SERVER_ERROR"]
+			], 500);
+		}
+
 
 		return [
 			"success" => true

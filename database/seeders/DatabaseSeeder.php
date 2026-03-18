@@ -48,7 +48,9 @@ class DatabaseSeeder extends Seeder
 		AccountLog::factory(20)->create();
 
 		SchoolComplex::factory(1)->create();
-		SchoolUnit::factory(5)->create();
+		SchoolUnit::factory(5)->create([
+			"school_complex_id" => 1,
+		]);
 
 		Subject::factory(5)->create();
 		$classUnits = ClassUnit::factory(15)->create();
