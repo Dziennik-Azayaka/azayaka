@@ -12,7 +12,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Hash;
 use Tests\TestCase;
 
-class AccountAccessesControllerTest extends TestCase
+final class AccountAccessesControllerTest extends TestCase
 {
 	use RefreshDatabase;
 

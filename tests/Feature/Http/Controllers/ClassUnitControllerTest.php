@@ -13,7 +13,7 @@ use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
-class ClassUnitControllerTest extends TestCase
+final class ClassUnitControllerTest extends TestCase
 {
 	use RefreshDatabase;
 

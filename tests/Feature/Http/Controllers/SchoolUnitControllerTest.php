@@ -12,7 +12,7 @@ use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
-class SchoolUnitControllerTest extends TestCase
+final class SchoolUnitControllerTest extends TestCase
 {
 	use RefreshDatabase;
 
