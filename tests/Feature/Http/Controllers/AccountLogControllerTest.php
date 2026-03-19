@@ -9,7 +9,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Carbon;
 use Tests\TestCase;
 
-class AccountLogControllerTest extends TestCase
+final class AccountLogControllerTest extends TestCase
 {
     use RefreshDatabase;
 
