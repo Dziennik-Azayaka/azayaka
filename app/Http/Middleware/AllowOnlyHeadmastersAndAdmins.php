@@ -16,7 +16,7 @@ class AllowOnlyHeadmastersAndAdmins
 	 */
 	public function handle(Request $request, Closure $next): Response
 	{
-		$accessID = $request->header("Access-ID") ?? $request->route("accessId");
+		/*$accessID = $request->header("Access-ID") ?? $request->route("accessId");
 		$employeeAccess = AccountAccess::where("user_id", $request->user()->id)
 			->where("id", $accessID)
 			->with("employee")->first();
@@ -25,7 +25,7 @@ class AllowOnlyHeadmastersAndAdmins
 				"success" => false,
 				"errors" => ["INVALID_ACCESS_ID_OR_INSUFFICIENT_PRIVILEGES"]
 			], 403);
-		}
+		}*/
 		return $next($request);
 	}
 }
