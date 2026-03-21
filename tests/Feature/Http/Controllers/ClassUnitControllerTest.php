@@ -48,7 +48,8 @@ final class ClassUnitControllerTest extends TestCase
 				"schoolUnitId",
 				"alias",
 				"mark",
-				"startingClassificationPeriodId",
+				"startingClassificationPeriodYear",
+				"startingClassificationPeriodNumber",
 				"teachingCycleLength",
 				"level"
 			],
