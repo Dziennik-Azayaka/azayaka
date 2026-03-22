@@ -11,7 +11,7 @@ use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
-class SchoolComplexControllerTest extends TestCase
+final class SchoolComplexControllerTest extends TestCase
 {
 	use RefreshDatabase;
 

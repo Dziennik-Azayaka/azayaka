@@ -12,7 +12,7 @@ use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
-class ClassificationPeriodControllerTest extends TestCase
+final class ClassificationPeriodControllerTest extends TestCase
 {
 	use RefreshDatabase;
 
@@ -30,7 +30,7 @@ class ClassificationPeriodControllerTest extends TestCase
 		return ["user" => $user, "access" => $accountAccess->id];
 	}
 
-	public function test_can_list_classification_periods()
+	public function test_can_list_classification_periods(): void
 	{
 		$actingUser = $this->actingUser();
 		$complex = SchoolComplex::factory()->create();
@@ -67,7 +67,7 @@ class ClassificationPeriodControllerTest extends TestCase
 		]);
 	}
 
-	public function test_can_save_new_classification_periods()
+	public function test_can_save_new_classification_periods(): void
 	{
 		$actingUser = $this->actingUser();
 		$complex = SchoolComplex::factory()->create();
@@ -104,7 +104,7 @@ class ClassificationPeriodControllerTest extends TestCase
 		]);
 	}
 
-	public function test_can_delete_classification_periods() {
+	public function test_can_delete_classification_periods(): void {
 		$actingUser = $this->actingUser();
 		$complex = SchoolComplex::factory()->create();
 		$schoolUnit = SchoolUnit::factory()->create(["school_complex_id" => $complex->id]);

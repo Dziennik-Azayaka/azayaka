@@ -25,12 +25,12 @@ class ClassUnitController extends Controller
 		}
 		$currentSchoolYear = ClassificationPeriodAssistant::getCurrentSchoolYear();
 
-		$category = $request->get("category");
+		$category = $request->input("category");
 		if (isset($category) && !in_array($category, ClassUnitCategory::cases(), true)) {
-			$category = ClassUnitCategory::from($request->get("category"));
+			$category = ClassUnitCategory::from($request->input("category"));
 			$classUnits->filterByCategory($category, $currentSchoolYear);
 		}
-		return $classUnits->get()->toResourceCollection();
+		return $classUnits->with("startingPeriod")->get()->toResourceCollection();
 	}
 
 	public function create(Request $request, int $schoolUnitId)
@@ -52,7 +52,7 @@ class ClassUnitController extends Controller
 
 		$classUnit = new ClassUnit();
 		$classUnit->school_unit_id = $schoolUnitId;
-		$classUnit->alias = $validated["alias"];
+		$classUnit->alias = $validated["alias" ?? null];
 		$classUnit->mark = $validated["mark"];
 		$classUnit->starting_classification_period_id = $validated["startingClassificationPeriodId"];
 		$classUnit->teaching_cycle_length = $validated["teachingCycleLength"];

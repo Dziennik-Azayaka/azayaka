@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Tests\TestCase;
 
-class SessionControllerTest extends TestCase
+final class SessionControllerTest extends TestCase
 {
     use RefreshDatabase;
 

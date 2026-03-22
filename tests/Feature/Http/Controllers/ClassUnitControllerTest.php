@@ -13,7 +13,7 @@ use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
-class ClassUnitControllerTest extends TestCase
+final class ClassUnitControllerTest extends TestCase
 {
 	use RefreshDatabase;
 
@@ -31,7 +31,7 @@ class ClassUnitControllerTest extends TestCase
 		return ["user" => $user, "access" => $accountAccess->id];
 	}
 
-	public function test_can_list_class_units()
+	public function test_can_list_class_units(): void
 	{
 		$actingUser = $this->actingUser();
 		$complex = SchoolComplex::factory()->create();
@@ -48,14 +48,15 @@ class ClassUnitControllerTest extends TestCase
 				"schoolUnitId",
 				"alias",
 				"mark",
-				"startingClassificationPeriodId",
+				"startingClassificationPeriodYear",
+				"startingClassificationPeriodNumber",
 				"teachingCycleLength",
 				"level"
 			],
 		]);
 	}
 
-	public function test_can_list_future_class_units()
+	public function test_can_list_future_class_units(): void
 	{
 		$actingUser = $this->actingUser();
 		$complex = SchoolComplex::factory()->create();
@@ -99,7 +100,7 @@ class ClassUnitControllerTest extends TestCase
 		$response->assertJsonCount(1);
 	}
 
-	public function test_can_list_current_class_units()
+	public function test_can_list_current_class_units(): void
 	{
 		$actingUser = $this->actingUser();
 		$complex = SchoolComplex::factory()->create();
@@ -169,7 +170,7 @@ class ClassUnitControllerTest extends TestCase
 		$response->assertJsonCount(1);
 	}
 
-	public function test_can_list_past_class_units()
+	public function test_can_list_past_class_units(): void
 	{
 		$actingUser = $this->actingUser();
 		$complex = SchoolComplex::factory()->create();
@@ -239,7 +240,7 @@ class ClassUnitControllerTest extends TestCase
 		$response->assertJsonCount(1);
 	}
 
-	public function test_can_create_a_class_unit()
+	public function test_can_create_a_class_unit(): void
 	{
 		$actingUser = $this->actingUser();
 		$complex = SchoolComplex::factory()->create();
@@ -294,7 +295,7 @@ class ClassUnitControllerTest extends TestCase
 		]);
 	}
 
-	public function test_can_create_a_class_unit_with_promotion_every_semester()
+	public function test_can_create_a_class_unit_with_promotion_every_semester(): void
 	{
 		$actingUser = $this->actingUser();
 		$complex = SchoolComplex::factory()->create();
@@ -349,7 +350,7 @@ class ClassUnitControllerTest extends TestCase
 		]);
 	}
 
-	public function test_creating_a_class_unit_with_disabled_employees_fails()
+	public function test_creating_a_class_unit_with_disabled_employees_fails(): void
 	{
 		$actingUser = $this->actingUser();
 		$complex = SchoolComplex::factory()->create();
@@ -386,7 +387,7 @@ class ClassUnitControllerTest extends TestCase
 		]);
 	}
 
-	public function test_creating_a_class_unit_with_nonexistent_employees_fails()
+	public function test_creating_a_class_unit_with_nonexistent_employees_fails(): void
 	{
 		$actingUser = $this->actingUser();
 		$complex = SchoolComplex::factory()->create();
@@ -422,7 +423,7 @@ class ClassUnitControllerTest extends TestCase
 		]);
 	}
 
-	public function test_can_update_a_class_unit()
+	public function test_can_update_a_class_unit(): void
 	{
 		$actingUser = $this->actingUser();
 		$complex = SchoolComplex::factory()->create();
@@ -465,7 +466,7 @@ class ClassUnitControllerTest extends TestCase
 		]);
 	}
 
-	public function test_can_delete_a_class_unit()
+	public function test_can_delete_a_class_unit(): void
 	{
 		$actingUser = $this->actingUser();
 		$complex = SchoolComplex::factory()->create();

@@ -9,7 +9,7 @@ use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
-class SubjectControllerTest extends TestCase
+final class SubjectControllerTest extends TestCase
 {
 	use RefreshDatabase;
 
@@ -27,7 +27,7 @@ class SubjectControllerTest extends TestCase
 		return ["user" => $user, "access" => $accountAccess->id];
 	}
 
-	public function test_can_list_subjects()
+	public function test_can_list_subjects(): void
 	{
 		$actingUser = $this->actingUser();
 		Subject::factory()->count(10)->create();
@@ -44,7 +44,7 @@ class SubjectControllerTest extends TestCase
 		]);
 	}
 
-	public function test_can_create_subject()
+	public function test_can_create_subject(): void
 	{
 		$actingUser = $this->actingUser();
 		$response = $this->post("/api/subjects", [
@@ -56,7 +56,7 @@ class SubjectControllerTest extends TestCase
 		$this->assertDatabaseHas("subjects", ["name" => "Test Subject", "shortcut" => "TSubject"]);
 	}
 
-	public function test_creating_subject_with_non_unique_shortcut_fails()
+	public function test_creating_subject_with_non_unique_shortcut_fails(): void
 	{
 		Subject::factory()->create([
 			"name" => "Colliding Subject",
@@ -72,7 +72,7 @@ class SubjectControllerTest extends TestCase
 		$response->assertBadRequest();
 	}
 
-	public function test_can_update_subject()
+	public function test_can_update_subject(): void
 	{
 		$actingUser = $this->actingUser();
 		$subject = Subject::factory()->create([
@@ -89,7 +89,7 @@ class SubjectControllerTest extends TestCase
 		$this->assertDatabaseMissing("subjects", ["name" => "Old Subject", "shortcut" => "OSubject"]);
 	}
 
-	public function test_can_archive_subject()
+	public function test_can_archive_subject(): void
 	{
 		$actingUser = $this->actingUser();
 		$subject = Subject::factory()->create();
@@ -98,7 +98,7 @@ class SubjectControllerTest extends TestCase
 		$this->assertDatabaseHas("subjects", ["id" => $subject->id, "active" => false]);
 	}
 
-	public function test_can_unarchive_subject()
+	public function test_can_unarchive_subject(): void
 	{
 		$actingUser = $this->actingUser();
 		$subject = Subject::factory()->create([

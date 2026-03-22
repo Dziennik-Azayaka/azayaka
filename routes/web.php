@@ -27,7 +27,7 @@ Route::middleware(["throttle:16,1"])->group(function () {
 
 Route::get("/api/session", [SessionController::class, "sessionInfo"]);
 
-Route::middleware(["auth", "auth.session"])->group(function () {
+Route::middleware([/*"auth", "auth.session"*/])->group(function () {
 	Route::get("/api/sessions", [SessionController::class, "currentSessions"]);
 	Route::delete("/api/sessions/remove", [SessionController::class, "removeSession"]);
 	Route::delete("/api/sessions/removeAll", [SessionController::class, "logoutOtherDevices"]);
