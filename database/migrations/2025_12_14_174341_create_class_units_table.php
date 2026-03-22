@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create("class_units", function (Blueprint $table) {
             $table->id();
 			$table->foreignId("school_unit_id")->constrained("school_units");
-			$table->string("alias");
+			$table->string("alias")->nullable();
 			$table->string("mark");
 			$table->foreignId("starting_classification_period_id");
 			$table->integer("teaching_cycle_length");
