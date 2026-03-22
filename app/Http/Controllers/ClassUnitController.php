@@ -52,7 +52,7 @@ class ClassUnitController extends Controller
 
 		$classUnit = new ClassUnit();
 		$classUnit->school_unit_id = $schoolUnitId;
-		$classUnit->alias = $validated["alias" ?? null];
+		$classUnit->alias = $validated["alias"] ?? null;
 		$classUnit->mark = $validated["mark"];
 		$classUnit->starting_classification_period_id = $validated["startingClassificationPeriodId"];
 		$classUnit->teaching_cycle_length = $validated["teachingCycleLength"];
