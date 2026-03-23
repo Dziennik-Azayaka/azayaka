@@ -17,7 +17,7 @@ import SchoolStructureService from "@/api/services/school-structure";
 import PanelHeader from "@/components/PanelHeader.vue";
 import ClassificationPeriodsChangeDialog from "@/components/classification-periods/ClassificationPeriodsChangeDialog.vue";
 import ClassificationPeriodsTable from "@/components/classification-periods/ClassificationPeriodsTable.vue";
-import { getCurrentSchoolYear, getSchoolYearString } from "@/utils";
+import { getCurrentSchoolYear, schoolYearString } from "@/utils";
 
 const { t } = useI18n();
 
@@ -56,7 +56,7 @@ const { data, isError, refetch, fetchStatus } = useQuery({
 
         <section class="px-3 sm:px-5 py-3 gap-2 border rounded-md flex justify-between items-center">
             <p class="font-semibold">
-                <span class="not-md:hidden">{{ t("schoolYear") }}</span> {{ getSchoolYearString(schoolYear) }}
+                <span class="not-md:hidden">{{ t("schoolYear") }}</span> {{ schoolYearString(schoolYear) }}
             </p>
             <div class="flex gap-3">
                 <ClassificationPeriodsChangeDialog
@@ -95,7 +95,7 @@ const { data, isError, refetch, fetchStatus } = useQuery({
                 :unit="unit"
                 :show-header="data.schoolUnits.length !== 1"
                 :periods="data.classificationPeriods.get(unit.id)!!"
-				:school-year="schoolYear"
+                :school-year="schoolYear"
             />
         </template>
     </div>

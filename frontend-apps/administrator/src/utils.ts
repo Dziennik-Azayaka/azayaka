@@ -3,4 +3,4 @@ export function getCurrentSchoolYear() {
     return date.getFullYear() - Number(date.getMonth() < 9);
 }
 
-export const getSchoolYearString = (number: number) => `${number}/${number + 1}`;
+export const schoolYearString = (id: number) => `${id}/${id + 1}`;

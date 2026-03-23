@@ -24,8 +24,8 @@ import type { ClassificationPeriodEntity } from "@/api/entities/classification-p
 const props = defineProps<{
     periods: ClassificationPeriodEntity[];
     schoolYear: number;
-	loading: boolean;
-	error: boolean;
+    loading: boolean;
+    error: boolean;
 }>();
 const emit = defineEmits<{ submit: [periodStarts: CalendarDate[]] }>();
 
@@ -112,7 +112,13 @@ onMounted(() => {
                 <FormItem class="contents">
                     <FormLabel>{{ t("periodsNumber") }}</FormLabel>
                     <FormControl>
-                        <Input type="number" v-bind="componentField" @input="onPeriodsNumberChange" :disabled="loading" :max="4" />
+                        <Input
+                            type="number"
+                            v-bind="componentField"
+                            @input="onPeriodsNumberChange"
+                            :disabled="loading"
+                            :max="4"
+                        />
                     </FormControl>
                     <FormMessage class="md:col-start-2 md:col-end-3" />
                 </FormItem>
@@ -126,11 +132,11 @@ onMounted(() => {
                     :index="index"
                     :min="minValue(index)"
                     :max="maxValue(index)"
-					:disabled="!index || loading"
+                    :disabled="!index || loading"
                 />
             </FormFieldArray>
         </div>
-		<ErrorBanner :description="t('unknownError')" v-if="error" />
+        <ErrorBanner :description="t('unknownError')" v-if="error" />
         <DialogFooter>
             <slot name="footer" />
         </DialogFooter>
