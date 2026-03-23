@@ -23,7 +23,7 @@ defineProps<{
     index: number;
     min: CalendarDate | undefined;
     max: CalendarDate | undefined;
-	disabled: boolean;
+    disabled: boolean;
 }>();
 
 const { locale, t, d } = useI18n();

@@ -24,3 +24,16 @@ export interface SubjectForm {
     name: string;
     shortcut: string;
 }
+
+export interface ClassGeneralInfoForm {
+    schoolUnitId: number;
+    mark: string;
+    alias: string | null;
+    promoteEvery: "year" | "semester";
+    teachingCycleLength: number;
+    startingClassificationPeriod: {
+        id: number;
+        number: number;
+        schoolYear: number;
+    };
+}

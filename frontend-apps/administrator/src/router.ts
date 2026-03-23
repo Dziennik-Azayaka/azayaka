@@ -7,7 +7,7 @@ const router = createRouter({
         {
             path: "/:accessId(\\d+)",
             component: RouterView,
-			redirect: { name: "schoolStructure" },
+            redirect: { name: "schoolStructure" },
             children: [
                 {
                     path: "school-structure",
@@ -56,11 +56,11 @@ const router = createRouter({
                 },
             ],
         },
-		{
+        {
             path: "/:accessId(\\d+)/classes",
-			name: "classes",
+            name: "classes",
             component: RouterView,
-			redirect: { name: "classes.list" },
+            redirect: { name: "classes.list" },
             children: [
                 {
                     path: "",
@@ -77,7 +77,7 @@ const router = createRouter({
                     meta: {
                         title: "classes",
                     },
-					props: ({ params }) => ({ classId: Number(params.id) }),
+                    props: ({ params }) => ({ classId: Number(params.id) }),
                 },
                 {
                     path: ":pathMatch(.*)*",
@@ -103,9 +103,8 @@ router.beforeEach(async (to) => {
     }
 
     userStore.setAccess(access);
-
-	console.log(userStore.access);
-	return true;
+	
+    return true;
 });
 
 export default router;

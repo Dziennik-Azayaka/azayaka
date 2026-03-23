@@ -28,7 +28,7 @@ const { data, fetchStatus, isError, refetch } = useQuery({
             }),
             ClassService.getAllClasses(props.tab),
         ]);
-		return { schoolUnits, classes }
+        return { schoolUnits, classes };
     },
 });
 </script>

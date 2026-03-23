@@ -10,6 +10,7 @@ import {
     useVueTable,
 } from "@tanstack/vue-table";
 import { useI18n } from "vue-i18n";
+import { useRouter } from "vue-router";
 
 import {
     Select,
@@ -26,7 +27,6 @@ import {
 
 import type { ClassEntity } from "@/api/entities/class.ts";
 import { schoolYearString } from "@/utils.ts";
-import { useRouter } from "vue-router";
 
 const props = defineProps<{ classes: ClassEntity[]; unitShorts: Map<number, string>; showCurrentLevel: boolean }>();
 const { t } = useI18n();
@@ -34,9 +34,9 @@ const router = useRouter();
 
 const columnHelper = createColumnHelper<ClassEntity>();
 const columns = [
-    columnHelper.accessor("startingSchoolYear", {
+    columnHelper.accessor("startingClassificationPeriodYear", {
         header: () => t("startingSchoolYear"),
-        cell: ({ row }) => schoolYearString(row.original.startingSchoolYear),
+        cell: ({ row }) => schoolYearString(row.original.startingClassificationPeriodYear),
         filterFn: (row, columnId, filterValue) => filterValue === "all" || row.getValue(columnId) === filterValue,
     }),
     props.showCurrentLevel &&
@@ -65,7 +65,7 @@ const table = useVueTable({
     state: {
         sorting: [
             {
-                id: "startingSchoolYear",
+                id: "startingClassificationPeriodYear",
                 desc: true,
             },
         ],
@@ -74,7 +74,7 @@ const table = useVueTable({
 });
 
 async function seeClassDetails(classId: number) {
-    return await router.push({ name: 'classes.details', params: { id: classId } });
+    return await router.push({ name: "classes.details", params: { id: classId } });
 }
 </script>
 
@@ -82,9 +82,9 @@ async function seeClassDetails(classId: number) {
     <section class="flex flex-wrap gap-3 items-center py-4">
         <div class="flex-1"></div>
         <Select
-            :model-value="table.getColumn('startingSchoolYear')?.getFilterValue() ?? 'all'"
+            :model-value="table.getColumn('startingClassificationPeriodYear')?.getFilterValue() ?? 'all'"
             :aria-label="t('startingSchoolYear')"
-            @update:model-value="table.getColumn('startingSchoolYear')?.setFilterValue($event)"
+            @update:model-value="table.getColumn('startingClassificationPeriodYear')?.setFilterValue($event)"
         >
             <SelectTrigger class="not-lg:w-full">
                 <span class="space-x-0.5">
@@ -95,7 +95,9 @@ async function seeClassDetails(classId: number) {
             <SelectContent>
                 <SelectItem value="all">{{ t("startingSchoolYear.all") }}</SelectItem>
                 <SelectItem
-                    v-for="id in [...table.getColumn('startingSchoolYear')!.getFacetedUniqueValues().keys()]
+                    v-for="id in [
+                        ...table.getColumn('startingClassificationPeriodYear')!.getFacetedUniqueValues().keys(),
+                    ]
                         .sort()
                         .reverse()"
                     :key="id"
