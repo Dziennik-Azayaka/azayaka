@@ -5,6 +5,7 @@ namespace Tests\Feature\Http\Controllers;
 use App\Models\AccountAccess;
 use App\Models\ClassificationPeriod;
 use App\Models\ClassUnit;
+use App\Models\ClassUnitFormTutors;
 use App\Models\Employee;
 use App\Models\SchoolComplex;
 use App\Models\SchoolUnit;
@@ -52,7 +53,16 @@ final class ClassUnitControllerTest extends TestCase
 				"startingClassificationPeriodYear",
 				"startingClassificationPeriodNumber",
 				"teachingCycleLength",
-				"level"
+				"level",
+				"formTutors" => [
+					"*" => [
+						"employeeId",
+						"firstName",
+						"lastName",
+						"dateFrom",
+						"dateTo"
+					]
+				]
 			],
 		]);
 	}
@@ -264,13 +274,19 @@ final class ClassUnitControllerTest extends TestCase
 		$classificationPeriod2->period_end = Carbon::create($currentYear + 1, 8, 31);
 		$classificationPeriod2->save();
 
+		$formTutorStartingDate = $classificationPeriod1->period_start->format("Y-m-d");
+		$formTutorEndingDate = $classificationPeriod1->period_start->addYears(5)->subDay()->format("Y-m-d");
 		$response = $this->post("/api/schoolUnits/$unit->id/classUnits", [
 			"alias" => "Klasa Informatyczna",
 			"mark" => "a",
 			"startingClassificationPeriodId" => $classificationPeriod1->id,
 			"teachingCycleLength" => 5,
-			"employeeIds" => [
-				$employee->id
+			"employees" => [
+				[
+					"id" =>	$employee->id,
+					"dateFrom" => $formTutorStartingDate,
+					"dateTo" => $formTutorEndingDate
+				]
 			],
 			"promoteEvery" => "year"
 		], ["Access-ID" => $actingUser["access"]]);
@@ -282,8 +298,10 @@ final class ClassUnitControllerTest extends TestCase
 			"teaching_cycle_length" => 5,
 			"promote_every" => "year"
 		]);
-		$this->assertDatabaseHas("class_units_employees", [
-			"employee_id" => $employee->id
+		$this->assertDatabaseHas("class_units_form_tutors", [
+			"employee_id" => $employee->id,
+			"date_from" => $formTutorStartingDate,
+			"date_to" => $formTutorEndingDate
 		]);
 
 		$this->assertDatabaseHas("class_units_periods", [
@@ -319,13 +337,21 @@ final class ClassUnitControllerTest extends TestCase
 		$classificationPeriod2->period_end = Carbon::create($currentYear + 1, 8, 31);
 		$classificationPeriod2->save();
 
+		$formTutorStartingDate = $classificationPeriod1->period_start->format("Y-m-d");
+		// the tutor ending date is not validated when promoting every semester
+		$formTutorEndingDate = $classificationPeriod1->period_start->addYears(10)->subDay()->format("Y-m-d");
+
 		$response = $this->post("/api/schoolUnits/$unit->id/classUnits", [
 			"alias" => "Klasa Informatyczna",
 			"mark" => "a",
 			"startingClassificationPeriodId" => $classificationPeriod1->id,
 			"teachingCycleLength" => 5,
-			"employeeIds" => [
-				$employee->id
+			"employees" => [
+				[
+					"id" =>	$employee->id,
+					"dateFrom" => $formTutorStartingDate,
+					"dateTo" => $formTutorEndingDate
+				]
 			],
 			"promoteEvery" => "semester"
 		], ["Access-ID" => $actingUser["access"]]);
@@ -337,8 +363,10 @@ final class ClassUnitControllerTest extends TestCase
 			"teaching_cycle_length" => 5,
 			"promote_every" => "semester"
 		]);
-		$this->assertDatabaseHas("class_units_employees", [
-			"employee_id" => $employee->id
+		$this->assertDatabaseHas("class_units_form_tutors", [
+			"employee_id" => $employee->id,
+			"date_from" => $formTutorStartingDate,
+			"date_to" => $formTutorEndingDate
 		]);
 
 		$this->assertDatabaseHas("class_units_periods", [
@@ -365,14 +393,25 @@ final class ClassUnitControllerTest extends TestCase
 			"period_start" => Carbon::now()->startOfYear(),
 			"period_end" => Carbon::now()->endOfYear(),
 		]);
+		$formTutorStartingDate = $period->period_start->format("Y-m-d");
+		$formTutorEndingDate = $period->period_start->addYears(5)->subDay()->format("Y-m-d");
 		$response = $this->post("/api/schoolUnits/$unit->id/classUnits", [
 			"alias" => "Klasa Informatyczna",
 			"mark" => "a",
 			"startingClassificationPeriodId" => $period->id,
 			"teachingCycleLength" => 5,
-			"employeeIds" => [
-				$activeEmployee->id,
-				$disabledEmployee->id
+			"promoteEvery" => "year",
+			"employees" => [
+				[
+					"id" => $activeEmployee->id,
+					"dateFrom" => $formTutorStartingDate,
+					"dateTo" => $formTutorEndingDate
+				],
+				[
+					"id" => $disabledEmployee->id,
+					"dateFrom" => $formTutorStartingDate,
+					"dateTo" => $formTutorEndingDate
+				]
 			]
 		], ["Access-ID" => $actingUser["access"]]);
 		$response->assertBadRequest();
@@ -380,10 +419,10 @@ final class ClassUnitControllerTest extends TestCase
 			"alias" => "Klasa Informatyczna",
 			"mark" => "a"
 		]);
-		$this->assertDatabaseMissing("class_units_employees", [
+		$this->assertDatabaseMissing("class_units_form_tutors", [
 			"employee_id" => $activeEmployee->id,
 		]);
-		$this->assertDatabaseMissing("class_units_employees", [
+		$this->assertDatabaseMissing("class_units_form_tutors", [
 			"employee_id" => $disabledEmployee->id,
 		]);
 	}
@@ -401,14 +440,22 @@ final class ClassUnitControllerTest extends TestCase
 			"period_start" => Carbon::now()->startOfYear(),
 			"period_end" => Carbon::now()->endOfYear(),
 		]);
+		$formTutorStartingDate = $period->period_start->format("Y-m-d");
+		$formTutorEndingDate = $period->period_start->addYears(5)->subDay()->format("Y-m-d");
 		$response = $this->post("/api/schoolUnits/$unit->id/classUnits", [
 			"alias" => "Klasa Informatyczna",
 			"mark" => "a",
 			"startingClassificationPeriodId" => $period->id,
 			"teachingCycleLength" => 5,
 			"employeeIds" => [
-				$employee->id,
-				694202137
+				"id" => $employee->id,
+				"dateFrom" => $formTutorStartingDate,
+				"dateTo" => $formTutorEndingDate
+			],
+			[
+				"id" => 694202137,
+				"dateFrom" => $formTutorStartingDate,
+				"dateTo" => $formTutorEndingDate
 			]
 		], ["Access-ID" => $actingUser["access"]]);
 		$response->assertBadRequest();
@@ -416,10 +463,10 @@ final class ClassUnitControllerTest extends TestCase
 			"alias" => "Klasa Informatyczna",
 			"mark" => "a"
 		]);
-		$this->assertDatabaseMissing("class_units_employees", [
+		$this->assertDatabaseMissing("class_units_form_tutors", [
 			"employee_id" => $employee->id,
 		]);
-		$this->assertDatabaseMissing("class_units_employees", [
+		$this->assertDatabaseMissing("class_units_form_tutors", [
 			"employee_id" => 694202137,
 		]);
 	}
@@ -432,8 +479,6 @@ final class ClassUnitControllerTest extends TestCase
 		$oldEmployee = Employee::factory()->create();
 		$newEmployee = Employee::factory()->create();
 		$classUnit = ClassUnit::factory()->create(["school_unit_id" => $unit->id]);
-		$classUnit->employees()->attach($oldEmployee->id);
-
 		$period = ClassificationPeriod::create([
 			"school_unit_id" => $unit->id,
 			"school_year" => Carbon::now()->year,
@@ -441,15 +486,28 @@ final class ClassUnitControllerTest extends TestCase
 			"period_start" => Carbon::now()->startOfYear(),
 			"period_end" => Carbon::now()->endOfYear(),
 		]);
+		$formTutorStartingDate = $period->period_start->format("Y-m-d");
+		$formTutorEndingDate = $period->period_start->addYears(5)->subDay()->format("Y-m-d");
+		ClassUnitFormTutors::insert([
+			"class_unit_id" => $classUnit->id,
+			"employee_id" => $oldEmployee->id,
+			"date_from" => $formTutorStartingDate,
+			"date_to" => $formTutorEndingDate,
+		]);
 
 		$response = $this->put("/api/schoolUnits/$classUnit->id/classUnits/$classUnit->id", [
 			"alias" => "Klasa Informatyczna",
 			"mark" => "y",
-			"employeeIds" => [
-				$newEmployee->id
+			"employees" => [
+				[
+					"id" => $newEmployee->id,
+					"dateFrom" => $formTutorStartingDate,
+					"dateTo" => $formTutorEndingDate
+				]
 			],
 			"startingClassificationPeriodId" => $period->id,
-			"teachingCycleLength" => 5
+			"teachingCycleLength" => 5,
+			"promoteEvery" => "year"
 		], ["Access-ID" => $actingUser["access"]]);
 
 		$response->assertOk();
@@ -457,11 +515,11 @@ final class ClassUnitControllerTest extends TestCase
 			"alias" => "Klasa Informatyczna",
 			"mark" => "y",
 		]);
-		$this->assertDatabaseHas("class_units_employees", [
+		$this->assertDatabaseHas("class_units_form_tutors", [
 			"employee_id" => $newEmployee->id,
 			"class_unit_id" => $classUnit->id,
 		]);
-		$this->assertDatabaseMissing("class_units_employees", [
+		$this->assertDatabaseMissing("class_units_form_tutors", [
 			"employee_id" => $oldEmployee->id,
 			"class_unit_id" => $classUnit->id,
 		]);
@@ -474,7 +532,12 @@ final class ClassUnitControllerTest extends TestCase
 		$unit = SchoolUnit::factory()->create(["school_complex_id" => $complex->id]);
 		$classUnit = ClassUnit::factory()->create(["school_unit_id" => $unit->id]);
 		$employee = Employee::factory()->create();
-		$classUnit->employees()->attach($employee->id);
+		ClassUnitFormTutors::insert([
+			"class_unit_id" => $classUnit->id,
+			"employee_id" => $employee->id,
+			"date_from" => "2024-01-01",
+			"date_to" => "2025-01-01",
+		]);
 		$response = $this->delete("/api/schoolUnits/$unit->id/classUnits/$classUnit->id", [], [
 			"Access-ID" => $actingUser["access"]
 		]);
@@ -484,7 +547,7 @@ final class ClassUnitControllerTest extends TestCase
 			"mark" => $classUnit->mark,
 			"id" => $classUnit->id,
 		]);
-		$this->assertDatabaseMissing("class_units_employees", [
+		$this->assertDatabaseMissing("class_units_form_tutors", [
 			"employee_id" => $employee->id,
 			"class_unit_id" => $classUnit->id,
 		]);

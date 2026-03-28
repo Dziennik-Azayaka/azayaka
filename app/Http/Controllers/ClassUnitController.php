@@ -6,6 +6,7 @@ use App\Enums\ClassUnitCategory;
 use App\Http\Resources\ClassUnitResource;
 use App\Models\ClassificationPeriod;
 use App\Models\ClassUnit;
+use App\Models\ClassUnitFormTutors;
 use App\Models\ClassUnitPeriod;
 use App\Models\Employee;
 use App\Models\SchoolUnit;
@@ -30,7 +31,7 @@ class ClassUnitController extends Controller
 			$category = ClassUnitCategory::from($request->input("category"));
 			$classUnits->filterByCategory($category, $currentSchoolYear);
 		}
-		return $classUnits->with("startingPeriod")->get()->toResourceCollection();
+		return $classUnits->with(["startingPeriod", "formTutors"])->get()->toResourceCollection();
 	}
 
 	public function create(Request $request, int $schoolUnitId)
@@ -60,7 +61,8 @@ class ClassUnitController extends Controller
 
 		$classUnit->save();
 
-		$classUnit->employees()->attach($validated["employeeIds"]);
+		$pivotEntries = $this->generatePivotEntries($validated["employees"], $classUnit);
+		ClassUnitFormTutors::insert($pivotEntries);
 
 		$startingPeriod = ClassificationPeriod::find($classUnit->starting_classification_period_id)->first();
 		$periods = ClassificationPeriod::where("period_start", ">=", $startingPeriod->period_start);
@@ -107,7 +109,10 @@ class ClassUnitController extends Controller
 
 		$classUnit->update($validated);
 
-		$classUnit->employees()->sync($validated["employeeIds"]);
+		ClassUnitFormTutors::where("class_unit_id", $classUnit->id)->delete();
+		$pivotEntries = $this->generatePivotEntries($validated["employees"], $classUnit);
+		ClassUnitFormTutors::insert($pivotEntries);
+
 		return [
 			"success" => true
 		];
@@ -121,7 +126,7 @@ class ClassUnitController extends Controller
 			"startingClassificationPeriodId" => ["integer", "required", "exists:classification_periods,id"],
 			"teachingCycleLength" => ["integer", "required", "between:2,8"],
 			"promoteEvery" => ["string", "in:year,semester"],
-			"employeeIds" => ["array", "required"],
+			"employees" => ["array", "required"],
 		]);
 
 		if (!$validator["success"]) {
@@ -130,7 +135,66 @@ class ClassUnitController extends Controller
 
 		$validated = $validator["data"];
 
-		$employeeIds = array_unique($validated["employeeIds"]);
+		$employeeIds = [];
+
+		/*
+		 * validation rules:
+			- the starting date of at least one teacher should be equal to the start date of the first period of the class unit
+			- no ending date should be earlier than a starting date
+			- if promoting every year, no ending date should be later than STAR_YEAR+TEACHING_CYCLE_LENGTH-08-31
+		 */
+
+		$startingClassificationPeriod = ClassificationPeriod::where("id", "=", $validated["startingClassificationPeriodId"])->first();
+		$foundTeacherStartingWithTheClassificationPeriod = false;
+		$startingYear = Carbon::parse($startingClassificationPeriod->period_start)->year;
+		$endingDate = Carbon::create($startingYear + $validated["teachingCycleLength"], 8, 31);
+		foreach ($validated["employees"] as $employee) {
+			$employeeIds[] = $employee["id"];
+
+			$dateFrom = Carbon::parse($employee["dateFrom"]);
+			$dateTo = Carbon::parse($employee["dateTo"]);
+			if ($dateFrom->gt($dateTo)) {
+				// TODO: Turn validator error arrays into a class
+				return [
+					"success" => false,
+					"errorResponse" => \Response::json([
+						"success" => false,
+						"errors" => [
+							"EMPLOYEE_DATE_FROM_MUST_NOT_BE_LATER_THAN_DATE_TO"
+						]
+					], 400)
+				];
+			}
+
+			if ($dateFrom->eq($startingClassificationPeriod->period_start)) {
+				$foundTeacherStartingWithTheClassificationPeriod = true;
+			}
+
+			if ($validated["promoteEvery"] == "year" && $dateTo->gt($endingDate)) {
+				return [
+					"success" => false,
+					"errorResponse" => \Response::json([
+						"success" => false,
+						"errors" => [
+							"EMPLOYEE_DATE_TO_MUST_NOT_BE_LATER_THAN_THE_CLASS_UNIT_END_DATE"
+						]
+					], 400)
+				];
+			}
+		}
+
+		if (!$foundTeacherStartingWithTheClassificationPeriod) {
+			return [
+				"success" => false,
+				"errorResponse" => \Response::json([
+					"success" => false,
+					"errors" => [
+						"AT_LEAST_ONE_FORM_TUTOR_MUST_START_ALONGSIDE_THE_STARTING_PERIOD"
+					]
+				], 400)
+			];
+		}
+
 		$employees = Employee::whereIn("id", $employeeIds)->get();
 		$existingCount = $employees->count();
 		if ($existingCount !== count($employeeIds)) {
@@ -171,5 +235,22 @@ class ClassUnitController extends Controller
 		return [
 			"success" => true
 		];
+	}
+
+	public function generatePivotEntries($employees, ClassUnit $classUnit): array
+	{
+		$now = Carbon::now();
+		$pivotEntries = [];
+		foreach ($employees as $employee) {
+			$pivotEntries[] = [
+				"class_unit_id" => $classUnit->id,
+				"employee_id" => $employee["id"],
+				"date_from" => $employee["dateFrom"],
+				"date_to" => $employee["dateTo"],
+				"created_at" => $now,
+				"updated_at" => $now,
+			];
+		}
+		return $pivotEntries;
 	}
 }

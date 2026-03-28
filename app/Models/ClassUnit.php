@@ -15,9 +15,12 @@ class ClassUnit extends Model
 
 	protected $fillable = ["alias", "school_unit_id", "mark", "starting_classification_period_id", "teaching_cycle_length"];
 
-	public function employees(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
+	public function formTutors(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
 	{
-		return $this->belongsToMany(Employee::class, "class_units_employees", "class_unit_id", "employee_id");
+		return $this->belongsToMany(Employee::class, "class_units_form_tutors", "class_unit_id", "employee_id")
+			->using(ClassUnitFormTutors::class)
+			->withPivot("id", "date_from", "date_to")
+			->withTimestamps();
 	}
 
 	public function schoolUnit() {
