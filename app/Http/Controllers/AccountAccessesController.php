@@ -30,12 +30,8 @@ class AccountAccessesController extends Controller
 			session(["activation_step" => "code_found"]);
 			session()->save();
 
-			$activation_code_info = $this->getFirstAndLastNameFromActivationCode($activation_code);
-
 			return [
-				"success" => true,
-				"firstName" => $activation_code_info["firstName"],
-				"lastName" => $activation_code_info["lastName"],
+				"success" => true
 			];
 		} else {
 			return Response::json([
