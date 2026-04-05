@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Documents\AccountAccessesActivation\AccountAccessesActivationDocument;
+use App\Enums\AccessType;
 use App\Enums\AccountEventType;
 use App\Models\AccountAccess;
 use App\Models\AccountLog;
@@ -316,5 +318,41 @@ class EmployeeController extends Controller
 		}
 
 		return $validator;
+	}
+
+	public function generateEmployeeAccessesDocument(Request $request)
+	{
+		$validator = ValidatorAssistant::validate($request, [
+			"ids" => "required|array"
+		]);
+
+		if (!$validator["success"]) {
+			return $validator["errorResponse"];
+		}
+
+		$ids = array_unique($validator["data"]["ids"]);
+		$employees = Employee::whereIn("id", $ids)->get();
+		$employeeIds = $employees->pluck("id");
+		$accesses = AccountAccess::whereIn("employee_id", $employeeIds)->get();
+
+		$document = new AccountAccessesActivationDocument();
+
+		foreach ($employees as $employee) {
+			$access = $accesses->where("employee_id", $employee->id)->first();
+			if (!$employee->active || $access?->words == null) {
+				return Response::json([
+					"success" => false,
+					"errors" => [
+						"EMPLOYEE_NOT_ACTIVE_OR_HAS_NO_ACCESS_WORDS"
+					]
+				], 400);
+			}
+			$document->addAccess(AccessType::EMPLOYEE,
+				$employee->first_name . " " . $employee->last_name,
+				explode(",", $access->words));
+		}
+
+		$document->generateDocument();
+		return $document->streamDocument();
 	}
 }
