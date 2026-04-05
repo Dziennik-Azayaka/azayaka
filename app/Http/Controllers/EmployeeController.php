@@ -8,7 +8,7 @@ use App\Enums\AccountEventType;
 use App\Models\AccountAccess;
 use App\Models\AccountLog;
 use App\Models\Employee;
-use App\Utilities\ValidatorAssistant;
+use App\Utilities\ValidatorAssistant\ValidatorAssistant;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Response;
@@ -22,12 +22,7 @@ class EmployeeController extends Controller
 
 	public function create(Request $request)
 	{
-		$validator = $this->validateEmployeeData($request);
-
-		if (!$validator["success"]) {
-			return $validator["errorResponse"];
-		}
-		$data = $validator["data"];
+		$data = $this->validateEmployeeData($request);
 
 		$shortcut = $data["shortcut"] ?? $this->generateShortcut($data["firstName"], $data["lastName"]);
 		if ($shortcut == null) {
@@ -60,12 +55,7 @@ class EmployeeController extends Controller
 
 	public function update(Employee $employee, Request $request)
 	{
-		$validator = $this->validateEmployeeData($request, $employee->id);
-
-		if (!$validator["success"]) {
-			return $validator["errorResponse"];
-		}
-		$data = $validator["data"];
+		$data = $this->validateEmployeeData($request, $employee->id);
 
 		if ($employee->first_name != $data["firstName"] || $employee->last_name != $data["lastName"]) {
 			$shortcut = $data["shortcut"] ?? $this->generateShortcut($data["firstName"], $data["lastName"]);
@@ -107,13 +97,9 @@ class EmployeeController extends Controller
 
 	public function archive(Employee $employee, Request $request)
 	{
-		$validator = ValidatorAssistant::validate($request, [
+		ValidatorAssistant::validate($request, [
 			"password" => "required|current_password"
 		]);
-
-		if (!$validator["success"]) {
-			return $validator["errorResponse"];
-		}
 
 		$employee->active = !$employee->active;
 		$employee->save();
@@ -249,16 +235,10 @@ class EmployeeController extends Controller
 
 	public function massUpdateAccess(Request $request)
 	{
-		$validator = ValidatorAssistant::validate($request, [
+		$data = ValidatorAssistant::validate($request, [
 			"action" => ["required"],
 			"ids" => ["required", "array"],
 		]);
-
-		if (!$validator["success"]) {
-			return $validator["errorResponse"];
-		}
-
-		$data = $validator["data"];
 
 		if ($data["action"] == "revoke") {
 			AccountAccess::whereIn("employee_id", $data["ids"])->delete();
@@ -305,16 +285,14 @@ class EmployeeController extends Controller
 			"isTeacher" => ["required", "boolean"],
 		]);
 
-		if ($validator["success"]) {
-			if (!$validator["data"]["isAdmin"] && !$validator["data"]["isSecretary"] &&
-				!$validator["data"]["isTeacher"] && !$validator["data"]["isHeadmaster"]) {
-				return [
-					"success" => false,
-					"errors" => [
-						"EMPLOYEE_MUST_HAVE_AT_LEAST_ONE_ROLE_ASSIGNED"
-					]
-				];
-			}
+		if (!$validator["isAdmin"] && !$validator["isSecretary"] &&
+			!$validator["isTeacher"] && !$validator["isHeadmaster"]) {
+			return [
+				"success" => false,
+				"errors" => [
+					"EMPLOYEE_MUST_HAVE_AT_LEAST_ONE_ROLE_ASSIGNED"
+				]
+			];
 		}
 
 		return $validator;
@@ -326,11 +304,7 @@ class EmployeeController extends Controller
 			"ids" => "required|array"
 		]);
 
-		if (!$validator["success"]) {
-			return $validator["errorResponse"];
-		}
-
-		$ids = array_unique($validator["data"]["ids"]);
+		$ids = array_unique($validator["ids"]);
 		$employees = Employee::whereIn("id", $ids)->get();
 		$employeeIds = $employees->pluck("id");
 		$accesses = AccountAccess::whereIn("employee_id", $employeeIds)->get();

@@ -4,25 +4,19 @@ namespace App\Http\Controllers;
 
 use App\Enums\AccountEventType;
 use App\Utilities\AccountEventLogger;
-use App\Utilities\ValidatorAssistant;
-use Response;
+use App\Utilities\ValidatorAssistant\ValidatorAssistant;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Response;
 
 class UserController extends Controller
 {
 	public function updateEmailAddress(Request $request) {
-		$validator = ValidatorAssistant::validate($request, [
+		$validated = ValidatorAssistant::validate($request, [
 			"email" => "required|unique:users,email",
 			"password" => "required",
 		]);
-
-		if (!$validator["success"]) {
-			return $validator["errorResponse"];
-		}
-
-		$validated = $validator["data"];
 
 		if (!Hash::check($validated["password"], $request->user()->password)) {
 			return Response::json([
@@ -46,16 +40,10 @@ class UserController extends Controller
 	}
 
 	public function updatePassword(Request $request) {
-		$validator = ValidatorAssistant::validate($request, [
+		$validated = ValidatorAssistant::validate($request, [
 			"oldPassword" => "required|current_password",
 			"newPassword" => "required|min:8",
 		]);
-
-		if (!$validator["success"]) {
-			return $validator["errorResponse"];
-		}
-
-		$validated = $validator["data"];
 
 		if (!Hash::check($validated["oldPassword"], $request->user()->password)) {
 			return Response::json([

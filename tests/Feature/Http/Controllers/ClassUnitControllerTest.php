@@ -458,7 +458,7 @@ final class ClassUnitControllerTest extends TestCase
 				"dateTo" => $formTutorEndingDate
 			]
 		], ["Access-ID" => $actingUser["access"]]);
-		$response->assertBadRequest();
+		$response->assertUnprocessable();
 		$this->assertDatabaseMissing("class_units", [
 			"alias" => "Klasa Informatyczna",
 			"mark" => "a"

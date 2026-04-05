@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Enums\ClassUnitCategory;
-use App\Http\Resources\ClassUnitResource;
 use App\Models\ClassificationPeriod;
 use App\Models\ClassUnit;
 use App\Models\ClassUnitFormTutors;
@@ -11,7 +10,7 @@ use App\Models\ClassUnitPeriod;
 use App\Models\Employee;
 use App\Models\SchoolUnit;
 use App\Utilities\ClassificationPeriodAssistant;
-use App\Utilities\ValidatorAssistant;
+use App\Utilities\ValidatorAssistant\ValidatorAssistant;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 
@@ -120,7 +119,7 @@ class ClassUnitController extends Controller
 
 	private function validateClassUnit(Request $request)
 	{
-		$validator = ValidatorAssistant::validate($request, [
+		$validated = ValidatorAssistant::validate($request, [
 			"alias" => ["string", "max:64", "nullable"],
 			"mark" => ["string", "max:3", "required"],
 			"startingClassificationPeriodId" => ["integer", "required", "exists:classification_periods,id"],
@@ -128,13 +127,6 @@ class ClassUnitController extends Controller
 			"promoteEvery" => ["string", "in:year,semester"],
 			"employees" => ["array", "required"],
 		]);
-
-		if (!$validator["success"]) {
-			return $validator;
-		}
-
-		$validated = $validator["data"];
-
 		$employeeIds = [];
 
 		/*
