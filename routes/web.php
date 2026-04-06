@@ -89,5 +89,5 @@ Route::post("/api/email/verification-notification", function (Request $request) 
 })->middleware(["auth", "throttle:6,1"])->name("verification.send");
 
 // SPA
-Route::redirect("/rejestracja", "/authentication/access-activation/code");
+Route::redirect("/rejestracja", "/authentication/access-activation/code")->name("activateAccess");
 Route::view("/{any?}", "index")->where("any", ".*");

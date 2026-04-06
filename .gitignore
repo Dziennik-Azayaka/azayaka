@@ -20,6 +20,7 @@ node_modules
 /public/storage
 /storage/*.key
 /storage/pail
+/storage/fonts
 /vendor
 Homestead.json
 Homestead.yaml

@@ -33,4 +33,11 @@ export const EmployeeService = {
       method: 'PATCH',
       body: { ids: [id], action },
     }),
+  getPdfInstructions: (ids: number[]) =>
+    http<Blob, 'blob'>('/employees/accesses/document', {
+      method: 'POST',
+      body: { ids },
+      responseType: 'blob',
+      parseResponse: undefined
+    })
 };

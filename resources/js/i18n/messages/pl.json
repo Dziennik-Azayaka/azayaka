@@ -79,7 +79,8 @@
 				"generate": "Wygeneruj kod aktywacji",
 				"regenerate": "Wygeneruj nowy kod aktywacji",
 				"revoke": "Zablokuj dostęp",
-				"seeCode": "Kliknij tutaj, aby zobaczyć kod aktywacji."
+				"seeCode": "Kliknij tutaj, aby zobaczyć kod aktywacji.",
+				"printInstructionsOne": "Wydurkuj instrukcję"
 			},
 			"activationDate": "Data aktywacji dostępu przez użytkownika",
 			"code": "Kod aktywacji dostępu",

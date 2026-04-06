@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useDownloadEmployeeAccessPdf } from '@/api/hooks/employee/downloadEmployeeAccessPdf';
 import AccessCode from './AccessCode.vue';
 import AccessStatusInfo from './AccessStatusInfo.vue';
 import { useUpdateEmployeeAccess } from '@/api/hooks/employee/updateEmployeeAccess';
@@ -15,7 +16,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
-import { LucideLock, LucideRefreshCw, LucideRotateCw } from 'lucide-vue-next';
+import { LucideLock, LucidePrinter, LucideRefreshCw, LucideRotateCw } from 'lucide-vue-next';
 import { ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 
@@ -27,7 +28,7 @@ const props = defineProps<{
 const { t, d } = useI18n();
 
 const dialogOpen = ref(false);
-const loading = ref<'regenerate' | 'generate' | 'revoke' | null>(null);
+const loading = ref<'regenerate' | 'generate' | 'revoke' | 'pdf' | null>(null);
 
 const { error, mutate } = useUpdateEmployeeAccess();
 function update(action: 'revoke' | 'regenerate' | 'generate') {
@@ -40,6 +41,23 @@ function update(action: 'revoke' | 'regenerate' | 'generate') {
       },
     },
   );
+}
+
+const { mutate: download } = useDownloadEmployeeAccessPdf();
+function downloadPdf() {
+  loading.value = 'pdf';
+  download(
+    [props.data.id],
+    {
+      onSuccess: (blob) => {
+        const url = window.URL.createObjectURL(blob);
+        window.open(url, "_blank");
+        setTimeout(() => window.URL.revokeObjectURL(url), 60000);
+
+        loading.value = null;
+      },
+    }
+  )
 }
 </script>
 
@@ -85,31 +103,18 @@ function update(action: 'revoke' | 'regenerate' | 'generate') {
         {{ t('administrator.systemAccess.statusDescriptions.inactive') }}
       </p>
 
-      <!--<AccessPrintableInstructions
-                :accesses="[getInstructionData()]"
-                v-if="data.status === AccessStatus.CODE_GENERATED && instructionPrint"
-                @done="instructionPrint = false"
-            />-->
-
-      <!--<p
-        class="rounded-md px-4 py-3.5 bg-destructive text-primary-foreground text-sm"
-        v-if="instructionPrint"
-      >
-        {{ t('printAlert') }}
-      </p>-->
-
       <ErrorBanner :error="error" v-if="error" />
 
       <DialogFooter>
-        <!--<Button
-                    variant="outline"
-                    type="button"
-                    @click="instructionPrint = true"
-                    v-if="data.status === AccessStatus.CODE_GENERATED"
-                >
-                    <LucidePrinter />
-                    {{ t("printInstructions") }}
-                </Button>-->
+        <Button
+          variant="outline"
+          v-if="data.status === AccessStatus.CODE_GENERATED"
+          type="button"
+          @click="downloadPdf"
+        >
+          <LucidePrinter />
+          {{ t('administrator.systemAccess.actions.printInstructionsOne') }}
+        </Button>
         <Button
           variant="default"
           type="button"
