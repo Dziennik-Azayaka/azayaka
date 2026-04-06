@@ -1,5 +1,8 @@
 <script setup lang="ts">
 import { appName, appVersion } from '@/env.ts';
+import { useI18n } from 'vue-i18n';
+
+const { t } = useI18n();
 </script>
 
 <template>
@@ -9,7 +12,7 @@ import { appName, appVersion } from '@/env.ts';
         <h1
           class="text-3xl lg:text-5xl font-bold absolute top-[50%] left-0 right-0 text-center translate-y-[-50%]"
         >
-          Nie znaleziono strony
+          {{ t('notFound.title') }}
         </h1>
         <p
           aria-hidden="true"

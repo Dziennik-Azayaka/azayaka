@@ -216,6 +216,9 @@
 			"empty": "Brak wyników."
 		}
 	},
+	"notFound": {
+		"title": "Nie znaleziono strony"
+	},
 	"myAccount": {
 		"accountData": {
 			"changeEmail": {
