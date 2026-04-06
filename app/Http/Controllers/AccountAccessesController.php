@@ -104,7 +104,7 @@ class AccountAccessesController extends Controller
 		if (!$activation_code) {
 			return Response::json([
 				"success" => false,
-				"error" => ["ACTIVATION_CODE_NOT_FOUND"],
+				"errors" => ["ACTIVATION_CODE_NOT_FOUND"],
 			], 404);
 		}
 
@@ -115,7 +115,7 @@ class AccountAccessesController extends Controller
 			if (!\Hash::check($data["password"], $user->password)) {
 				return Response::json([
 					"success" => false,
-					"error" => ["WRONG_PASSWORD"]
+					"errors" => ["WRONG_PASSWORD"]
 				], 401);
 			}
 		} else {

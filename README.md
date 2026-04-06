@@ -78,14 +78,8 @@ php artisan db:seed
 
 ### Uruchamianie lokalnie
 
-Uruchom oba skrypty:
-
 ```shell
-pnpm dev
-```
-
-```shell
-php artisan serve
+composer dev
 ```
 
 ## Licencja
