@@ -2,14 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Exceptions\CustomValidationException;
 use App\Models\ChildrenRegistry;
 use App\Models\ResidenceAddress;
 use App\Models\Student;
 use App\Models\StudentRegistry;
 use App\Rules\Pesel;
 use App\Utilities\ValidatorAssistant\ValidatorAssistant;
-use App\Utilities\ValidatorAssistant\ValidatorAssistantException;
 use DB;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -17,106 +15,175 @@ use Illuminate\Validation\Rules\File;
 
 class StudentController extends Controller
 {
-	public function list(StudentRegistry $studentRegistry, Request $request)
+	public function list(StudentRegistry $studentRegistry)
 	{
-		$query = $studentRegistry->students()->with(["person", "person.residenceAddress", "person.guardians"]);
-
-		if ($request->has("birthYear")) {
-			$query = $query->whereHas("person", function ($personQuery) use ($request) {
-				$personQuery->whereYear("birthdate", "=", $request->input("birthYear"));
-			});
-		}
-
-		if ($request->has("gender")) {
-			$query = $query->whereHas("person", function ($personQuery) use ($request) {
-				$personQuery->where("gender", "=", $request->input("gender"));
-			});
-		}
-
-		if ($request->has("status")) {
-			switch ($request->input("status")) {
-				case "active":
-					$query = $query->whereNull("leave_date");
-					break;
-				case "inactive":
-					$query = $query->whereNotNull("leave_date");
-					break;
-				case "trashed":
-					$query = $query->onlyTrashed();
-					break;
-			}
-		}
-
-		if ($request->has("classUnitId")) {
-			$query = $query->whereHas("classUnits", function ($classUnitQuery) use ($request) {
-				$classUnitQuery->where("class_units.id", "=", $request->input("classUnitId"));
-			});
-		} else if ($request->has("level")) {
-			$query = $query->whereHas("classUnits", function ($classUnitQuery) use ($request) {
-				$classUnitQuery->whereHas("periods", function ($periodQuery) use ($request) {
-					$now = now();
-
-					$periodQuery->where("period_start", "<=", $now)
-						->where("period_end", ">=", $now)
-						->where("class_units_periods.level", "=", $request->input("level"));
-				});
-			});
-		}
-
-		return $query->get()->toResourceCollection();
+		return $studentRegistry->students()->with("residenceAddress")->get()->toResourceCollection();
 	}
-
 
 	public function create(Request $request, StudentRegistry $studentRegistry)
 	{
-		$validated = $request->validate([
-			"personId" => ["required", "exists:people,id"],
-			"admissionDate" => ["required", "date"]
-		]);
+		$validator = ValidatorAssistant::validate($request, $this->generateValidationRules(true, true));
 
-		$student = new Student();
-		$student->person_id = $validated["personId"];
-		$student->student_registry_id = $studentRegistry->id;
-		$student->admission_date = $validated["admissionDate"];
-		$student->saveOrFail();
+		$student = $this->createAndSaveStudentWithResidenceAddress($validator);
 
-		return \Response::json(["success" => true,
-			"studentId" => $student->id,], 201);
+		$studentRegistry->students()->attach($student);
+
+		if ($validator["childrenRegistryId"] != null) {
+			ChildrenRegistry::find($validator["childrenRegistryId"])->students()->attach($student);
+		}
+
+		return \Response::json([
+			"success" => true
+		], 201);
 	}
 
-	public function update(Request $request, Student $student)
+	public function update(Request $request, StudentRegistry $studentRegistry, Student $student)
 	{
-		$this->checkIfRegistryIsActive($student->studentRegistry);
+		$validated = ValidatorAssistant::validate($request, $this->generateValidationRules(
+			false, false, $student
+		));
 
-		$validated = $request->validate([
-			"admissionDate" => ["required", "date"],
-			"leaveDate" => ["nullable", "date"],
-			"leaveReason" => ["nullable", "string", "max:255"],
-		]);
-
-		$student->admission_date = $validated["admissionDate"];
-		$student->leave_date = $validated["leaveDate"] ?? null;
-		$student->leave_reason = $validated["leaveReason"] ?? null;
-
+		$student["first_name"] = $validated["firstName"];
+		$student["last_name"] = $validated["lastName"];
+		$student["second_name"] = $validated["secondName"] ?? null;
+		$student["pesel"] = $validated["pesel"] ?? null;
+		$student["alternate_identity_document"] = $validated["alternateIdentityDocument"] ?? null;
+		$student["birthdate"] = $validated["birthdate"];
+		$student["birthplace"] = $validated["birthplace"];
+		$student["gender"] = $validated["gender"];
+		$student["admission_date"] = $validated["admissionDate"];
 		$student->save();
 		return [
 			"success" => true
 		];
 	}
 
-	public function destroy(Student $student)
+	public function massCreateFromCSV(Request $request, StudentRegistry $studentRegistry)
 	{
-		$this->checkIfRegistryIsActive($student->studentRegistry);
-		$student->delete();
-		return [
+		$validator = ValidatorAssistant::validate($request, [
+			"csv" => ["required", "file", File::types(["csv"])->max(2048)],
+			"childrenRegistryId" => ["nullable", "exists:children_registries,id"],
+			"delimiter" => ["nullable", "string"]
+		]);
+
+		$childrenRegistryId = $validator["childrenRegistryId"];
+
+		$lines = explode(PHP_EOL, trim($request->file("csv")->get()));
+		$headers = str_getcsv(array_shift($lines));
+
+		$uploadedData = array_map(function($line) use ($headers) {
+			return array_combine($headers, str_getcsv($line));
+		}, $lines);
+
+		$validationRules = $this->generateValidationRules(true);
+
+		DB::beginTransaction();
+		$transactionSuccessful = true;
+
+		$students = [];
+		foreach ($uploadedData as $row) {
+			// TODO: Include information about the row which contains the error
+			$validator = ValidatorAssistant::validate($row, $validationRules);
+
+			// This isn't efficient; however, we need to know the IDs of addresses and students
+			// to build relationships with the registries.
+			$students[] = $this->createAndSaveStudentWithResidenceAddress($validator, $transactionSuccessful);
+		}
+
+		$studentRegistry->students()->attach($students);
+		if (array_key_exists("childrenRegistryId", $validator)) {
+			ChildrenRegistry::find($childrenRegistryId)->students()->attach($students);
+		}
+
+		if (!$transactionSuccessful) {
+			DB::rollBack();
+			return \Response::json([
+				"success" => true,
+				"errors" => ["UNKNOWN_SERVER_ERROR"]
+			], 500);
+		} else {
+			DB::commit();
+		}
+
+		return \Response::json([
 			"success" => true
-		];
+		], 201);
 	}
 
-	private function checkIfRegistryIsActive(StudentRegistry $studentRegistry)
+	private function generateValidationRules(bool $validateResidence = false, bool $validateChildrenRegistryId = false, ?Student $student = null)
 	{
-		if ($studentRegistry->isArchived()) {
-			throw CustomValidationException::withMessages(["STUDENT_REGISTRY_ARCHIVED"]);
+		$validationRules = ["firstName" => ["required", "max:255"],
+			"lastName" => ["required", "max:255"],
+			"secondName" => ["nullable", "max:255"],
+			"pesel" => [
+				"required_without:alternateIdentityDocument",
+				$student != null ? Rule::unique("students")->ignore($student->id) : "unique:students",
+				new Pesel
+			],
+			"alternateIdentityDocument" => [
+				"required_without:pesel",
+				"max:255",
+				$student != null ?
+					Rule::unique("students", "alternate_identity_document")->ignore($student->id) :
+					"unique:students,alternate_identity_document"
+			],
+			"birthdate" => ["required", "date"],
+			"birthplace" => ["required", "max:255"],
+			"gender" => ["required", "in:male,female"],
+			"admissionDate" => ["required", "date"],
+		];
+
+		if ($validateResidence) {
+			$validationRules["residenceAddressCountry"] = ["required", "max:255"];
+			$validationRules = array_merge($validationRules, array_fill_keys([
+				"residenceAddressCommune",
+				"residenceAddressTown",
+				"residenceAddressPostalCode",
+				"residenceAddressHouseNumber",
+				"residenceAddressStreet"
+			], ["nullable", "max:255"]));
 		}
+
+		if ($validateChildrenRegistryId) {
+			$validationRules["childrenRegistryId"] = ["nullable", "exists:children_registries,id"];
+		}
+
+		return $validationRules;
+	}
+
+	private function createAndSaveStudentWithResidenceAddress(array $data, ?bool &$transactionStatus = null)
+	{
+		$residenceAddress = new ResidenceAddress();
+		$residenceAddress->country = $data["residenceAddressCountry"];
+		$residenceAddress->commune = $data["residenceAddressCommune"];
+		$residenceAddress->town = $data["residenceAddressTown"];
+		$residenceAddress->postal_code = $data["residenceAddressPostalCode"];
+		$residenceAddress->house_number = $data["residenceAddressHouseNumber"];
+		$residenceAddress->street = $data["residenceAddressStreet"];
+		$residenceAddress->save();
+
+		$student = new Student();
+		$student->first_name = $data["firstName"];
+		$student->last_name = $data["lastName"];
+		$student->second_name = $data["secondName"] ?? null;
+		$student->pesel = $data["pesel"] ?? null;
+		$student->alternate_identity_document = $data["alternateIdentityDocument"] ?? null;
+		$student->birthdate = $data["birthdate"];
+		$student->birthplace = $data["birthplace"];
+		$student->gender = $data["gender"];
+		$student->admission_date = $data["admissionDate"];
+		$student->residence_address_id = $residenceAddress->id;
+
+		try {
+			$student->saveOrFail();
+		} catch (\Throwable) {
+			// Saving the student failed, so we need to delete the residence address
+			if ($transactionStatus != null) {
+				$transactionStatus = false;
+			}
+			$residenceAddress->delete();
+		}
+
+		return $student;
 	}
 }

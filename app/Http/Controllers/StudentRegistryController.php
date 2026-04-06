@@ -2,11 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\SchoolUnit;
-use App\Models\Student;
 use App\Models\StudentRegistry;
 use App\Utilities\ValidatorAssistant\ValidatorAssistant;
-use App\XmlExports\Register\StudentsRegisterXmlExport;
 use Illuminate\Http\Request;
 
 class StudentRegistryController extends Controller
@@ -38,13 +35,5 @@ class StudentRegistryController extends Controller
 		return \Response::json([
 			"success" => true
 		], 201);
-	}
-
-	public function export(Request $request, StudentRegistry $studentRegistry) {
-		$xmlExport = new StudentsRegisterXmlExport(
-			SchoolUnit::where("id", "=", $studentRegistry->school_unit_id)->first(),
-			$studentRegistry->created_at, $studentRegistry
-		);
-		return $request->input("format") == "xml" ? $xmlExport->downloadXml() : $xmlExport->downloadHtml();
 	}
 }

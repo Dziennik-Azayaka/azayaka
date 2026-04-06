@@ -3,9 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\ChildrenRegistry;
-use App\Models\SchoolUnit;
 use App\Utilities\ValidatorAssistant\ValidatorAssistant;
-use App\XmlExports\Register\ChildrenRegisterXmlExport;
 use Illuminate\Http\Request;
 
 class ChildrenRegistryController extends Controller
@@ -37,13 +35,5 @@ class ChildrenRegistryController extends Controller
 		return \Response::json([
 			"success" => true
 		], 201);
-	}
-
-	public function export(Request $request, ChildrenRegistry $childrenRegistry) {
-		$xmlExport = new ChildrenRegisterXmlExport(
-			SchoolUnit::where("id", "=", $childrenRegistry->school_unit_id)->first(),
-			$childrenRegistry->created_at, $childrenRegistry
-		);
-		return $request->input("format") == "xml" ? $xmlExport->downloadXml() : $xmlExport->downloadHtml();
 	}
 }
