@@ -49,7 +49,7 @@ final class SessionControllerTest extends TestCase
             "email" => "not-an-email",
         ]);
 
-        $response->assertStatus(400);
+        $response->assertUnprocessable();
         $response->assertJson([
             "success" => false,
             "errors" => [

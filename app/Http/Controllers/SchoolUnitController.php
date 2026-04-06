@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Enums\SchoolType;
 use App\Enums\Voivodeship;
 use App\Models\SchoolUnit;
-use App\Utilities\ValidatorAssistant;
+use App\Utilities\ValidatorAssistant\ValidatorAssistant;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Response;
 use Illuminate\Validation\Rule;
@@ -18,12 +18,7 @@ class SchoolUnitController extends Controller
 	}
 
 	public function create(Request $request) {
-		$validator = $this->validateSchoolUnit($request);
-
-		if (!$validator["success"]) {
-			return $validator["errorResponse"];
-		}
-		$data = $validator["data"];
+		$data = $this->validateSchoolUnit($request);
 
 		if ($data["studentCategory"] != "childrenAndYouths" && $data["studentCategory"] != "adultsOnly") {
 			return Response::json([
@@ -69,12 +64,7 @@ class SchoolUnitController extends Controller
 			]);
 		}
 
-		$validator = $this->validateSchoolUnit($request);
-
-		if (!$validator["success"]) {
-			return $validator["errorResponse"];
-		}
-		$data = $validator["data"];
+		$data = $this->validateSchoolUnit($request);
 
 		if ($data["studentCategory"] != "childrenAndYouths" && $data["studentCategory"] != "adultsOnly") {
 			return Response::json([
@@ -107,11 +97,7 @@ class SchoolUnitController extends Controller
 			"state" => "required|boolean"
 		]);
 
-		if (!$validator["success"]) {
-			return $validator["errorResponse"];
-		}
-
-		$schoolUnit->active = $validator["data"]["state"];
+		$schoolUnit->active = $validator["state"];
 		$schoolUnit->save();
 		return [
 			"success" => true

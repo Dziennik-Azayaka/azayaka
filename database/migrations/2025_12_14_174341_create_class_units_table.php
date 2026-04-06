@@ -22,11 +22,13 @@ return new class extends Migration
             $table->timestamps();
         });
 
-		// form teachers
-		Schema::create("class_units_employees", function (Blueprint $table) {
+		// form tutors
+		Schema::create("class_units_form_tutors", function (Blueprint $table) {
 			$table->id();
 			$table->foreignId("class_unit_id")->constrained("class_units")->onDelete("cascade");
 			$table->foreignId("employee_id")->constrained("employees")->onDelete("cascade");
+			$table->date("date_from");
+			$table->date("date_to");
 			$table->timestamps();
 		});
     }

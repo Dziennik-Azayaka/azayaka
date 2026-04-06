@@ -6,30 +6,22 @@ use App\Enums\AccountEventType;
 use App\Enums\FrontendModule;
 use App\Models\AccountAccess;
 use App\Models\Employee;
-use App\Models\Guardian;
 use App\Models\Student;
 use App\Models\User;
 use App\Utilities\AccountEventLogger;
-use App\Utilities\ValidatorAssistant;
+use App\Utilities\ValidatorAssistant\ValidatorAssistant;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Response;
-use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
 
 class AccountAccessesController extends Controller
 {
 	public function lookup(Request $request)
 	{
-		$validator = ValidatorAssistant::validate($request, [
+		$code = ValidatorAssistant::validate($request, [
 			"code" => "required|string"
-		]);
-
-		if (!$validator["success"]) {
-			return $validator["errorResponse"];
-		}
-
-		$code = $validator["data"]["code"];
+		])["code"];
 
 		$activation_code = AccountAccess::where("words", $code)->first();
 
@@ -38,12 +30,8 @@ class AccountAccessesController extends Controller
 			session(["activation_step" => "code_found"]);
 			session()->save();
 
-			$activation_code_info = $this->getFirstAndLastNameFromActivationCode($activation_code);
-
 			return [
-				"success" => true,
-				"firstName" => $activation_code_info["firstName"],
-				"lastName" => $activation_code_info["lastName"],
+				"success" => true
 			];
 		} else {
 			return Response::json([
@@ -61,11 +49,7 @@ class AccountAccessesController extends Controller
 			"email" => "required|email"
 		]);
 
-		if (!$validator["success"]) {
-			return $validator["errorResponse"];
-		}
-
-		$email = $validator["data"]["email"];
+		$email = $validator["email"];
 
 		session(["activation_email" => $email]);
 		if (User::whereEmail($email)->exists()) {
@@ -87,17 +71,11 @@ class AccountAccessesController extends Controller
 	{
 		$signedIn = Auth::check();
 
-		$validator = ValidatorAssistant::validate($request, [
+		$data = ValidatorAssistant::validate($request, [
 			"code" => "required|string",
 			"password" => $signedIn ? "nullable|exclude" : "required|min:8|max:255",
 			"email" => $signedIn ? "nullable|exclude" : "required|email|max:255"
 		]);
-
-		if (!$validator["success"]) {
-			return $validator["errorResponse"];
-		}
-
-		$data = $validator["data"];
 
 		$activation_code = AccountAccess::where("words", $data["code"])->first();
 

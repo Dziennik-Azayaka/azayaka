@@ -1,9 +1,8 @@
 <?php
 
-namespace App\Utilities;
+namespace App\Utilities\ValidatorAssistant;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\Validator;
 
 class ValidatorAssistant
@@ -36,7 +35,7 @@ class ValidatorAssistant
 	}
 
 
-	static function validate(Request $request, array $rules): array
+	public static function validate(Request $request, array $rules): array
 	{
 		$validator = Validator::make($request->all(), $rules);
 
@@ -70,18 +69,9 @@ class ValidatorAssistant
 				}
 			}
 
-			return [
-				"success" => false,
-				"errorResponse" => Response::json([
-					"success" => false,
-					"errors" => $errorCodes
-				], 400)
-			];
+			throw new ValidatorAssistantException($validator, null, $errorCodes);
 		}
 
-		return [
-			"success" => true,
-			"data" => $validator->validated()
-		];
+		return $validator->validated();
 	}
 }

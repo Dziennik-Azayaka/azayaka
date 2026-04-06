@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Subject;
-use App\Utilities\ValidatorAssistant;
+use App\Utilities\ValidatorAssistant\ValidatorAssistant;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
@@ -15,7 +15,7 @@ class SubjectController extends Controller
 
 	public function create(Request $request) {
 		$subjectName = $request->post("name");
-		$validator = ValidatorAssistant::validate($request, [
+		$validated = ValidatorAssistant::validate($request, [
 			"name" => ["string", "max:255", "min:3", "required", Rule::unique("subjects", "name")->where(
 				function ($query) use ($subjectName) {
 					return $query->whereRaw("LOWER(name) = ?", [strtolower($subjectName)]);
@@ -23,12 +23,6 @@ class SubjectController extends Controller
 			)],
 			"shortcut" => ["string", "max:32", "unique:subjects", "required"]
 		]);
-
-		if (!$validator["success"]) {
-			return $validator["errorResponse"];
-		}
-
-		$validated = $validator["data"];
 
 		$subject = new Subject();
 		$subject->name = $validated["name"];
@@ -50,11 +44,7 @@ class SubjectController extends Controller
 			"shortcut" => ["string", "max:32", Rule::unique("subjects")->ignore($subject->id)]
 		]);
 
-		if (!$validator["success"]) {
-			return $validator["errorResponse"];
-		}
-
-		$subject->update($validator["data"]);
+		$subject->update($validator);
 
 		return [
 			"success" => true
