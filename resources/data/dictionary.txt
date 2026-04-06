@@ -254,7 +254,7 @@ powierzchnia
 system
 związek
 statek
-wino
+gdańsk
 wykonać
 działać
 więc
@@ -431,7 +431,7 @@ jedzenie
 trzeci
 dokument
 męski
-piwo
+wrocław
 ogień
 francja
 całość
@@ -872,7 +872,7 @@ cienki
 zachód
 zakres
 grecja
-papieros
+toruń
 wydać
 hiszpański
 leczenie
