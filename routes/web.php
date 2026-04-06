@@ -90,4 +90,5 @@ Route::post("/api/email/verification-notification", function (Request $request) 
 
 // SPA
 Route::redirect("/rejestracja", "/authentication/access-activation/code")->name("activateAccess");
+Route::view("/authentication/log-in", "index")->name("login");
 Route::view("/{any?}", "index")->where("any", ".*");
