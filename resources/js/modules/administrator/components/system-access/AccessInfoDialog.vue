@@ -16,6 +16,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
+import { useDownloadPDFPage } from '@/lib/utils';
 import { LucideLock, LucidePrinter, LucideRefreshCw, LucideRotateCw } from 'lucide-vue-next';
 import { ref } from 'vue';
 import { useI18n } from 'vue-i18n';
@@ -46,13 +47,14 @@ function update(action: 'revoke' | 'regenerate' | 'generate') {
 const { mutate: download } = useDownloadEmployeeAccessPdf();
 function downloadPdf() {
   loading.value = 'pdf';
+  const { displayError, displayPDF } = useDownloadPDFPage();
+
   download([props.data.id], {
     onSuccess: (blob) => {
-      const url = window.URL.createObjectURL(blob);
-      window.open(url, '_blank');
-      setTimeout(() => window.URL.revokeObjectURL(url), 60000);
-
-      loading.value = null;
+      displayPDF(blob);
+    },
+    onError: () => {
+      displayError();
     },
   });
 }

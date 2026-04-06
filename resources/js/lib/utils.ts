@@ -1,3 +1,4 @@
+import { i18n } from '@/config/i18n';
 import router from '@/router';
 import type { ClassValue } from 'clsx';
 import { clsx } from 'clsx';
@@ -25,3 +26,24 @@ export function currentSchoolYear() {
 }
 
 export const schoolYearString = (id: number) => `${id}/${id + 1}`;
+
+export const useDownloadPDFPage = () => {
+  const { t } = i18n.global;
+  const pdfWindow = window.open('about:blank', '_blank');
+  if (!pdfWindow) throw new Error('pdfWindow is null!');
+
+  pdfWindow.document.body.style.backgroundColor = 'white';
+  pdfWindow.document.body.innerHTML = `<p style="text-align:center;margin:50px;font-size:30px;font-family:sans-serif;">${t('common.print.loading')}</p>`;
+
+  function displayPDF(blob: Blob) {
+    const url = window.URL.createObjectURL(blob);
+    pdfWindow!.document.location.href = url;
+    setTimeout(() => window.URL.revokeObjectURL(url), 60000);
+  }
+
+  function displayError() {
+    pdfWindow!.document.querySelector('p')!.textContent = t('common.print.error');
+  }
+
+  return { displayPDF, displayError };
+};

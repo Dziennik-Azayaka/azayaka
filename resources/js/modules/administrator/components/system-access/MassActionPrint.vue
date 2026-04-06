@@ -10,6 +10,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
+import { useDownloadPDFPage } from '@/lib/utils';
 import type { UseMutationReturnType } from '@tanstack/vue-query';
 import { LucidePrinter } from 'lucide-vue-next';
 import { computed, ref } from 'vue';
@@ -25,19 +26,23 @@ const showWarning = ref(false);
 
 const { mutate: download, isPending } = props.hook();
 
-const downloadPdf = () =>
+function downloadPdf() {
+  const { displayError, displayPDF } = useDownloadPDFPage();
+
   download(
     props.selected
       .filter((access) => access.status === AccessStatus.CODE_GENERATED)
       .map((access) => access.id),
     {
       onSuccess: (blob) => {
-        const url = window.URL.createObjectURL(blob);
-        window.open(url, '_blank');
-        setTimeout(() => window.URL.revokeObjectURL(url), 60000);
+        displayPDF(blob);
+      },
+      onError: () => {
+        displayError();
       },
     },
   );
+}
 
 function onPrintClick() {
   if (props.selected.find((access) => access.status !== AccessStatus.CODE_GENERATED))

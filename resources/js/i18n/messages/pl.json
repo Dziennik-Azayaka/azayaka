@@ -218,6 +218,10 @@
 			"previousPage": "Poprzednia strona"
 		},
 		"pleaseWait": "Proszę czekać...",
+		"print": {
+			"loading": "Trwa pobieranie dokumentu, proszę czekać...",
+			"error": "Wystąpił nieoczekiwany błąd podczas pobierania dokumentu. Spróbuj ponownie później."
+		},
 		"repeatPassword": "Powtórz hasło",
 		"requiredFieldsInfo": "Pola oznaczone * są wymagane.",
 		"table": {
