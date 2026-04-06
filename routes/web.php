@@ -59,6 +59,7 @@ Route::middleware(["auth", "auth.session"])->group(function () {
 		Route::delete("/api/employees/{employee}/access", [EmployeeController::class, "revokeEmployeeAccess"]);
 		Route::get("/api/employees/accesses", [EmployeeController::class, "listEmployeeAccesses"]);
 		Route::patch("/api/employees/accesses", [EmployeeController::class, "massUpdateAccess"]);
+		Route::post("api/employees/accesses/document", [EmployeeController::class, "generateEmployeeAccessesDocument"]);
 
 		Route::get("/api/subjects", [SubjectController::class, "list"]);
 		Route::post("/api/subjects", [SubjectController::class, "create"]);
@@ -88,5 +89,13 @@ Route::post("/api/email/verification-notification", function (Request $request) 
 })->middleware(["auth", "throttle:6,1"])->name("verification.send");
 
 // SPA
-Route::redirect("/rejestracja", "/authentication/access-activation/code");
-Route::view("/{any?}", "index")->where("any", ".*");
+Route::view("/authentication{any?}", "authentication")->where("any", ".*")->name("login");
+
+Route::middleware(["auth", "auth.session"])->group(function () {
+	Route::view("/myaccount{any?}", "myaccount")->where("any", ".*");
+
+	Route::view("/administrator/{accessId}{any?}", "administrator")->where("any", ".*")->middleware("headmasters.admins");
+});
+
+Route::redirect("/rejestracja", "/authentication/access-activation/code")->name("activateAccess");
+Route::redirect("/", "/myaccount");

@@ -69,7 +69,7 @@ final class SubjectControllerTest extends TestCase
 			"shortcut" => "CSubject"
 		], ["Access-ID" => $actingUser["access"]]);
 
-		$response->assertBadRequest();
+		$response->assertUnprocessable();
 	}
 
 	public function test_can_update_subject(): void

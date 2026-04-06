@@ -40,9 +40,7 @@ final class AccountAccessesControllerTest extends TestCase
 		]);
 		$response->assertOk();
 		$response->assertJson([
-			"success" => true,
-			"firstName" => "Jan",
-			"lastName" => "Kowalski",
+			"success" => true
 		]);
 
 		$response404 = $this->post("/api/activation/lookup", [

@@ -6,7 +6,7 @@ use App\Models\ClassificationPeriod;
 use App\Models\ClassUnit;
 use App\Models\ClassUnitPeriod;
 use App\Utilities\ClassificationPeriodAssistant;
-use App\Utilities\ValidatorAssistant;
+use App\Utilities\ValidatorAssistant\ValidatorAssistant;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -23,15 +23,9 @@ class ClassificationPeriodController extends Controller
 
 	public function save(Request $request, int $schoolUnitId, int $schoolYear)
 	{
-		$validator = ValidatorAssistant::validate($request, [
+		$validated = ValidatorAssistant::validate($request, [
 			"periodEnd" => ["required", "array"]
 		]);
-
-		if (!$validator["success"]) {
-			return $validator["errorResponse"];
-		}
-
-		$validated = $validator["data"];
 
 		$classificationPeriodValidatorResponse = ClassificationPeriodAssistant::validate($validated["periodEnd"], $schoolYear);
 		if ($classificationPeriodValidatorResponse) {
