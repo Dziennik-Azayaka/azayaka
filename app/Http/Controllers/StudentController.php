@@ -2,14 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Resources\StudentResource;
 use App\Models\ChildrenRegistry;
 use App\Models\ResidenceAddress;
 use App\Models\Student;
 use App\Models\StudentRegistry;
 use App\Rules\Pesel;
-use App\Utilities\ValidatorAssistant;
-use Carbon\Carbon;
+use App\Utilities\ValidatorAssistant\ValidatorAssistant;
 use DB;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -26,18 +24,12 @@ class StudentController extends Controller
 	{
 		$validator = ValidatorAssistant::validate($request, $this->generateValidationRules(true, true));
 
-		if (!$validator["success"]) {
-			return $validator["errorResponse"];
-		}
-
-		$validated = $validator["data"];
-
-		$student = $this->createAndSaveStudentWithResidenceAddress($validated);
+		$student = $this->createAndSaveStudentWithResidenceAddress($validator);
 
 		$studentRegistry->students()->attach($student);
 
-		if ($validated["childrenRegistryId"] != null) {
-			ChildrenRegistry::find($validated["childrenRegistryId"])->students()->attach($student);
+		if ($validator["childrenRegistryId"] != null) {
+			ChildrenRegistry::find($validator["childrenRegistryId"])->students()->attach($student);
 		}
 
 		return \Response::json([
@@ -47,15 +39,10 @@ class StudentController extends Controller
 
 	public function update(Request $request, StudentRegistry $studentRegistry, Student $student)
 	{
-		$validator = ValidatorAssistant::validate($request, $this->generateValidationRules(
+		$validated = ValidatorAssistant::validate($request, $this->generateValidationRules(
 			false, false, $student
 		));
 
-		if (!$validator["success"]) {
-			return $validator["errorResponse"];
-		}
-
-		$validated = $validator["data"];
 		$student["first_name"] = $validated["firstName"];
 		$student["last_name"] = $validated["lastName"];
 		$student["second_name"] = $validated["secondName"] ?? null;
@@ -79,11 +66,7 @@ class StudentController extends Controller
 			"delimiter" => ["nullable", "string"]
 		]);
 
-		if (!$validator["success"]) {
-			return $validator["errorResponse"];
-		}
-
-		$childrenRegistryId = $validator["data"]["childrenRegistryId"];
+		$childrenRegistryId = $validator["childrenRegistryId"];
 
 		$lines = explode(PHP_EOL, trim($request->file("csv")->get()));
 		$headers = str_getcsv(array_shift($lines));
@@ -99,21 +82,16 @@ class StudentController extends Controller
 
 		$students = [];
 		foreach ($uploadedData as $row) {
-			$validator = ValidatorAssistant::validate($row, $validationRules);
-
 			// TODO: Include information about the row which contains the error
-			if (!$validator["success"]) {
-				return $validator["errorResponse"];
-			}
-			$data = $validator["data"];
+			$validator = ValidatorAssistant::validate($row, $validationRules);
 
 			// This isn't efficient; however, we need to know the IDs of addresses and students
 			// to build relationships with the registries.
-			$students[] = $this->createAndSaveStudentWithResidenceAddress($data, $transactionSuccessful);
+			$students[] = $this->createAndSaveStudentWithResidenceAddress($validator, $transactionSuccessful);
 		}
 
 		$studentRegistry->students()->attach($students);
-		if (array_key_exists("childrenRegistryId", $validator["data"])) {
+		if (array_key_exists("childrenRegistryId", $validator)) {
 			ChildrenRegistry::find($childrenRegistryId)->students()->attach($students);
 		}
 

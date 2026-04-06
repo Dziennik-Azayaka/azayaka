@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\StudentRegistry;
-use App\Utilities\ValidatorAssistant;
+use App\Utilities\ValidatorAssistant\ValidatorAssistant;
 use Illuminate\Http\Request;
 
 class StudentRegistryController extends Controller

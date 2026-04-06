@@ -69,7 +69,7 @@ class ChildrenRegistryControllerTest extends TestCase
 		$response = $this->post("/api/childrenRegistry", [
 			"schoolUnitId" => "invalid-id"
 		], ["Access-ID" => $actingUser["access"]]);
-		$response->assertStatus(400);
+		$response->assertUnprocessable();
 		$this->assertDatabaseMissing("children_registries", [
 			"school_unit_id" => "invalid-id"
 		]);
