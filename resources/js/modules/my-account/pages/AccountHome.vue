@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import ActiveSessionsTable from '@/modules/my-account/components/ActiveSessionsTable.vue';
 import { useGetActiveSessions } from '@/api/hooks/session/getActiveSessions';
 import PanelPageHeader from '@/components/panel-layout/PanelPageHeader.vue';
 import { EmptyLoading, EmptyLoadingError } from '@/components/ui/empty';
+import ActiveSessionsTable from '@/modules/my-account/components/ActiveSessionsTable.vue';
 import { useI18n } from 'vue-i18n';
 
 const { t } = useI18n();

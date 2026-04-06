@@ -1,9 +1,14 @@
 <script setup lang="ts">
 import LogoDark from '../../../static/logo-dark.svg';
 import LogoLight from '../../../static/logo-light.svg';
-import { Breadcrumb, BreadcrumbItem, BreadcrumbList, BreadcrumbSeparator } from '@/components/ui/breadcrumb';
-import { Button } from '@/components/ui/button';
 import PanelAccountMenu from './PanelAccountMenu.vue';
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbList,
+  BreadcrumbSeparator,
+} from '@/components/ui/breadcrumb';
+import { Button } from '@/components/ui/button';
 import { usePreferencesStore } from '@/stores/preferences';
 import { LucideMenu } from 'lucide-vue-next';
 import { computed } from 'vue';

@@ -1,13 +1,13 @@
 <script setup lang="ts">
-import { useActivationStore } from '@/stores/activation';
-import BackButton from '@/modules/authentication/components/BackButton.vue';
-import FormHeader from '@/modules/authentication/components/FormHeader.vue';
-import { activationLogInSchema } from '@/modules/authentication/forms/activationLogIn';
 import { useActivateAccess } from '@/api/hooks/activation/activateAccess';
 import { ErrorBanner } from '@/components/ui/banner';
 import { Button } from '@/components/ui/button';
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { PasswordInput } from '@/components/ui/input';
+import BackButton from '@/modules/authentication/components/BackButton.vue';
+import FormHeader from '@/modules/authentication/components/FormHeader.vue';
+import { activationLogInSchema } from '@/modules/authentication/forms/activationLogIn';
+import { useActivationStore } from '@/stores/activation';
 import { useForm } from 'vee-validate';
 import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';

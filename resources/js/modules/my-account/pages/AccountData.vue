@@ -1,7 +1,7 @@
 <script setup lang="ts">
+import PanelPageHeader from '@/components/panel-layout/PanelPageHeader.vue';
 import AccountDataEmailChange from '@/modules/my-account/components/AccountDataEmailChange.vue';
 import AccountDataPasswordChange from '@/modules/my-account/components/AccountDataPasswordChange.vue';
-import PanelPageHeader from '@/components/panel-layout/PanelPageHeader.vue';
 import { useUserStore } from '@/stores/user';
 import { useI18n } from 'vue-i18n';
 

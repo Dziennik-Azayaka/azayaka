@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { useDownloadEmployeeAccessPdf } from '@/api/hooks/employee/downloadEmployeeAccessPdf';
 import AccessCode from './AccessCode.vue';
 import AccessStatusInfo from './AccessStatusInfo.vue';
+import { useDownloadEmployeeAccessPdf } from '@/api/hooks/employee/downloadEmployeeAccessPdf';
 import { useUpdateEmployeeAccess } from '@/api/hooks/employee/updateEmployeeAccess';
 import { AccessStatus } from '@/api/types/access';
 import type { EmployeeAccess } from '@/api/types/employee-access';
@@ -46,18 +46,15 @@ function update(action: 'revoke' | 'regenerate' | 'generate') {
 const { mutate: download } = useDownloadEmployeeAccessPdf();
 function downloadPdf() {
   loading.value = 'pdf';
-  download(
-    [props.data.id],
-    {
-      onSuccess: (blob) => {
-        const url = window.URL.createObjectURL(blob);
-        window.open(url, "_blank");
-        setTimeout(() => window.URL.revokeObjectURL(url), 60000);
+  download([props.data.id], {
+    onSuccess: (blob) => {
+      const url = window.URL.createObjectURL(blob);
+      window.open(url, '_blank');
+      setTimeout(() => window.URL.revokeObjectURL(url), 60000);
 
-        loading.value = null;
-      },
-    }
-  )
+      loading.value = null;
+    },
+  });
 }
 </script>
 

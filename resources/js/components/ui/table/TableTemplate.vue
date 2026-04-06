@@ -30,7 +30,10 @@ const templateRow = (row: Row<T>) => h(TableTemplateRow<T>, { row });
             v-for="header in headerGroup.headers"
             :key="header.id"
             :colspan="header.colSpan"
-            :class="{ 'bg-background!': groupIndex + 1 !== table.getHeaderGroups().length }"
+            :class="{
+              'bg-background!': groupIndex + 1 !== table.getHeaderGroups().length,
+              'w-0': header.column.id === 'select',
+            }"
           >
             <FlexRender
               v-if="!header.isPlaceholder"

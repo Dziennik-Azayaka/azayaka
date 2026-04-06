@@ -38,6 +38,6 @@ export const EmployeeService = {
       method: 'POST',
       body: { ids },
       responseType: 'blob',
-      parseResponse: undefined
-    })
+      parseResponse: undefined,
+    }),
 };

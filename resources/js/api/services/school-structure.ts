@@ -1,9 +1,5 @@
 import { type SchoolComplexDTO, schoolStructureFromDTOs } from '../dtos/school-complex';
-import {
-  type SchoolUnitBodyDTO,
-  type SchoolUnitDTO,
-  schoolUnitFromDTO,
-} from '../dtos/school-unit';
+import { type SchoolUnitBodyDTO, type SchoolUnitDTO, schoolUnitFromDTO } from '../dtos/school-unit';
 import type { SchoolUnit } from '../types/school-structure';
 import { http } from '@/config/ofetch';
 

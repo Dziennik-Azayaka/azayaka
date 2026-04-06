@@ -8,7 +8,11 @@ defineProps<{ row: Row<T> }>();
 
 <template>
   <TableRow class="cursor-pointer">
-    <TableCell v-for="cell in row.getVisibleCells()" :key="cell.id">
+    <TableCell
+      v-for="cell in row.getVisibleCells()"
+      :key="cell.id"
+      :class="{ 'p-0!': cell.column.id === 'select' }"
+    >
       <FlexRender :props="cell.getContext()" :render="cell.column.columnDef.cell" />
     </TableCell>
   </TableRow>

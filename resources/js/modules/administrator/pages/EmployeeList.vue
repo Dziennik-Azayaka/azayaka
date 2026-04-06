@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import EmployeeAdd from '@/modules/administrator/components/employees/EmployeeAdd.vue';
-import EmployeeTable from '@/modules/administrator/components/employees/EmployeeTable.vue';
 import { useGetEmployees } from '@/api/hooks/employee/getEmployees';
 import PanelPageHeader from '@/components/panel-layout/PanelPageHeader.vue';
 import { EmptyLoading, EmptyLoadingError } from '@/components/ui/empty';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import EmployeeAdd from '@/modules/administrator/components/employees/EmployeeAdd.vue';
+import EmployeeTable from '@/modules/administrator/components/employees/EmployeeTable.vue';
 import { ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 

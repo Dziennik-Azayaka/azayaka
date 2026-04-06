@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import ActivationBanner from '@/modules/authentication/components/ActivationBanner.vue';
-import FormHeader from '@/modules/authentication/components/FormHeader.vue';
-import { logInSchema } from '@/modules/authentication/forms/logIn';
 import { useLogIn } from '@/api/hooks/session/logIn';
 import { ErrorBanner } from '@/components/ui/banner';
 import { Button } from '@/components/ui/button';
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input, PasswordInput } from '@/components/ui/input';
+import ActivationBanner from '@/modules/authentication/components/ActivationBanner.vue';
+import FormHeader from '@/modules/authentication/components/FormHeader.vue';
+import { logInSchema } from '@/modules/authentication/forms/logIn';
 import { useForm } from 'vee-validate';
 import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';

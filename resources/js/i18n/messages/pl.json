@@ -93,6 +93,11 @@
 				"userHasntActivateAccess": "Użytkownik nie aktywował swojego dostępu"
 			},
 			"lastLoginDate": "Data ostatniego logowania",
+			"massActionPrint": {
+				"title": "Wydrukuj instrukcje dla zaznaczonych",
+				"dialogTitle": "Ostrzeżenie",
+				"dialogDescription": "Część z zaznaczonych użytkowników ma już aktywowany dostęp lub jest on zablokowany. Ci użytkownicy zostaną pominięci w drukowaniu instrukcji."
+			},
 			"statusDescriptions": {
 				"codeGenerated": "Aby użytkownik mógł uzyskać dostęp do systemu musi zarejestrować się z użyciem kodu podanego wyżej. Możesz wydrukować instrukcję rejestracji, która będzie zawierała ten kod.",
 				"inactive": "Dostęp użytkownika do systemu został zablokowany przez administratora. Aby odblokować dostęp, należy wygenerować nowy kod aktywacji. Użytkownik będzie musiał przejść proces aktywacji dostępu od nowa."
@@ -172,6 +177,7 @@
 			"close": "Zamknij",
 			"closeMenu": "Zamknij menu",
 			"confirm": "Potwierdź",
+			"continue": "Kontynuuj",
 			"editData": "Edytuj dane",
 			"hidePassword": "Ukryj hasło",
 			"logOut": "Wyloguj się",
@@ -180,6 +186,8 @@
 			"previousYear": "Poprzedni rok",
 			"save": "Zapisz",
 			"select": "Wybierz",
+			"selectAll": "Zaznacz wszystko",
+			"selectRow": "Zaznacz wiersz",
 			"showPassword": "Pokaż hasło",
 			"skipToContent": "Przejdź do treści",
 			"toggleMenu": "Otwórz/zamknij menu",

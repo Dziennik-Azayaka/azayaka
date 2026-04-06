@@ -1,8 +1,11 @@
 <script lang="ts" setup>
 import AccessInfoDialog from './AccessInfoDialog.vue';
 import AccessStatusBadge from './AccessStatusBadge.vue';
+import MassActionPrint from './MassActionPrint.vue';
+import { useDownloadEmployeeAccessPdf } from '@/api/hooks/employee/downloadEmployeeAccessPdf';
 import { AccessStatus } from '@/api/types/access';
 import type { EmployeeAccess } from '@/api/types/employee-access';
+import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import {
   Select,
@@ -11,6 +14,7 @@ import {
   SelectValue,
   SelectTrigger,
 } from '@/components/ui/select';
+import TableCheckbox from '@/components/ui/table/TableCheckbox.vue';
 import TableTemplate from '@/components/ui/table/TableTemplate.vue';
 import {
   createColumnHelper,
@@ -27,6 +31,20 @@ const { t, d } = useI18n();
 
 const columnHelper = createColumnHelper<EmployeeAccess>();
 const columns = [
+  columnHelper.display({
+    id: 'select',
+    header: ({ table }) =>
+      h(Checkbox, {
+        modelValue:
+          table.getIsAllPageRowsSelected() ||
+          (table.getIsSomePageRowsSelected() && 'indeterminate'),
+        'onUpdate:modelValue': (value) => table.toggleAllPageRowsSelected(!!value),
+        ariaLabel: () => t('common.actions.selectAll'),
+      }),
+    cell: ({ row }) => h(TableCheckbox<EmployeeAccess>, { row }),
+    enableSorting: false,
+    enableHiding: false,
+  }),
   columnHelper.accessor((row) => `${row.fullName} (${row.shortcut})`, {
     id: 'fullName',
     header: () => `${t('common.data.fullName')} (${t('common.data.short').toLowerCase()})`,
@@ -92,7 +110,7 @@ const table = useVueTable({
       <div class="flex-1"></div>
       <Select
         :model-value="table.getColumn('status')?.getFilterValue() ?? 'all'"
-        :aria-label="t('accessStatus')"
+        :aria-label="t('administrator.systemAccess.accessStatus')"
         @update:model-value="table.getColumn('status')?.setFilterValue($event)"
       >
         <SelectTrigger class="not-lg:w-full">
@@ -118,6 +136,10 @@ const table = useVueTable({
           </SelectItem>
         </SelectContent>
       </Select>
+      <MassActionPrint
+        :hook="useDownloadEmployeeAccessPdf"
+        :selected="table.getSelectedRowModel().rows.map((row) => row.original)"
+      />
     </div>
 
     <TableTemplate :table="table">

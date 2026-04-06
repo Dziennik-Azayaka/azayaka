@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import AccountActivityTable from '@/modules/my-account/components/AccountActivityTable.vue';
 import { useGetAccountActivity } from '@/api/hooks/user/getAccountActivity';
 import PanelPageHeader from '@/components/panel-layout/PanelPageHeader.vue';
 import { EmptyLoading, EmptyLoadingError } from '@/components/ui/empty';
+import AccountActivityTable from '@/modules/my-account/components/AccountActivityTable.vue';
 import { ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 

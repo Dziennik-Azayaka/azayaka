@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import ClassificationPeriodTable from '@/modules/administrator/components/classification-periods/ClassificationPeriodTable.vue';
 import { useGetClassificationPeriods } from '@/api/hooks/classification-period/getClassificationPeriods';
 import { useGetSchoolUnits } from '@/api/hooks/school-structure/getSchoolUnits';
 import PanelPageHeader from '@/components/panel-layout/PanelPageHeader.vue';
 import { Button } from '@/components/ui/button';
 import { EmptyLoading, EmptyLoadingError } from '@/components/ui/empty';
 import { currentSchoolYear, schoolYearString } from '@/lib/utils';
+import ClassificationPeriodTable from '@/modules/administrator/components/classification-periods/ClassificationPeriodTable.vue';
 import { LucideChevronLeft, LucideChevronRight } from 'lucide-vue-next';
 import { computed, ref } from 'vue';
 import { useI18n } from 'vue-i18n';

@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import SchoolComplexCard from '@/modules/administrator/components/school-structure/SchoolComplexCard.vue';
-import SchoolComplexCreate from '@/modules/administrator/components/school-structure/SchoolComplexCreate.vue';
-import SchoolUnitCard from '@/modules/administrator/components/school-structure/SchoolUnitCard.vue';
 import { useGetSchoolStructure } from '@/api/hooks/school-structure/getSchoolStructure';
 import PanelPageHeader from '@/components/panel-layout/PanelPageHeader.vue';
 import { EmptyLoading, EmptyLoadingError } from '@/components/ui/empty';
+import SchoolComplexCard from '@/modules/administrator/components/school-structure/SchoolComplexCard.vue';
+import SchoolComplexCreate from '@/modules/administrator/components/school-structure/SchoolComplexCreate.vue';
+import SchoolUnitCard from '@/modules/administrator/components/school-structure/SchoolUnitCard.vue';
 import { LucideInfo } from 'lucide-vue-next';
 import { useI18n } from 'vue-i18n';
 

@@ -1,13 +1,13 @@
 <script setup lang="ts">
-import { useActivationStore } from '@/stores/activation';
-import BackButton from '@/modules/authentication/components/BackButton.vue';
-import FormHeader from '@/modules/authentication/components/FormHeader.vue';
-import { checkEmailAvailabilitySchema } from '@/modules/authentication/forms/checkEmailAvailability';
 import { checkEmailAvailbility } from '@/api/hooks/activation/checkEmailAvailability';
 import { ErrorBanner } from '@/components/ui/banner';
 import { Button } from '@/components/ui/button';
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
+import BackButton from '@/modules/authentication/components/BackButton.vue';
+import FormHeader from '@/modules/authentication/components/FormHeader.vue';
+import { checkEmailAvailabilitySchema } from '@/modules/authentication/forms/checkEmailAvailability';
+import { useActivationStore } from '@/stores/activation';
 import { useForm } from 'vee-validate';
 import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';

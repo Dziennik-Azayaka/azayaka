@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import EmployeeAccessTab from '@/modules/administrator/components/system-access/EmployeeAccessTab.vue';
 import PanelPageHeader from '@/components/panel-layout/PanelPageHeader.vue';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import EmployeeAccessTab from '@/modules/administrator/components/system-access/EmployeeAccessTab.vue';
 import { ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 
