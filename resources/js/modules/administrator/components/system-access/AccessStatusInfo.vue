@@ -17,7 +17,7 @@ const { t } = useI18n();
         <LucideUser />
       </div>
       <div
-        class="absolute left-[calc(50%+25px)] right-[calc(-50%+10px)] top-6 block h-0.5 shrink-0 rounded-full bg-muted group-data-[state=completed]:bg-primary"
+        class="absolute left-[calc(50%+1.5625rem)] right-[calc(-50%+1.5625rem)] top-6 block h-0.5 shrink-0 rounded-full bg-muted group-data-[state=completed]:bg-primary"
       />
       <div class="flex flex-col items-center">
         <div class="text-sm font-medium text-center">
@@ -37,7 +37,7 @@ const { t } = useI18n();
         <LucideRectangleEllipsis v-else />
       </div>
       <div
-        class="absolute left-[calc(50%+25px)] right-[calc(-50%+25px)] top-6 block h-0.5 shrink-0 rounded-full bg-muted group-data-[state=completed]:bg-primary"
+        class="absolute left-[calc(50%+1.5625rem)] right-[calc(-50%+1.5625rem)] top-6 block h-0.5 shrink-0 rounded-full bg-muted group-data-[state=completed]:bg-primary"
       />
       <div class="flex flex-col items-center">
         <div class="text-sm font-medium text-center">
