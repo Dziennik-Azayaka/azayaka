@@ -56,7 +56,7 @@ const disabled = computed(
 </script>
 
 <template>
-  <Button @click="onPrintClick()" :disabled="disabled" :loading="isPending" class="not-lg:w-full">
+  <Button @click="onPrintClick()" :disabled="disabled" :loading="isPending">
     <LucidePrinter />
     {{ t('administrator.systemAccess.massActionPrint.title') }}
   </Button>

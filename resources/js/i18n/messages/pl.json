@@ -112,7 +112,7 @@
 	},
 	"apiErrors": {
 		"incorrectCode": "Podany kod jest nieprawidłowy.",
-		"incorrectCredentials": "Adres e-mail lub hasło jest nieprawidłowe",
+		"incorrectCredentials": "Adres e-mail lub hasło jest nieprawidłowe.",
 		"incorrectPassword": "Hasło jest nieprawidłowe.",
 		"takenEmail": "Ten adres e-mail jest już użyty.",
 		"takenName": "Ta nazwa jest już użyta.",
@@ -157,7 +157,7 @@
 			"title": "Aktywacja dostępu"
 		},
 		"logIn": {
-			"description": "Wpisz swój adres e-mail i hasło",
+			"description": "Wpisz swój adres e-mail i hasło.",
 			"submit": "Zaloguj się",
 			"title": "Zaloguj się"
 		}

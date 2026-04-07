@@ -25,7 +25,7 @@ import {
 } from 'lucide-vue-next';
 import { useI18n } from 'vue-i18n';
 
-const { t } = useI18n();
+const { t, locale } = useI18n();
 
 const preferencesStore = usePreferencesStore();
 const userStore = useUserStore();
@@ -69,7 +69,7 @@ const userStore = useUserStore();
         </DropdownMenuSubTrigger>
         <DropdownMenuPortal>
           <DropdownMenuSubContent>
-            <DropdownMenuRadioGroup v-model="preferencesStore.locale">
+            <DropdownMenuRadioGroup v-model="locale">
               <DropdownMenuRadioItem value="pl">Polski (pl)</DropdownMenuRadioItem>
               <DropdownMenuRadioItem value="en">English (en)</DropdownMenuRadioItem>
             </DropdownMenuRadioGroup>

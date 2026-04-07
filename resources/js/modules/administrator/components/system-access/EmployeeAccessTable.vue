@@ -100,11 +100,11 @@ const table = useVueTable({
 
 <template>
   <div class="w-full">
-    <div class="flex items-stretch md:items-center not-md:flex-col gap-1.5 md:gap-4 py-4">
+    <div class="flex items-stretch lg:items-center not-lg:flex-col gap-1.5 lg:gap-4 py-4">
       <Input
         :aria-label="t('administrator.systemAccess.tableSearch')"
         :placeholder="t('administrator.systemAccess.tableSearch')"
-        class="md:max-w-sm"
+        class="lg:max-w-sm"
         v-model="searchQuery"
       />
       <div class="flex-1"></div>

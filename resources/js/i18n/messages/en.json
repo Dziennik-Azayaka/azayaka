@@ -1,1 +1,299 @@
-{}
+{
+	"administrator": {
+		"classificationPeriods": {
+			"changePeriods": "Change periods",
+			"changePeriodsYear": "Change periods for {schoolYear} school year",
+			"periodEnd": "End of period",
+			"periodNumber": "Period number",
+			"periodStart": "Start of period",
+			"periodsNumber": "Numer of periods",
+			"startNPeriod": "Start of {number} period",
+			"title": "Classification periods"
+		},
+		"employees": {
+			"add": "Add employee",
+			"archive": {
+				"description": "This will block their access to the system. To confirm this action, please enter your password.",
+				"title": "Are you sure you want to move the employee to the archive?"
+			},
+			"description": "To edit an employee's details, click on the table row.",
+			"edit": "Edit employee details",
+			"roles": {
+				"administrator": "Administrator",
+				"headmaster": "Headmaster",
+				"secretary": "Secretary",
+				"teacher": "Teacher"
+			},
+			"tableSearch": "Search for employees...",
+			"tabs": {
+				"archive": "Archive",
+				"current": "Current"
+			},
+			"title": "Employees",
+			"unarchive": {
+				"description": "To confirm the action, enter your password.",
+				"title": "Are you sure you want to unarchive this employee?"
+			}
+		},
+		"schoolStructure": {
+			"addSchoolUnit": "Add school unit",
+			"archiveSchoolUnit": {
+				"description": "You cannot modify any registers or ledgers in an archived unit; the data is read-only. Archiving is recommended only for units that have been wound up. To confirm the archiving of the unit, enter your password.",
+				"title": "Are you sure you want to archive the volume?"
+			},
+			"archivedUnit": "Archived unit",
+			"createSchoolComplex": "Create school complex",
+			"data": {
+				"institutionType": "Institution type",
+				"studentCategory": "Student cateogry"
+			},
+			"editSchoolComplex": "Edit school complex data",
+			"editSchoolUnit": "Edit school unit data",
+			"schoolComplexInfo": "For a school to consist of more than one school unit, a school complex must be created.",
+			"title": "School structure",
+			"unarchiveSchoolUnit": {
+				"description": "To confirm the action, enter your password.",
+				"title": "Are you sure you want to unarchive the unit?"
+			}
+		},
+		"subjects": {
+			"add": "Add subject",
+			"description": "To edit the subject data, click on the table row.",
+			"edit": "Edit subject data",
+			"tableSearch": "Search for subjects...",
+			"tabs": {
+				"archive": "Archive",
+				"current": "Current"
+			},
+			"title": "Subjects"
+		},
+		"systemAccess": {
+			"accessStatus": "Access status",
+			"accessStatuses": {
+				"active": "Active",
+				"all": "All",
+				"codeGenerated": "Generated activation code",
+				"inactive": "Blocked"
+			},
+			"actions": {
+				"generate": "Generate activation code",
+				"regenerate": "Regenerate activation code",
+				"revoke": "Block access",
+				"seeCode": "Click here to view the activation code.",
+				"printInstructionsOne": "Print instructions"
+			},
+			"activationDate": "Date of access activation",
+			"code": "Access activation code",
+			"description": "To view details or manage user access, click on a row in the table.",
+			"diagramSteps": {
+				"accessBlocked": "Access to system has been blocked",
+				"codeGenerated": "Access activation code has been generated",
+				"userActivatedAccess": "User has activated their access",
+				"userCreated": "User has been created",
+				"userHasntActivateAccess": "The user has not activated their access"
+			},
+			"lastLoginDate": "Date of last log in",
+			"massActionPrint": {
+				"title": "Print instructions for selected item",
+				"dialogTitle": "Warning",
+				"dialogDescription": "Some of the selected users already have access activated or their access is blocked. These users will be excluded from the instructions printing."
+			},
+			"statusDescriptions": {
+				"codeGenerated": "To access the system, you must register using the code provided above. You can print the registration instructions, which will include this code.",
+				"inactive": "The administrator has blocked the user access to the system. To unlock the access, you will need to generate a new activation code. The user will need to go through the access activation process again."
+			},
+			"tableSearch": "Search for users...",
+			"tabs": {
+				"employees": "Employees"
+			},
+			"title": "Access to system"
+		},
+		"title": "Administrator panel"
+	},
+	"apiErrors": {
+		"incorrectCode": "The code is incorrect.",
+		"incorrectCredentials": "Email address or password is incorrect.",
+		"incorrectPassword": "Password is incorrect.",
+		"takenEmail": "This email address is already taken.",
+		"takenName": "This name is already taken.",
+		"takenShortcut": "This shortcut is already taken.",
+		"unexpectedError": "An unexpected error has occurred."
+	},
+	"assets": {
+		"institutionTypes": {
+			"complementaryGeneralSecondarySchoolForVocationalGraduates": "Complementary general secondary school for graduates of basic vocational schools",
+            "generalBalletSchool": "General ballet school",
+			"generalMusicSchoolStageOne": "General music school, stage one",
+            "generalMusicSchoolStageTwo": "General music school, stage two",
+            "generalSchoolOfFineArts": "General school of fine arts",
+			"generalSecondarySchool": "General secondary school",
+            "postSecondaryArtSchool": "Post-secondary art school",
+            "postSecondaryMusicSchool": "Post-secondary music school",
+            "postSecondarySchool": "Post-secondary school",
+			"primarySchool": "Primary school",
+            "schoolOfFineArts": "Secondary school of fine arts",
+            "specialSchoolForWorkPreparation": "Special school for work preparation",
+            "technicalSecondarySchool": "Technical secondary school",
+			"vocationalSchoolStageOne": "First-stage vocational school",
+            "vocationalSchoolStageTwo": "Second-stage vocational school"
+		},
+		"studentCategories": {
+			"adultsOnly": "Adults",
+			"childrenAndYouths": "Children and youths"
+		}
+	},
+	"auth": {
+		"activation": {
+			"banner": {
+				"button": "Click here",
+				"text": "Have you received a code from the school to activate access to the register?"
+			},
+			"stepDescriptions": {
+				"code": "Enter the activation code you received at school. Enter one word in each field.",
+				"email": "Enter the email address you want to use to log in.",
+				"logIn": "It looks like you already have an account on this school's register. Please enter your password.",
+				"setPassword": "Now set the password you will use to log in."
+			},
+			"title": "Access activation"
+		},
+		"logIn": {
+			"description": "Enter your email address and password.",
+			"submit": "Log in",
+			"title": "Log in"
+		}
+	},
+	"common": {
+		"accessTypes": {
+			"employee": "Employee",
+			"guardian": "Guardian",
+			"student": "Student"
+		},
+		"actions": {
+			"archive": "Move to archive",
+			"back": "Back",
+			"cancel": "Cancel",
+			"change": "Change",
+			"chooseDate": "Choose date",
+			"close": "Close",
+			"closeMenu": "Close menu",
+			"confirm": "Confirm",
+			"continue": "Continue",
+			"editData": "Edit data",
+			"hidePassword": "Hide password",
+			"logOut": "Log out",
+			"next": "Next",
+			"nextYear": "Next year",
+			"previousYear": "Previous year",
+			"save": "Save",
+			"select": "Select",
+			"selectAll": "Select all",
+			"selectRow": "Select row",
+			"showPassword": "Show password",
+			"skipToContent": "Skip to content",
+			"toggleMenu": "Open/close menu",
+			"tryAgain": "Try again",
+			"unarchive": "Unarchive"
+		},
+		"actions_": "Actions",
+		"auto": "(auto)",
+		"data": {
+			"address": "Address",
+			"date": "Date",
+			"district": "District",
+			"email": "Email address",
+			"firstName": "First name",
+			"fullName": "Full name",
+			"lastName": "Last name",
+			"municipality": "Municipality",
+			"name": "Name",
+			"password": "Password",
+			"roles": "Roles",
+			"schoolYear": "School year",
+			"short": "Shortcut",
+			"voivodeship": "Voivodeship"
+		},
+		"loadingDataError": "The data could not be loaded. Please try again later.",
+		"pagination": {
+			"nextPage": "Next page",
+			"previousPage": "Previous page"
+		},
+		"pleaseWait": "Please wait...",
+		"print": {
+			"loading": "The document is downloading, please wait...",
+			"error": "An unexpected error occurred whilst downloading the document. Please try again later."
+		},
+		"repeatPassword": "Repeat password",
+		"requiredFieldsInfo": "Fields marked with * are required.",
+		"table": {
+			"empty": "No results."
+		}
+	},
+	"notFound": {
+		"title": "Page not found"
+	},
+	"myAccount": {
+		"accountData": {
+			"changeEmail": {
+				"description": "Set a new email address that you will use to log in to the register.",
+				"title": "Change email address"
+			},
+			"changePassword": {
+				"description": "Set a new password that you will use to log in to the register.",
+				"newPassword": "New password",
+				"oldPassword": "Old password",
+				"title": "Change password"
+			},
+			"title": "Account data"
+		},
+		"activityHistory": {
+			"statuses": {
+				"credentialsChanged": "Changed credentials",
+				"failedLoginAttempt": "Failed login attempt",
+				"loggedIn": "Logged in",
+				"loggedOut": "Logged out",
+				"loggedOutByAnotherDevice": "Logget out by another device"
+			},
+			"title": "Activity history"
+		},
+		"data": {
+			"activity": "Activity",
+			"device": "Device",
+			"ipAddress": "IP address",
+			"lastActivity": "Last activity",
+			"unknownDevice": "Unknown device"
+		},
+		"home": {
+			"currentSession": "Your curremt session",
+			"description": "Welcome to your account settings. Here you can change your login details and view your account activity history.",
+			"logOutSession": {
+				"description": "Enter your password to log out the session.",
+				"title": "Log out session"
+			},
+			"title": "Home"
+		},
+		"title": "Account settings"
+	},
+	"preferences": {
+		"appLanguage": "App language",
+		"fontSize": "Font size",
+		"fontSizes": {
+			"large": "Large",
+			"normal": "Normal"
+		},
+		"theme": "Theme",
+		"themes": {
+			"dark": "Dark",
+			"highContrast": "High constrast",
+			"light": "Light"
+		}
+	},
+	"validationErrors": {
+		"fieldRequired": "This field is required.",
+		"invalidEmail": "The email address is incorrect.",
+		"maxLength": "The value must not exceed {number} characters.",
+		"maxValue": "The value must not exceed {number}.",
+		"minLength": "The value must be at least {number} characters long.",
+        "minValue": "The value must be at least {number}.",
+        "passwordsMustMatch": "A different password has been entered in the \"Confirm password\" field."
+	}
+}
