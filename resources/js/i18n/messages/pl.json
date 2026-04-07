@@ -1,5 +1,14 @@
 {
 	"administrator": {
+		"classes": {
+			"description": "Aby zobaczyć szczegóły lub zmienić dane oddziału, kliknij na wiersz tabeli.",
+			"tabs": {
+				"archive": "Archiwum",
+				"current": "Obecne",
+				"future": "Przyszłe"
+			},
+			"title": "Oddziały"
+		},
 		"classificationPeriods": {
 			"changePeriods": "Zmień okresy",
 			"changePeriodsYear": "Zmień okresy na rok szkolny {schoolYear}",

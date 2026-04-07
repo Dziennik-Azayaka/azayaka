@@ -122,20 +122,20 @@
 	"assets": {
 		"institutionTypes": {
 			"complementaryGeneralSecondarySchoolForVocationalGraduates": "Complementary general secondary school for graduates of basic vocational schools",
-            "generalBalletSchool": "General ballet school",
+			"generalBalletSchool": "General ballet school",
 			"generalMusicSchoolStageOne": "General music school, stage one",
-            "generalMusicSchoolStageTwo": "General music school, stage two",
-            "generalSchoolOfFineArts": "General school of fine arts",
+			"generalMusicSchoolStageTwo": "General music school, stage two",
+			"generalSchoolOfFineArts": "General school of fine arts",
 			"generalSecondarySchool": "General secondary school",
-            "postSecondaryArtSchool": "Post-secondary art school",
-            "postSecondaryMusicSchool": "Post-secondary music school",
-            "postSecondarySchool": "Post-secondary school",
+			"postSecondaryArtSchool": "Post-secondary art school",
+			"postSecondaryMusicSchool": "Post-secondary music school",
+			"postSecondarySchool": "Post-secondary school",
 			"primarySchool": "Primary school",
-            "schoolOfFineArts": "Secondary school of fine arts",
-            "specialSchoolForWorkPreparation": "Special school for work preparation",
-            "technicalSecondarySchool": "Technical secondary school",
+			"schoolOfFineArts": "Secondary school of fine arts",
+			"specialSchoolForWorkPreparation": "Special school for work preparation",
+			"technicalSecondarySchool": "Technical secondary school",
 			"vocationalSchoolStageOne": "First-stage vocational school",
-            "vocationalSchoolStageTwo": "Second-stage vocational school"
+			"vocationalSchoolStageTwo": "Second-stage vocational school"
 		},
 		"studentCategories": {
 			"adultsOnly": "Adults",
@@ -294,7 +294,7 @@
 		"maxLength": "The value must not exceed {number} characters.",
 		"maxValue": "The value must not exceed {number}.",
 		"minLength": "The value must be at least {number} characters long.",
-        "minValue": "The value must be at least {number}.",
-        "passwordsMustMatch": "A different password has been entered in the \"Confirm password\" field."
+		"minValue": "The value must be at least {number}.",
+		"passwordsMustMatch": "A different password has been entered in the \"Confirm password\" field."
 	}
 }

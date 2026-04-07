@@ -77,6 +77,20 @@ const route: RouteRecordRaw = {
       },
       component: () => import('./pages/SystemAccess.vue'),
     },
+    {
+      name: 'administrator.classes',
+      path: '/administrator/:accessId/classes',
+      meta: {
+        breadcrumb: [
+          { name: 'administrator.title' },
+          {
+            name: 'administrator.classes.title',
+            route: { name: 'administrator.classes' },
+          },
+        ],
+      },
+      component: () => import('./pages/ClassList.vue'),
+    },
   ],
 };
 

@@ -1,6 +1,7 @@
 import {
   LucideBuilding,
   LucideCalendarCog,
+  LucideGrid2X2,
   LucideLogIn,
   LucideShapes,
   LucideUsers,
@@ -26,6 +27,11 @@ export const menuItems = [
     title: 'administrator.classificationPeriods.title',
     link: { name: 'administrator.classificationPeriods' },
     icon: LucideCalendarCog,
+  },
+  {
+    title: 'administrator.classes.title',
+    link: { name: 'administrator.classes' },
+    icon: LucideGrid2X2,
   },
   {
     title: 'administrator.subjects.title',
