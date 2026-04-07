@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import ClassTable from './ClassTable.vue';
 import type { GetClassFilter } from '@/api/dtos/class';
 import { useGetClasses } from '@/api/hooks/classes/getClasses';
 import type { SchoolUnit } from '@/api/types/school-structure';
@@ -24,12 +25,10 @@ const isError = computed(() => props.schoolUnitsQuery.isError.value || isClasses
 <template>
   <EmptyLoading v-if="isLoading" />
   <EmptyLoadingError v-else-if="isError" />
-  <template v-else-if="props.schoolUnitsQuery.data && classes">
-    <p class="my-5 text-xl font-semibold">Classes</p>
-    <pre class="border rounded-md bg-accent text-xs font-mono p-2">{{ classes }}</pre>
-    <p class="my-5 text-xl font-semibold">School units</p>
-    <pre class="border rounded-md bg-accent text-xs font-mono p-2">
-      {{ props.schoolUnitsQuery.data }}
-    </pre>
-  </template>
+  <ClassTable
+    v-else-if="props.schoolUnitsQuery.data.value && classes"
+    :classes="classes"
+    :school-units="props.schoolUnitsQuery.data.value"
+    :show-current-level="tab === 'current'"
+  />
 </template>

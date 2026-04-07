@@ -7,7 +7,24 @@
 				"current": "Obecne",
 				"future": "Przyszłe"
 			},
-			"title": "Oddziały"
+			"title": "Oddziały",
+			"data": {
+				"startingSchoolYear": "Rok szkolny otwarcia",
+				"startingPeriod": "Okres",
+				"mark": "Oznaczenie",
+				"alias": "Alias",
+				"level": "Obecny poziom"
+			},
+			"tableFilters": {
+				"schoolYear": {
+					"label": "Rok szkolny otwarica",
+					"all": "Wszystkie"
+				},
+				"schoolUnit": {
+					"label": "Jednostka",
+					"all": "Wszystkie"
+				}
+			}
 		},
 		"classificationPeriods": {
 			"changePeriods": "Zmień okresy",
@@ -219,7 +236,9 @@
 			"roles": "Role",
 			"schoolYear": "Rok szkolny",
 			"short": "Skrót",
-			"voivodeship": "Województwo"
+			"voivodeship": "Województwo",
+			"period": "Okres",
+			"schoolUnit": "Jednostka"
 		},
 		"loadingDataError": "Nie udało się załadować danych. Spróbuj ponownie później.",
 		"modulesMenuTitle": "Przjedź do",
