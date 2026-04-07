@@ -3,7 +3,7 @@
 @import './fonts.css';
 
 @theme {
-  --font-sans: 'Geist', system-ui, sans-serif;
+  --font-sans: 'Geist', system-ui, Segoe UI, Roboto, Helvetica, Ubuntu, sans-serif;
 }
 
 @custom-variant dark (&:is(.dark *));
