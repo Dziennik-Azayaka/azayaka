@@ -1,0 +1,300 @@
+{
+	"administrator": {
+		"classificationPeriods": {
+			"changePeriods": "Zmień okresy",
+			"changePeriodsYear": "Zmień okresy na rok szkolny {schoolYear}",
+			"periodEnd": "Koniec okresu",
+			"periodNumber": "Numer okresu",
+			"periodStart": "Początek okresu",
+			"periodsNumber": "Ilość okresów",
+			"startNPeriod": "Początek {number} okresu",
+			"title": "Okresy klasyfikacyjne"
+		},
+		"employees": {
+			"add": "Dodaj pracownika",
+			"archive": {
+				"description": "Spowoduje to zablokowanie jego dostępu do systemu. Aby potwierdzić akcję, wpisz swoje hasło.",
+				"title": "Czy na pewno chcesz przenieść pracownika do archiwum?"
+			},
+			"description": "Aby edytować dane pracownika, kliknij na wiersz tabeli.",
+			"edit": "Edytuj dane pracownika",
+			"roles": {
+				"administrator": "Administrator",
+				"headmaster": "Dyrektor",
+				"secretary": "Sekretariat",
+				"teacher": "Nauczyciel"
+			},
+			"tableSearch": "Szukaj pracowników...",
+			"tabs": {
+				"archive": "Archiwum",
+				"current": "Obecni"
+			},
+			"title": "Pracownicy",
+			"unarchive": {
+				"description": "Aby potwierdzić akcję, wpisz swoje hasło.",
+				"title": "Czy na pewno chcesz odarchiwizować pracownika?"
+			}
+		},
+		"schoolStructure": {
+			"addSchoolUnit": "Dodaj jednostkę",
+			"archiveSchoolUnit": {
+				"description": "W zarchiwizowanej jednostce nie można modyfikować żadnych dzienników i ksiąg, dane są tylko do odczytu. Archiwizację zaleca się tylko dla zlikwidowanych jednostek. Aby potwierdzić archiwizację jednostki, wpisz swoje hasło.",
+				"title": "Czy na pewno chcesz zarchiwizować jednostkę?"
+			},
+			"archivedUnit": "Jednostka zarchiwizowana",
+			"createSchoolComplex": "Stwórz zespół szkół",
+			"data": {
+				"institutionType": "Typ placówki",
+				"studentCategory": "Kategoria uczniów"
+			},
+			"editSchoolComplex": "Edytuj dane zespołu szkół",
+			"editSchoolUnit": "Edytuj dane jednostki",
+			"schoolComplexInfo": "Aby struktura szkoły składała się z więcej niż jednej jednostki, trzeba utworzyć zespół.",
+			"title": "Struktura szkoły",
+			"unarchiveSchoolUnit": {
+				"description": "Aby potwierdzić akcję, wpisz swoje hasło.",
+				"title": "Czy na pewno chcesz odarchiwizować jednostkę?"
+			}
+		},
+		"subjects": {
+			"add": "Dodaj przedmiot",
+			"description": "Aby edytować dane przedmiotu, kliknij na wiersz tabeli.",
+			"edit": "Edytuj dane przedmiotu",
+			"tableSearch": "Szukaj przedmiotów...",
+			"tabs": {
+				"archive": "Archiwum",
+				"current": "Obecne"
+			},
+			"title": "Przedmioty"
+		},
+		"systemAccess": {
+			"accessStatus": "Status dostępu",
+			"accessStatuses": {
+				"active": "Aktywny",
+				"all": "Wszystko",
+				"codeGenerated": "Wygenerowany kod aktywacji",
+				"inactive": "Zablokowany"
+			},
+			"actions": {
+				"generate": "Wygeneruj kod aktywacji",
+				"regenerate": "Wygeneruj nowy kod aktywacji",
+				"revoke": "Zablokuj dostęp",
+				"seeCode": "Kliknij tutaj, aby zobaczyć kod aktywacji.",
+				"printInstructionsOne": "Wydurkuj instrukcję"
+			},
+			"activationDate": "Data aktywacji dostępu przez użytkownika",
+			"code": "Kod aktywacji dostępu",
+			"description": "Aby zobaczyć szczegóły lub zarządzać dostępem użytkownika, kliknij na wiersz tabeli.",
+			"diagramSteps": {
+				"accessBlocked": "Dostęp do systemu zablokowany",
+				"codeGenerated": "Kod aktywacji dostępu wygenerowany",
+				"userActivatedAccess": "Użytkownik aktywował swój dostęp",
+				"userCreated": "Użytkownik dodany",
+				"userHasntActivateAccess": "Użytkownik nie aktywował swojego dostępu"
+			},
+			"lastLoginDate": "Data ostatniego logowania",
+			"massActionPrint": {
+				"title": "Wydrukuj instrukcje dla zaznaczonych",
+				"dialogTitle": "Ostrzeżenie",
+				"dialogDescription": "Część z zaznaczonych użytkowników ma już aktywowany dostęp lub jest on zablokowany. Ci użytkownicy zostaną pominięci w drukowaniu instrukcji."
+			},
+			"statusDescriptions": {
+				"codeGenerated": "Aby użytkownik mógł uzyskać dostęp do systemu musi zarejestrować się z użyciem kodu podanego wyżej. Możesz wydrukować instrukcję rejestracji, która będzie zawierała ten kod.",
+				"inactive": "Dostęp użytkownika do systemu został zablokowany przez administratora. Aby odblokować dostęp, należy wygenerować nowy kod aktywacji. Użytkownik będzie musiał przejść proces aktywacji dostępu od nowa."
+			},
+			"tableSearch": "Szukaj użytkowników...",
+			"tabs": {
+				"employees": "Pracownicy"
+			},
+			"title": "Dostęp do systemu"
+		},
+		"title": "Panel administratora"
+	},
+	"apiErrors": {
+		"incorrectCode": "Podany kod jest nieprawidłowy.",
+		"incorrectCredentials": "Adres e-mail lub hasło jest nieprawidłowe.",
+		"incorrectPassword": "Hasło jest nieprawidłowe.",
+		"takenEmail": "Ten adres e-mail jest już użyty.",
+		"takenName": "Ta nazwa jest już użyta.",
+		"takenShortcut": "Ten skrót jest już użyty.",
+		"unexpectedError": "Wystąpił nieoczekiwany błąd."
+	},
+	"assets": {
+		"institutionTypes": {
+			"complementaryGeneralSecondarySchoolForVocationalGraduates": "Liceum ogólnokształcące uzupełniające dla absolwentów zasadniczych szkół zawodowych",
+			"generalBalletSchool": "Ogólnokształcąca szkoła baletowa",
+			"generalMusicSchoolStageOne": "Ogólnokształcąca szkoła muzyczna I stopnia",
+			"generalMusicSchoolStageTwo": "Ogólnokształcąca szkoła muzyczna II stopnia",
+			"generalSchoolOfFineArts": "Ogólnokształcąca szkoła sztuk pięknych",
+			"generalSecondarySchool": "Liceum ogólnokształcące",
+			"postSecondaryArtSchool": "Policealna szkoła plastyczna",
+			"postSecondaryMusicSchool": "Policealna szkoła muzyczna",
+			"postSecondarySchool": "Szkoła policealna",
+			"primarySchool": "Szkoła podstawowa",
+			"schoolOfFineArts": "Liceum sztuk plastycznych",
+			"specialSchoolForWorkPreparation": "Szkoła specjalna przysposabiająca do pracy",
+			"technicalSecondarySchool": "Technikum",
+			"vocationalSchoolStageOne": "Branżowa szkoła I stopnia",
+			"vocationalSchoolStageTwo": "Branżowa szkoła II stopnia"
+		},
+		"studentCategories": {
+			"adultsOnly": "Dorośli",
+			"childrenAndYouths": "Dzieci i młodzież"
+		}
+	},
+	"auth": {
+		"activation": {
+			"banner": {
+				"button": "Przejdź tutaj",
+				"text": "Otrzymałeś/aś od szkoły kod do aktywacji dostępu do dziennika?"
+			},
+			"stepDescriptions": {
+				"code": "Wpisz kod aktywacji, który otrzymałeś/aś w szkole. Do każdego pola wpisz jedno słowo.",
+				"email": "Wpisz adres e-mail, który chcesz używać do logowania.",
+				"logIn": "Wygląda na to, że masz już konto w dzienniku tej szkoły. Wpisz hasło do swojego konta.",
+				"setPassword": "Teraz ustaw hasło, które będziesz używać do logowania."
+			},
+			"title": "Aktywacja dostępu"
+		},
+		"logIn": {
+			"description": "Wpisz swój adres e-mail i hasło.",
+			"submit": "Zaloguj się",
+			"title": "Zaloguj się"
+		}
+	},
+	"common": {
+		"accessTypes": {
+			"employee": "Pracownik",
+			"guardian": "Opiekun",
+			"student": "Rodzic"
+		},
+		"actions": {
+			"archive": "Przenieś do archiwum",
+			"back": "Wróć",
+			"cancel": "Anuluj",
+			"change": "Zmień",
+			"chooseDate": "Wybierz datę",
+			"close": "Zamknij",
+			"closeMenu": "Zamknij menu",
+			"confirm": "Potwierdź",
+			"continue": "Kontynuuj",
+			"editData": "Edytuj dane",
+			"hidePassword": "Ukryj hasło",
+			"logOut": "Wyloguj się",
+			"next": "Dalej",
+			"nextYear": "Następny rok",
+			"previousYear": "Poprzedni rok",
+			"save": "Zapisz",
+			"select": "Wybierz",
+			"selectAll": "Zaznacz wszystko",
+			"selectRow": "Zaznacz wiersz",
+			"showPassword": "Pokaż hasło",
+			"skipToContent": "Przejdź do treści",
+			"toggleMenu": "Otwórz/zamknij menu",
+			"tryAgain": "Spróbuj ponownie",
+			"unarchive": "Odarchiwizuj"
+		},
+		"actions_": "Akcje",
+		"auto": "(auto)",
+		"data": {
+			"address": "Adres",
+			"date": "Data",
+			"district": "Dzielnica",
+			"email": "Adres e-mail",
+			"firstName": "Imię",
+			"fullName": "Nazwisko i imię",
+			"lastName": "Nazwisko",
+			"municipality": "Gmina",
+			"name": "Nazwa",
+			"password": "Hasło",
+			"roles": "Role",
+			"schoolYear": "Rok szkolny",
+			"short": "Skrót",
+			"voivodeship": "Województwo"
+		},
+		"loadingDataError": "Nie udało się załadować danych. Spróbuj ponownie później.",
+		"modulesMenuTitle": "Przjedź do",
+		"pagination": {
+			"nextPage": "Następna strona",
+			"previousPage": "Poprzednia strona"
+		},
+		"pleaseWait": "Proszę czekać...",
+		"print": {
+			"loading": "Trwa pobieranie dokumentu, proszę czekać...",
+			"error": "Wystąpił nieoczekiwany błąd podczas pobierania dokumentu. Spróbuj ponownie później."
+		},
+		"repeatPassword": "Powtórz hasło",
+		"requiredFieldsInfo": "Pola oznaczone * są wymagane.",
+		"table": {
+			"empty": "Brak wyników."
+		}
+	},
+	"notFound": {
+		"title": "Nie znaleziono strony"
+	},
+	"myAccount": {
+		"accountData": {
+			"changeEmail": {
+				"description": "Ustaw nowy adres e-mail, który będziesz używać do logowania się do dziennika.",
+				"title": "Zmień adres e-mail"
+			},
+			"changePassword": {
+				"description": "Ustaw nowe hasło, który będziesz używać do logowania się do dziennika.",
+				"newPassword": "Nowe hasło",
+				"oldPassword": "Stare hasło",
+				"title": "Zmień hasło"
+			},
+			"title": "Dane konta"
+		},
+		"activityHistory": {
+			"statuses": {
+				"credentialsChanged": "Zmiana danych logowania",
+				"failedLoginAttempt": "Nieudana próba zalogowania na konto",
+				"loggedIn": "Udane zalogowanie",
+				"loggedOut": "Wylogowanie",
+				"loggedOutByAnotherDevice": "Wylogowanie przez inne urządzenie"
+			},
+			"title": "Historia aktywności"
+		},
+		"data": {
+			"activity": "Aktywność",
+			"device": "Urządzenie",
+			"ipAddress": "Adres IP",
+			"lastActivity": "Ostatnia aktywność",
+			"unknownDevice": "Nieznane urządzenie"
+		},
+		"home": {
+			"currentSession": "Twoja obecna sesja",
+			"description": "Witaj w ustawieniach konta. Możesz tu zmienić dane logowania i zobaczyć historię aktywności na koncie.",
+			"logOutSession": {
+				"description": "Wpisz swoje hasło, aby wylogować sesję.",
+				"title": "Wyloguj sesję"
+			},
+			"title": "Strona główna"
+		},
+		"title": "Ustawienia konta"
+	},
+	"preferences": {
+		"appLanguage": "Język aplikacji",
+		"fontSize": "Rozmiar czcionki",
+		"fontSizes": {
+			"large": "Duży",
+			"normal": "Normalny"
+		},
+		"theme": "Motyw",
+		"themes": {
+			"dark": "Ciemny",
+			"highContrast": "Wysoki kontrast",
+			"light": "Jasny"
+		}
+	},
+	"validationErrors": {
+		"fieldRequired": "To pole jest wymagane.",
+		"invalidEmail": "Adres e-mail jest nieprawidłowy.",
+		"maxLength": "Wartość nie może mieć więcej niż {number} znaków.",
+		"maxValue": "Wartość nie może być większa niż {number}.",
+		"minLength": "Wartość nie może mieć mniej niż {number} znaków.",
+		"minValue": "Wartość nie może być mniejsza niż {number}.",
+		"passwordsMustMatch": "W polu \"Powtórz hasło\" wpisano inne hasło."
+	}
+}

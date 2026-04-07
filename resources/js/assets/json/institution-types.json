@@ -1,0 +1,20 @@
+[
+	{ "id": 0, "nameTranslationId": "assets.institutionTypes.vocationalSchoolStageOne" },
+	{ "id": 1, "nameTranslationId": "assets.institutionTypes.vocationalSchoolStageTwo" },
+	{ "id": 2, "nameTranslationId": "assets.institutionTypes.specialSchoolForWorkPreparation" },
+	{ "id": 3, "nameTranslationId": "assets.institutionTypes.postSecondaryMusicSchool" },
+	{ "id": 4, "nameTranslationId": "assets.institutionTypes.postSecondaryArtSchool" },
+	{ "id": 5, "nameTranslationId": "assets.institutionTypes.postSecondarySchool" },
+	{ "id": 6, "nameTranslationId": "assets.institutionTypes.generalSecondarySchool" },
+	{
+		"id": 8,
+		"nameTranslationId": "assets.institutionTypes.complementaryGeneralSecondarySchoolForVocationalGraduates"
+	},
+	{ "id": 9, "nameTranslationId": "assets.institutionTypes.schoolOfFineArts" },
+	{ "id": 10, "nameTranslationId": "assets.institutionTypes.technicalSecondarySchool" },
+	{ "id": 11, "nameTranslationId": "assets.institutionTypes.generalBalletSchool" },
+	{ "id": 12, "nameTranslationId": "assets.institutionTypes.generalMusicSchoolStageOne" },
+	{ "id": 13, "nameTranslationId": "assets.institutionTypes.generalMusicSchoolStageTwo" },
+	{ "id": 24, "nameTranslationId": "assets.institutionTypes.generalSchoolOfFineArts" },
+	{ "id": 25, "nameTranslationId": "assets.institutionTypes.primarySchool" }
+]

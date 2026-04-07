@@ -89,13 +89,6 @@ Route::post("/api/email/verification-notification", function (Request $request) 
 })->middleware(["auth", "throttle:6,1"])->name("verification.send");
 
 // SPA
-Route::view("/authentication{any?}", "authentication")->where("any", ".*")->name("login");
-
-Route::middleware(["auth", "auth.session"])->group(function () {
-	Route::view("/myaccount{any?}", "myaccount")->where("any", ".*");
-
-	Route::view("/administrator/{accessId}{any?}", "administrator")->where("any", ".*")->middleware("headmasters.admins");
-});
-
 Route::redirect("/rejestracja", "/authentication/access-activation/code")->name("activateAccess");
-Route::redirect("/", "/myaccount");
+Route::view("/authentication/log-in", "index")->name("login");
+Route::view("/{any?}", "index")->where("any", ".*");

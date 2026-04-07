@@ -1,13 +1,13 @@
 {
     "$schema": "https://getcomposer.org/schema.json",
-    "name": "laravel/laravel",
+    "name": "dziennik-azayaka/azayaka",
     "type": "project",
-    "description": "The skeleton application for the Laravel framework.",
+    "description": "Wolny i otwartoźrodłowy dziennik dla szkół podstawowych i ponadpodstawowych. ",
     "keywords": [
         "laravel",
         "framework"
     ],
-    "license": "MIT",
+    "license": "AGPL-3.0-only",
     "require": {
         "php": "^8.3",
         "barryvdh/laravel-dompdf": "^3.1",
@@ -55,7 +55,7 @@
         ],
         "dev": [
             "Composer\\Config::disableProcessTimeout",
-            "npx concurrently -c \"#93c5fd,#c4b5fd,#fb7185,#fdba74\" \"php artisan serve\" \"php artisan queue:listen --tries=1\" \"php artisan pail --timeout=0\" \"npm run dev\" --names=server,queue,logs,vite"
+            "pnpm exec concurrently -c \"#93c5fd,#c4b5fd,#fb7185,#fdba74\" \"php artisan serve\" \"php artisan queue:listen --tries=1\" \"php artisan pail --timeout=0\" \"pnpm run dev\" --names=server,queue,logs,vite"
         ],
         "test": [
             "@php artisan config:clear --ansi",
