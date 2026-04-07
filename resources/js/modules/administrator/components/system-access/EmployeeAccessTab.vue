@@ -3,11 +3,11 @@ import EmployeeAccessTable from './EmployeeAccessTable.vue';
 import { useGetEmployeeAccesses } from '@/api/hooks/employee/getEmployeeAcceses';
 import { EmptyLoading, EmptyLoadingError } from '@/components/ui/empty';
 
-const { data: accesses, isFetching, isError, refetch } = useGetEmployeeAccesses();
+const { data: accesses, isLoading, isError, refetch } = useGetEmployeeAccesses();
 </script>
 
 <template>
-  <EmptyLoading v-if="isFetching" />
+  <EmptyLoading v-if="isLoading" />
   <EmptyLoadingError v-else-if="isError" @refresh="refetch" />
   <EmployeeAccessTable v-else-if="accesses" :accesses="accesses" />
 </template>

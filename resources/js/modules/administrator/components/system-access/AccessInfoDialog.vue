@@ -110,6 +110,8 @@ function downloadPdf() {
           v-if="data.status === AccessStatus.CODE_GENERATED"
           type="button"
           @click="downloadPdf"
+          :loading="loading === 'pdf'"
+          :disabled="loading"
         >
           <LucidePrinter />
           {{ t('administrator.systemAccess.actions.printInstructionsOne') }}
@@ -119,6 +121,7 @@ function downloadPdf() {
           type="button"
           v-if="data.status === AccessStatus.INACTIVE"
           @click="update('generate')"
+          :loading="loading === 'generate'"
           :disabled="loading"
         >
           <LucideRefreshCw />
@@ -129,6 +132,7 @@ function downloadPdf() {
           type="button"
           v-if="data.status === AccessStatus.ACTIVE"
           @click="update('regenerate')"
+          :loading="loading === 'regenerate'"
           :disabled="loading"
         >
           <LucideRotateCw />
@@ -139,6 +143,7 @@ function downloadPdf() {
           type="button"
           v-if="data.status !== AccessStatus.INACTIVE"
           @click="update('revoke')"
+          :loading="loading === 'revoke'"
           :disabled="loading"
         >
           <LucideLock />
