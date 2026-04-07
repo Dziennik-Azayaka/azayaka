@@ -57,7 +57,7 @@ const moduleIcons: Record<Module, Component> = {
       <PanelNavigationHeaderMenuTrigger :title="title" />
     </DropdownMenuTrigger>
     <DropdownMenuContent class="w-87.5">
-      <DropdownMenuLabel>{{ t('goTo') }}</DropdownMenuLabel>
+      <DropdownMenuLabel>{{ t('common.modulesMenuTitle') }}</DropdownMenuLabel>
       <DropdownMenuItem as-child>
         <RouterLink
           :to="{ name: 'myAccount' }"
@@ -100,7 +100,7 @@ const moduleIcons: Record<Module, Component> = {
     </DialogTrigger>
     <DialogContent>
       <DialogHeader>
-        <DialogTitle>{{ t('goTo') }}</DialogTitle>
+        <DialogTitle>{{ t('common.modulesMenuTitle') }}</DialogTitle>
       </DialogHeader>
       <ul class="space-y-1.5">
         <li>

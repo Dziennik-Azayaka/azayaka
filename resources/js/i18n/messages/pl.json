@@ -213,6 +213,7 @@
 			"voivodeship": "Województwo"
 		},
 		"loadingDataError": "Nie udało się załadować danych. Spróbuj ponownie później.",
+		"modulesMenuTitle": "Przjedź do",
 		"pagination": {
 			"nextPage": "Następna strona",
 			"previousPage": "Poprzednia strona"

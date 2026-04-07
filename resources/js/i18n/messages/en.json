@@ -213,6 +213,7 @@
 			"voivodeship": "Voivodeship"
 		},
 		"loadingDataError": "The data could not be loaded. Please try again later.",
+		"modulesMenuTitle": "Go to",
 		"pagination": {
 			"nextPage": "Next page",
 			"previousPage": "Previous page"
