@@ -4,7 +4,7 @@ import { useColorMode, useStorage } from '@vueuse/core';
 import { defineStore } from 'pinia';
 import { ref, watch } from 'vue';
 
-function preferedTheme() {
+function preferredTheme() {
   if (window.matchMedia('(prefers-contrast: more)').matches) return 'highContrast';
   if (window.matchMedia('prefers-color-scheme: dark)').matches) return 'dark';
   return 'light';
@@ -17,7 +17,7 @@ export const usePreferencesStore = defineStore('preferences', () => {
     modes: {
       highContrast: 'high-contrast',
     },
-    initialValue: preferedTheme(),
+    initialValue: preferredTheme(),
     storageKey: 'color-mode',
   });
   const mobileNavOpen = ref(false);
