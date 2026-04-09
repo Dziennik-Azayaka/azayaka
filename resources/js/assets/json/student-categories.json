@@ -1,0 +1,10 @@
+[
+	{
+		"nameTranslationId": "assets.studentCategories.childrenAndYouths",
+		"value": "childrenAndYouths"
+	},
+	{
+		"nameTranslationId": "assets.studentCategories.adultsOnly",
+		"value": "adultsOnly"
+	}
+]

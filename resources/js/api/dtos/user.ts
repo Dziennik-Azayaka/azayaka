@@ -1,0 +1,13 @@
+export interface UserDTO {
+  email: string;
+  accesses: UserAccessDTO[];
+}
+
+export type UserAccessDTO = {
+  id: number;
+  name: string;
+  type: 'employee' | 'student' | 'guardian';
+  modulesAvailable: Module[];
+};
+
+export type Module = 'student' | 'secretary' | 'administrator' | 'teacher';

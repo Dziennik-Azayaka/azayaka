@@ -71,6 +71,7 @@ Route::middleware(["auth", "auth.session"])->group(function () {
 
 		Route::get("/api/schoolUnits/{schoolUnit}/classUnits", [ClassUnitController::class, "list"]);
 		Route::post("/api/schoolUnits/{schoolUnit}/classUnits", [ClassUnitController::class, "create"]);
+		Route::get("/api/schoolUnits/{schoolUnit}/classUnits/{classUnit}", [ClassUnitController::class, "show"]);
 		Route::put("/api/schoolUnits/{schoolUnit}/classUnits/{classUnit}", [ClassUnitController::class, "update"]);
 		Route::delete("/api/schoolUnits/{schoolUnit}/classUnits/{classUnit}", [ClassUnitController::class, "delete"]);
 
@@ -112,4 +113,5 @@ Route::middleware(["auth", "auth.session"])->group(function () {
 });
 
 Route::redirect("/rejestracja", "/authentication/access-activation/code")->name("activateAccess");
-Route::redirect("/", "/myaccount");
+Route::view("/authentication/log-in", "index")->name("login");
+Route::view("/{any?}", "index")->where("any", ".*");
