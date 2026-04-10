@@ -46,7 +46,6 @@ final class ClassUnitControllerTest extends TestCase
 		$response->assertJsonStructure([
 			"*" => [
 				"id",
-				"schoolUnitId",
 				"alias",
 				"mark",
 				"startingClassificationPeriodId",
@@ -54,6 +53,7 @@ final class ClassUnitControllerTest extends TestCase
 				"startingClassificationPeriodNumber",
 				"teachingCycleLength",
 				"level",
+				"promoteEvery",
 				"formTutors" => [
 					"*" => [
 						"employeeId",
@@ -62,6 +62,11 @@ final class ClassUnitControllerTest extends TestCase
 						"dateFrom",
 						"dateTo"
 					]
+				],
+				"schoolUnit" => [
+					"id",
+					"name",
+					"shortName"
 				]
 			],
 		]);
@@ -115,7 +120,10 @@ final class ClassUnitControllerTest extends TestCase
 	{
 		$actingUser = $this->actingUser();
 		$complex = SchoolComplex::factory()->create();
-		$unit = SchoolUnit::factory()->create(["school_complex_id" => $complex->id]);
+		$unit = SchoolUnit::factory()->create([
+			"school_complex_id" => $complex->id,
+			"id" => 12345 // arbitrary number to stop conflicts on line 183, PHPUnit would detect id=1 inside the nested schoolUnit array and error out
+		]);
 
 		$oldStart = ClassificationPeriod::create([
 			"school_unit_id" => $unit->id,

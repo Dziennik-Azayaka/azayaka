@@ -18,7 +18,6 @@ class ClassUnitResource extends JsonResource
     {
         return [
 			"id" => $this->id,
-			"schoolUnitId" => $this->school_unit_id,
 			"alias" => $this->alias,
 			"mark" => $this->mark,
 			"startingClassificationPeriodId" => $this->startingPeriod->id,
@@ -26,13 +25,19 @@ class ClassUnitResource extends JsonResource
 			"startingClassificationPeriodNumber" => $this->startingPeriod->period_number,
 			"teachingCycleLength" => $this->teaching_cycle_length,
 			"level" => $this->currentLevel,
+			"promoteEvery" => $this->promote_every,
 			"formTutors" => $this->formTutors->map(fn($tutor) => [
 				"employeeId" => $tutor->id,
 				"firstName" => $tutor->first_name,
 				"lastName" => $tutor->last_name,
 				"dateFrom" => Carbon::parse($tutor->pivot->date_from)->format("Y-m-d"),
 				"dateTo" => Carbon::parse($tutor->pivot->date_to)->format("Y-m-d")
-			])
+			]),
+			"schoolUnit" => [
+				"id" => $this->schoolUnit->id,
+				"name" => $this->schoolUnit->name,
+				"shortName" => $this->schoolUnit->short_name
+			]
 		];
     }
 }

@@ -5,6 +5,7 @@ namespace Database\Factories;
 use App\Models\ClassificationPeriod;
 use App\Models\SchoolUnit;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Support\Facades\Log;
 
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\ClassUnit>
@@ -18,22 +19,11 @@ class ClassUnitFactory extends Factory
      */
     public function definition(): array
     {
-        $unit = SchoolUnit::factory()->create();
-        $start = now()->startOfYear();
-        $end = (clone $start)->endOfYear();
-        $period = ClassificationPeriod::create([
-            "school_unit_id" => $unit->id,
-            "school_year" => $start->year,
-            "period_number" => 1,
-            "period_start" => $start,
-            "period_end" => $end,
-        ]);
-
         return [
-            "school_unit_id" => $unit->id,
+            "school_unit_id" => SchoolUnit::factory(),
             "alias" => $this->faker->unique()->word(),
             "mark" => $this->faker->unique()->randomLetter(),
-            "starting_classification_period_id" => $period->id,
+            "starting_classification_period_id" => ClassificationPeriod::factory(),
             "teaching_cycle_length" => $this->faker->numberBetween(2, 8),
         ];
     }

@@ -184,6 +184,6 @@ class ClassUnitController extends Controller
 
 	public function show(ClassUnit $classUnit)
 	{
-		return $classUnit->load(["startingPeriod", "formTutors"])->toResource();
+		return $classUnit->load(["startingPeriod", "formTutors", "schoolUnit"])->toResource();
 	}
 }
