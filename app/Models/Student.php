@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Student extends BaseModel
 {
@@ -14,7 +15,7 @@ class Student extends BaseModel
 	protected $fillable = ["first_name", "last_name", "second_name", "pesel", "alternate_identity_document",
 		"birthdate", "birthplace", "gender", "admission_date"];
 
-	function guardians()
+	function guardians(): BelongsToMany
 	{
 		return $this->belongsToMany(Guardian::class);
 	}
@@ -36,5 +37,10 @@ class Student extends BaseModel
 			'residence_address_id',  // Foreign key on students table
 			'id'                     // Primary key on residence_addresses table
 		);
+	}
+
+	public function compulsoryEducationFulfillments(): HasMany
+	{
+		return $this->hasMany(CompulsoryEducationFulfillment::class);
 	}
 }

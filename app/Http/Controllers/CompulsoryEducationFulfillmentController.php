@@ -6,5 +6,4 @@ use Illuminate\Http\Request;
 
 class CompulsoryEducationFulfillmentController extends Controller
 {
-    //
 }
