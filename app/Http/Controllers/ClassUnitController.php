@@ -245,4 +245,9 @@ class ClassUnitController extends Controller
 		}
 		return $pivotEntries;
 	}
+
+	public function show(int $schoolUnitId, ClassUnit $classUnit)
+	{
+		return $classUnit->load(["startingPeriod", "formTutors"])->toResource();
+	}
 }
