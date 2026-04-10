@@ -11,11 +11,11 @@ class ValidatorAssistantException extends ValidationException {
 	/**
 	 * Create a new exception instance.
 	 *
-	 * @param Validator $validator
+	 * @param Validator|null $validator
 	 * @param JsonResponse|null $response
 	 * @param array $errorCodes
 	 */
-	public function __construct(Validator $validator, ?JsonResponse $response = null, array $errorCodes = []) {
+	public function __construct(?Validator $validator = null, ?JsonResponse $response = null, array $errorCodes = []) {
 		parent::__construct($validator);
 		if ($response == null) {
 			$response = Response::json([
@@ -27,5 +27,12 @@ class ValidatorAssistantException extends ValidationException {
 		$this->validator = $validator;
 		$this->response = $response;
 		$this->status = $response->getStatusCode();
+	}
+
+	// Override the base class method which summarizes the errors. Not needed here, as we generate our own error
+	// messages anyway, and keeping the base function makes it incompatible with our constructor (nullable validator).
+	protected static function summarize($validator): string
+	{
+		return "An error occured during validation.";
 	}
 }

@@ -66,11 +66,11 @@ Route::middleware(["auth", "auth.session"])->group(function () {
 		Route::put("/api/subjects/{subject}", [SubjectController::class, "update"]);
 		Route::put("/api/subjects/{subject}/activity", [SubjectController::class, "archive"]);
 
-		Route::get("/api/schoolUnits/{schoolUnit}/classUnits", [ClassUnitController::class, "list"]);
-		Route::post("/api/schoolUnits/{schoolUnit}/classUnits", [ClassUnitController::class, "create"]);
-		Route::get("/api/schoolUnits/{schoolUnit}/classUnits/{classUnit}", [ClassUnitController::class, "show"]);
-		Route::put("/api/schoolUnits/{schoolUnit}/classUnits/{classUnit}", [ClassUnitController::class, "update"]);
-		Route::delete("/api/schoolUnits/{schoolUnit}/classUnits/{classUnit}", [ClassUnitController::class, "delete"]);
+		Route::get("/api/classUnits", [ClassUnitController::class, "list"]);
+		Route::post("/api/classUnits", [ClassUnitController::class, "create"]);
+		Route::get("/api/classUnits/{classUnit}", [ClassUnitController::class, "show"]);
+		Route::put("/api/classUnits/{classUnit}", [ClassUnitController::class, "update"]);
+		Route::delete("/api/classUnits/{classUnit}", [ClassUnitController::class, "delete"]);
 
 		Route::get("/api/schoolUnits/{schoolUnitId}/classificationPeriods/{schoolYear}", [ClassificationPeriodController::class, "list"]);
 		Route::post("/api/schoolUnits/{schoolUnitId}/classificationPeriods/{schoolYear}", [ClassificationPeriodController::class, "save"]);
