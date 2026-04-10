@@ -40,7 +40,7 @@ final class ClassUnitControllerTest extends TestCase
 		ClassUnit::factory()->count(5)->create([
 			"school_unit_id" => $unit->id,
 		]);
-		$response = $this->get("/api/schoolUnits/$unit->id/classUnits", ["Access-ID" => $actingUser["access"]]);
+		$response = $this->get("/api/classUnits", ["Access-ID" => $actingUser["access"]]);
 		$response->assertOk();
 		$response->assertJsonIsArray();
 		$response->assertJsonStructure([
@@ -97,7 +97,7 @@ final class ClassUnitControllerTest extends TestCase
 			"starting_classification_period_id" => $futurePeriod->id,
 		]);
 
-		$response = $this->get("/api/schoolUnits/$unit->id/classUnits?category=future", [
+		$response = $this->get("/api/classUnits?category=future", [
 			"Access-ID" => $actingUser["access"]
 		]);
 		$response->assertOk();
@@ -164,7 +164,7 @@ final class ClassUnitControllerTest extends TestCase
 		];
 		$classUnitCurrent->periods()->sync($periodData);
 
-		$response = $this->get("/api/schoolUnits/$unit->id/classUnits?category=current", [
+		$response = $this->get("/api/classUnits?category=current", [
 			"Access-ID" => $actingUser["access"]
 		]);
 		$response->assertOk();
@@ -234,7 +234,7 @@ final class ClassUnitControllerTest extends TestCase
 		];
 		$classUnitOld->periods()->sync($periodData);
 
-		$response = $this->get("/api/schoolUnits/$unit->id/classUnits?category=archive", [
+		$response = $this->get("/api/classUnits?category=archive", [
 			"Access-ID" => $actingUser["access"]
 		]);
 		$response->assertOk();
@@ -276,7 +276,8 @@ final class ClassUnitControllerTest extends TestCase
 
 		$formTutorStartingDate = $classificationPeriod1->period_start->format("Y-m-d");
 		$formTutorEndingDate = $classificationPeriod1->period_start->addYears(5)->subDay()->format("Y-m-d");
-		$response = $this->post("/api/schoolUnits/$unit->id/classUnits", [
+		$response = $this->post("/api/classUnits", [
+			"schoolUnitId" => $unit->id,
 			"alias" => "Klasa Informatyczna",
 			"mark" => "a",
 			"startingClassificationPeriodId" => $classificationPeriod1->id,
@@ -341,7 +342,8 @@ final class ClassUnitControllerTest extends TestCase
 		// the tutor ending date is not validated when promoting every semester
 		$formTutorEndingDate = $classificationPeriod1->period_start->addYears(10)->subDay()->format("Y-m-d");
 
-		$response = $this->post("/api/schoolUnits/$unit->id/classUnits", [
+		$response = $this->post("/api/classUnits", [
+			"schoolUnitId" => $unit->id,
 			"alias" => "Klasa Informatyczna",
 			"mark" => "a",
 			"startingClassificationPeriodId" => $classificationPeriod1->id,
@@ -395,7 +397,8 @@ final class ClassUnitControllerTest extends TestCase
 		]);
 		$formTutorStartingDate = $period->period_start->format("Y-m-d");
 		$formTutorEndingDate = $period->period_start->addYears(5)->subDay()->format("Y-m-d");
-		$response = $this->post("/api/schoolUnits/$unit->id/classUnits", [
+		$response = $this->post("/api/classUnits", [
+			"schoolUnitId" => $unit->id,
 			"alias" => "Klasa Informatyczna",
 			"mark" => "a",
 			"startingClassificationPeriodId" => $period->id,
@@ -414,7 +417,7 @@ final class ClassUnitControllerTest extends TestCase
 				]
 			]
 		], ["Access-ID" => $actingUser["access"]]);
-		$response->assertBadRequest();
+		$response->assertUnprocessable();
 		$this->assertDatabaseMissing("class_units", [
 			"alias" => "Klasa Informatyczna",
 			"mark" => "a"
@@ -442,7 +445,7 @@ final class ClassUnitControllerTest extends TestCase
 		]);
 		$formTutorStartingDate = $period->period_start->format("Y-m-d");
 		$formTutorEndingDate = $period->period_start->addYears(5)->subDay()->format("Y-m-d");
-		$response = $this->post("/api/schoolUnits/$unit->id/classUnits", [
+		$response = $this->post("/api/classUnits", [
 			"alias" => "Klasa Informatyczna",
 			"mark" => "a",
 			"startingClassificationPeriodId" => $period->id,
@@ -495,7 +498,8 @@ final class ClassUnitControllerTest extends TestCase
 			"date_to" => $formTutorEndingDate,
 		]);
 
-		$response = $this->put("/api/schoolUnits/$classUnit->id/classUnits/$classUnit->id", [
+		$response = $this->put("/api/classUnits/$classUnit->id", [
+			"schoolUnitId" => $unit->id,
 			"alias" => "Klasa Informatyczna",
 			"mark" => "y",
 			"employees" => [
@@ -538,7 +542,7 @@ final class ClassUnitControllerTest extends TestCase
 			"date_from" => "2024-01-01",
 			"date_to" => "2025-01-01",
 		]);
-		$response = $this->delete("/api/schoolUnits/$unit->id/classUnits/$classUnit->id", [], [
+		$response = $this->delete("/api/classUnits/$classUnit->id", [], [
 			"Access-ID" => $actingUser["access"]
 		]);
 		$response->assertOk();
