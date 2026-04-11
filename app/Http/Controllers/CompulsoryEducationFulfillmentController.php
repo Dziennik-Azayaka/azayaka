@@ -16,7 +16,15 @@ class CompulsoryEducationFulfillmentController extends Controller
 		$validated["children_registry_id"] = $childrenRegistry->id;
 		$validated["student_id"] = $student->id;
 
-		CompulsoryEducationFulfillment::create($validated)->save();
+		$fulfillment = new CompulsoryEducationFulfillment();
+		$fulfillment->student_id = $student->id;
+		$fulfillment->children_registry_id = $childrenRegistry->id;
+		$fulfillment->school_year = $validated["schoolYear"];
+		$fulfillment->control_date = $validated["controlDate"];
+		$fulfillment->fulfillment_form = $validated["fulfillmentForm"];
+		$fulfillment->level = $validated["level"];
+		$fulfillment->relationship = $validated["relationship"];
+		$fulfillment->save();
 
 		return \Response::json([
 			"success" => true
@@ -26,7 +34,12 @@ class CompulsoryEducationFulfillmentController extends Controller
 	public function update(Request $request, ChildrenRegistry $childrenRegistry, Student $student, CompulsoryEducationFulfillment $fulfillment)
 	{
 		$validated = $this->validateFulfillmentData($request);
-		$fulfillment->update($validated);
+		$fulfillment->school_year = $validated["schoolYear"];
+		$fulfillment->control_date = $validated["controlDate"];
+		$fulfillment->fulfillment_form = $validated["fulfillmentForm"];
+		$fulfillment->level = $validated["level"];
+		$fulfillment->relationship = $validated["relationship"];
+		$fulfillment->save();
 		return [
 			"success" => true
 		];
@@ -43,9 +56,9 @@ class CompulsoryEducationFulfillmentController extends Controller
 	protected function validateFulfillmentData(Request $request)
 	{
 		return ValidatorAssistant::validate($request, [
-			"school_year" => "required|integer",
-			"control_date" => "required|date",
-			"fulfillment_form" => "required|string|max:255",
+			"schoolYear" => "required|integer",
+			"controlDate" => "required|date",
+			"fulfillmentForm" => "required|string|max:255",
 			"level" => "required|integer",
 			"relationship" => "required|string|max:255",
 		]);

@@ -21,7 +21,8 @@ class ResidenceAddressResource extends JsonResource
 			"town" => $this->town,
 			"postalCode" => $this->postal_code,
 			"street" => $this->street,
-			"houseNumber" => $this->house_number
+			"houseNumber" => $this->house_number,
+			"flatNumber" => $this->flat_number
 		];
     }
 }

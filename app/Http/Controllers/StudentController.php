@@ -150,6 +150,7 @@ class StudentController extends Controller
 				"residenceAddressTown",
 				"residenceAddressPostalCode",
 				"residenceAddressHouseNumber",
+				"residenceAddressFlatNumber",
 				"residenceAddressStreet"
 			], ["nullable", "max:255"]));
 		}
@@ -165,11 +166,12 @@ class StudentController extends Controller
 	{
 		$residenceAddress = new ResidenceAddress();
 		$residenceAddress->country = $data["residenceAddressCountry"];
-		$residenceAddress->commune = $data["residenceAddressCommune"];
-		$residenceAddress->town = $data["residenceAddressTown"];
-		$residenceAddress->postal_code = $data["residenceAddressPostalCode"];
-		$residenceAddress->house_number = $data["residenceAddressHouseNumber"];
-		$residenceAddress->street = $data["residenceAddressStreet"];
+		$residenceAddress->commune = $data["residenceAddressCommune"] ?? null;
+		$residenceAddress->town = $data["residenceAddressTown"] ?? null;
+		$residenceAddress->postal_code = $data["residenceAddressPostalCode"] ?? null;
+		$residenceAddress->house_number = $data["residenceAddressHouseNumber"] ?? null;
+		$residenceAddress->flat_number = $data["residenceAddressFlatNumber"] ?? null;
+		$residenceAddress->street = $data["residenceAddressStreet"] ?? null;
 		$residenceAddress->save();
 
 		$student = new Student();

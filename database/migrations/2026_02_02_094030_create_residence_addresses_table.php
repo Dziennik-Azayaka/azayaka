@@ -18,6 +18,7 @@ return new class extends Migration {
 			$table->string("postal_code")->nullable();
 			$table->string("street")->nullable();
 			$table->string("house_number")->nullable();
+			$table->string("flat_number")->nullable();
 			$table->timestamps();
 		});
 

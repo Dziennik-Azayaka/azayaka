@@ -24,9 +24,9 @@ class CompulsoryEducationFulfillmentControllerTest extends TestCase
 		]);
 		$childrenRegistry->students()->attach($student);
 		$payload = [
-			"school_year" => 2025,
-			"control_date" => Carbon::now()->format("Y-m-d"),
-			"fulfillment_form" => "w szkole w której obwodzie mieszka uczeń",
+			"schoolYear" => 2025,
+			"controlDate" => Carbon::now()->format("Y-m-d"),
+			"fulfillmentForm" => "w szkole w której obwodzie mieszka uczeń",
 			"level" => 5,
 			"relationship" => "podlega obowiązku szkolnemu w szkole podstawowej"
 		];
@@ -34,7 +34,13 @@ class CompulsoryEducationFulfillmentControllerTest extends TestCase
 		$response->assertCreated();
 		$payload["children_registry_id"] = $childrenRegistry->id;
 		$payload["student_id"] = $student->id;
-		$this->assertDatabaseHas("compulsory_education_fulfillments", $payload);
+		$this->assertDatabaseHas("compulsory_education_fulfillments", [
+			"school_year" => $payload["schoolYear"],
+			"control_date" => $payload["controlDate"],
+			"fulfillment_form" => $payload["fulfillmentForm"],
+			"level" => $payload["level"],
+			"relationship" => $payload["relationship"]
+		]);
     }
 
 	public function test_can_update_compulsory_education_fulfillment()
@@ -49,15 +55,22 @@ class CompulsoryEducationFulfillmentControllerTest extends TestCase
 			"children_registry_id" => $childrenRegistry->id,
 		]);
 		$updatedPayload = [
-			"school_year" => 2026,
-			"control_date" => Carbon::now()->addYear()->format("Y-m-d"),
-			"fulfillment_form" => "w szkole poza obwodem w którym mieszka uczeń",
+			"schoolYear" => 2026,
+			"controlDate" => Carbon::now()->addYear()->format("Y-m-d"),
+			"fulfillmentForm" => "w szkole poza obwodem w którym mieszka uczeń",
 			"level" => 2,
 			"relationship" => "podlega obowiązkowi szkolnemu w szkole ponadpodstawowej"
 		];
 		$response = $this->put("/api/childrenRegistry/$childrenRegistry->id/$student->id/fulfillment/$fulfillment->id", $updatedPayload);
 		$response->assertOk();
-		$this->assertDatabaseHas("compulsory_education_fulfillments", $updatedPayload);
+		$this->assertDatabaseHas("compulsory_education_fulfillments", [
+			"id" => $fulfillment->id,
+			"school_year" => $updatedPayload["schoolYear"],
+			"control_date" => $updatedPayload["controlDate"],
+			"fulfillment_form" => $updatedPayload["fulfillmentForm"],
+			"level" => $updatedPayload["level"],
+			"relationship" => $updatedPayload["relationship"]
+		]);
 	}
 
 	public function test_can_delete_compulsory_education_fulfillment()
