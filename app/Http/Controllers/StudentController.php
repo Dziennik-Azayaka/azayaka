@@ -17,7 +17,12 @@ class StudentController extends Controller
 {
 	public function list(StudentRegistry $studentRegistry)
 	{
-		return $studentRegistry->students()->with("residenceAddress")->get()->toResourceCollection();
+		return $studentRegistry->students()->with(["residenceAddress", "compulsoryEducationFulfillment"])->get()->toResourceCollection();
+	}
+
+	public function show(Student $student)
+	{
+		return $student->load(["residenceAddress", "compulsoryEducationFulfillment"])->toResource();
 	}
 
 	public function create(Request $request, StudentRegistry $studentRegistry)
@@ -37,7 +42,7 @@ class StudentController extends Controller
 		], 201);
 	}
 
-	public function update(Request $request, StudentRegistry $studentRegistry, Student $student)
+	public function update(Request $request, Student $student)
 	{
 		$validated = ValidatorAssistant::validate($request, $this->generateValidationRules(
 			false, false, $student
