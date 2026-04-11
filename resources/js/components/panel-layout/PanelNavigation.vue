@@ -33,7 +33,8 @@ const { t } = useI18n();
     leave-to-class="-translate-x-full"
   >
     <nav
-      class="w-87.5 not-xl:fixed not-xl:bg-background not-xl:p-3 not-xl:h-dvh max-w-[80vw] overflow-y-auto flex flex-col z-20 transition-[translate] duration-300"
+      class="w-87.5 not-xl:fixed not-xl:bg-background not-xl:p-3 not-xl:h-dvh max-w-[80vw] overflow-y-auto flex flex-col z-20"
+      :class="{ 'transition-[translate] duration-300': isMobile }"
       v-if="preferencesStore.mobileNavOpen || !isMobile"
     >
       <Button

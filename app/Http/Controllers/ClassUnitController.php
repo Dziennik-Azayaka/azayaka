@@ -11,18 +11,15 @@ use App\Models\Employee;
 use App\Models\SchoolUnit;
 use App\Utilities\ClassificationPeriodAssistant;
 use App\Utilities\ValidatorAssistant\ValidatorAssistant;
+use App\Utilities\ValidatorAssistant\ValidatorAssistantException;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class ClassUnitController extends Controller
 {
-	public function list(Request $request, int|string $schoolUnitId)
+	public function list(Request $request)
 	{
-		if ($schoolUnitId === "all") {
-			$classUnits = ClassUnit::query();
-		} else {
-			$classUnits = ClassUnit::where("school_unit_id", $schoolUnitId);
-		}
+		$classUnits = ClassUnit::query();
 		$currentSchoolYear = ClassificationPeriodAssistant::getCurrentSchoolYear();
 
 		$category = $request->input("category");
@@ -33,25 +30,12 @@ class ClassUnitController extends Controller
 		return $classUnits->with(["startingPeriod", "formTutors"])->get()->toResourceCollection();
 	}
 
-	public function create(Request $request, int $schoolUnitId)
+	public function create(Request $request)
 	{
-		if (!SchoolUnit::where("id", $schoolUnitId)->exists()) {
-			return response()->json([
-				"success" => false,
-				"errors" => [
-					"SCHOOL_UNIT_NOT_FOUND"
-				]
-			]);
-		}
-
-		$validator = $this->validateClassUnit($request);
-		if (!$validator["success"]) {
-			return $validator["errorResponse"];
-		}
-		$validated = $validator["data"];
+		$validated = $this->validateClassUnit($request);
 
 		$classUnit = new ClassUnit();
-		$classUnit->school_unit_id = $schoolUnitId;
+		$classUnit->school_unit_id = $validated["schoolUnitId"];
 		$classUnit->alias = $validated["alias"] ?? null;
 		$classUnit->mark = $validated["mark"];
 		$classUnit->starting_classification_period_id = $validated["startingClassificationPeriodId"];
@@ -98,13 +82,9 @@ class ClassUnitController extends Controller
 		], 201);
 	}
 
-	public function update(Request $request, int $schoolUnitId, ClassUnit $classUnit)
+	public function update(Request $request, ClassUnit $classUnit)
 	{
-		$validator = $this->validateClassUnit($request);
-		if (!$validator["success"]) {
-			return $validator["errorResponse"];
-		}
-		$validated = $validator["data"];
+		$validated = $this->validateClassUnit($request);
 
 		$classUnit->update($validated);
 
@@ -126,6 +106,7 @@ class ClassUnitController extends Controller
 			"teachingCycleLength" => ["integer", "required", "between:2,8"],
 			"promoteEvery" => ["string", "in:year,semester"],
 			"employees" => ["array", "required"],
+			"schoolUnitId" => ["integer", "required", "exists:school_units,id"]
 		]);
 		$employeeIds = [];
 
@@ -146,16 +127,7 @@ class ClassUnitController extends Controller
 			$dateFrom = Carbon::parse($employee["dateFrom"]);
 			$dateTo = Carbon::parse($employee["dateTo"]);
 			if ($dateFrom->gt($dateTo)) {
-				// TODO: Turn validator error arrays into a class
-				return [
-					"success" => false,
-					"errorResponse" => \Response::json([
-						"success" => false,
-						"errors" => [
-							"EMPLOYEE_DATE_FROM_MUST_NOT_BE_LATER_THAN_DATE_TO"
-						]
-					], 400)
-				];
+				throw new ValidatorAssistantException(null, null, ["EMPLOYEE_DATE_FROM_MUST_NOT_BE_LATER_THAN_DATE_TO"]);
 			}
 
 			if ($dateFrom->eq($startingClassificationPeriod->period_start)) {
@@ -163,64 +135,28 @@ class ClassUnitController extends Controller
 			}
 
 			if ($validated["promoteEvery"] == "year" && $dateTo->gt($endingDate)) {
-				return [
-					"success" => false,
-					"errorResponse" => \Response::json([
-						"success" => false,
-						"errors" => [
-							"EMPLOYEE_DATE_TO_MUST_NOT_BE_LATER_THAN_THE_CLASS_UNIT_END_DATE"
-						]
-					], 400)
-				];
+				throw new ValidatorAssistantException(null, null, ["EMPLOYEE_DATE_TO_MUST_NOT_BE_LATER_THAN_THE_CLASS_UNIT_END_DATE"]);
 			}
 		}
 
 		if (!$foundTeacherStartingWithTheClassificationPeriod) {
-			return [
-				"success" => false,
-				"errorResponse" => \Response::json([
-					"success" => false,
-					"errors" => [
-						"AT_LEAST_ONE_FORM_TUTOR_MUST_START_ALONGSIDE_THE_STARTING_PERIOD"
-					]
-				], 400)
-			];
+			throw new ValidatorAssistantException(null, null, ["AT_LEAST_ONE_FORM_TUTOR_MUST_START_ALONGSIDE_THE_STARTING_PERIOD"]);
 		}
 
 		$employees = Employee::whereIn("id", $employeeIds)->get();
 		$existingCount = $employees->count();
 		if ($existingCount !== count($employeeIds)) {
-			return [
-				"success" => false,
-				"errorResponse" => \Response::json([
-					"success" => false,
-					"errors" => [
-						"EMPLOYEE_IDS_NOT_FOUND"
-					]
-				], 400)
-			];
+			throw new ValidatorAssistantException(null, null, ["EMPLOYEE_IDS_NOT_FOUND"]);
 		}
 
 		if ($employees->contains("active", false)) {
-			return [
-				"success" => false,
-				"errorResponse" => \Response::json([
-					"success" => false,
-					"errors" => [
-						"EMPLOYEES_MUST_BE_ACTIVE"
-					]
-				], 400)
-			];
+			throw new ValidatorAssistantException(null, null, ["EMPLOYEES_MUST_BE_ACTIVE"]);
 		}
 
-		return [
-			"success" => true,
-			"data" => $validated,
-			"employee_ids" => $employeeIds
-		];
+		return $validated;
 	}
 
-	public function delete(int $schoolUnitId, ClassUnit $classUnit)
+	public function delete(ClassUnit $classUnit)
 	{
 		// TODO: Implement checks to make sure no grade books have been created for this class unit
 		$classUnit->delete();
@@ -246,8 +182,8 @@ class ClassUnitController extends Controller
 		return $pivotEntries;
 	}
 
-	public function show(int $schoolUnitId, ClassUnit $classUnit)
+	public function show(ClassUnit $classUnit)
 	{
-		return $classUnit->load(["startingPeriod", "formTutors"])->toResource();
+		return $classUnit->load(["startingPeriod", "formTutors", "schoolUnit"])->toResource();
 	}
 }

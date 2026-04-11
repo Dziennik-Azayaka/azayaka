@@ -54,14 +54,34 @@ class DatabaseSeeder extends Seeder
 		AccountLog::factory(20)->create();
 
 		SchoolComplex::factory(1)->create();
-		SchoolUnit::factory(5)->create([
+		$schoolUnits = SchoolUnit::factory(4)->create([
 			"school_complex_id" => 1,
 		]);
 
-		Subject::factory(5)->create();
-		$classUnits = ClassUnit::factory(15)->create();
+		$classificationPeriods = [];
+		$currentYear = now()->year;
+		$schoolUnits->each(function ($schoolUnit) use ($currentYear, &$classificationPeriods) {
+			for ($i = $currentYear - 10; $i < $currentYear + 10; $i++) {
+				$nextYear = $i + 1;
+				$classificationPeriods[] = [
+					"school_unit_id" => $schoolUnit->id,
+					"school_year" => $i,
+					"period_number" => 1,
+					"period_start" => "$i-09-01",
+					"period_end" => "$nextYear-02-01",
+				];
+				$classificationPeriods[] = [
+					"school_unit_id" => $schoolUnit->id,
+					"school_year" => $i,
+					"period_number" => 2,
+					"period_start" => "$nextYear-02-02",
+					"period_end" => "$nextYear-08-31",
+				];
+			}
+		});
+		ClassificationPeriod::insert($classificationPeriods);
 
-		$classificationPeriod1 = ClassificationPeriod::create([
+		$genericStartingClassificationPeriod = ClassificationPeriod::create([
 			"school_unit_id" => 1,
 			"school_year" => 2024,
 			"period_number" => 1,
@@ -69,7 +89,14 @@ class DatabaseSeeder extends Seeder
 			"period_end" => "2025-01-30"
 		]);
 
-		$classificationPeriod2 = ClassificationPeriod::create([
+		Subject::factory(5)->create();
+		$classUnits = ClassUnit::factory(15)
+			->recycle($schoolUnits)
+			->recycle($genericStartingClassificationPeriod)
+			->create();
+
+
+		$genericEndingClassificationPeriod = ClassificationPeriod::create([
 			"school_unit_id" => 1,
 			"school_year" => 2024,
 			"period_number" => 2,
@@ -77,10 +104,10 @@ class DatabaseSeeder extends Seeder
 			"period_end" => "2025-08-31"
 		]);
 
-		$classUnits->each(function ($classUnit) use ($classificationPeriod1, $classificationPeriod2) {
+		$classUnits->each(function ($classUnit) use ($genericStartingClassificationPeriod, $genericEndingClassificationPeriod) {
 			$classUnit->periods()->sync([
-				$classificationPeriod1->id => ["level" => rand(1, 8)],
-				$classificationPeriod2->id => ["level" => rand(1, 8)],
+				$genericStartingClassificationPeriod->id => ["level" => rand(1, 8)],
+				$genericEndingClassificationPeriod->id => ["level" => rand(1, 8)],
 			]);
 		});
 
