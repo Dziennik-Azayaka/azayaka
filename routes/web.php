@@ -84,7 +84,7 @@ Route::middleware(["auth", "auth.session"])->group(function () {
 	Route::middleware(["employee.role:secretary"])->group(function () {
 		Route::get("/api/studentRegistry", [StudentRegistryController::class, "list"]);
 		Route::post("/api/studentRegistry", [StudentRegistryController::class, "create"]);
-		Route::get("/api/studentRegistry/{studentRegistry}", [StudentController::class, "list"]);
+		Route::get("/api/studentRegistry/{studentRegistry}", [StudentController::class, "listByStudentRegistry"]);
 		Route::post("/api/studentRegistry/{studentRegistry}", [StudentController::class, "create"]);
 		Route::post("/api/studentRegistry/{studentRegistry}/massCreate", [StudentController::class, "massCreateFromCSV"]);
 
@@ -93,6 +93,7 @@ Route::middleware(["auth", "auth.session"])->group(function () {
 
 		Route::get("/api/childrenRegistry", [ChildrenRegistryController::class, "list"]);
 		Route::post("/api/childrenRegistry", [ChildrenRegistryController::class, "create"]);
+		Route::get("/api/childrenRegistry/{studentRegistry}", [StudentController::class, "listByChildrenRegistry"]);
 		Route::post("/api/childrenRegistry/{childrenRegistry}/{student}", [CompulsoryEducationFulfillmentController::class, "create"]);
 		Route::post("/api/childrenRegistry/{childrenRegistry}/{student}/{fulfillment}", [CompulsoryEducationFulfillmentController::class, "update"]);
 		Route::delete("/api/childrenRegistry/{childrenRegistry}/{student}/{fulfillment}", [CompulsoryEducationFulfillmentController::class, "destroy"]);
