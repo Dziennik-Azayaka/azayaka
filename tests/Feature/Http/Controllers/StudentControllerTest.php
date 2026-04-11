@@ -104,7 +104,7 @@ class StudentControllerTest extends TestCase
 			"alternate_identity_document" => null
 		]);
 		$studentRegistry->students()->attach($student);
-		$response = $this->put("/api/studentRegistry/$studentRegistry->id/$student->id", [
+		$response = $this->put("/api/students/$student->id", [
 			"firstName" => "Jan",
 			"lastName" => "Nowak",
 			"birthdate" => "1999-01-01",
