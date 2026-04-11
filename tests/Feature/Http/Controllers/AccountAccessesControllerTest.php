@@ -17,13 +17,6 @@ final class AccountAccessesControllerTest extends TestCase
 {
 	use RefreshDatabase;
 
-	private function actingUser(): User
-	{
-		$user = User::factory()->create();
-		$this->be($user);
-		return $user;
-	}
-
 	public function test_lookup_success_and_not_found(): void
 	{
 		$student = Student::factory()->create([

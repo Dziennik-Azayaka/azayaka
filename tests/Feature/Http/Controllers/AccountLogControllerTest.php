@@ -13,13 +13,6 @@ final class AccountLogControllerTest extends TestCase
 {
     use RefreshDatabase;
 
-    private function actingUser(): User
-    {
-        $user = User::factory()->create();
-        $this->be($user);
-        return $user;
-    }
-
     public function test_list_returns_paginated_camelised_logs_for_authenticated_user(): void
     {
         $user = $this->actingUser();

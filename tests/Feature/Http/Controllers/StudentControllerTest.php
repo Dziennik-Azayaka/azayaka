@@ -17,21 +17,6 @@ class StudentControllerTest extends TestCase
 {
 	use RefreshDatabase;
 
-	private function actingUser(): array
-	{
-		$user = User::factory()->create();
-		$this->be($user);
-		$employee = Employee::factory()->create([
-			"is_admin" => true,
-			"is_headmaster" => true
-		]);
-		$accountAccess = AccountAccess::create();
-		$accountAccess->employee_id = $employee->id;
-		$accountAccess->user_id = $user->id;
-		$accountAccess->save();
-		return ["user" => $user, "access" => $accountAccess->id];
-	}
-
 	private function generateStudentRegistry() {
 		$schoolComplex = SchoolComplex::factory()->create();
 		$schoolUnit = SchoolUnit::factory()->create([
@@ -41,18 +26,18 @@ class StudentControllerTest extends TestCase
 	}
 
     public function test_can_list_students() {
-		$actingUser = $this->actingUser();
+		$this->actingUser();
 		$registry = $this->generateStudentRegistry();
 		$students = Student::factory()->count(5)->create();
 		$registry->students()->attach($students);
-		$response = $this->get("/api/studentRegistry/$registry->id", ["Access-ID" => $actingUser["access"]]);
+		$response = $this->get("/api/studentRegistry/$registry->id");
 		$response->assertOk();
 		$response->assertJsonIsArray();
 		$response->assertJsonCount(5);
 	}
 
 	public function test_can_create_students() {
-		$actingUser = $this->actingUser();
+		$this->actingUser();
 		$studentRegistry = $this->generateStudentRegistry();
 		$childrenRegistry = $studentRegistry->schoolUnit->childrenRegistry()->create();
 		$response = $this->post("/api/studentRegistry/$studentRegistry->id", [
@@ -70,7 +55,7 @@ class StudentControllerTest extends TestCase
 			"residenceAddressHouseNumber" => "3",
 			"residenceAddressStreet" => "Szeroka",
 			"childrenRegistryId" => $childrenRegistry->id
-		], ["Access-ID" => $actingUser["access"]]);
+		]);
 		$response->assertCreated();
 		$this->assertDatabaseHas("students", [
 			"first_name" => "Grzegorz",
@@ -97,7 +82,7 @@ class StudentControllerTest extends TestCase
 	}
 
 	public function test_can_update_students() {
-		$actingUser = $this->actingUser();
+		$this->actingUser();
 		$studentRegistry = $this->generateStudentRegistry();
 		$student = Student::factory()->create([
 			"pesel" => "987654321",
@@ -113,7 +98,7 @@ class StudentControllerTest extends TestCase
 			"admissionDate" => "2021-01-01",
 			"pesel" => null,
 			"alternateIdentityDocument" => "123456789"
-		], ["Access-ID" => $actingUser["access"]]);
+		]);
 		$response->assertOk();
 		$this->assertDatabaseHas("students", [
 			"id" => $student->id,
@@ -129,13 +114,13 @@ class StudentControllerTest extends TestCase
 	}
 
 	public function test_can_mass_create_students() {
-		$actingUser = $this->actingUser();
+		$this->actingUser();
 		$studentRegistry = $this->generateStudentRegistry();
 		$childrenRegistry = $studentRegistry->schoolUnit->childrenRegistry()->create();
 		$response = $this->post("/api/studentRegistry/$studentRegistry->id/massCreate", [
 			"childrenRegistryId" => $childrenRegistry->id,
 			"csv" => new UploadedFile(storage_path("tests/StudentControllerMassInsert.csv"), "upload.csv", null, null, true)
-		], ["Access-ID" => $actingUser["access"]]);
+		]);
 		$response->assertCreated();
 		$this->assertDatabaseCount("students", 2);
 		$this->assertDatabaseCount("residence_addresses", 2);
