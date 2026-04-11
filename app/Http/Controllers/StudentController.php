@@ -15,9 +15,14 @@ use Illuminate\Validation\Rules\File;
 
 class StudentController extends Controller
 {
-	public function list(StudentRegistry $studentRegistry)
+	public function listByStudentRegistry(StudentRegistry $studentRegistry)
 	{
 		return $studentRegistry->students()->with(["residenceAddress", "compulsoryEducationFulfillment"])->get()->toResourceCollection();
+	}
+
+	public function listByChildrenRegistry(ChildrenRegistry $childrenRegistry)
+	{
+		return $childrenRegistry->students()->with(["residenceAddress", "compulsoryEducationFulfillment"])->get()->toResourceCollection();
 	}
 
 	public function show(Student $student)
