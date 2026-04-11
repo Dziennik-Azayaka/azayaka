@@ -2,6 +2,7 @@
 	"administrator": {
 		"classes": {
 			"description": "Aby zobaczyć szczegóły lub zmienić dane oddziału, kliknij na wiersz tabeli.",
+			"details": "Szczegóły oddziału",
 			"tabs": {
 				"archive": "Archiwum",
 				"current": "Obecne",
@@ -13,7 +14,13 @@
 				"startingPeriod": "Okres",
 				"mark": "Oznaczenie",
 				"alias": "Alias",
-				"level": "Obecny poziom"
+				"level": "Obecny poziom",
+				"promoteEvery": {
+					"label": "Promocja co",
+					"year": "Rok szkolny",
+					"semester": "Okres klasyfikacyjny"
+				},
+				"teachingCycleLength": "Długość cyklu nauczania"
 			},
 			"tableFilters": {
 				"schoolYear": {
@@ -238,7 +245,8 @@
 			"short": "Skrót",
 			"voivodeship": "Województwo",
 			"period": "Okres",
-			"schoolUnit": "Jednostka"
+			"schoolUnit": "Jednostka",
+			"class": "Oddział"
 		},
 		"loadingDataError": "Nie udało się załadować danych. Spróbuj ponownie później.",
 		"modulesMenuTitle": "Przjedź do",
@@ -255,7 +263,11 @@
 		"requiredFieldsInfo": "Pola oznaczone * są wymagane.",
 		"table": {
 			"empty": "Brak wyników."
-		}
+		},
+		"pluralization": {
+			"year": "rok | lata | lat"
+		},
+		"generalInfo": "Ogólne informacje"
 	},
 	"notFound": {
 		"title": "Nie znaleziono strony"

@@ -80,16 +80,41 @@ const route: RouteRecordRaw = {
     {
       name: 'administrator.classes',
       path: '/administrator/:accessId/classes',
-      meta: {
-        breadcrumb: [
-          { name: 'administrator.title' },
-          {
-            name: 'administrator.classes.title',
-            route: { name: 'administrator.classes' },
+      redirect: { name: 'administrator.classes.list' },
+      children: [
+        {
+          name: 'administrator.classes.list',
+          path: '/administrator/:accessId/classes',
+          meta: {
+            breadcrumb: [
+              { name: 'administrator.title' },
+              {
+                name: 'administrator.classes.title',
+                route: { name: 'administrator.classes.list' },
+              },
+            ],
           },
-        ],
-      },
-      component: () => import('./pages/ClassList.vue'),
+          component: () => import('./pages/ClassList.vue'),
+        },
+        {
+          name: 'administrator.classes.details',
+          path: '/administrator/:accessId/classes/:classId',
+          meta: {
+            breadcrumb: [
+              { name: 'administrator.title' },
+              {
+                name: 'administrator.classes.title',
+                route: { name: 'administrator.classes.list' },
+              },
+              {
+                name: 'administrator.classes.details',
+                route: { name: 'administrator.classes.details' },
+              },
+            ],
+          },
+          component: () => import('./pages/ClassDetails.vue'),
+        },
+      ],
     },
   ],
 };

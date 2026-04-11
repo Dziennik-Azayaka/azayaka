@@ -3,14 +3,11 @@ import PanelPageHeader from '@/components/panel-layout/PanelPageHeader.vue';
 import { ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { useGetSchoolUnits } from '@/api/hooks/school-structure/getSchoolUnits';
 import ClassesTab from '../components/classes/ClassesTab.vue';
 import type { GetClassFilter } from '@/api/dtos/class';
 
 const { t } = useI18n();
 const tab = ref<GetClassFilter>('current');
-
-const schoolUnitsQuery = useGetSchoolUnits();
 </script>
 
 <template>
@@ -27,7 +24,7 @@ const schoolUnitsQuery = useGetSchoolUnits();
       </TabsList>
     </div>
     <TabsContent :value="tab" :key="tab" class="flex flex-col">
-      <ClassesTab :tab="tab" :school-units-query="schoolUnitsQuery" />
+      <ClassesTab :tab="tab" />
     </TabsContent>
   </Tabs>
 </template>

@@ -1,13 +1,18 @@
 export interface Class {
   id: number;
-  schoolUnitId: number;
+  schoolUnit: {
+    id: number;
+    name: string;
+    shortName: string;
+  };
+  promoteEvery: 'year' | 'semester';
   alias: string;
   mark: string;
   startingClassificationPeriodId: number;
   startingClassificationPeriodYear: number;
   startingClassificationPeriodNumber: number;
   teachingCycleLength: number;
-  level: number;
+  level: number | null;
   formTutors: FormTutor[];
 }
 

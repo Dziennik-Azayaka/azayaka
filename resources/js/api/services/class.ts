@@ -4,8 +4,10 @@ import { http } from '@/config/ofetch';
 
 export const ClassService = {
   getAll: (category: GetClassFilter): Promise<Class[]> =>
-    http<ClassDTO[]>('/schoolUnits/all/classUnits', {
+    http<ClassDTO[]>('/classUnits', {
       method: 'GET',
-      query: { category }
+      query: { category },
     }).then((res) => res.map(classFromDTO)),
+  getById: (id: number): Promise<Class> =>
+    http<ClassDTO>(`/classUnits/${id}`, { method: 'GET' }).then((res) => classFromDTO(res)),
 };

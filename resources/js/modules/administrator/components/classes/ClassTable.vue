@@ -1,6 +1,5 @@
 <script lang="ts" setup>
 import type { Class } from '@/api/types/class';
-import type { SchoolUnit } from '@/api/types/school-structure';
 import {
   Select,
   SelectContent,
@@ -19,11 +18,11 @@ import {
   useVueTable,
   type ColumnDef,
 } from '@tanstack/vue-table';
+import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 const props = defineProps<{
   classes: Class[];
-  schoolUnits: SchoolUnit[];
   showCurrentLevel: boolean;
 }>();
 const { t } = useI18n();
@@ -35,18 +34,20 @@ const columns: ColumnDef<Class, any>[] = [
     header: () => t('administrator.classes.data.startingSchoolYear'),
     cell: ({ row }) => {
       let text = schoolYearString(row.original.startingClassificationPeriodYear);
-      const periodNumber = row.original.startingClassificationPeriodNumber;
-      if (periodNumber !== 1) text += `(${periodNumber} ${t('common.data.period').toLowerCase()})`;
+      if (row.original.promoteEvery === 'semester')
+        text += `(${row.original.startingClassificationPeriodNumber} ${t('common.data.period').toLowerCase()})`;
 
       return text;
     },
-    filterFn: (row, columnId, filterValue) => filterValue === "all" || row.getValue(columnId) === filterValue,
+    filterFn: (row, columnId, filterValue) =>
+      filterValue === 'all' || row.getValue(columnId) === filterValue,
   }),
-  columnHelper.accessor('schoolUnitId', {
+  columnHelper.accessor('schoolUnit', {
     header: () => t('common.data.schoolUnit'),
-    cell: ({ row }) =>
-      props.schoolUnits.find((unit) => unit.id === row.original.schoolUnitId)?.shortName ?? '',
-    filterFn: (row, columnId, filterValue) => filterValue === "all" || row.getValue(columnId) === filterValue,
+    cell: ({ row }) => row.original.schoolUnit.shortName,
+    filterFn: (row, _, filterValue) =>
+      filterValue === 'all' || row.original.schoolUnit.id === filterValue,
+    sortingFn: (a, b) => a.original.schoolUnit.shortName > b.original.schoolUnit.shortName ? 1 : -1
   }),
   columnHelper.accessor('mark', {
     header: () => t('administrator.classes.data.mark'),
@@ -61,6 +62,14 @@ if (props.showCurrentLevel) {
     columnHelper.accessor('level', { header: () => t('administrator.classes.data.level') }),
   );
 }
+
+const schoolUnits = computed(() => {
+  const map = new Map<number, { id: number; shortName: string; name: string }>();
+  props.classes.forEach(({ schoolUnit }) => {
+    map.set(schoolUnit.id, schoolUnit);
+  });
+  return [...map.values()];
+});
 
 const table = useVueTable({
   get data() {
@@ -79,7 +88,7 @@ const table = useVueTable({
         desc: false,
       },
       {
-        id: 'schoolUnitId',
+        id: 'schoolUnit',
         desc: false,
       },
       {
@@ -105,12 +114,16 @@ const table = useVueTable({
       >
         <SelectTrigger class="not-lg:w-full">
           <span class="space-x-0.5">
-            <span class="text-muted-foreground">{{ t('administrator.classes.tableFilters.schoolYear.label') }}: </span>
+            <span class="text-muted-foreground">
+              {{ t('administrator.classes.tableFilters.schoolYear.label') }}:
+            </span>
             <SelectValue />
           </span>
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="all">{{ t('administrator.classes.tableFilters.schoolYear.all') }}</SelectItem>
+          <SelectItem value="all">
+            {{ t('administrator.classes.tableFilters.schoolYear.all') }}
+          </SelectItem>
           <SelectItem
             v-for="id in [
               ...table
@@ -128,27 +141,23 @@ const table = useVueTable({
         </SelectContent>
       </Select>
       <Select
-        :model-value="
-          table.getColumn('schoolUnitId')?.getFilterValue() ?? 'all'
-        "
+        :model-value="table.getColumn('schoolUnit')?.getFilterValue() ?? 'all'"
         :aria-label="t('administrator.classes.tableFilters.schoolUnit.label')"
-        @update:model-value="
-          table.getColumn('schoolUnitId')?.setFilterValue($event)
-        "
+        @update:model-value="table.getColumn('schoolUnit')?.setFilterValue($event)"
       >
         <SelectTrigger class="not-lg:w-full">
           <span class="space-x-0.5">
-            <span class="text-muted-foreground">{{ t('administrator.classes.tableFilters.schoolUnit.label') }}: </span>
+            <span class="text-muted-foreground">
+              {{ t('administrator.classes.tableFilters.schoolUnit.label') }}:
+            </span>
             <SelectValue />
           </span>
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="all">{{ t('administrator.classes.tableFilters.schoolUnit.all') }}</SelectItem>
-          <SelectItem
-            v-for="unit in schoolUnits"
-            :key="unit.id"
-            :value="unit.id"
-          >
+          <SelectItem value="all">
+            {{ t('administrator.classes.tableFilters.schoolUnit.all') }}
+          </SelectItem>
+          <SelectItem v-for="unit in schoolUnits" :key="unit.id" :value="unit.id">
             {{ unit.shortName }}
           </SelectItem>
         </SelectContent>
@@ -156,8 +165,13 @@ const table = useVueTable({
     </div>
 
     <TableTemplate :table="table">
-      <template #row="{ templateRow }">
-        <component :is="templateRow" />
+      <template #row="{ templateRow, row }">
+        <RouterLink
+          :to="{ name: 'administrator.classes.details', params: { classId: row.original.id } }"
+          class="contents not-last:*:border-b!"
+        >
+          <component :is="templateRow" />
+        </RouterLink>
       </template>
     </TableTemplate>
   </div>

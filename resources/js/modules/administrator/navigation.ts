@@ -30,7 +30,7 @@ export const menuItems = [
   },
   {
     title: 'administrator.classes.title',
-    link: { name: 'administrator.classes' },
+    link: { name: 'administrator.classes.list' },
     icon: LucideGrid2X2,
   },
   {
