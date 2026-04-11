@@ -18,9 +18,9 @@ class CompulsoryEducationFulfillmentController extends Controller
 
 		CompulsoryEducationFulfillment::create($validated)->save();
 
-		return [
+		return \Response::json([
 			"success" => true
-		];
+		], 201);
 	}
 
 	public function update(Request $request, ChildrenRegistry $childrenRegistry, Student $student, CompulsoryEducationFulfillment $compulsoryEducationFulfillment)
@@ -45,9 +45,9 @@ class CompulsoryEducationFulfillmentController extends Controller
 		return ValidatorAssistant::validate($request, [
 			"school_year" => "required|integer",
 			"control_date" => "required|date",
-			"fulfillment_form" => "required|string",
+			"fulfillment_form" => "required|string|max:255",
 			"level" => "required|integer",
-			"relationship" => "required|string",
+			"relationship" => "required|string|max:255",
 		]);
 	}
 }

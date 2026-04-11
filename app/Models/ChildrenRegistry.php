@@ -9,6 +9,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class ChildrenRegistry extends Model
 {
+
+	protected $fillable = ["school_unit_id"];
 	public function schoolUnit(): BelongsTo
 	{
 		return $this->belongsTo(SchoolUnit::class);
