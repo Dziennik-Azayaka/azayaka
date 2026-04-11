@@ -37,7 +37,7 @@ class DatabaseSeeder extends Seeder
 
 		ResidenceAddress::factory(10)->create();
 
-		Student::factory(10)->create();
+		$students = Student::factory(10)->create();
 		Guardian::factory(10)->create();
 		Employee::factory(10)->create();
 		AccountAccess::factory(10)->create();
@@ -125,6 +125,6 @@ class DatabaseSeeder extends Seeder
 
 		$childrenRegistry->students()->attach(Student::all());
 
-		CompulsoryEducationFulfillment::factory(10)->create();
+		CompulsoryEducationFulfillment::factory(10)->recycle($students)->create();
 	}
 }

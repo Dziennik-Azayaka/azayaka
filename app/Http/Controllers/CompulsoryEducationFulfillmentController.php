@@ -23,18 +23,18 @@ class CompulsoryEducationFulfillmentController extends Controller
 		], 201);
 	}
 
-	public function update(Request $request, ChildrenRegistry $childrenRegistry, Student $student, CompulsoryEducationFulfillment $compulsoryEducationFulfillment)
+	public function update(Request $request, ChildrenRegistry $childrenRegistry, Student $student, CompulsoryEducationFulfillment $fulfillment)
 	{
 		$validated = $this->validateFulfillmentData($request);
-		$compulsoryEducationFulfillment->update($validated);
+		$fulfillment->update($validated);
 		return [
 			"success" => true
 		];
 	}
 
-	public function destroy(ChildrenRegistry $childrenRegistry, Student $student, CompulsoryEducationFulfillment $compulsoryEducationFulfillment)
+	public function destroy(ChildrenRegistry $childrenRegistry, Student $student, CompulsoryEducationFulfillment $fulfillment)
 	{
-		$compulsoryEducationFulfillment->delete();
+		$fulfillment->delete();
 		return [
 			"success" => true
 		];

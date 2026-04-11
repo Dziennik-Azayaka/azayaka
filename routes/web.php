@@ -95,7 +95,7 @@ Route::middleware(["auth", "auth.session"])->group(function () {
 		Route::post("/api/childrenRegistry", [ChildrenRegistryController::class, "create"]);
 		Route::get("/api/childrenRegistry/{studentRegistry}", [StudentController::class, "listByChildrenRegistry"]);
 		Route::post("/api/childrenRegistry/{childrenRegistry}/{student}/fulfillment", [CompulsoryEducationFulfillmentController::class, "create"]);
-		Route::post("/api/childrenRegistry/{childrenRegistry}/{student}/fulfillment/{fulfillment}", [CompulsoryEducationFulfillmentController::class, "update"]);
+		Route::put("/api/childrenRegistry/{childrenRegistry}/{student}/fulfillment/{fulfillment}", [CompulsoryEducationFulfillmentController::class, "update"]);
 		Route::delete("/api/childrenRegistry/{childrenRegistry}/{student}/fulfillment/{fulfillment}", [CompulsoryEducationFulfillmentController::class, "destroy"]);
 	});
 });

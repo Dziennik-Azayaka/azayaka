@@ -45,7 +45,9 @@ class CompulsoryEducationFulfillmentControllerTest extends TestCase
 			"school_unit_id" => SchoolUnit::factory()->create()->id,
 		]);
 		$childrenRegistry->students()->attach($student);
-		$fulfillment = CompulsoryEducationFulfillment::factory()->recycle($childrenRegistry)->recycle($student)->create();
+		$fulfillment = CompulsoryEducationFulfillment::factory()->recycle($student)->create([
+			"children_registry_id" => $childrenRegistry->id,
+		]);
 		$updatedPayload = [
 			"school_year" => 2026,
 			"control_date" => Carbon::now()->addYear()->format("Y-m-d"),
@@ -53,7 +55,7 @@ class CompulsoryEducationFulfillmentControllerTest extends TestCase
 			"level" => 2,
 			"relationship" => "podlega obowiązkowi szkolnemu w szkole ponadpodstawowej"
 		];
-		$response = $this->post("/api/childrenRegistry/$childrenRegistry->id/$student->id/fulfillment/$fulfillment->id", $updatedPayload);
+		$response = $this->put("/api/childrenRegistry/$childrenRegistry->id/$student->id/fulfillment/$fulfillment->id", $updatedPayload);
 		$response->assertOk();
 		$this->assertDatabaseHas("compulsory_education_fulfillments", $updatedPayload);
 	}
@@ -66,7 +68,9 @@ class CompulsoryEducationFulfillmentControllerTest extends TestCase
 			"school_unit_id" => SchoolUnit::factory()->create()->id,
 		]);
 		$childrenRegistry->students()->attach($student);
-		$fulfillment = CompulsoryEducationFulfillment::factory()->recycle($childrenRegistry)->recycle($student)->create();
+		$fulfillment = CompulsoryEducationFulfillment::factory()->recycle($student)->create([
+			"children_registry_id" => $childrenRegistry->id,
+		]);
 		$response = $this->delete("/api/childrenRegistry/$childrenRegistry->id/$student->id/fulfillment/$fulfillment->id");
 		$response->assertOk();
 		$this->assertDatabaseMissing("compulsory_education_fulfillments", [
