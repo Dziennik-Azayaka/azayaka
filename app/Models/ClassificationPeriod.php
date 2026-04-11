@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class ClassificationPeriod extends Model
 {
+	/** @use HasFactory<\Database\Factories\ClassUnitFactory> */
+	use HasFactory;
 	protected $fillable = [
 		"school_unit_id", "school_year", "period_number", "period_start", "period_end"
 	];

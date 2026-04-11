@@ -21,7 +21,11 @@ class EmployeeFactory extends Factory
         return [
 			"first_name" => $firstName,
 			"last_name" => $lastName,
-			"shortcut" => substr($firstName, 0, 1) . substr($lastName, 0, 2)
+			"shortcut" => substr($firstName, 0, 1) . substr($lastName, 0, 2),
+			"is_admin" => rand(0, 1) == 0,
+			"is_headmaster" => rand(0, 1) == 0,
+			"is_secretary" => rand(0, 1) == 0,
+			"is_teacher" => rand(0, 1) == 0,
         ];
     }
 }
