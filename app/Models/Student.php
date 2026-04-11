@@ -39,7 +39,7 @@ class Student extends BaseModel
 		);
 	}
 
-	public function compulsoryEducationFulfillments(): HasMany
+	public function compulsoryEducationFulfillment(): HasMany
 	{
 		return $this->hasMany(CompulsoryEducationFulfillment::class);
 	}

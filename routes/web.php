@@ -6,6 +6,7 @@ use App\Http\Controllers\ChildrenRegistryController;
 use App\Http\Controllers\ClassificationPeriodController;
 use App\Http\Controllers\ClassificationPeriodDefaultsController;
 use App\Http\Controllers\ClassUnitController;
+use App\Http\Controllers\CompulsoryEducationFulfillmentController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\SchoolComplexController;
 use App\Http\Controllers\SchoolUnitController;
@@ -86,9 +87,15 @@ Route::middleware(["auth", "auth.session"])->group(function () {
 		Route::get("/api/studentRegistry/{studentRegistry}", [StudentController::class, "list"]);
 		Route::post("/api/studentRegistry/{studentRegistry}", [StudentController::class, "create"]);
 		Route::post("/api/studentRegistry/{studentRegistry}/massCreate", [StudentController::class, "massCreateFromCSV"]);
-		Route::put("/api/studentRegistry/{studentRegistry}/{student}", [StudentController::class, "update"]);
+
+		Route::get("/api/students/{student}", [StudentController::class, "show"]);
+		Route::put("/api/students/{student}", [StudentController::class, "update"]);
+
 		Route::get("/api/childrenRegistry", [ChildrenRegistryController::class, "list"]);
 		Route::post("/api/childrenRegistry", [ChildrenRegistryController::class, "create"]);
+		Route::post("/api/childrenRegistry/{childrenRegistry}/{student}", [CompulsoryEducationFulfillmentController::class, "create"]);
+		Route::post("/api/childrenRegistry/{childrenRegistry}/{student}/{fulfillment}", [CompulsoryEducationFulfillmentController::class, "update"]);
+		Route::delete("/api/childrenRegistry/{childrenRegistry}/{student}/{fulfillment}", [CompulsoryEducationFulfillmentController::class, "destroy"]);
 	});
 });
 
@@ -104,13 +111,6 @@ Route::post("/api/email/verification-notification", function (Request $request) 
 })->middleware(["auth", "throttle:6,1"])->name("verification.send");
 
 // SPA
-Route::view("/authentication{any?}", "authentication")->where("any", ".*")->name("login");
-
-Route::middleware(["auth", "auth.session"])->group(function () {
-	Route::view("/myaccount{any?}", "myaccount")->where("any", ".*");
-
-	Route::view("/administrator/{accessId}{any?}", "administrator")->where("any", ".*")->middleware("employee.role:administrator");
-});
 
 Route::redirect("/rejestracja", "/authentication/access-activation/code")->name("activateAccess");
 Route::view("/authentication/log-in", "index")->name("login");

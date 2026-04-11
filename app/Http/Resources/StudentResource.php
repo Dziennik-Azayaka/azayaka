@@ -27,6 +27,7 @@ class StudentResource extends JsonResource
 			"leaveDate" => $this->leave_date,
 			"leaveReason" => $this->leave_reason,
 			"residenceAddress" => new ResidenceAddressResource($this->whenLoaded("residenceAddress")),
+			"compulsoryEducationFulfillment" => new CompulsoryEducationFulfillmentResource($this->whenLoaded("compulsoryEducationFulfillment")),
 		];
 	}
 }
