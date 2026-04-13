@@ -8,6 +8,7 @@ use App\Models\Student;
 use App\Models\StudentRegistry;
 use App\Rules\Pesel;
 use App\Utilities\ValidatorAssistant\ValidatorAssistant;
+use App\Utilities\ValidatorAssistant\ValidatorAssistantException;
 use DB;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -34,8 +35,11 @@ class StudentController extends Controller
 	{
 		$validator = ValidatorAssistant::validate($request, $this->generateValidationRules(true, true));
 
+		$childrenRegistry = ChildrenRegistry::find($validator["childrenRegistryId"]);
+		$this->checkIfRegistriesAreActive($studentRegistry, $childrenRegistry);
+
 		$this->createAndSaveStudentWithResidenceAddress(
-			$studentRegistry->id, $validator, $validator["childrenRegistryId"]
+			$studentRegistry->id, $validator, $childrenRegistry->id
 		);
 
 		return \Response::json([
@@ -45,6 +49,8 @@ class StudentController extends Controller
 
 	public function update(Request $request, Student $student)
 	{
+		$this->checkIfRegistriesAreActive($student->studentRegistry, $student->childrenRegistry);
+
 		$validated = ValidatorAssistant::validate($request, $this->generateValidationRules(
 			false, false, $student
 		));
@@ -64,6 +70,25 @@ class StudentController extends Controller
 		];
 	}
 
+	public function destroy(Request $request, Student $student) {
+		$this->checkIfRegistriesAreActive($student->studentRegistry, $student->childrenRegistry);
+		DB::beginTransaction();
+		try {
+			$student->residenceAddress->delete();
+			$student->delete();
+			DB::commit();
+			return [
+				"success" => true
+			];
+		} catch (\Throwable) {
+			DB::rollBack();
+			return \Response::json([
+				"success" => false,
+				"errors" => ["UNKNOWN_SERVER_ERROR"]
+			], 500);
+		}
+	}
+
 	public function massCreateFromCSV(Request $request, StudentRegistry $studentRegistry)
 	{
 		$validator = ValidatorAssistant::validate($request, [
@@ -72,7 +97,8 @@ class StudentController extends Controller
 			"delimiter" => ["nullable", "string"]
 		]);
 
-		$childrenRegistryId = $validator["childrenRegistryId"];
+		$childrenRegistry = ChildrenRegistry::find($validator["childrenRegistryId"]);
+		$this->checkIfRegistriesAreActive($studentRegistry, $childrenRegistry);
 
 		$lines = explode(PHP_EOL, trim($request->file("csv")->get()));
 		$headers = str_getcsv(array_shift($lines));
@@ -92,7 +118,7 @@ class StudentController extends Controller
 			$validator = ValidatorAssistant::validate($row, $validationRules);
 
 			$students[] = $this->createAndSaveStudentWithResidenceAddress(
-				$studentRegistry->id, $validator, $childrenRegistryId, $transactionSuccessful
+				$studentRegistry->id, $validator, $childrenRegistry->id, $transactionSuccessful
 			);
 		}
 
@@ -194,5 +220,12 @@ class StudentController extends Controller
 		}
 
 		return $student;
+	}
+
+	private function checkIfRegistriesAreActive(StudentRegistry $studentRegistry, ?ChildrenRegistry $childrenRegistry)
+	{
+		if ($studentRegistry->isArchived() || $childrenRegistry?->isArchived()) {
+			throw new ValidatorAssistantException(null, null, ["STUDENT_REGISTRY_OR_CHILDREN_REGISTRY_ARCHIVED"]);
+		}
 	}
 }
