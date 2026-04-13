@@ -21,4 +21,8 @@ class ChildrenRegistry extends Model
 	{
 		return $this->hasMany(Student::class);
 	}
+
+	public function isArchived() {
+		return $this->schoolUnit->active == false;
+	}
 }

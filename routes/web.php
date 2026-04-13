@@ -90,6 +90,7 @@ Route::middleware(["auth", "auth.session"])->group(function () {
 
 		Route::get("/api/students/{student}", [StudentController::class, "show"]);
 		Route::put("/api/students/{student}", [StudentController::class, "update"]);
+		Route::delete("/api/students/{student}", [StudentController::class, "destroy"]);
 
 		Route::get("/api/childrenRegistry", [ChildrenRegistryController::class, "list"]);
 		Route::post("/api/childrenRegistry", [ChildrenRegistryController::class, "create"]);

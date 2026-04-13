@@ -15,6 +15,10 @@ return new class extends Migration {
 			$table->foreignId("school_unit_id");
 			$table->timestamps();
 		});
+
+		Schema::table("students", function (Blueprint $table) {
+			$table->foreignId("student_registry_id")->constrained("student_registries")->cascadeOnDelete();
+		});
 	}
 
 	/**

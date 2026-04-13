@@ -23,11 +23,11 @@ return new class extends Migration {
 		});
 
 		Schema::table("students", function (Blueprint $table) {
-			$table->foreignId("residence_address_id")->nullable()->constrained("residence_addresses")->nullOnDelete();
+			$table->foreignId("residence_address_id")->nullable()->constrained("residence_addresses")->cascadeOnDelete();
 		});
 
 		Schema::table("guardians", function (Blueprint $table) {
-			$table->foreignId("residence_address_id")->nullable()->constrained("residence_addresses")->nullOnDelete();
+			$table->foreignId("residence_address_id")->nullable()->constrained("residence_addresses")->cascadeOnDelete();
 		});
 	}
 

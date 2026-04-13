@@ -21,14 +21,14 @@ class Student extends BaseModel
 		return $this->belongsToMany(Guardian::class);
 	}
 
-	public function studentRegistries(): HasOne
+	public function studentRegistry(): BelongsTo
 	{
-		return $this->hasOne(StudentRegistry::class);
+		return $this->belongsTo(StudentRegistry::class);
 	}
 
-	public function childrenRegistries(): BelongsToMany
+	public function childrenRegistry(): BelongsTo
 	{
-		return $this->belongsToMany(ChildrenRegistry::class, "children_registry_student")->withPivot("id");
+		return $this->belongsTo(ChildrenRegistry::class);
 	}
 
 	public function residenceAddress(): BelongsTo

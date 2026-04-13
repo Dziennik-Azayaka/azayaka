@@ -37,7 +37,19 @@ class DatabaseSeeder extends Seeder
 
 		ResidenceAddress::factory(10)->create();
 
-		$students = Student::factory(10)->create();
+		$studentRegistry = StudentRegistry::create([
+			"school_unit_id" => 1,
+			"created_at" => "2024-09-01"
+		]);
+
+		$childrenRegistry = ChildrenRegistry::create([
+			"school_unit_id" => 1,
+			"created_at" => "2024-09-01"
+		]);
+		$students = Student::factory(10)->create([
+			"student_registry_id" => $studentRegistry->id,
+			"children_registry_id" => $childrenRegistry->id
+		]);
 		Guardian::factory(10)->create();
 		Employee::factory(10)->create();
 		AccountAccess::factory(10)->create();
@@ -110,20 +122,6 @@ class DatabaseSeeder extends Seeder
 				$genericEndingClassificationPeriod->id => ["level" => rand(1, 8)],
 			]);
 		});
-
-		$studentRegistry = StudentRegistry::create([
-			"school_unit_id" => 1,
-			"created_at" => "2024-09-01"
-		]);
-
-		$studentRegistry->students()->attach(Student::all());
-
-		$childrenRegistry = ChildrenRegistry::create([
-			"school_unit_id" => 1,
-			"created_at" => "2024-09-01"
-		]);
-
-		$childrenRegistry->students()->attach(Student::all());
 
 		CompulsoryEducationFulfillment::factory(10)->recycle($students)->create();
 	}

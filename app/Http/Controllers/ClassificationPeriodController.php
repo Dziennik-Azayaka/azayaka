@@ -144,7 +144,7 @@ class ClassificationPeriodController extends Controller
 		} catch (\Throwable) {
 			return \Response::json([
 				"success" => false,
-				"errors" => ["INTERNAL_SERVER_ERROR"]
+				"errors" => ["UNKNOWN_SERVER_ERROR"]
 			], 500);
 		}
 
