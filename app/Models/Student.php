@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Student extends BaseModel
 {
@@ -20,9 +21,9 @@ class Student extends BaseModel
 		return $this->belongsToMany(Guardian::class);
 	}
 
-	public function studentRegistries(): BelongsToMany
+	public function studentRegistries(): HasOne
 	{
-		return $this->belongsToMany(StudentRegistry::class, "student_registry_student");
+		return $this->hasOne(StudentRegistry::class);
 	}
 
 	public function childrenRegistries(): BelongsToMany

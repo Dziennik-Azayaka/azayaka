@@ -15,12 +15,6 @@ return new class extends Migration {
 			$table->foreignId("school_unit_id");
 			$table->timestamps();
 		});
-
-		Schema::create("student_registry_student", function (Blueprint $table) {
-			$table->id();
-			$table->foreignId("student_registry_id")->constrained("student_registries")->onDelete("cascade");
-			$table->foreignId("student_id")->constrained("students")->onDelete("cascade");
-		});
 	}
 
 	/**

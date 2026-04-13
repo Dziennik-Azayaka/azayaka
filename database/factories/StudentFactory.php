@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use App\Models\ResidenceAddress;
+use App\Models\StudentRegistry;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -34,6 +35,7 @@ class StudentFactory extends Factory
 			"leave_date" => $leftSchool ? null : "2025-12-31",
 			"leave_reason" => $leftSchool ? "Przeniesienie do innej placówki edukacyjnej." : null,
 			"residence_address_id" => ResidenceAddress::factory()->create()->id,
+			"student_registry_id" => StudentRegistry::factory(),
 		];
 	}
 }

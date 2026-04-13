@@ -28,8 +28,7 @@ class StudentControllerTest extends TestCase
     public function test_can_list_students() {
 		$this->actingUser();
 		$registry = $this->generateStudentRegistry();
-		$students = Student::factory()->count(5)->create();
-		$registry->students()->attach($students);
+		Student::factory(5)->recycle($registry)->create();
 		$response = $this->get("/api/studentRegistry/$registry->id");
 		$response->assertOk();
 		$response->assertJsonIsArray();
@@ -86,9 +85,9 @@ class StudentControllerTest extends TestCase
 		$studentRegistry = $this->generateStudentRegistry();
 		$student = Student::factory()->create([
 			"pesel" => "987654321",
-			"alternate_identity_document" => null
+			"alternate_identity_document" => null,
+			"student_registry_id" => $studentRegistry->id
 		]);
-		$studentRegistry->students()->attach($student);
 		$response = $this->put("/api/students/$student->id", [
 			"firstName" => "Jan",
 			"lastName" => "Nowak",
