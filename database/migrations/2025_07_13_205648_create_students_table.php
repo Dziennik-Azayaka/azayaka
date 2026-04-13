@@ -4,13 +4,12 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
-    /**
-     * Run the migrations.
-     */
-    public function up(): void
-    {
+return new class extends Migration {
+	/**
+	 * Run the migrations.
+	 */
+	public function up(): void
+	{
 		Schema::create("students", function (Blueprint $table) {
 			$table->id();
 			$table->string("first_name");
@@ -26,15 +25,17 @@ return new class extends Migration
 			$table->date("leave_date")->nullable();
 			$table->string("leave_reason")->nullable();
 			$table->foreignId("student_registry_id")->constrained("student_registries")->onDelete("cascade");
+			$table->foreignId("children_registry_id")->nullable()
+				->constrained("children_registries")->nullOnDelete();
 			$table->timestamps();
-        });
-    }
+		});
+	}
 
-    /**
-     * Reverse the migrations.
-     */
-    public function down(): void
-    {
-        Schema::dropIfExists("students");
-    }
+	/**
+	 * Reverse the migrations.
+	 */
+	public function down(): void
+	{
+		Schema::dropIfExists("students");
+	}
 };

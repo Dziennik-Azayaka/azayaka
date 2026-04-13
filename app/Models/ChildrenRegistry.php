@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class ChildrenRegistry extends Model
 {
@@ -16,8 +17,8 @@ class ChildrenRegistry extends Model
 		return $this->belongsTo(SchoolUnit::class);
 	}
 
-	public function students(): BelongsToMany
+	public function students(): HasMany
 	{
-		return $this->belongsToMany(Student::class, "children_registry_student")->withPivot("id");
+		return $this->hasMany(Student::class);
 	}
 }

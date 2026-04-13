@@ -34,11 +34,9 @@ class StudentController extends Controller
 	{
 		$validator = ValidatorAssistant::validate($request, $this->generateValidationRules(true, true));
 
-		$student = $this->createAndSaveStudentWithResidenceAddress($studentRegistry->id, $validator);
-
-		if ($validator["childrenRegistryId"] != null) {
-			ChildrenRegistry::find($validator["childrenRegistryId"])->students()->attach($student);
-		}
+		$this->createAndSaveStudentWithResidenceAddress(
+			$studentRegistry->id, $validator, $validator["childrenRegistryId"]
+		);
 
 		return \Response::json([
 			"success" => true
@@ -79,7 +77,7 @@ class StudentController extends Controller
 		$lines = explode(PHP_EOL, trim($request->file("csv")->get()));
 		$headers = str_getcsv(array_shift($lines));
 
-		$uploadedData = array_map(function($line) use ($headers) {
+		$uploadedData = array_map(function ($line) use ($headers) {
 			return array_combine($headers, str_getcsv($line));
 		}, $lines);
 
@@ -93,13 +91,9 @@ class StudentController extends Controller
 			// TODO: Include information about the row which contains the error
 			$validator = ValidatorAssistant::validate($row, $validationRules);
 
-			// This isn't efficient; however, we need to know the IDs of addresses and students
-			// to build relationships with the registries.
-			$students[] = $this->createAndSaveStudentWithResidenceAddress($studentRegistry->id, $validator, $transactionSuccessful);
-		}
-
-		if (array_key_exists("childrenRegistryId", $validator)) {
-			ChildrenRegistry::find($childrenRegistryId)->students()->attach($students);
+			$students[] = $this->createAndSaveStudentWithResidenceAddress(
+				$studentRegistry->id, $validator, $childrenRegistryId, $transactionSuccessful
+			);
 		}
 
 		if (!$transactionSuccessful) {
@@ -159,7 +153,11 @@ class StudentController extends Controller
 		return $validationRules;
 	}
 
-	private function createAndSaveStudentWithResidenceAddress(int $studentRegistryId, array $data, ?bool &$transactionStatus = null)
+	private function createAndSaveStudentWithResidenceAddress(
+		int   $studentRegistryId,
+		array $data,
+		?int  $childrenRegistryId = null,
+		?bool &$transactionStatus = null)
 	{
 		$residenceAddress = new ResidenceAddress();
 		$residenceAddress->country = $data["residenceAddressCountry"];
@@ -183,6 +181,7 @@ class StudentController extends Controller
 		$student->admission_date = $data["admissionDate"];
 		$student->residence_address_id = $residenceAddress->id;
 		$student->student_registry_id = $studentRegistryId;
+		$student->children_registry_id = $childrenRegistryId;
 
 		try {
 			$student->saveOrFail();

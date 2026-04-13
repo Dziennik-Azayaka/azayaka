@@ -17,12 +17,13 @@ class CompulsoryEducationFulfillmentControllerTest extends TestCase
 
     public function test_can_create_compulsory_education_fulfillment()
     {
-        $this->actingUser();
-		$student = Student::factory()->create();
+		$this->actingUser();
 		$childrenRegistry = ChildrenRegistry::create([
 			"school_unit_id" => SchoolUnit::factory()->create()->id,
 		]);
-		$childrenRegistry->students()->attach($student);
+		$student = Student::factory()->create([
+			"children_registry_id" => $childrenRegistry->id
+		]);
 		$payload = [
 			"schoolYear" => 2025,
 			"controlDate" => Carbon::now()->format("Y-m-d"),
@@ -46,11 +47,12 @@ class CompulsoryEducationFulfillmentControllerTest extends TestCase
 	public function test_can_update_compulsory_education_fulfillment()
 	{
 		$this->actingUser();
-		$student = Student::factory()->create();
 		$childrenRegistry = ChildrenRegistry::create([
 			"school_unit_id" => SchoolUnit::factory()->create()->id,
 		]);
-		$childrenRegistry->students()->attach($student);
+		$student = Student::factory()->create([
+			"children_registry_id" => $childrenRegistry->id,
+		]);
 		$fulfillment = CompulsoryEducationFulfillment::factory()->recycle($student)->create([
 			"children_registry_id" => $childrenRegistry->id,
 		]);
@@ -76,11 +78,12 @@ class CompulsoryEducationFulfillmentControllerTest extends TestCase
 	public function test_can_delete_compulsory_education_fulfillment()
 	{
 		$this->actingUser();
-		$student = Student::factory()->create();
 		$childrenRegistry = ChildrenRegistry::create([
 			"school_unit_id" => SchoolUnit::factory()->create()->id,
 		]);
-		$childrenRegistry->students()->attach($student);
+		$student = Student::factory()->create([
+			"children_registry_id" => $childrenRegistry->id,
+		]);
 		$fulfillment = CompulsoryEducationFulfillment::factory()->recycle($student)->create([
 			"children_registry_id" => $childrenRegistry->id,
 		]);
