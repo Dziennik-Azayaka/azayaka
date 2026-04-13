@@ -34,9 +34,7 @@ class StudentController extends Controller
 	{
 		$validator = ValidatorAssistant::validate($request, $this->generateValidationRules(true, true));
 
-		$student = $this->createAndSaveStudentWithResidenceAddress($validator);
-
-		$studentRegistry->students()->attach($student);
+		$student = $this->createAndSaveStudentWithResidenceAddress($studentRegistry->id, $validator);
 
 		if ($validator["childrenRegistryId"] != null) {
 			ChildrenRegistry::find($validator["childrenRegistryId"])->students()->attach($student);
@@ -97,10 +95,9 @@ class StudentController extends Controller
 
 			// This isn't efficient; however, we need to know the IDs of addresses and students
 			// to build relationships with the registries.
-			$students[] = $this->createAndSaveStudentWithResidenceAddress($validator, $transactionSuccessful);
+			$students[] = $this->createAndSaveStudentWithResidenceAddress($studentRegistry->id, $validator, $transactionSuccessful);
 		}
 
-		$studentRegistry->students()->attach($students);
 		if (array_key_exists("childrenRegistryId", $validator)) {
 			ChildrenRegistry::find($childrenRegistryId)->students()->attach($students);
 		}
@@ -162,7 +159,7 @@ class StudentController extends Controller
 		return $validationRules;
 	}
 
-	private function createAndSaveStudentWithResidenceAddress(array $data, ?bool &$transactionStatus = null)
+	private function createAndSaveStudentWithResidenceAddress(int $studentRegistryId, array $data, ?bool &$transactionStatus = null)
 	{
 		$residenceAddress = new ResidenceAddress();
 		$residenceAddress->country = $data["residenceAddressCountry"];
@@ -185,6 +182,7 @@ class StudentController extends Controller
 		$student->gender = $data["gender"];
 		$student->admission_date = $data["admissionDate"];
 		$student->residence_address_id = $residenceAddress->id;
+		$student->student_registry_id = $studentRegistryId;
 
 		try {
 			$student->saveOrFail();
