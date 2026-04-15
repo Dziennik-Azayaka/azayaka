@@ -11,11 +11,11 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 
-class ChildrenRegistryControllerTest extends TestCase
+final class ChildrenRegistryControllerTest extends TestCase
 {
 	use RefreshDatabase;
 
-	public function test_can_list_children_registries()
+	public function test_can_list_children_registries(): void
 	{
 		$this->actingUser();
 		$schoolComplex = SchoolComplex::factory()->create();
@@ -32,7 +32,7 @@ class ChildrenRegistryControllerTest extends TestCase
 		]);
 	}
 
-	public function test_can_create_a_children_registry()
+	public function test_can_create_a_children_registry(): void
 	{
 		$this->actingUser();
 		$schoolComplex = SchoolComplex::factory()->create();
@@ -48,7 +48,7 @@ class ChildrenRegistryControllerTest extends TestCase
 		]);
 	}
 
-	public function test_cannot_create_a_children_registry_without_a_valid_school_unit_id()
+	public function test_cannot_create_a_children_registry_without_a_valid_school_unit_id(): void
 	{
 		$this->actingUser();
 		$response = $this->post("/api/childrenRegistry", [
@@ -60,7 +60,7 @@ class ChildrenRegistryControllerTest extends TestCase
 		]);
 	}
 
-	public function test_cannot_create_a_children_registry_when_the_school_unit_already_has_one()
+	public function test_cannot_create_a_children_registry_when_the_school_unit_already_has_one(): void
 	{
 		$this->actingUser();
 		$schoolComplex = SchoolComplex::factory()->create();
