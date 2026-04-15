@@ -213,9 +213,8 @@ final class AccountAccessesControllerTest extends TestCase
 		]);
 
 		// Guardian access with a linked student
-		$guardian = Guardian::factory()->create(["first_name" => "Ewa", "last_name" => "Nowak"]);
 		$student2 = Student::factory()->create(["first_name" => "Rozalia", "last_name" => "Nowak"]);
-		$guardian->students()->attach($student2->id);
+		$guardian = Guardian::factory()->create(["first_name" => "Ewa", "last_name" => "Nowak", "student_id" => $student2->id]);
 		$guardianAccess = AccountAccess::factory()->create([
 			"student_id" => null,
 			"employee_id" => null,

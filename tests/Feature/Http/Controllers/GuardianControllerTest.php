@@ -10,6 +10,8 @@ use Tests\TestCase;
 
 final class GuardianControllerTest extends TestCase
 {
+	use RefreshDatabase;
+
 	public function test_can_list_guardians(): void
 	{
 		$this->actingUser();
@@ -29,6 +31,57 @@ final class GuardianControllerTest extends TestCase
 				"email",
 				"phoneNumber",
 			]
+		]);
+	}
+
+	public function test_can_create_guardian(): void
+	{
+		$this->actingUser();
+		$student = Student::factory()->create();
+		$response = $this->post("/api/students/$student->id/guardians", [
+			"firstName" => "John",
+			"lastName" => "Doe",
+			"email" => null,
+			"phoneNumber" => "1234567890"
+		]);
+		$response->assertCreated();
+		$this->assertDatabaseHas("guardians", [
+			"student_id" => $student->id,
+			"first_name" => "John",
+			"last_name" => "Doe",
+			"email" => null,
+			"phone_number" => "1234567890"
+		]);
+	}
+
+	public function test_can_update_guardian(): void
+	{
+		$this->actingUser();
+		$guardian = Guardian::factory()->create();
+		$response = $this->put("/api/guardians/$guardian->id", [
+			"firstName" => "Jane",
+			"lastName" => "Doe",
+			"email" => "test@example.com",
+			"phoneNumber" => "987654321"
+		]);
+		$response->assertOk();
+		$this->assertDatabaseHas("guardians", [
+			"id" => $guardian->id,
+			"first_name" => "Jane",
+			"last_name" => "Doe",
+			"email" => "test@example.com",
+			"phone_number" => "987654321"
+		]);
+	}
+
+	public function test_can_delete_guardian(): void
+	{
+		$this->actingUser();
+		$guardian = Guardian::factory()->create();
+		$response = $this->delete("/api/guardians/$guardian->id");
+		$response->assertOk();
+		$this->assertDatabaseMissing("guardians", [
+			"id" => $guardian->id
 		]);
 	}
 }

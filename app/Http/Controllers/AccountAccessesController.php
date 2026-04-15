@@ -167,15 +167,13 @@ class AccountAccessesController extends Controller
 
 		foreach ($accesses as $access) {
 			if ($access->guardian) {
-				foreach ($access->guardian->students as $student) {
-					$accessesWithPersonas[] = [
-						"id" => $access->id,
-						"name" => $student->first_name . " " . $student->last_name,
-						"type" => "guardian",
-						"updatedAt" => $access->updated_at,
-						"modulesAvailable" => $this->getAvailableModules($student)
-					];
-				}
+				$accessesWithPersonas[] = [
+					"id" => $access->id,
+					"name" => $access->guardian->student->first_name . " " . $access->guardian->student->last_name,
+					"type" => "guardian",
+					"updatedAt" => $access->updated_at,
+					"modulesAvailable" => $this->getAvailableModules($access->guardian->student)
+				];
 			}
 
 			if ($access->student) {

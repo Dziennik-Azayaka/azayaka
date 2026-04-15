@@ -25,8 +25,8 @@ class GuardianController extends Controller
 		$guardian->student_id = $student->id;
 		$guardian->first_name = $validated["firstName"];
 		$guardian->last_name = $validated["lastName"];
-		$guardian->email = $validated["email"];
-		$guardian->phone_number = $validated["phoneNumber"];
+		$guardian->email = $validated["email"] ?? null;
+		$guardian->phone_number = $validated["phoneNumber"] ?? null;
 		$guardian->save();
 
 		return \Response::json([
@@ -44,8 +44,8 @@ class GuardianController extends Controller
 
 		$guardian->first_name = $validated["firstName"];
 		$guardian->last_name = $validated["lastName"];
-		$guardian->email = $validated["email"];
-		$guardian->phone_number = $validated["phoneNumber"];
+		$guardian->email = $validated["email"] ?? null;
+		$guardian->phone_number = $validated["phoneNumber"] ?? null;
 		$guardian->save();
 
 		return \Response::json([
