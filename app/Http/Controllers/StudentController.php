@@ -38,9 +38,18 @@ class StudentController extends Controller
 		$childrenRegistry = ChildrenRegistry::find($validator["childrenRegistryId"]);
 		$this->checkIfRegistriesAreActive($studentRegistry, $childrenRegistry);
 
-		$this->createAndSaveStudentWithResidenceAddress(
-			$studentRegistry->id, $validator, $childrenRegistry->id
-		);
+		try {
+			DB::transaction(function () use ($studentRegistry, $childrenRegistry, $validator) {
+				$this->createAndSaveStudentWithResidenceAddress(
+					$studentRegistry->id, $validator, $childrenRegistry->id
+				);
+			});
+		} catch (\Throwable) {
+			return \Response::json([
+				"success" => false,
+				"errors" => ["UNKNOWN_SERVER_ERROR"]
+			], 500);
+		}
 
 		return \Response::json([
 			"success" => true
@@ -70,7 +79,8 @@ class StudentController extends Controller
 		];
 	}
 
-	public function destroy(Student $student) {
+	public function destroy(Student $student)
+	{
 		$this->checkIfRegistriesAreActive($student->studentRegistry, $student->childrenRegistry);
 		DB::beginTransaction();
 		try {
@@ -109,27 +119,21 @@ class StudentController extends Controller
 
 		$validationRules = $this->generateValidationRules(true);
 
-		DB::beginTransaction();
-		$transactionSuccessful = true;
-
-		$students = [];
-		foreach ($uploadedData as $row) {
-			// TODO: Include information about the row which contains the error
-			$validator = ValidatorAssistant::validate($row, $validationRules);
-
-			$students[] = $this->createAndSaveStudentWithResidenceAddress(
-				$studentRegistry->id, $validator, $childrenRegistry->id, $transactionSuccessful
-			);
-		}
-
-		if (!$transactionSuccessful) {
-			DB::rollBack();
+		try {
+			DB::transaction(function () use ($uploadedData, $validationRules, $studentRegistry, $childrenRegistry) {
+				foreach ($uploadedData as $row) {
+					// TODO: Include information about the row which contains the error
+					$validated = ValidatorAssistant::validate($row, $validationRules);
+					$this->createAndSaveStudentWithResidenceAddress(
+						$studentRegistry->id, $validated, $childrenRegistry->id
+					);
+				}
+			});
+		} catch (\Throwable) {
 			return \Response::json([
 				"success" => true,
 				"errors" => ["UNKNOWN_SERVER_ERROR"]
 			], 500);
-		} else {
-			DB::commit();
 		}
 
 		return \Response::json([
@@ -144,15 +148,11 @@ class StudentController extends Controller
 			"secondName" => ["nullable", "max:255"],
 			"pesel" => [
 				"required_without:alternateIdentityDocument",
-				$student != null ? Rule::unique("students")->ignore($student->id) : "unique:students",
 				new Pesel
 			],
 			"alternateIdentityDocument" => [
 				"required_without:pesel",
-				"max:255",
-				$student != null ?
-					Rule::unique("students", "alternate_identity_document")->ignore($student->id) :
-					"unique:students,alternate_identity_document"
+				"max:255"
 			],
 			"birthdate" => ["required", "date"],
 			"birthplace" => ["required", "max:255"],
@@ -179,11 +179,13 @@ class StudentController extends Controller
 		return $validationRules;
 	}
 
+	/**
+	 * @throws \Throwable
+	 */
 	private function createAndSaveStudentWithResidenceAddress(
 		int   $studentRegistryId,
 		array $data,
-		?int  $childrenRegistryId = null,
-		?bool &$transactionStatus = null)
+		?int  $childrenRegistryId = null)
 	{
 		$residenceAddress = new ResidenceAddress();
 		$residenceAddress->country = $data["residenceAddressCountry"];
@@ -193,7 +195,7 @@ class StudentController extends Controller
 		$residenceAddress->house_number = $data["residenceAddressHouseNumber"] ?? null;
 		$residenceAddress->flat_number = $data["residenceAddressFlatNumber"] ?? null;
 		$residenceAddress->street = $data["residenceAddressStreet"] ?? null;
-		$residenceAddress->save();
+		$residenceAddress->saveOrFail();
 
 		$student = new Student();
 		$student->first_name = $data["firstName"];
@@ -208,17 +210,7 @@ class StudentController extends Controller
 		$student->residence_address_id = $residenceAddress->id;
 		$student->student_registry_id = $studentRegistryId;
 		$student->children_registry_id = $childrenRegistryId;
-
-		try {
-			$student->saveOrFail();
-		} catch (\Throwable) {
-			// Saving the student failed, so we need to delete the residence address
-			if ($transactionStatus != null) {
-				$transactionStatus = false;
-			}
-			$residenceAddress->delete();
-		}
-
+		$student->saveOrFail();
 		return $student;
 	}
 
