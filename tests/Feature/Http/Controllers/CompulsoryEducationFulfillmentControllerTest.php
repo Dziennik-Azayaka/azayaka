@@ -11,11 +11,11 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 
-class CompulsoryEducationFulfillmentControllerTest extends TestCase
+final class CompulsoryEducationFulfillmentControllerTest extends TestCase
 {
 	use RefreshDatabase;
 
-    public function test_can_create_compulsory_education_fulfillment()
+    public function test_can_create_compulsory_education_fulfillment(): void
     {
 		$this->actingUser();
 		$childrenRegistry = ChildrenRegistry::create([
@@ -44,7 +44,7 @@ class CompulsoryEducationFulfillmentControllerTest extends TestCase
 		]);
     }
 
-	public function test_can_update_compulsory_education_fulfillment()
+	public function test_can_update_compulsory_education_fulfillment(): void
 	{
 		$this->actingUser();
 		$childrenRegistry = ChildrenRegistry::create([
@@ -75,7 +75,7 @@ class CompulsoryEducationFulfillmentControllerTest extends TestCase
 		]);
 	}
 
-	public function test_can_delete_compulsory_education_fulfillment()
+	public function test_can_delete_compulsory_education_fulfillment(): void
 	{
 		$this->actingUser();
 		$childrenRegistry = ChildrenRegistry::create([

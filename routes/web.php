@@ -8,6 +8,7 @@ use App\Http\Controllers\ClassificationPeriodDefaultsController;
 use App\Http\Controllers\ClassUnitController;
 use App\Http\Controllers\CompulsoryEducationFulfillmentController;
 use App\Http\Controllers\EmployeeController;
+use App\Http\Controllers\GuardianController;
 use App\Http\Controllers\SchoolComplexController;
 use App\Http\Controllers\SchoolUnitController;
 use App\Http\Controllers\SessionController;
@@ -91,6 +92,11 @@ Route::middleware(["auth", "auth.session"])->group(function () {
 		Route::get("/api/students/{student}", [StudentController::class, "show"]);
 		Route::put("/api/students/{student}", [StudentController::class, "update"]);
 		Route::delete("/api/students/{student}", [StudentController::class, "destroy"]);
+		Route::get("/api/students/{student}/guardians", [GuardianController::class, "list"]);
+		Route::post("/api/students/{student}/guardians", [GuardianController::class, "create"]);
+
+		Route::put("/api/guardians/{guardian}", [GuardianController::class, "update"]);
+		Route::delete("/api/guardians/{guardian}", [GuardianController::class, "destroy"]);
 
 		Route::get("/api/childrenRegistry", [ChildrenRegistryController::class, "list"]);
 		Route::post("/api/childrenRegistry", [ChildrenRegistryController::class, "create"]);

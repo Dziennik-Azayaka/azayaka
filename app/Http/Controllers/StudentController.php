@@ -70,7 +70,7 @@ class StudentController extends Controller
 		];
 	}
 
-	public function destroy(Request $request, Student $student) {
+	public function destroy(Student $student) {
 		$this->checkIfRegistriesAreActive($student->studentRegistry, $student->childrenRegistry);
 		DB::beginTransaction();
 		try {

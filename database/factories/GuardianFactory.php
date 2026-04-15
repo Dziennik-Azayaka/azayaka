@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use App\Models\ResidenceAddress;
+use App\Models\Student;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -22,7 +23,8 @@ class GuardianFactory extends Factory
 			"last_name" => $this->faker->lastName,
 			"phone_number" => rand(1, 10) > 3 ? $this->faker->phoneNumber : null,
 			"email" => rand(1, 10) > 3 ? $this->faker->email : null,
-			"residence_address_id" => ResidenceAddress::factory()->create()->id
+			"residence_address_id" => ResidenceAddress::factory(),
+			"student_id" => Student::factory()
 		];
 	}
 }

@@ -16,9 +16,9 @@ class Student extends BaseModel
 	protected $fillable = ["first_name", "last_name", "second_name", "pesel", "alternate_identity_document",
 		"birthdate", "birthplace", "gender", "admission_date"];
 
-	function guardians(): BelongsToMany
+	function guardians(): HasMany
 	{
-		return $this->belongsToMany(Guardian::class);
+		return $this->hasMany(Guardian::class);
 	}
 
 	public function studentRegistry(): BelongsTo
