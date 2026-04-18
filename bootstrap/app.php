@@ -46,7 +46,7 @@ return Application::configure(basePath: dirname(__DIR__))
 			}
 
 			throw \App\Exceptions\CustomValidationException::withMessages(
-				$exception->validator->errors()->toArray()
+				$exception->validator?->errors()?->toArray() ?? ["UNKNOWN_ERROR"]
 			);
 		});
     })->create();
