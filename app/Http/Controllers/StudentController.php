@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Exceptions\CustomValidationException;
 use App\Models\ChildrenRegistry;
 use App\Models\ResidenceAddress;
 use App\Models\Student;
@@ -61,7 +62,7 @@ class StudentController extends Controller
 		$this->checkIfRegistriesAreActive($student->studentRegistry, $student->childrenRegistry);
 
 		$validated = ValidatorAssistant::validate($request, $this->generateValidationRules(
-			false, false, $student
+			true, false, $student
 		));
 
 		$student["first_name"] = $validated["firstName"];
@@ -73,6 +74,16 @@ class StudentController extends Controller
 		$student["birthplace"] = $validated["birthplace"];
 		$student["gender"] = $validated["gender"];
 		$student["admission_date"] = $validated["admissionDate"];
+
+		$student->residenceAddress->country = $validated["residenceAddressCountry"];
+		$student->residenceAddress->commune = $validated["residenceAddressCommune"] ?? null;
+		$student->residenceAddress->town = $validated["residenceAddressTown"] ?? null;
+		$student->residenceAddress->postal_code = $validated["residenceAddressPostalCode"] ?? null;
+		$student->residenceAddress->house_number = $validated["residenceAddressHouseNumber"] ?? null;
+		$student->residenceAddress->flat_number = $validated["residenceAddressFlatNumber"] ?? null;
+		$student->residenceAddress->street = $validated["residenceAddressStreet"] ?? null;
+		$student->residenceAddress->save();
+
 		$student->save();
 		return [
 			"success" => true
@@ -217,7 +228,7 @@ class StudentController extends Controller
 	private function checkIfRegistriesAreActive(StudentRegistry $studentRegistry, ?ChildrenRegistry $childrenRegistry)
 	{
 		if ($studentRegistry->isArchived() || $childrenRegistry?->isArchived()) {
-			throw new ValidatorAssistantException(null, null, ["STUDENT_REGISTRY_OR_CHILDREN_REGISTRY_ARCHIVED"]);
+			throw CustomValidationException::withMessages(["STUDENT_REGISTRY_OR_CHILDREN_REGISTRY_ARCHIVED"]);
 		}
 	}
 }

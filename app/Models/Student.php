@@ -35,8 +35,7 @@ class Student extends BaseModel
 	{
 		return $this->belongsTo(
 			ResidenceAddress::class,
-			'residence_address_id',  // Foreign key on students table
-			'id'                     // Primary key on residence_addresses table
+			'residence_address_id'
 		);
 	}
 

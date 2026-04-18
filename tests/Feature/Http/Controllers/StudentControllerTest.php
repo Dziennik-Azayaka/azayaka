@@ -92,7 +92,8 @@ class StudentControllerTest extends TestCase
 			"gender" => "male",
 			"admissionDate" => "2021-01-01",
 			"pesel" => null,
-			"alternateIdentityDocument" => "123456789"
+			"alternateIdentityDocument" => "123456789",
+			"residenceAddressCountry" => "AQ"
 		]);
 		$response->assertOk();
 		$this->assertDatabaseHas("students", [

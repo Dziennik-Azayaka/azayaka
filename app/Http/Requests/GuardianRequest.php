@@ -26,7 +26,14 @@ class GuardianRequest extends FormRequest
 			"firstName" => ["required", "string", "max:255"],
 			"lastName" => ["required", "string", "max:255"],
 			"email" => ["nullable", "email", "max:255"],
-			"phoneNumber" => ["nullable", "max:16"]
+			"phoneNumber" => ["nullable", "max:16"],
+			"residenceAddressCountry" => ["required", "string", "max:255"],
+			"residenceAddressCommune" => ["nullable", "string", "max:255"],
+			"residenceAddressTown" => ["nullable", "string", "max:255"],
+			"residenceAddressPostalCode" => ["nullable", "string", "max:255"],
+			"residenceAddressStreet" => ["nullable", "string", "max:255"],
+			"residenceAddressHouseNumber" => ["nullable", "max:255"],
+			"residenceAddressFlatNumber" => ["nullable", "max:255"],
 		];
 	}
 }

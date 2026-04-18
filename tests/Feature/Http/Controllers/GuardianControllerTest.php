@@ -42,7 +42,8 @@ final class GuardianControllerTest extends TestCase
 			"firstName" => "John",
 			"lastName" => "Doe",
 			"email" => null,
-			"phoneNumber" => "1234567890"
+			"phoneNumber" => "1234567890",
+			"residenceAddressCountry" => "AQ"
 		]);
 		$response->assertCreated();
 		$this->assertDatabaseHas("guardians", [
@@ -51,6 +52,9 @@ final class GuardianControllerTest extends TestCase
 			"last_name" => "Doe",
 			"email" => null,
 			"phone_number" => "1234567890"
+		]);
+		$this->assertDatabaseHas("residence_addresses", [
+			"country" => "AQ"
 		]);
 	}
 
@@ -62,7 +66,8 @@ final class GuardianControllerTest extends TestCase
 			"firstName" => "Jane",
 			"lastName" => "Doe",
 			"email" => "test@example.com",
-			"phoneNumber" => "987654321"
+			"phoneNumber" => "987654321",
+			"residenceAddressCountry" => "AQ"
 		]);
 		$response->assertOk();
 		$this->assertDatabaseHas("guardians", [
@@ -71,6 +76,9 @@ final class GuardianControllerTest extends TestCase
 			"last_name" => "Doe",
 			"email" => "test@example.com",
 			"phone_number" => "987654321"
+		]);
+		$this->assertDatabaseHas("residence_addresses", [
+			"country" => "AQ"
 		]);
 	}
 
