@@ -5,6 +5,9 @@ namespace App\Utilities\ValidatorAssistant;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
+/**
+ * @deprecated Use Laravel's built-in Validator instead with the CustomValidationException class.
+ */
 class ValidatorAssistant
 {
 	private static function toUppercaseWithUnderscores($string): string

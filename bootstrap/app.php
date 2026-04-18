@@ -39,4 +39,14 @@ return Application::configure(basePath: dirname(__DIR__))
 
 			return $response;
 		});
+
+		$exceptions->renderable(function (\Illuminate\Validation\ValidationException $exception, $request) {
+			if (!$request->wantsJson()) {
+				return null; // return null to display the default Laravel error page
+			}
+
+			throw \App\Exceptions\CustomValidationException::withMessages(
+				$exception->validator->errors()->toArray()
+			);
+		});
     })->create();

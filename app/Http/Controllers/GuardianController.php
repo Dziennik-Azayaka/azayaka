@@ -2,9 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\GuardianRequest;
 use App\Models\Guardian;
 use App\Models\Student;
-use App\Utilities\ValidatorAssistant\ValidatorAssistant;
+use App\Utilities\CaseConverter;
 use Illuminate\Http\Request;
 
 class GuardianController extends Controller
@@ -13,20 +14,10 @@ class GuardianController extends Controller
 		return $student->guardians()->get()->toresourceCollection();
 	}
 
-	public function create(Request $request, Student $student) {
-		$validated = ValidatorAssistant::validate($request, [
-			"firstName" => "required|string|max:255",
-			"lastName" => "required|string|max:255",
-			"email" => "nullable|email|max:255",
-			"phoneNumber" => "nullable|max:16"
-		]);
-
-		$guardian = new Guardian();
-		$guardian->student_id = $student->id;
-		$guardian->first_name = $validated["firstName"];
-		$guardian->last_name = $validated["lastName"];
-		$guardian->email = $validated["email"] ?? null;
-		$guardian->phone_number = $validated["phoneNumber"] ?? null;
+	public function create(GuardianRequest $request, Student $student) {
+		$validated = $request->validated();
+		$guardian = new Guardian(CaseConverter::toSnakeCase($validated));
+		$guardian->student()->associate($student);
 		$guardian->save();
 
 		return \Response::json([
@@ -34,20 +25,8 @@ class GuardianController extends Controller
 		], 201);
 	}
 
-	public function update(Request $request, Guardian $guardian) {
-		$validated = ValidatorAssistant::validate($request, [
-			"firstName" => "required|string|max:255",
-			"lastName" => "required|string|max:255",
-			"email" => "nullable|email|max:255",
-			"phoneNumber" => "nullable|max:16"
-		]);
-
-		$guardian->first_name = $validated["firstName"];
-		$guardian->last_name = $validated["lastName"];
-		$guardian->email = $validated["email"] ?? null;
-		$guardian->phone_number = $validated["phoneNumber"] ?? null;
-		$guardian->save();
-
+	public function update(GuardianRequest $request, Guardian $guardian) {
+		$guardian->update(CaseConverter::toSnakeCase($request->validated()));
 		return \Response::json([
 			"success" => true
 		]);
