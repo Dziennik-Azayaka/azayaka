@@ -23,4 +23,12 @@ class Guardian extends BaseModel
 			'residence_address_id'
 		);
 	}
+
+	public function residenceAddress(): BelongsTo
+	{
+		return $this->belongsTo(
+			ResidenceAddress::class,
+			'residence_address_id'
+		);
+	}
 }
