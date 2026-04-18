@@ -23,15 +23,15 @@ class CaseConverter
 			}
 
 			if (is_array($value)) {
-				$value = CaseConverter::toCamelCase($value);
+				$value = CaseConverter::convertArray($value, $callback);
 			}
 
 			if ($value instanceof SupportCollection) {
-				$value = CaseConverter::toCamelCase($value->toArray());
+				$value = CaseConverter::convertArray($value->toArray(), $callback);
 			}
 
 			if ($value instanceof \stdClass || $value instanceof BaseModel) {
-				$value = CaseConverter::toCamelCase((array)$value);
+				$value = CaseConverter::convertArray((array)$value, $callback);
 			}
 
 			$result[$newKey] = $value;

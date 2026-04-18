@@ -6,7 +6,7 @@ use App\Rules\Pesel;
 use Tests\TestCase;
 use Validator;
 
-class PeselTest extends TestCase
+final class PeselTest extends TestCase
 {
 	public function test_valid_pesel_passes(): void
 	{
