@@ -20,7 +20,9 @@
 					"year": "Rok szkolny",
 					"semester": "Okres klasyfikacyjny"
 				},
-				"teachingCycleLength": "Długość cyklu nauczania"
+				"teachingCycleLength": "Długość cyklu nauczania",
+				"startingClassificationPeriod": "Pierwszy okres klasyfikacyjny",
+				"formTutors": "Wychowawcy"
 			},
 			"tableFilters": {
 				"schoolYear": {
@@ -31,6 +33,10 @@
 					"label": "Jednostka",
 					"all": "Wszystkie"
 				}
+			},
+			"add": "Dodaj oddział",
+			"periodSelect": {
+				"noPeriods": "Brak okresów"
 			}
 		},
 		"classificationPeriods": {
@@ -267,7 +273,11 @@
 		"pluralization": {
 			"year": "rok | lata | lat"
 		},
-		"generalInfo": "Ogólne informacje"
+		"generalInfo": "Ogólne informacje",
+		"select": {
+			"search": "Szukaj...",
+			"noResults": "Brak wyników."
+		}
 	},
 	"notFound": {
 		"title": "Nie znaleziono strony"

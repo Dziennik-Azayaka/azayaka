@@ -2,7 +2,12 @@ import type { Class, FormTutor } from '../types/class';
 
 export interface ClassDTO {
   id: number;
-  schoolUnitId: number;
+  schoolUnit: {
+    id: number;
+    name: string;
+    shortName: string;
+  };
+  promoteEvery: 'year' | 'semester';
   alias: string;
   mark: string;
   startingClassificationPeriodId: number;
@@ -33,3 +38,13 @@ export const formTutorFromDTO = (dto: FormTutorDTO): FormTutor => ({
 });
 
 export type GetClassFilter = 'archive' | 'current' | 'future';
+
+export interface ClassBodyDTO {
+  alias: string | null;
+  mark: string;
+  startingClassificationPeriodId: number;
+  teachingCycleLength: number;
+  promoteEvery: string;
+  employees: { id: number }[];
+  schoolUnitId: number;
+}

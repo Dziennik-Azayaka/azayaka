@@ -1,4 +1,4 @@
-import { classFromDTO, type ClassDTO, type GetClassFilter } from '../dtos/class';
+import { classFromDTO, type ClassBodyDTO, type ClassDTO, type GetClassFilter } from '../dtos/class';
 import type { Class } from '../types/class';
 import { http } from '@/config/ofetch';
 
@@ -10,4 +10,9 @@ export const ClassService = {
     }).then((res) => res.map(classFromDTO)),
   getById: (id: number): Promise<Class> =>
     http<ClassDTO>(`/classUnits/${id}`, { method: 'GET' }).then((res) => classFromDTO(res)),
+  add: (data: ClassBodyDTO) =>
+    http('/classUnits', {
+      method: 'POST',
+      body: data
+    })
 };

@@ -5,6 +5,7 @@ import { useI18n } from 'vue-i18n';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import ClassesTab from '../components/classes/ClassesTab.vue';
 import type { GetClassFilter } from '@/api/dtos/class';
+import ClassAdd from '../components/classes/ClassAdd.vue';
 
 const { t } = useI18n();
 const tab = ref<GetClassFilter>('current');
@@ -22,6 +23,7 @@ const tab = ref<GetClassFilter>('current');
         <TabsTrigger value="current">{{ t('administrator.classes.tabs.current') }}</TabsTrigger>
         <TabsTrigger value="future">{{ t('administrator.classes.tabs.future') }}</TabsTrigger>
       </TabsList>
+      <ClassAdd />
     </div>
     <TabsContent :value="tab" :key="tab" class="flex flex-col">
       <ClassesTab :tab="tab" />
