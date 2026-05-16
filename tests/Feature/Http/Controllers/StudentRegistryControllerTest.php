@@ -4,11 +4,12 @@ namespace Tests\Feature\Http\Controllers;
 
 use App\Models\AccountAccess;
 use App\Models\Employee;
+use App\Models\Guardian;
 use App\Models\SchoolComplex;
 use App\Models\SchoolUnit;
+use App\Models\Student;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 
 final class StudentRegistryControllerTest extends TestCase
@@ -72,5 +73,129 @@ final class StudentRegistryControllerTest extends TestCase
 			"schoolUnitId" => $schoolUnit->id
 		]);
 		$response->assertStatus(409);
+	}
+
+	public function test_can_export_student_registry_as_xml(): void
+	{
+		$this->actingUser();
+
+		$schoolUnit = SchoolUnit::factory()->create([
+			"name" => "Szkoła im. Microsoftowców",
+		]);
+
+		$registry = $schoolUnit->studentRegistry()->create();
+
+		$student = Student::factory()->create([
+			"student_registry_id" => $registry->id,
+			"first_name" => "Jan",
+			"last_name" => "Kowalski",
+			"second_name" => "Andrzej",
+			"pesel" => "12345678901",
+			"alternate_identity_document" => null,
+			"birthdate" => "2010-05-15",
+			"birthplace" => "Łódź",
+			"admission_date" => "2025-09-01",
+		]);
+
+		Guardian::factory()->create([
+			"student_id" => $student->id,
+			"first_name" => "Anna",
+			"last_name" => "Kowalska",
+		]);
+
+		Student::factory()->create([
+			"student_registry_id" => $schoolUnit->studentRegistry()->create()->id,
+			"first_name" => "Zygmunt",
+			"last_name" => "Spozaszkoły",
+		]);
+
+		$response = $this->get("/api/studentRegistry/$registry->id/export?format=xml");
+
+		$response->assertOk();
+		$response->assertHeader("Content-Type", "text/xml; charset=UTF-8");
+		$this->assertStringContainsString(
+			"attachment; filename=Export_Uczniow.xml",
+			$response->headers->get("Content-Disposition")
+		);
+
+		$response->assertSee("<Ksiega", false);
+		$response->assertSee("<Uczniow>", false);
+		$response->assertSee("<Uczniowie>", false);
+		$response->assertSee("<Imie>Jan</Imie>", false);
+		$response->assertSee("<DrugieImie>Andrzej</DrugieImie>", false);
+		$response->assertSee("<Nazwisko>Kowalski</Nazwisko>", false);
+		$response->assertSee("<DataUrodzenia>2010-05-15</DataUrodzenia>", false);
+		$response->assertSee("<Pesel>12345678901</Pesel>", false);
+		$response->assertSee("<Imie>Anna</Imie>", false);
+		$response->assertDontSee("Excluded", false);
+		/* TODO: Validate against XSD schema. Not feasible right now because PHP does not support XML 1.1 which
+		the govt-provided schemas use for whatever reason. */
+	}
+
+	public function test_can_export_student_registry_as_html(): void
+	{
+		$this->actingUser();
+
+		$schoolUnit = SchoolUnit::factory()->create([
+			"name" => "Szkoła im. Webmasterów",
+		]);
+
+		$registry = $schoolUnit->studentRegistry()->create();
+
+		Student::factory()->create([
+			"student_registry_id" => $registry->id,
+			"first_name" => "Maria",
+			"last_name" => "Nowak",
+			"pesel" => "98765432109",
+			"alternate_identity_document" => null,
+		]);
+
+		$response = $this->get("/api/studentRegistry/$registry->id/export");
+
+		$response->assertOk();
+		$response->assertHeader("Content-Type", "text/html; charset=UTF-8");
+		$this->assertStringContainsString(
+			"attachment; filename=Export_Uczniow.html",
+			$response->headers->get("Content-Disposition")
+		);
+		$this->assertNotEmpty($response->getContent());
+	}
+
+	public function test_xml_export_uses_alternate_identity_document_when_student_has_no_pesel(): void
+	{
+		$this->actingUser();
+
+		$schoolUnit = SchoolUnit::factory()->create();
+		$registry = $schoolUnit->studentRegistry()->create();
+
+		Student::factory()->create([
+			"student_registry_id" => $registry->id,
+			"first_name" => "John",
+			"last_name" => "Student",
+			"pesel" => null,
+			"alternate_identity_document" => "ABC-123",
+		]);
+
+		$response = $this->get("/api/studentRegistry/$registry->id/export?format=xml");
+
+		$response->assertOk();
+		$response->assertSee(
+			"<NazwaINumerDokumentuPotwierdzajacegoTozsamosc>ABC-123</NazwaINumerDokumentuPotwierdzajacegoTozsamosc>",
+			false
+		);
+		$response->assertDontSee("<Pesel>", false);
+	}
+
+	public function test_xml_export_returns_an_empty_students_node_when_registry_has_no_students(): void
+	{
+		$this->actingUser();
+
+		$schoolUnit = SchoolUnit::factory()->create();
+		$registry = $schoolUnit->studentRegistry()->create();
+
+		$response = $this->get("/api/studentRegistry/$registry->id/export?format=xml");
+
+		$response->assertOk();
+		$response->assertSee("<Uczniowie/>", false);
 	}
 }

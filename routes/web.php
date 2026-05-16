@@ -18,9 +18,6 @@ use App\Http\Controllers\UserController;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Support\Facades\Route;
 
-Route::get("/api/studentRegistry/{studentRegistry}/export", [StudentRegistryController::class, "export"]);
-
-
 Route::middleware(["auth.deny", "throttle:16,1"])->group(function () {
 	Route::post("/api/login", [SessionController::class, "authenticate"]);
 });
@@ -89,6 +86,7 @@ Route::middleware(["auth", "auth.session"])->group(function () {
 		Route::post("/api/studentRegistry", [StudentRegistryController::class, "create"]);
 		Route::get("/api/studentRegistry/{studentRegistry}", [StudentController::class, "listByStudentRegistry"]);
 		Route::post("/api/studentRegistry/{studentRegistry}", [StudentController::class, "create"]);
+		Route::get("/api/studentRegistry/{studentRegistry}/export", [StudentRegistryController::class, "export"]);
 		Route::post("/api/studentRegistry/{studentRegistry}/massCreate", [StudentController::class, "massCreateFromCSV"]);
 
 		Route::get("/api/students/{student}", [StudentController::class, "show"]);
