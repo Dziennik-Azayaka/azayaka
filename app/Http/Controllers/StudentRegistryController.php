@@ -44,7 +44,7 @@ class StudentRegistryController extends Controller
 		$students = Student::where("students.student_registry_id", $studentRegistry->id)
 			->with(["guardians", "classUnits"])->get();
 		$xmlExport = new StudentsRegisterXmlExport(
-			SchoolUnit::where("id", 1)->first(),
+			SchoolUnit::where("id", "=", $studentRegistry->school_unit_id)->first(),
 			$studentRegistry->created_at, $students
 		);
 		return $request->input("format") == "xml" ? $xmlExport->downloadXml() : $xmlExport->downloadHtml();
