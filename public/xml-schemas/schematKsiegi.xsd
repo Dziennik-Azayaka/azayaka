@@ -1,0 +1,203 @@
+<?xml version="1.1" encoding="UTF-8" ?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+    <xs:element name="Ksiega">
+        <xs:complexType>
+            <xs:choice>
+                <xs:element name="EwidencjiDzieci" type="ksiegaEwidencjiDzieciTyp"/>
+                <xs:element name="Uczniow" type="ksiegaUczniowTyp"/>
+                <xs:element name="Sluchaczy" type="ksiegaSluchaczyTyp"/>
+                <xs:element name="Wychowankow" type="ksiegaWychowankowTyp"/>
+            </xs:choice>
+        </xs:complexType>
+    </xs:element>
+
+
+    <!-- definition of complex elements -->
+		<xs:complexType name="ksiegaEwidencjiDzieciTyp">
+        <xs:sequence>
+            <xs:element name="NazwaPlacowki" type="xs:string"/>
+            <xs:element name="AdresPlacowki" type="adresTyp"/>
+            <xs:element name="Wojewodztwo" type="xs:string"/>
+            <xs:element name="Gmina" type="xs:string"/>
+            <xs:element name="DataZalozeniaEwidencji" type="xs:string"/>
+            <xs:element name="Dzieci">
+                <xs:complexType>
+                    <xs:sequence maxOccurs="unbounded">
+                        <xs:element name="Dziecko" type="dzieckoTyp"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="ksiegaUczniowTyp">
+        <xs:sequence>
+            <xs:element name="NazwaPlacowki" type="xs:string"/>
+            <xs:element name="AdresPlacowki" type="adresTyp"/>
+            <xs:element name="Wojewodztwo" type="xs:string"/>
+            <xs:element name="Gmina" type="xs:string"/>
+            <xs:element name="DataZalozeniaEwidencji" type="xs:string"/>
+            <xs:element name="Uczniowie">
+                <xs:complexType>
+                    <xs:sequence maxOccurs="unbounded">
+                        <xs:element name="Uczen" type="uczenTyp"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="ksiegaSluchaczyTyp">
+        <xs:sequence>
+            <xs:element name="NazwaPlacowki" type="xs:string"/>
+            <xs:element name="AdresPlacowki" type="adresTyp"/>
+            <xs:element name="Wojewodztwo" type="xs:string"/>
+            <xs:element name="Gmina" type="xs:string"/>
+            <xs:element name="DataZalozeniaEwidencji" type="xs:string"/>
+            <xs:element name="Sluchacze">
+                <xs:complexType>
+                    <xs:sequence maxOccurs="unbounded">
+                        <xs:element name="Sluchacz" type="sluchaczTyp"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="ksiegaWychowankowTyp">
+        <xs:sequence>
+            <xs:element name="NazwaPlacowki" type="xs:string"/>
+            <xs:element name="AdresPlacowki" type="adresTyp"/>
+            <xs:element name="Wojewodztwo" type="xs:string"/>
+            <xs:element name="Gmina" type="xs:string"/>
+            <xs:element name="DataZalozeniaEwidencji" type="xs:string"/>
+            <xs:element name="Wychowankowie">
+                <xs:complexType>
+                    <xs:sequence maxOccurs="unbounded">
+                        <xs:element name="Wychowanek" type="wychowanekTyp"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="adresTyp">
+        <xs:sequence>
+            <xs:element name="KodPocztowy" type="xs:string"/>
+            <xs:element name="Miejscowosc" type="xs:string"/>
+            <xs:element name="Ulica" type="xs:string"/>
+            <xs:element name="NumerDomu" type="xs:string"/>
+            <xs:element name="NumerLokalu" type="xs:string"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="dzieckoTyp">
+        <xs:sequence>
+            <xs:element name="Numer" type="xs:integer" nillable="true" minOccurs="0"/>
+            <xs:element name="Imie" type="xs:string"/>
+            <xs:element name="DrugieImie" type="xs:string" minOccurs="0"/>
+            <xs:element name="Nazwisko" type="xs:string"/>
+            <xs:element name="DataUrodzenia" type="xs:date" minOccurs="0"/>
+            <xs:element name="MiejsceUrodzenia" type="xs:string" minOccurs="0"/>
+            <xs:element name="Pesel" type="xs:string" minOccurs="0"/>
+            <xs:element name="NazwaINumerDokumentuPotwierdzajacegoTozsamosc" type="xs:string" minOccurs="0" />
+            <xs:element name="Adres" type="adresTyp" minOccurs="0"/>
+            <xs:element name="Rodzice" minOccurs="0">
+                <xs:complexType>
+                    <xs:sequence maxOccurs="unbounded">
+                        <xs:element name="Rodzic" type="rodzicTyp"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="InformacjeOPrzedszkolu" type="xs:string" minOccurs="0"/>
+            <xs:element name="InformacjeOOdroczeniu" type="xs:string" minOccurs="0"/>
+            <xs:element name="InformacjeOSzkoleLubMiejscuRealizacjiZajecRewalidacyjnoWychowawczych" type="xs:string" minOccurs="0"/>
+            <xs:element name="InformacjeOSpelnianiuPrzezDzieckoObowiazkuSzkolnegoPozaSzkola" type="xs:string" minOccurs="0"/>
+        </xs:sequence>
+        <xs:attribute name="id" type="xs:string"/>
+    </xs:complexType>
+
+    <xs:complexType name="uczenTyp">
+        <xs:sequence>
+            <xs:element name="Numer" type="xs:integer" nillable="true" minOccurs="0"/>
+            <xs:element name="Imie" type="xs:string"/>
+            <xs:element name="DrugieImie" type="xs:string" minOccurs="0"/>
+            <xs:element name="Nazwisko" type="xs:string"/>
+            <xs:element name="DataUrodzenia" type="xs:date" minOccurs="0"/>
+            <xs:element name="MiejsceUrodzenia" type="xs:string" minOccurs="0"/>
+            <xs:element name="Pesel" type="xs:string" minOccurs="0"/>
+            <xs:element name="NazwaINumerDokumentuPotwierdzajacegoTozsamosc" type="xs:string" minOccurs="0"/>
+            <xs:element name="Adres" type="adresTyp" minOccurs="0"/>
+            <xs:element name="Rodzice" minOccurs="0">
+                <xs:complexType>
+                    <xs:sequence maxOccurs="unbounded">
+                        <xs:element name="Rodzic" type="rodzicTyp"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="DataRozpoczeciaNauki" type="xs:string" />
+            <xs:element name="Oddzial" type="xs:string"/>
+            <xs:element name="DataUkonczeniaSzkoly" type="xs:string" minOccurs="0"/>
+            <xs:element name="DataIPrzyczynaOpuszczeniaSzkoly" type="xs:string" minOccurs="0"/>
+        </xs:sequence>
+        <xs:attribute name="id" type="xs:string"/>
+        <!--<xs:assert test="not(DataIPrzyczynaOpuszczeniaSzkoly) or not(DataUkonczeniaSzkoly)"/>-->
+    </xs:complexType>
+
+    <xs:complexType name="sluchaczTyp">
+        <xs:sequence>
+            <xs:element name="Numer" type="xs:integer" nillable="true" minOccurs="0"/>
+            <xs:element name="Imie" type="xs:string"/>
+            <xs:element name="DrugieImie" type="xs:string" minOccurs="0"/>
+            <xs:element name="Nazwisko" type="xs:string"/>
+            <xs:element name="DataUrodzenia" type="xs:date" minOccurs="0"/>
+            <xs:element name="MiejsceUrodzenia" type="xs:string" minOccurs="0"/>
+            <xs:element name="Pesel" type="xs:string" minOccurs="0"/>
+            <xs:element name="NazwaINumerDokumentuPotwierdzajacegoTozsamosc" type="xs:string" minOccurs="0"/>
+            <xs:element name="Adres" type="adresTyp" minOccurs="0"/>
+            <xs:element name="DataRozpoczeciaNauki" type="xs:string" />
+            <xs:element name="Oddzial" type="xs:string"/>
+            <xs:element name="DataUkonczeniaSzkoly" type="xs:string" minOccurs="0"/>
+            <xs:element name="DataIPrzyczynaOpuszczeniaSzkoly" type="xs:string" minOccurs="0"/>
+        </xs:sequence>
+        <xs:attribute name="id" type="xs:string"/>
+        <!--<xs:assert test="not(DataIPrzyczynaOpuszczeniaSzkoly) or not(DataUkonczeniaSzkoly)"/>-->
+    </xs:complexType>
+
+    <xs:complexType name="wychowanekTyp">
+        <xs:sequence>
+            <xs:element name="Numer" type="xs:integer" nillable="true" minOccurs="0"/>
+            <xs:element name="Imie" type="xs:string"/>
+            <xs:element name="DrugieImie" type="xs:string" minOccurs="0"/>
+            <xs:element name="Nazwisko" type="xs:string"/>
+            <xs:element name="DataUrodzenia" type="xs:date" minOccurs="0"/>
+            <xs:element name="MiejsceUrodzenia" type="xs:string" minOccurs="0"/>
+            <xs:element name="Pesel" type="xs:string" minOccurs="0"/>
+            <xs:element name="NazwaINumerDokumentuPotwierdzajacegoTozsamosc" type="xs:string" minOccurs="0"/>
+            <xs:element name="Adres" type="adresTyp" minOccurs="0"/>
+            <xs:element name="Rodzice" minOccurs="0">
+                <xs:complexType>
+                    <xs:sequence maxOccurs="unbounded">
+                        <xs:element name="Rodzic" type="rodzicTyp"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="DataPrzyjeciaWychowankaDoPlacowki" type="xs:string" minOccurs="0"/>
+            <xs:element name="DataSkresleniaZListyWychowankow" type="xs:string" minOccurs="0"/>
+            <xs:element name="PrzyczynaSkresleniaZListyWychowankow" type="xs:string" minOccurs="0"/>
+            <xs:element name="NazwaPlacowkiDoKtorejWychowanekZostalPrzeniesiony" type="xs:string" minOccurs="0"/>
+            <xs:element name="AdresDoKtorejWychowanekZostalPrzeniesiony" type="adresTyp" minOccurs="0"/>
+        </xs:sequence>
+        <xs:attribute name="id" type="xs:string"/>
+    </xs:complexType>
+
+    <xs:complexType name="rodzicTyp">
+        <xs:sequence>
+            <xs:element name="Imie" type="xs:string" minOccurs="0"/>
+            <xs:element name="Nazwisko" type="xs:string" minOccurs="0"/>
+            <xs:element name="Adres" type="adresTyp" minOccurs="0"/>
+        </xs:sequence>
+        <xs:attribute name="id" type="xs:string"/>
+    </xs:complexType>
+
+</xs:schema>

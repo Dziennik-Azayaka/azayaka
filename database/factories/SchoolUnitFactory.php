@@ -39,9 +39,12 @@ class SchoolUnitFactory extends Factory
 			"type" => $schoolType,
 			"student_category" => "childrenAndYouths",
 			"municipality" => "Łódź",
+			"town" => "Łódź",
 			"voivodeship" => rand(1, 16),
 			"district" => rand(0, 1) == 0 ? "Bałuty" : null,
-			"address" => "ul. Dzienniczkowa 23",
+			"postal_code" => "90-001",
+			"street" => "ul. Dzienniczkowa",
+			"house_number" => "23",
 			"short_name" => $schoolNumber . " " . $schoolShortName,
 			"school_complex_id" => null,
 		];

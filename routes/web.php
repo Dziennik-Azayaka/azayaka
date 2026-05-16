@@ -4,7 +4,6 @@ use App\Http\Controllers\AccountAccessesController;
 use App\Http\Controllers\AccountLogController;
 use App\Http\Controllers\ChildrenRegistryController;
 use App\Http\Controllers\ClassificationPeriodController;
-use App\Http\Controllers\ClassificationPeriodDefaultsController;
 use App\Http\Controllers\ClassUnitController;
 use App\Http\Controllers\CompulsoryEducationFulfillmentController;
 use App\Http\Controllers\EmployeeController;

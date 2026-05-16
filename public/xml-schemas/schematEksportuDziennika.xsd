@@ -1,0 +1,1140 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+    <xs:element name="Dziennik">
+        <xs:complexType>
+            <xs:choice>
+                <xs:element name="Przedszkola" type="dziennikPrzedszkolaTyp"/>
+                <xs:element name="Szkoly" type="dziennikSzkolyTyp"/>
+                <xs:element name="Swietlicy" type="dziennikSwietlicyTyp"/>
+                <xs:element name="OsrodkaWychowawczego" type="dziennikOsrodkaWychowawczegoTyp"/>
+                <xs:element name="InnychZajec" type="dziennikInnychZajecTyp"/>
+                <xs:element name="InnychZajecPomocPsychologicznoPedagogiczna"
+                            type="dziennikInnychZajecPomocPsychologicznoPedagogicznaTyp"/>
+                <xs:element name="ZajecRewalidacyjnoWychowawczych" type="dziennikZajecRewalidacyjnoWychowawczychTyp"/>
+                <xs:element name="PedagogPsychologLogopeda" type="dziennikPedagogPsychologLogopedaTyp"/>
+                <xs:element name="ZajecStalych" type="dziennikZajecStalychTyp"/>
+                <xs:element name="ZajecOkresowychLubOkazjonalnych" type="dziennikZajecOkresowychLubOkazjonalnychTyp"/>
+            </xs:choice>
+        </xs:complexType>
+    </xs:element>
+
+
+    <!-- definition of complex elements -->
+    <xs:complexType name="dziennikPrzedszkolaTyp">
+        <xs:sequence>
+            <xs:element name="NazwaPlacowki" type="xs:string"/>
+            <xs:element name="AdresPlacowki" type="adresTyp"/>
+            <xs:element name="Wojewodztwo" type="xs:string"/>
+            <xs:element name="Gmina" type="xs:string"/>
+            <xs:element name="RokSzkolny" type="xs:string"/>
+            <xs:element name="NazwaOddzialu" type="xs:string"/>
+            <xs:element name="NumerOddzialu" type="xs:string"/>
+            <xs:element name="Uczniowie">
+                <xs:complexType>
+                    <xs:sequence maxOccurs="unbounded">
+                        <xs:element name="Uczen" type="uczenTyp"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="Nauczyciele">
+                <xs:complexType>
+                    <xs:sequence maxOccurs="unbounded">
+                        <xs:element name="Nauczyciel" type="nauczycielTyp"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="Przedmioty" minOccurs="0">
+                <xs:complexType>
+                    <xs:sequence maxOccurs="unbounded">
+                        <xs:element name="Przedmiot" type="przedmiotTyp"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="DniTygodnia" minOccurs="0">
+                <xs:complexType>
+                    <xs:sequence maxOccurs="unbounded">
+                        <xs:element name="Dzien" type="dzienTygodniaTyp"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="GodzinyLekcyjne" minOccurs="0">
+                <xs:complexType>
+                    <xs:sequence maxOccurs="unbounded">
+                        <xs:element name="Godzina" type="godzinaLekcyjnaTyp"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="StatusyObecnosci" minOccurs="0">
+                <xs:complexType>
+                    <xs:sequence maxOccurs="unbounded">
+                        <xs:element name="Status" type="statusObecnosciTyp"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="Tematy" minOccurs="0">
+                <xs:complexType>
+                    <xs:sequence maxOccurs="unbounded">
+                        <xs:element name="Temat" type="tematTyp"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="Frekwencja" minOccurs="0">
+                <xs:complexType>
+                    <xs:sequence maxOccurs="unbounded">
+                        <xs:element name="Wpis" type="wpisFrekwencjiTyp"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="GodzinyPrzyprowadzania" minOccurs="0">
+                <xs:complexType>
+                    <xs:sequence maxOccurs="unbounded">
+                        <xs:element name="Wpis" type="godzinaPrzyprowadzeniaTyp"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+        </xs:sequence>
+        <xs:attribute name="identyfikatorOddzialu" type="xs:string" use="required"/>
+    </xs:complexType>
+
+    <xs:complexType name="dziennikSzkolyTyp">
+        <xs:sequence>
+            <xs:element name="NazwaPlacowki" type="xs:string"/>
+            <xs:element name="AdresPlacowki" type="adresTyp"/>
+            <xs:element name="Wojewodztwo" type="xs:string"/>
+            <xs:element name="Gmina" type="xs:string"/>
+            <xs:element name="RokSzkolny" type="xs:string"/>
+            <xs:element name="NazwaOddzialu" type="xs:string"/>
+            <xs:element name="NumerOddzialu" type="xs:string"/>
+            <xs:element name="Uczniowie">
+                <xs:complexType>
+                    <xs:sequence maxOccurs="unbounded">
+                        <xs:element name="Uczen" type="uczenTyp"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="Nauczyciele">
+                <xs:complexType>
+                    <xs:sequence maxOccurs="unbounded">
+                        <xs:element name="Nauczyciel" type="nauczycielTyp"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="DniTygodnia" minOccurs="0">
+                <xs:complexType>
+                    <xs:sequence maxOccurs="unbounded">
+                        <xs:element name="Dzien" type="dzienTygodniaTyp"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="GodzinyLekcyjne" minOccurs="0">
+                <xs:complexType>
+                    <xs:sequence maxOccurs="unbounded">
+                        <xs:element name="Godzina" type="godzinaLekcyjnaTyp"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="StatusyObecnosci" minOccurs="0">
+                <xs:complexType>
+                    <xs:sequence maxOccurs="unbounded">
+                        <xs:element name="Status" type="statusObecnosciTyp"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="Wychowawca" type="xs:string" minOccurs="0"/>
+            <xs:element name="Przedmioty" minOccurs="0">
+                <xs:complexType>
+                    <xs:sequence maxOccurs="unbounded">
+                        <xs:element name="Przedmiot" type="przedmiotTyp"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="PlanyZajec" minOccurs="0">
+                <xs:complexType>
+                    <xs:sequence maxOccurs="unbounded">
+                        <xs:element name="Plan" type="planZajecTyp"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="SemestralnyPlanZajec" minOccurs="0">
+                <xs:complexType>
+                    <xs:sequence maxOccurs="unbounded">
+                        <xs:element name="Plan" type="semestralnyPlanZajecTyp"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="Tematy" minOccurs="0">
+                <xs:complexType>
+                    <xs:sequence maxOccurs="unbounded">
+                        <xs:element name="Temat" type="tematTyp"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="Frekwencja" minOccurs="0">
+                <xs:complexType>
+                    <xs:sequence maxOccurs="unbounded">
+                        <xs:element name="Wpis" type="wpisFrekwencjiTyp"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="OcenyOkresowe" minOccurs="0">
+                <xs:complexType>
+                    <xs:sequence maxOccurs="unbounded">
+                        <xs:element name="OcenaUcznia" type="ocenaOkresowaUczniaTyp"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="OcenyKoncowe" minOccurs="0">
+                <xs:complexType>
+                    <xs:sequence maxOccurs="unbounded">
+                        <xs:element name="OcenaKoncowa" type="ocenaKoncowaUczniaTyp"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="Egzaminy" minOccurs="0">
+                <xs:complexType>
+                    <xs:sequence maxOccurs="unbounded">
+                        <xs:element name="Egzamin" type="egzaminTyp"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+        </xs:sequence>
+        <xs:attribute name="identyfikatorOddzialu" type="xs:string" use="required"/>
+    </xs:complexType>
+
+    <xs:complexType name="dziennikSwietlicyTyp">
+        <xs:sequence>
+            <xs:element name="NazwaPlacowki" type="xs:string"/>
+            <xs:element name="AdresPlacowki" type="adresTyp"/>
+            <xs:element name="Wojewodztwo" type="xs:string"/>
+            <xs:element name="Gmina" type="xs:string"/>
+            <xs:element name="RokSzkolny" type="xs:string"/>
+            <xs:element name="Uczniowie">
+                <xs:complexType>
+                    <xs:sequence maxOccurs="unbounded">
+                        <xs:element name="Uczen" type="uczenPodstawowyTyp"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="PlanPracySwietlicy">
+                <xs:complexType>
+                    <xs:sequence maxOccurs="unbounded">
+                        <xs:element name="Wpis" type="wpisPlanPracySwietlicyType"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="ObecnosciSwietlica">
+                <xs:complexType>
+                    <xs:sequence maxOccurs="unbounded">
+                        <xs:element name="Wpis" type="wpisObecnoscSwietlicaType"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="StatusyObecnosci" minOccurs="0">
+                <xs:complexType>
+                    <xs:sequence maxOccurs="unbounded">
+                        <xs:element name="Status" type="statusObecnosciTyp"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="dziennikOsrodkaWychowawczegoTyp">
+        <xs:sequence>
+            <xs:element name="NazwaPlacowki" type="xs:string"/>
+            <xs:element name="AdresPlacowki" type="adresTyp"/>
+            <xs:element name="Wojewodztwo" type="xs:string"/>
+            <xs:element name="Gmina" type="xs:string"/>
+            <xs:element name="RokSzkolny" type="xs:string"/>
+            <xs:element name="Uczniowie">
+                <xs:complexType>
+                    <xs:sequence maxOccurs="unbounded">
+                        <xs:element name="Uczen" type="uczenOsrodekTyp"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="Nauczyciele">
+                <xs:complexType>
+                    <xs:sequence maxOccurs="unbounded">
+                        <xs:element name="Nauczyciel" type="nauczycielTyp"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="DniTygodnia" minOccurs="0">
+                <xs:complexType>
+                    <xs:sequence maxOccurs="unbounded">
+                        <xs:element name="Dzien" type="dzienTygodniaTyp"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="GodzinyLekcyjne" minOccurs="0">
+                <xs:complexType>
+                    <xs:sequence maxOccurs="unbounded">
+                        <xs:element name="Godzina" type="godzinaLekcyjnaTyp"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="Przedmioty" minOccurs="0">
+                <xs:complexType>
+                    <xs:sequence maxOccurs="unbounded">
+                        <xs:element name="Przedmiot" type="przedmiotTyp"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="PlanyZajec" minOccurs="0">
+                <xs:complexType>
+                    <xs:sequence maxOccurs="unbounded">
+                        <xs:element name="Plan" type="planZajecTyp"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="PlanPracyzWychowankami">
+                <xs:complexType>
+                    <xs:sequence maxOccurs="unbounded">
+                        <xs:element name="Wpis" type="wpisPlanPracyzWychowankamiTyp"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="UwagiOWychowankach">
+                <xs:complexType>
+                    <xs:sequence maxOccurs="unbounded">
+                        <xs:element name="Wpis" type="wpisUwagiOWychowankachTyp"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="InformacjeOKontaktachZRodzinaWychowanka">
+                <xs:complexType>
+                    <xs:sequence maxOccurs="unbounded">
+                        <xs:element name="Wpis" type="wpisInformacjeOKontaktachZRodzinaWychowankaTyp"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="OcenyKoncowe" minOccurs="0">
+                <xs:complexType>
+                    <xs:sequence maxOccurs="unbounded">
+                        <xs:element name="OcenaKoncowa" type="ocenaKoncowaUczniaTyp"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="dziennikInnychZajecTyp">
+        <xs:sequence>
+            <xs:element name="NazwaPlacowki" type="xs:string"/>
+            <xs:element name="AdresPlacowki" type="adresTyp"/>
+            <xs:element name="Wojewodztwo" type="xs:string"/>
+            <xs:element name="Gmina" type="xs:string"/>
+            <xs:element name="RokSzkolny" type="xs:string"/>
+            <xs:element name="Uczniowie">
+                <xs:complexType>
+                    <xs:sequence maxOccurs="unbounded">
+                        <xs:element name="Uczen" type="uczenPodstawowyTyp"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="Nauczyciele">
+                <xs:complexType>
+                    <xs:sequence maxOccurs="unbounded">
+                        <xs:element name="Nauczyciel" type="nauczycielTyp"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="DniTygodnia" minOccurs="0">
+                <xs:complexType>
+                    <xs:sequence maxOccurs="unbounded">
+                        <xs:element name="Dzien" type="dzienTygodniaTyp"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="GodzinyLekcyjne" minOccurs="0">
+                <xs:complexType>
+                    <xs:sequence maxOccurs="unbounded">
+                        <xs:element name="Godzina" type="godzinaLekcyjnaTyp"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="Przedmioty" minOccurs="0">
+                <xs:complexType>
+                    <xs:sequence maxOccurs="unbounded">
+                        <xs:element name="Przedmiot" type="przedmiotTyp"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="PlanyZajec" minOccurs="0">
+                <xs:complexType>
+                    <xs:sequence maxOccurs="unbounded">
+                        <xs:element name="Plan" type="planZajecTyp"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="Tematy" minOccurs="0">
+                <xs:complexType>
+                    <xs:sequence maxOccurs="unbounded">
+                        <xs:element name="Temat" type="tematTyp"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="StatusyObecnosci" minOccurs="0">
+                <xs:complexType>
+                    <xs:sequence maxOccurs="unbounded">
+                        <xs:element name="Status" type="statusObecnosciTyp"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="Frekwencja" minOccurs="0">
+                <xs:complexType>
+                    <xs:sequence maxOccurs="unbounded">
+                        <xs:element name="Wpis" type="wpisFrekwencjiTyp"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="dziennikInnychZajecPomocPsychologicznoPedagogicznaTyp">
+        <xs:sequence>
+            <xs:element name="NazwaPlacowki" type="xs:string"/>
+            <xs:element name="AdresPlacowki" type="adresTyp"/>
+            <xs:element name="Wojewodztwo" type="xs:string"/>
+            <xs:element name="Gmina" type="xs:string"/>
+            <xs:element name="RokSzkolny" type="xs:string"/>
+            <xs:element name="Uczniowie">
+                <xs:complexType>
+                    <xs:sequence maxOccurs="unbounded">
+                        <xs:element name="Uczen" type="uczenPomocPedagogicznaTyp"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="Nauczyciele">
+                <xs:complexType>
+                    <xs:sequence maxOccurs="unbounded">
+                        <xs:element name="Nauczyciel" type="nauczycielTyp"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="DniTygodnia" minOccurs="0">
+                <xs:complexType>
+                    <xs:sequence maxOccurs="unbounded">
+                        <xs:element name="Dzien" type="dzienTygodniaTyp"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="GodzinyLekcyjne" minOccurs="0">
+                <xs:complexType>
+                    <xs:sequence maxOccurs="unbounded">
+                        <xs:element name="Godzina" type="godzinaLekcyjnaTyp"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="Przedmioty" minOccurs="0">
+                <xs:complexType>
+                    <xs:sequence maxOccurs="unbounded">
+                        <xs:element name="Przedmiot" type="przedmiotTyp"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="PlanyZajec" minOccurs="0">
+                <xs:complexType>
+                    <xs:sequence maxOccurs="unbounded">
+                        <xs:element name="Plan" type="planZajecTyp"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="Tematy" minOccurs="0">
+                <xs:complexType>
+                    <xs:sequence maxOccurs="unbounded">
+                        <xs:element name="Temat" type="tematTyp"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="StatusyObecnosci" minOccurs="0">
+                <xs:complexType>
+                    <xs:sequence maxOccurs="unbounded">
+                        <xs:element name="Status" type="statusObecnosciTyp"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="Frekwencja" minOccurs="0">
+                <xs:complexType>
+                    <xs:sequence maxOccurs="unbounded">
+                        <xs:element name="Wpis" type="wpisFrekwencjiTyp"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="IndywidualnyProgramPracyZDzieckiem" minOccurs="0">
+                <xs:complexType>
+                    <xs:sequence maxOccurs="unbounded">
+                        <xs:element name="Wpis" type="wpisIndywidualnyProgramPracyZDzieckiemTyp"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="ProgramPracyGrupy" minOccurs="0">
+                <xs:complexType>
+                    <xs:sequence maxOccurs="unbounded">
+                        <xs:element name="Wpis" type="wpisProgramPracyGrupyTyp"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="OcenaPostepowIwnioski" minOccurs="0">
+                <xs:complexType>
+                    <xs:sequence maxOccurs="unbounded">
+                        <xs:element name="Wpis" type="wpisOcenaPostepowIwnioskiTyp"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="dziennikZajecRewalidacyjnoWychowawczychTyp">
+        <xs:sequence>
+            <xs:element name="Uczniowie">
+                <xs:complexType>
+                    <xs:sequence maxOccurs="unbounded">
+                        <xs:element name="Uczen" type="uczenTyp"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="Nauczyciele">
+                <xs:complexType>
+                    <xs:sequence maxOccurs="unbounded">
+                        <xs:element name="Nauczyciel" type="nauczycielTyp"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="DniTygodnia" minOccurs="0">
+                <xs:complexType>
+                    <xs:sequence maxOccurs="unbounded">
+                        <xs:element name="Dzien" type="dzienTygodniaTyp"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="GodzinyLekcyjne" minOccurs="0">
+                <xs:complexType>
+                    <xs:sequence maxOccurs="unbounded">
+                        <xs:element name="Godzina" type="godzinaLekcyjnaTyp"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="Przedmioty" minOccurs="0">
+                <xs:complexType>
+                    <xs:sequence maxOccurs="unbounded">
+                        <xs:element name="Przedmiot" type="przedmiotTyp"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="PlanyZajec" minOccurs="0">
+                <xs:complexType>
+                    <xs:sequence maxOccurs="unbounded">
+                        <xs:element name="Plan" type="planZajecTyp"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="StatusyObecnosci" minOccurs="0">
+                <xs:complexType>
+                    <xs:sequence maxOccurs="unbounded">
+                        <xs:element name="Status" type="statusObecnosciTyp"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="Frekwencja" minOccurs="0">
+                <xs:complexType>
+                    <xs:sequence maxOccurs="unbounded">
+                        <xs:element name="Wpis" type="wpisFrekwencjiTyp"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="IndywidualnyProgramPracyZDzieckiem" minOccurs="0">
+                <xs:complexType>
+                    <xs:sequence maxOccurs="unbounded">
+                        <xs:element name="Wpis" type="wpisIndywidualnyProgramPracyZDzieckiemTyp"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="dziennikPedagogPsychologLogopedaTyp">
+        <xs:sequence>
+            <xs:element name="Uczniowie">
+                <xs:complexType>
+                    <xs:sequence maxOccurs="unbounded">
+                        <xs:element name="Uczen" type="uczenPodstawowyTyp"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="DniTygodnia" minOccurs="0">
+                <xs:complexType>
+                    <xs:sequence maxOccurs="unbounded">
+                        <xs:element name="Dzien" type="dzienTygodniaTyp"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="GodzinyLekcyjne" minOccurs="0">
+                <xs:complexType>
+                    <xs:sequence maxOccurs="unbounded">
+                        <xs:element name="Godzina" type="godzinaLekcyjnaTyp"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="RozkladWlasnyZajec" minOccurs="0">
+                <xs:complexType>
+                    <xs:sequence maxOccurs="unbounded">
+                        <xs:element name="PlanZajec" type="planZajecRozkladWlasnyZajecTyp"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="ZajeciaICzynnosciPrzeprowadzoneWPoszczegolnychDniach" minOccurs="0">
+                <xs:complexType>
+                    <xs:sequence maxOccurs="unbounded">
+                        <xs:element name="Wpis" type="wpisZajeciaICzynnosciPrzeprowadzoneWPoszczegolnychDniachTyp"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="dziennikZajecStalychTyp">
+        <xs:sequence>
+            <xs:element name="Uczniowie">
+                <xs:complexType>
+                    <xs:sequence maxOccurs="unbounded">
+                        <xs:element name="Uczen" type="uczenTyp"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="Nauczyciele">
+                <xs:complexType>
+                    <xs:sequence maxOccurs="unbounded">
+                        <xs:element name="Nauczyciel" type="nauczycielTyp"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="DniTygodnia" minOccurs="0">
+                <xs:complexType>
+                    <xs:sequence maxOccurs="unbounded">
+                        <xs:element name="Dzien" type="dzienTygodniaTyp"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="GodzinyLekcyjne" minOccurs="0">
+                <xs:complexType>
+                    <xs:sequence maxOccurs="unbounded">
+                        <xs:element name="Godzina" type="godzinaLekcyjnaTyp"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="Przedmioty" minOccurs="0">
+                <xs:complexType>
+                    <xs:sequence maxOccurs="unbounded">
+                        <xs:element name="Przedmiot" type="przedmiotTyp"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="PlanyZajec" minOccurs="0">
+                <xs:complexType>
+                    <xs:sequence maxOccurs="unbounded">
+                        <xs:element name="Plan" type="planZajecTyp"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="StatusyObecnosci" minOccurs="0">
+                <xs:complexType>
+                    <xs:sequence maxOccurs="unbounded">
+                        <xs:element name="Status" type="statusObecnosciTyp"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="Frekwencja" minOccurs="0">
+                <xs:complexType>
+                    <xs:sequence maxOccurs="unbounded">
+                        <xs:element name="Wpis" type="wpisFrekwencjiTyp"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="dziennikZajecOkresowychLubOkazjonalnychTyp">
+        <xs:sequence>
+            <xs:element name="ZalozeniaProgramowe">
+                <xs:complexType>
+                    <xs:sequence maxOccurs="unbounded">
+                        <xs:element name="Wpis">
+                            <xs:complexType>
+                                <xs:sequence>
+                                    <xs:element name="nazwaProgramu" type="xs:string"/>
+                                    <xs:element name="autorProgramu" type="xs:string"/>
+                                    <xs:element name="dataDopuszczenia" type="xs:date"/>
+                                </xs:sequence>
+                            </xs:complexType>
+                        </xs:element>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="Nauczyciele">
+                <xs:complexType>
+                    <xs:sequence maxOccurs="unbounded">
+                        <xs:element name="Nauczyciel" type="nauczycielTyp"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="Przedmioty" minOccurs="0">
+                <xs:complexType>
+                    <xs:sequence maxOccurs="unbounded">
+                        <xs:element name="Przedmiot" type="przedmiotTyp"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="TematyZLiczbaUczestnikow" minOccurs="0">
+                <xs:complexType>
+                    <xs:sequence maxOccurs="unbounded">
+                        <xs:element name="Temat" type="tematZLiczbaUczestnikowTyp"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+
+    <xs:complexType name="dzienTygodniaTyp">
+        <xs:sequence maxOccurs="unbounded">
+            <xs:element name="numer" type="xs:integer" nillable="true"/>
+            <xs:element name="nazwa" type="xs:string"/>
+        </xs:sequence>
+        <xs:attribute name="id" type="xs:string"/>
+    </xs:complexType>
+
+    <xs:complexType name="godzinaLekcyjnaTyp">
+        <xs:sequence>
+            <xs:element name="numer" type="xs:integer" nillable="true"/>
+            <xs:element name="czasOd" type="xs:string"/>
+            <xs:element name="czasTrwania" type="xs:integer"/>
+        </xs:sequence>
+        <xs:attribute name="id" type="xs:string"/>
+    </xs:complexType>
+
+    <xs:complexType name="statusObecnosciTyp">
+        <xs:sequence>
+            <xs:element name="wartosc" type="xs:string"/>
+        </xs:sequence>
+        <xs:attribute name="id" type="xs:string"/>
+    </xs:complexType>
+
+    <xs:complexType name="adresTyp">
+        <xs:sequence>
+            <xs:element name="kodPocztowy" type="xs:string"/>
+            <xs:element name="miejscowosc" type="xs:string"/>
+            <xs:element name="ulica" type="xs:string"/>
+            <xs:element name="numerDomu" type="xs:string"/>
+            <xs:element name="numerLokalu" type="xs:string"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="uczenTyp">
+        <xs:sequence>
+            <xs:element name="numer" type="xs:integer" nillable="true" minOccurs="0"/>
+            <xs:element name="imie" type="xs:string"/>
+            <xs:element name="drugieImie" type="xs:string" minOccurs="0"/>
+            <xs:element name="nazwisko" type="xs:string"/>
+            <xs:element name="dataUrodzenia" type="xs:date" minOccurs="0"/>
+            <xs:element name="miejsceUrodzenia" type="xs:string" minOccurs="0"/>
+            <xs:element name="adres" type="adresTyp" minOccurs="0"/>
+            <xs:element name="numerOddzialu" type="xs:string"/>
+            <xs:element name="nazwaOddzialu" type="xs:string"/>
+            <xs:element name="Rodzice" minOccurs="0">
+                <xs:complexType>
+                    <xs:sequence maxOccurs="unbounded">
+                        <xs:element name="Rodzic" type="rodzicTyp"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+        </xs:sequence>
+        <xs:attribute name="id" type="xs:string"/>
+    </xs:complexType>
+
+    <xs:complexType name="uczenOsrodekTyp">
+        <xs:sequence>
+            <xs:element name="numer" type="xs:integer" nillable="true" minOccurs="0"/>
+            <xs:element name="imie" type="xs:string"/>
+            <xs:element name="drugieImie" type="xs:string" minOccurs="0"/>
+            <xs:element name="nazwisko" type="xs:string"/>
+            <xs:element name="dataUrodzenia" type="xs:date" minOccurs="0"/>
+            <xs:element name="miejsceUrodzenia" type="xs:string" minOccurs="0"/>
+            <xs:element name="adres" type="adresTyp" minOccurs="0"/>
+            <xs:element name="numerOddzialu" type="xs:string"/>
+            <xs:element name="nazwaOddzialu" type="xs:string"/>
+            <xs:element name="nazwaSzkoly" type="xs:string" minOccurs="0"/>
+            <xs:element name="adresSzkoly" type="adresTyp" minOccurs="0"/>
+            <xs:element name="Rodzice" minOccurs="0">
+                <xs:complexType>
+                    <xs:sequence maxOccurs="unbounded">
+                        <xs:element name="Rodzic" type="rodzicTyp"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="liczbaGodzinNieobecnosciUsprawiedliwionych" type="xs:integer" nillable="true" minOccurs="0"/>
+            <xs:element name="liczbaGodzinNieobecnosciNieusprawiedliwionych" type="xs:integer" nillable="true" minOccurs="0"/>
+        </xs:sequence>
+        <xs:attribute name="id" type="xs:string"/>
+    </xs:complexType>
+
+    <xs:complexType name="uczenPodstawowyTyp">
+        <xs:sequence>
+            <xs:element name="numer" type="xs:integer" nillable="true" minOccurs="0"/>
+            <xs:element name="imie" type="xs:string"/>
+            <xs:element name="drugieImie" type="xs:string" minOccurs="0"/>
+            <xs:element name="nazwisko" type="xs:string"/>
+            <xs:element name="numerOddzialu" type="xs:string"/>
+            <xs:element name="nazwaOddzialu" type="xs:string"/>
+            <xs:element name="Rodzice" minOccurs="0">
+                <xs:complexType>
+                    <xs:sequence maxOccurs="unbounded">
+                        <xs:element name="Rodzic" type="rodzicTyp"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+        </xs:sequence>
+        <xs:attribute name="id" type="xs:string"/>
+    </xs:complexType>
+
+    <xs:complexType name="uczenPomocPedagogicznaTyp">
+        <xs:sequence>
+            <xs:element name="numer" type="xs:integer" nillable="true" minOccurs="0"/>
+            <xs:element name="imie" type="xs:string"/>
+            <xs:element name="drugieImie" type="xs:string" minOccurs="0"/>
+            <xs:element name="nazwisko" type="xs:string"/>
+            <xs:element name="numerOddzialu" type="xs:string"/>
+            <xs:element name="nazwaOddzialu" type="xs:string"/>
+            <xs:element name="Rodzice" minOccurs="0">
+                <xs:complexType>
+                    <xs:sequence maxOccurs="unbounded">
+                        <xs:element name="Rodzic" type="rodzicPomocPedagogicznaTyp"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+        </xs:sequence>
+        <xs:attribute name="id" type="xs:string"/>
+    </xs:complexType>
+
+    <xs:complexType name="rodzicTyp">
+        <xs:sequence>
+            <xs:element name="imie" type="xs:string" minOccurs="0"/>
+            <xs:element name="nazwisko" type="xs:string" minOccurs="0"/>
+            <xs:element name="adres" type="adresTyp" minOccurs="0"/>
+            <xs:element name="mail" type="xs:string" minOccurs="0"/>
+            <xs:element name="telefon" type="xs:string" minOccurs="0"/>
+        </xs:sequence>
+        <xs:attribute name="id" type="xs:string"/>
+    </xs:complexType>
+    <xs:complexType name="rodzicPomocPedagogicznaTyp">
+        <xs:sequence>
+            <xs:element name="mail" type="xs:string" minOccurs="0"/>
+            <xs:element name="telefon" type="xs:string" minOccurs="0"/>
+        </xs:sequence>
+        <xs:attribute name="id" type="xs:string"/>
+    </xs:complexType>
+    <xs:complexType name="nauczycielTyp">
+        <xs:sequence>
+            <xs:element name="imie" type="xs:string"/>
+            <xs:element name="nazwisko" type="xs:string"/>
+            <xs:element name="numer" type="xs:integer" nillable="true" minOccurs="0"/>
+        </xs:sequence>
+        <xs:attribute name="id" type="xs:string"/>
+    </xs:complexType>
+
+    <xs:complexType name="przedmiotTyp">
+        <xs:sequence>
+            <xs:element name="nazwa" type="xs:string"/>
+            <xs:element name="numer" type="xs:integer" minOccurs="0" nillable="true"/>
+            <xs:element name="nazwaSkrocona" type="xs:string" minOccurs="0"/>
+            <xs:element name="czyDodatkowy" type="xs:boolean" minOccurs="0"/>
+            <xs:element name="nauczyciel" type="nauczycielTyp" minOccurs="0"/>
+        </xs:sequence>
+        <xs:attribute name="id" type="xs:string"/>
+    </xs:complexType>
+
+    <xs:complexType name="planZajecTyp">
+        <xs:sequence maxOccurs="unbounded">
+            <xs:element name="ObowiazujeOdDnia" type="xs:date"/>
+            <xs:sequence maxOccurs="unbounded">
+                <xs:element name="Wpis">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element name="DzienTygodniaRef" type="referencjaTyp"/>
+                            <xs:element name="GodzinaLekcyjnaRef" type="referencjaTyp"/>
+                            <xs:element name="Zajecia">
+                                <xs:complexType>
+                                    <xs:sequence maxOccurs="unbounded">
+                                        <xs:element name="Wpis">
+                                            <xs:complexType>
+                                                <xs:sequence maxOccurs="unbounded">
+                                                    <xs:element name="PrzedmiotRef" type="referencjaTyp"/>
+                                                    <xs:element name="Nauczyciele">
+                                                        <xs:complexType>
+                                                            <xs:sequence maxOccurs="unbounded">
+                                                                <xs:element name="NauczycielRef" type="referencjaTyp"/>
+                                                            </xs:sequence>
+                                                        </xs:complexType>
+                                                    </xs:element>
+                                                </xs:sequence>
+                                            </xs:complexType>
+                                        </xs:element>
+                                    </xs:sequence>
+                                </xs:complexType>
+                            </xs:element>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+            </xs:sequence>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="semestralnyPlanZajecTyp">
+        <xs:sequence maxOccurs="unbounded">
+            <xs:element name="Data" type="xs:date"/>
+            <xs:sequence maxOccurs="unbounded">
+                <xs:element name="Wpis">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element name="DzienTygodniaRef" type="referencjaTyp"/>
+                            <xs:element name="GodzinaLekcyjnaRef" type="referencjaTyp"/>
+                            <xs:element name="Zajecia">
+                                <xs:complexType>
+                                    <xs:sequence maxOccurs="unbounded">
+                                        <xs:element name="Wpis">
+                                            <xs:complexType>
+                                                <xs:sequence maxOccurs="unbounded">
+                                                    <xs:element name="PrzedmiotRef" type="referencjaTyp"/>
+                                                    <xs:element name="Nauczyciele">
+                                                        <xs:complexType>
+                                                            <xs:sequence maxOccurs="unbounded">
+                                                                <xs:element name="NauczycielRef" type="referencjaTyp"/>
+                                                            </xs:sequence>
+                                                        </xs:complexType>
+                                                    </xs:element>
+                                                </xs:sequence>
+                                            </xs:complexType>
+                                        </xs:element>
+                                    </xs:sequence>
+                                </xs:complexType>
+                            </xs:element>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+            </xs:sequence>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="tematTyp">
+        <xs:sequence>
+            <xs:element name="data" type="xs:date"/>
+            <xs:element name="tresc" type="xs:string"/>
+            <xs:element name="przedmiotRef" type="referencjaTyp"/>
+            <xs:element name="numerLekcji" type="xs:string"/>
+            <xs:element name="czasRealizacji" type="xs:integer"/>
+            <xs:element name="czasOd" type="xs:string"/>
+            <xs:element name="czasDo" type="xs:string"/>
+            <xs:element name="nauczycielRef" type="referencjaTyp"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="wpisFrekwencjiTyp">
+        <xs:sequence>
+            <xs:element name="uczenRef" type="referencjaTyp"/>
+            <xs:element name="data" type="xs:date"/>
+            <xs:element name="godzinaLekcyjnaRef" type="referencjaTyp"/>
+            <xs:element name="statusObecnosciRef" type="referencjaTyp"/>
+        </xs:sequence>
+    </xs:complexType>
+
+
+    <xs:complexType name="ocenaOkresowaUczniaTyp">
+        <xs:sequence>
+            <xs:element name="UczenRef" type="referencjaTyp"/>
+            <xs:element name="PrzedmiotRef" type="referencjaTyp"/>
+            <xs:element name="NauczycielRef" type="referencjaTyp"/>
+            <xs:element name="Okres" type="xs:string"/>
+            <xs:element name="Ocena" type="ocenaTyp"/>
+            <xs:element name="Komentarz" type="xs:string"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="ocenaKoncowaUczniaTyp">
+        <xs:sequence>
+            <xs:element name="UczenRef" type="referencjaTyp"/>
+            <xs:element name="PrzedmiotRef" type="referencjaTyp"/>
+            <xs:element name="NauczycielRef" type="referencjaTyp"/>
+            <xs:element name="czyZachowanie" type="xs:boolean"/>
+            <xs:element name="Ocena" type="ocenaTyp"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="egzaminTyp">
+        <xs:sequence>
+            <xs:element name="UczenRef" type="referencjaTyp"/>
+            <xs:element name="PrzedmiotRef" type="referencjaTyp"/>
+            <xs:element name="NauczycielRef" type="referencjaTyp"/>
+            <xs:element name="Okres" type="xs:string"/>
+            <xs:element name="czyPoprawkowy" type="xs:boolean"/>
+            <xs:element name="czyUstny" type="xs:boolean"/>
+            <xs:element name="czyPisemny" type="xs:boolean"/>
+            <xs:element name="czyPraktyczny" type="xs:boolean"/>
+            <xs:element name="Ocena" type="ocenaTyp"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="ocenaTyp">
+        <xs:sequence>
+            <xs:element name="prezentacja" type="xs:string"/>
+            <xs:element name="wartoscNumeryczna" type="xs:float" minOccurs="0"/>
+            <xs:element name="waga" type="xs:float" minOccurs="0"/>
+            <xs:element name="czyPunkty" type="xs:boolean"/>
+            <xs:element name="sumaDlaPunktow" type="xs:float" minOccurs="0"/>
+            <xs:element name="czyOpisowa" type="xs:boolean" minOccurs="0"/>
+        </xs:sequence>
+        <xs:attribute name="idPrzedmiotu" type="xs:string"/>
+    </xs:complexType>
+
+
+    <xs:complexType name="wpisPlanPracySwietlicyType">
+        <xs:sequence>
+            <xs:element name="TerminRealizacji" type="xs:string"/>
+            <xs:element name="TematTygodnia" type="xs:string"/>
+            <xs:choice>
+                <xs:element name="CeleDydaktycznoWychowawcze"   type="xs:string"/>
+                <xs:element name="CeleDydaktocznoWychowawcze"   type="xs:string">
+                    <xs:annotation>
+                        <xs:documentation>
+                            Deprecated: use &lt;CeleDydaktycznoWychowawcze&gt; instead.
+                        </xs:documentation>
+                    </xs:annotation>
+                </xs:element>
+            </xs:choice>
+            <xs:element name="SposobyRealizacji" type="xs:string"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="wpisObecnoscSwietlicaType">
+        <xs:sequence>
+            <xs:element name="uczenRef" type="referencjaTyp"/>
+            <xs:element name="data" type="xs:date"/>
+            <xs:element name="statusObecnosciRef" type="referencjaTyp"/>
+        </xs:sequence>
+    </xs:complexType>
+
+
+    <xs:complexType name="planZajecRozkladWlasnyZajecTyp">
+        <xs:sequence>
+            <xs:element name="obowiazujeOdDnia"/>
+            <xs:sequence maxOccurs="unbounded">
+                <xs:element name="Wpis">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element name="dzienTygodniaRef" type="referencjaTyp"/>
+                            <xs:element name="godzinaLekcyjnaRef" type="referencjaTyp"/>
+                            <xs:element name="szczegoly" type="xs:string"/>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+            </xs:sequence>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="tematZLiczbaUczestnikowTyp">
+        <xs:sequence maxOccurs="unbounded">
+            <xs:element name="data" type="xs:date"/>
+            <xs:element name="tresc" type="xs:string"/>
+            <xs:element name="przedmiotRef" type="referencjaTyp"/>
+            <xs:element name="numerLekcji" type="xs:string"/>
+            <xs:element name="czasRealizacji" type="xs:integer"/>
+            <xs:element name="czasOd" type="xs:string"/>
+            <xs:element name="czasDo" type="xs:string"/>
+            <xs:element name="nauczycielRef" type="referencjaTyp"/>
+            <xs:element name="liczbaUczestnikow" type="xs:string"/>
+        </xs:sequence>
+    </xs:complexType>
+
+
+    <xs:complexType name="godzinaPrzyprowadzeniaTyp">
+        <xs:sequence>
+            <xs:element name="uczenRef" type="referencjaTyp"/>
+            <xs:element name="dzienTygodniaRef" type="referencjaTyp"/>
+            <xs:element name="godzinaPrzyprowadzania" type="xs:string"/>
+            <xs:element name="godzinaOdbioru" type="xs:string"/>
+        </xs:sequence>
+    </xs:complexType>
+
+
+    <xs:complexType name="wpisPlanPracyzWychowankamiTyp">
+        <xs:sequence>
+            <xs:element name="dzialaniaWychowawcze" type="xs:string"/>
+            <xs:element name="formyRealizacji" type="xs:string"/>
+            <xs:element name="odpowiedzialny" type="xs:string"/>
+            <xs:element name="terminRealizacji" type="xs:string"/>
+        </xs:sequence>
+    </xs:complexType>
+
+
+    <xs:complexType name="wpisUwagiOWychowankachTyp">
+        <xs:sequence>
+            <xs:element name="uczenRef" type="referencjaTyp"/>
+            <xs:element name="uwaga" type="xs:string"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="wpisInformacjeOKontaktachZRodzinaWychowankaTyp">
+        <xs:sequence>
+            <xs:element name="uczenRef" type="referencjaTyp"/>
+            <xs:element name="data" type="xs:date"/>
+            <xs:element name="szczegoly" type="xs:string"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="wpisIndywidualnyProgramPracyZDzieckiemTyp">
+        <xs:sequence>
+            <xs:element name="uczenRef" type="referencjaTyp"/>
+            <xs:element name="szczegoly" type="xs:string"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="wpisProgramPracyGrupyTyp">
+        <xs:sequence>
+            <xs:element name="nazwaProgramu" type="xs:string"/>
+            <xs:element name="autorProgramu" type="xs:string"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="wpisOcenaPostepowIwnioskiTyp">
+        <xs:sequence>
+            <xs:element name="uczenRef" type="referencjaTyp"/>
+            <xs:element name="ocenaPostepow" type="xs:string"/>
+            <xs:element name="wnioski" type="xs:string"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="wpisZajeciaICzynnosciPrzeprowadzoneWPoszczegolnychDniachTyp">
+        <xs:sequence>
+            <xs:element name="data" type="xs:date"/>
+            <xs:element name="uczenRef" type="referencjaTyp"/>
+            <xs:element name="szczegoly" type="xs:string"/>
+            <xs:element name="formaKontaktu" type="xs:string" minOccurs="0"/>
+            <xs:element name="nazwaInstytucji" type="xs:string" minOccurs="0"/>
+        </xs:sequence>
+    </xs:complexType>
+
+
+    <xs:complexType name="adres">
+        <xs:sequence>
+            <xs:element name="kodPocztowy" type="xs:string"/>
+            <xs:element name="miejscowosc" type="xs:string"/>
+            <xs:element name="ulica" type="xs:string"/>
+            <xs:element name="numerDomu" type="xs:string"/>
+            <xs:element name="numerLokalu" type="xs:string"/>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="referencjaTyp">
+        <xs:attribute name="id" type="xs:string" use="required"/>
+    </xs:complexType>
+
+</xs:schema>

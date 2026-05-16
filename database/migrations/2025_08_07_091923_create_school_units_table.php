@@ -17,11 +17,15 @@ return new class extends Migration
 			$table->integer("type");
 			$table->boolean("active")->default(true);
 			$table->enum("student_category", ["childrenAndYouths", "adultsOnly"]);
-			$table->string("municipality");
+			$table->string("municipality"); // Gmina
 			$table->integer("voivodeship");
+			$table->string("town");
 			$table->string("district")->nullable();
-			$table->string("address");
 			$table->string("short_name");
+			$table->string("postal_code");
+			$table->string("street");
+			$table->string("house_number");
+			$table->string("flat_number")->nullable();
 			$table->foreignId("school_complex_id")->nullable()->constrained("school_complexes")->cascadeOnDelete();
             $table->timestamps();
         });
