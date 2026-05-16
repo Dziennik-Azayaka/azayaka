@@ -43,4 +43,9 @@ class Student extends BaseModel
 	{
 		return $this->hasMany(CompulsoryEducationFulfillment::class);
 	}
+
+	public function classUnits(): BelongsToMany
+	{
+		return $this->belongsToMany(ClassUnit::class, "class_units_students", "student_id", "class_unit_id");
+	}
 }

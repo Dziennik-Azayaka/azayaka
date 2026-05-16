@@ -31,7 +31,8 @@ class StudentsRegisterXmlExport extends RegisterXmlExport
 		}
 	}
 
-	private function addStudent(Student $student): void {
+	private function addStudent(Student $student): void
+	{
 		$studentElement = $this->dom->createElement("Uczen");
 		$studentElement->setAttribute("id", $student->id);
 		$studentElement->appendChild($this->dom->createElement("Numer", $student->id));
@@ -40,14 +41,16 @@ class StudentsRegisterXmlExport extends RegisterXmlExport
 			$studentElement->appendChild($this->dom->createElement("DrugieImie", $student->second_name));
 		}
 		$studentElement->appendChild($this->dom->createElement("Nazwisko", $student->last_name));
-		$studentElement->appendChild($this->dom->createElement("DataUrodzenia", Carbon::parse($student->birthdate)->format("Y-m-d")));
+		$studentElement->appendChild($this->dom->createElement(
+			"DataUrodzenia", Carbon::parse($student->birthdate)->format("Y-m-d")));
 		if ($student->birthplace) {
 			$studentElement->appendChild($this->dom->createElement("MiejsceUrodzenia", $student->birthplace));
 		}
 		if ($student->pesel) {
 			$studentElement->appendChild($this->dom->createElement("Pesel", $student->pesel));
 		} else {
-			$studentElement->appendChild($this->dom->createElement("NazwaINumerDokumentuPotwierdzajacegoTozsamosc", $student->alternate_identity_document));
+			$studentElement->appendChild($this->dom->createElement(
+				"NazwaINumerDokumentuPotwierdzajacegoTozsamosc", $student->alternate_identity_document));
 		}
 		$this->buildResidenceAddressData($studentElement, $student->residenceAddress);
 		$guardiansElement = $this->dom->createElement("Rodzice");
@@ -60,7 +63,20 @@ class StudentsRegisterXmlExport extends RegisterXmlExport
 			$guardiansElement->appendChild($parentElement);
 		});
 		$studentElement->appendChild($guardiansElement);
-		$studentElement->appendChild($this->dom->createElement("DataRozpoczeciaNauki", Carbon::parse($student->admission_date)->format("d.m.Y") . " r."));
+		$studentElement->appendChild($this->dom->createElement(
+			"DataRozpoczeciaNauki",
+			Carbon::parse($student->admission_date)->format("d.m.Y") . " r."));
+
+		$currentClassUnit = $student->classUnits()->withPivot("date_from", "date_to")
+			->get()->sortBy("pivot.date_to")->last();
+
+		if ($currentClassUnit) {
+			$studentElement->appendChild(
+				$this->dom->createElement(
+					"Oddzial",
+					$currentClassUnit->current_level . $currentClassUnit->mark));
+		}
+
 		$this->studentsElement->appendChild($studentElement);
 	}
 }

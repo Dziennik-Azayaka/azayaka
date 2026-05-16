@@ -7,6 +7,8 @@ use App\Models\ResidenceAddress;
 use App\Models\SchoolUnit;
 use DOMDocument;
 use DOMElement;
+use Illuminate\Http\Response;
+use Symfony\Component\HttpFoundation\HeaderUtils;
 
 /**
  * Abstract class for exporting XML data based on the provided school unit.
@@ -151,5 +153,35 @@ abstract class XmlExport implements XmlExportInterface
 		$xsltProcessor = new \XSLTProcessor();
 		$xsltProcessor->importStyleSheet($xsl);
 		return $xsltProcessor->transformToXML($this->dom);
+	}
+
+	/**
+	 * Generates an XML document via generateXml() and then downloads it.
+	 * @return Response A response containing the XML document
+	 */
+	public function downloadXml(): Response
+	{
+		$output = $this->generateXml();
+
+		return new Response($output, 200, [
+			"Content-Type" => "text/xml",
+			"Content-Disposition" => HeaderUtils::makeDisposition("attachment", "Export_" . $this->getExportType()->value . ".xml"),
+			"Content-Length" => strlen($output),
+		]);
+	}
+
+	/**
+	 * Generates an HTML document via generateHtml() and then downloads it.
+	 * @return Response A response containing the HTML document
+	 */
+	public function downloadHtml(): Response
+	{
+		$output = $this->generateHtml();
+
+		return new Response($output, 200, [
+			"Content-Type" => "text/html",
+			"Content-Disposition" => HeaderUtils::makeDisposition("attachment", "Export_" . $this->getExportType()->value . ".html"),
+			"Content-Length" => strlen($output),
+		]);
 	}
 }
