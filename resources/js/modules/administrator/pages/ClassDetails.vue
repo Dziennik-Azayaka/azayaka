@@ -3,6 +3,7 @@ import { useGetClassById } from '@/api/hooks/classes/getClassById';
 import PanelPageHeader from '@/components/panel-layout/PanelPageHeader.vue';
 import { EmptyLoading, EmptyLoadingError } from '@/components/ui/empty';
 import { schoolYearString } from '@/lib/utils';
+import ClassFormTutorTable from '@/modules/administrator/components/classes/ClassFormTutorTable.vue';
 import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRoute } from 'vue-router';
@@ -89,5 +90,7 @@ const title = computed(() => {
         </div>
       </dl>
     </section>
+
+    <ClassFormTutorTable :form-tutors="class_.formTutors" class="mt-6" />
   </template>
 </template>

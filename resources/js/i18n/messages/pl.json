@@ -238,6 +238,8 @@
 		"data": {
 			"address": "Adres",
 			"date": "Data",
+			"dateFrom": "Data od",
+			"dateTo": "Data do",
 			"district": "Dzielnica",
 			"email": "Adres e-mail",
 			"firstName": "Imię",

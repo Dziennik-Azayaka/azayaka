@@ -199,6 +199,8 @@
 		"data": {
 			"address": "Address",
 			"date": "Date",
+			"dateFrom": "Date from",
+			"dateTo": "Date to",
 			"district": "District",
 			"email": "Email address",
 			"firstName": "First name",
