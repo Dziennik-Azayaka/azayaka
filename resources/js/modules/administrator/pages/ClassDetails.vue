@@ -3,6 +3,7 @@ import { useGetClassById } from '@/api/hooks/classes/getClassById';
 import PanelPageHeader from '@/components/panel-layout/PanelPageHeader.vue';
 import { EmptyLoading, EmptyLoadingError } from '@/components/ui/empty';
 import { schoolYearString } from '@/lib/utils';
+import ClassDelete from '@/modules/administrator/components/classes/ClassDelete.vue';
 import ClassFormTutorTable from '@/modules/administrator/components/classes/ClassFormTutorTable.vue';
 import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
@@ -24,7 +25,10 @@ const title = computed(() => {
 </script>
 
 <template>
-  <PanelPageHeader :title="title" />
+  <div class="flex items-center justify-between mb-4">
+    <PanelPageHeader :title="title" class="mb-0!" />
+    <ClassDelete v-if="class_" :class-id="class_.id" />
+  </div>
   <EmptyLoading v-if="isFetching" />
   <EmptyLoadingError v-if="isError" @refresh="refetch" />
 

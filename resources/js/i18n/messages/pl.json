@@ -35,6 +35,10 @@
 				}
 			},
 			"add": "Dodaj oddział",
+			"delete": {
+				"title": "Czy na pewno chcesz usunąć oddział?",
+				"description": "Ta operacja jest nieodwracalna. Wszystkie dane związane z oddziałem zostaną usunięte."
+			},
 			"periodSelect": {
 				"noPeriods": "Brak okresów"
 			}
@@ -231,7 +235,8 @@
 			"skipToContent": "Przejdź do treści",
 			"toggleMenu": "Otwórz/zamknij menu",
 			"tryAgain": "Spróbuj ponownie",
-			"unarchive": "Odarchiwizuj"
+			"unarchive": "Odarchiwizuj",
+			"delete": "Usuń"
 		},
 		"actions_": "Akcje",
 		"auto": "(auto)",

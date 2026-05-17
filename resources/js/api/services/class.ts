@@ -14,5 +14,9 @@ export const ClassService = {
     http('/classUnits', {
       method: 'POST',
       body: data
-    })
+    }),
+  delete: (id: number) =>
+    http(`/classUnits/${id}`, {
+      method: 'DELETE',
+    }),
 };
