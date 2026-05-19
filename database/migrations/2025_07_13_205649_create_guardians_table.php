@@ -17,7 +17,7 @@ return new class extends Migration
 			$table->string("last_name");
 			$table->string("phone_number")->nullable();
 			$table->string("email")->nullable();
-			$table->foreignId("student_id")->constrained("students")->cascadeOnDelete();
+			$table->foreignId("person_id")->constrained("people")->cascadeOnDelete();
 			$table->timestamps();
         });
     }

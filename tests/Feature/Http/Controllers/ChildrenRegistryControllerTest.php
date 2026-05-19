@@ -2,13 +2,8 @@
 
 namespace Tests\Feature\Http\Controllers;
 
-use App\Models\AccountAccess;
-use App\Models\Employee;
-use App\Models\SchoolComplex;
 use App\Models\SchoolUnit;
-use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 
 final class ChildrenRegistryControllerTest extends TestCase
@@ -18,10 +13,7 @@ final class ChildrenRegistryControllerTest extends TestCase
 	public function test_can_list_children_registries(): void
 	{
 		$this->actingUser();
-		$schoolComplex = SchoolComplex::factory()->create();
-		$schoolUnit = SchoolUnit::factory()->create([
-			"school_complex_id" => $schoolComplex->id
-		]);
+		$schoolUnit = SchoolUnit::factory()->create();
 		$registry = $schoolUnit->childrenRegistry()->create();
 		$response = $this->get("/api/childrenRegistry");
 		$response->assertOk();
@@ -35,10 +27,7 @@ final class ChildrenRegistryControllerTest extends TestCase
 	public function test_can_create_a_children_registry(): void
 	{
 		$this->actingUser();
-		$schoolComplex = SchoolComplex::factory()->create();
-		$schoolUnit = SchoolUnit::factory()->create([
-			"school_complex_id" => $schoolComplex->id
-		]);
+		$schoolUnit = SchoolUnit::factory()->create();
 		$response = $this->post("/api/childrenRegistry", [
 			"schoolUnitId" => $schoolUnit->id
 		]);
@@ -63,10 +52,7 @@ final class ChildrenRegistryControllerTest extends TestCase
 	public function test_cannot_create_a_children_registry_when_the_school_unit_already_has_one(): void
 	{
 		$this->actingUser();
-		$schoolComplex = SchoolComplex::factory()->create();
-		$schoolUnit = SchoolUnit::factory()->create([
-			"school_complex_id" => $schoolComplex->id
-		]);
+		$schoolUnit = SchoolUnit::factory()->create();
 		$schoolUnit->childrenRegistry()->create();
 		$response = $this->post("/api/childrenRegistry", [
 			"schoolUnitId" => $schoolUnit->id
