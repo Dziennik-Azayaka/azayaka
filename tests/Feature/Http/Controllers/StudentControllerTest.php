@@ -39,7 +39,7 @@ final class StudentControllerTest extends TestCase
 		]);
 		$response = $this->post("/api/studentRegistry/$registry->id", [
 			"personId" => $person->id,
-			"admission_date" => "2025-09-01"
+			"admissionDate" => "2025-09-01"
 		]);
 		$response->assertCreated();
 		$this->assertDatabaseHas("students", [
@@ -55,7 +55,7 @@ final class StudentControllerTest extends TestCase
 		$registry = $this->createStudentRegistry();
 		$response = $this->post("/api/studentRegistry/$registry->id", [
 			"personId" => 99999,
-			"admission_date" => "2025-09-01"
+			"admissionDate" => "2025-09-01"
 		]);
 		$response->assertUnprocessable();
 	}
@@ -88,8 +88,8 @@ final class StudentControllerTest extends TestCase
 		$student = Student::factory()->create();
 		$response = $this->put("/api/students/$student->id", [
 			"admissionDate" => "2024-09-01",
-			"leave_date" => "2025-06-30",
-			"leave_reason" => "Przeniesienie do innej placówki edukacyjnej."
+			"leaveDate" => "2025-06-30",
+			"leaveReason" => "Przeniesienie do innej placówki edukacyjnej."
 		]);
 		$response->assertOk();
 		$this->assertDatabaseHas("students", [
@@ -106,8 +106,7 @@ final class StudentControllerTest extends TestCase
 		$student = Student::factory()->create();
 		$response = $this->delete("/api/students/$student->id");
 		$response->assertOk();
-		$this->assertDatabaseMissing("students", [
-			"id" => $student->id
-		]);
+		$student = $student->refresh();
+		$this->assertTrue($student->trashed());
 	}
 }

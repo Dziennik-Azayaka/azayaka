@@ -24,7 +24,8 @@ class PersonResource extends JsonResource
 			"birthdate" => $this->birthdate,
 			"birthplace" => $this->birthplace,
 			"gender" => $this->gender,
-			"residenceAddress" => new ResidenceAddressResource($this->whenLoaded("residenceAddress"))
+			"residenceAddress" => new ResidenceAddressResource($this->whenLoaded("residenceAddress")),
+			"guardians" => GuardianResource::collection($this->whenLoaded("guardians")),
 		];
 	}
 }

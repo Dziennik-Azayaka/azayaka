@@ -17,6 +17,7 @@ return new class extends Migration {
 			$table->date("leave_date")->nullable();
 			$table->string("leave_reason")->nullable();
 			$table->timestamps();
+			$table->softDeletes();
 		});
 	}
 

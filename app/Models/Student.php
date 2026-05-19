@@ -7,16 +7,12 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Student extends BaseModel
 {
 	/** @use HasFactory<\Database\Factories\StudentFactory> */
-	use HasFactory;
-
-	function guardians(): HasMany
-	{
-		return $this->hasMany(Guardian::class);
-	}
+	use HasFactory, SoftDeletes;
 
 	public function studentRegistry(): BelongsTo
 	{

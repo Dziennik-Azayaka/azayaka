@@ -19,7 +19,7 @@ class StudentController extends Controller
 {
 	public function list(StudentRegistry $studentRegistry)
 	{
-		return $studentRegistry->students()->with(["person", "person.residenceAddress"])->get()->toResourceCollection();
+		return $studentRegistry->students()->with(["person", "person.residenceAddress", "person.guardians"])->get()->toResourceCollection();
 	}
 
 	public function show(Student $student)
@@ -31,27 +31,17 @@ class StudentController extends Controller
 	{
 		$validated = $request->validate([
 			"personId" => ["required", "exists:people,id"],
-			"admission_date" => ["required", "date"]
+			"admissionDate" => ["required", "date"]
 		]);
 
 		$student = new Student();
-			$student->person_id = $validated["personId"];
-			$student->student_registry_id = $studentRegistry->id;
-			$student->admission_date = $validated["admission_date"];
-			try {
-			$student->saveOrFail();
-		} catch (\Throwable $e) {
-			\Log::error($e);
-			return response()->json([
-				"success" => false,
-				"errors" => ["UNKNOWN_SERVER_ERROR"]
-			], 500);
-		}
+		$student->person_id = $validated["personId"];
+		$student->student_registry_id = $studentRegistry->id;
+		$student->admission_date = $validated["admissionDate"];
+		$student->saveOrFail();
 
-		return \Response::json([
-			"success" => true,
-			"studentId" => $student->id,
-		], 201);
+		return \Response::json(["success" => true,
+			"studentId" => $student->id,], 201);
 	}
 
 	public function update(Request $request, Student $student)
@@ -60,13 +50,13 @@ class StudentController extends Controller
 
 		$validated = $request->validate([
 			"admissionDate" => ["required", "date"],
-			"leave_date" => ["nullable", "date"],
-			"leave_reason" => ["nullable", "string", "max:255"],
+			"leaveDate" => ["nullable", "date"],
+			"leaveReason" => ["nullable", "string", "max:255"],
 		]);
 
 		$student->admission_date = $validated["admissionDate"];
-		$student->leave_date = $validated["leave_date"] ?? null;
-		$student->leave_reason = $validated["leave_reason"] ?? null;
+		$student->leave_date = $validated["leaveDate"] ?? null;
+		$student->leave_reason = $validated["leaveReason"] ?? null;
 
 		$student->save();
 		return [
@@ -83,7 +73,7 @@ class StudentController extends Controller
 		];
 	}
 
-	private function checkIfRegistryIsActive(StudentRegistry $studentRegistry)
+	private	function checkIfRegistryIsActive(StudentRegistry $studentRegistry)
 	{
 		if ($studentRegistry->isArchived()) {
 			throw CustomValidationException::withMessages(["STUDENT_REGISTRY_ARCHIVED"]);

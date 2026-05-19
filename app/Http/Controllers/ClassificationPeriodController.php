@@ -128,25 +128,18 @@ class ClassificationPeriodController extends Controller
 			}
 		);
 
-		try {
-			DB::transaction(function () use ($oldClassificationPeriodIds, $futurePeriodIds, $processedClassUnitIds, $schoolYear, $schoolUnitId, $pivotEntries) {
-				ClassUnitPeriod::whereIn("classification_period_id", $oldClassificationPeriodIds)->delete();
-				ClassUnitPeriod::whereIn("classification_period_id", $futurePeriodIds)
-					->whereIn("class_unit_id", $processedClassUnitIds)
-					->delete();
+		DB::transaction(function () use ($oldClassificationPeriodIds, $futurePeriodIds, $processedClassUnitIds, $schoolYear, $schoolUnitId, $pivotEntries) {
+			ClassUnitPeriod::whereIn("classification_period_id", $oldClassificationPeriodIds)->delete();
+			ClassUnitPeriod::whereIn("classification_period_id", $futurePeriodIds)
+				->whereIn("class_unit_id", $processedClassUnitIds)
+				->delete();
 
-				ClassificationPeriod::whereIn("id", $oldClassificationPeriodIds)->delete();
+			ClassificationPeriod::whereIn("id", $oldClassificationPeriodIds)->delete();
 
-				foreach (array_chunk($pivotEntries, 500) as $chunk) {
-					ClassUnitPeriod::insert($chunk);
-				}
-			});
-		} catch (\Throwable) {
-			return \Response::json([
-				"success" => false,
-				"errors" => ["UNKNOWN_SERVER_ERROR"]
-			], 500);
-		}
+			foreach (array_chunk($pivotEntries, 500) as $chunk) {
+				ClassUnitPeriod::insert($chunk);
+			}
+		});
 
 
 		return [

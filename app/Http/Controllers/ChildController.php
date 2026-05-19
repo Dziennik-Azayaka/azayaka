@@ -13,7 +13,7 @@ class ChildController extends Controller
 {
 	public function list(ChildrenRegistry $childrenRegistry)
 	{
-		return $childrenRegistry->children()->with(["person", "person.residenceAddress"])->get()->toResourceCollection();
+		return $childrenRegistry->children()->with(["person", "person.residenceAddress", "person.guardians"])->get()->toResourceCollection();
 	}
 
 	public function show(Child $child)
@@ -30,15 +30,7 @@ class ChildController extends Controller
 		$child = new Child();
 		$child->person_id = $validated["personId"];
 		$child->children_registry_id = $childrenRegistry->id;
-		try {
-			$child->saveOrFail();
-		} catch (\Throwable $e) {
-			\Log::error($e);
-			return response()->json([
-				"success" => false,
-				"errors" => ["UNKNOWN_SERVER_ERROR"]
-			], 500);
-		}
+		$child->saveOrFail();
 
 		return \Response::json([
 			"success" => true,

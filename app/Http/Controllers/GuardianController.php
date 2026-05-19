@@ -16,10 +16,6 @@ use Illuminate\Http\Request;
 
 class GuardianController extends Controller
 {
-	public function list(Person $person) {
-		return $person->guardians->toResourceCollection();
-	}
-
 	public function create(GuardianRequest $request, Person $person) {
 		$this->checkIfSchoolUnitIsActive($person);
 

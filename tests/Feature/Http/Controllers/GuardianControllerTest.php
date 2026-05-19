@@ -20,28 +20,6 @@ final class GuardianControllerTest extends TestCase
 		]);
 	}
 
-	public function test_can_list_guardians(): void
-	{
-		$this->actingUser();
-		$person = $this->createPerson();
-		Guardian::factory()->count(5)->create([
-			"person_id" => $person->id
-		]);
-		$response = $this->get("/api/people/$person->id/guardians");
-		$response->assertOk();
-		$response->assertJsonIsArray();
-		$response->assertJsonCount(5);
-		$response->assertJsonStructure([
-			"*" => [
-				"id",
-				"firstName",
-				"lastName",
-				"email",
-				"phoneNumber",
-			]
-		]);
-	}
-
 	public function test_can_create_guardian(): void
 	{
 		$this->actingUser();

@@ -35,6 +35,13 @@ return Application::configure(basePath: dirname(__DIR__))
 						"USER_NOT_LOGGED_IN"
 					]
 				], 401);
+			} else if ($response->getStatusCode() == 500) {
+				return \Illuminate\Support\Facades\Response::json([
+					"success" => false,
+					"errors" => [
+						"UNKNOWN_SERVER_ERROR"
+					]
+				], 500);
 			}
 
 			return $response;

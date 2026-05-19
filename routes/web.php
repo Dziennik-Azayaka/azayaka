@@ -88,8 +88,8 @@ Route::middleware(["auth", "auth.session"])->group(function () {
 		Route::post("/api/schoolUnits/{schoolUnitId}/people", [PersonController::class, "create"]);
 		Route::post("/api/schoolUnits/{schoolUnitId}/people/import", [PersonController::class, "import"]);
 		Route::put("/api/schoolUnits/{schoolUnitId}/people/{person}", [PersonController::class, "update"]);
+		Route::get("/api/people/{person}", [PersonController::class, "show"]);
 		Route::delete("/api/people/{person}", [PersonController::class, "destroy"]);
-		Route::get("/api/people/{person}/guardians", [GuardianController::class, "list"]);
 		Route::post("/api/people/{person}/guardians", [GuardianController::class, "create"]);
 
 		Route::put("/api/guardians/{guardian}", [GuardianController::class, "update"]);

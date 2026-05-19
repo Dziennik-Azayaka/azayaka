@@ -71,8 +71,7 @@ final class ChildControllerTest extends TestCase
 		$child = Child::factory()->create();
 		$response = $this->delete("/api/children/$child->id");
 		$response->assertOk();
-		$this->assertDatabaseMissing("children", [
-			"id" => $child->id
-		]);
+		$child = $child->refresh();
+		$this->assertTrue($child->trashed());
 	}
 }

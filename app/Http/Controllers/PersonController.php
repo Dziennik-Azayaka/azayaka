@@ -10,6 +10,8 @@ use App\Models\ResidenceAddress;
 use App\Models\Student;
 use App\Models\StudentRegistry;
 use App\Rules\Pesel;
+use App\Utilities\CsvImportAssistant;
+use Closure;
 use DB;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -49,6 +51,16 @@ class PersonController extends Controller
 		}
 	}
 
+	public function show(Person $person)
+	{
+		$personComplete = $person->load(["residenceAddress", "students", "children", "guardians"]);
+		return [
+			"person" => $personComplete->toResource(),
+			"students" => $personComplete->students->map(fn($student) => $student->toResource()),
+			"children" => $personComplete->children->map(fn($child) => $child->toResource())
+		];
+	}
+
 	public function create(CreatePersonRequest $request, int $schoolUnitId)
 	{
 		$validated = $request->validated();
@@ -62,7 +74,7 @@ class PersonController extends Controller
 				"errors" => [
 					"PERSON_ALREADY_EXISTS"
 				]
-			], 422);
+			], 409);
 		}
 
 		$registryCheck = $this->checkIfRegistriesAreActive($validated);
@@ -70,15 +82,7 @@ class PersonController extends Controller
 			return $registryCheck;
 		}
 
-		try {
-			$personId = $this->savePersonAndAddressToDatabase($validated, $schoolUnitId);
-		} catch (Throwable $e) {
-			Log::error($e);
-			return response()->json([
-				"success" => false,
-				"errors" => ["UNKNOWN_SERVER_ERROR"]
-			], 500);
-		}
+		$personId = $this->savePersonAndAddressToDatabase($validated, $schoolUnitId);
 
 		return response()->json([
 			"success" => true,
@@ -129,134 +133,65 @@ class PersonController extends Controller
 			return $registryCheck;
 		}
 
-		$file = $request->file("csvFile");
-		$handle = fopen($file->getRealPath(), "r");
-		if ($handle === false) {
-			return response()->json(["success" => false, "errors" => ["CANNOT_READ_CSV"]], 500);
-		}
-
-		/* We can automatically detect if the file is using commas, semicolons or tabs as a delimiter by
-		 reading the first line. Depending on locale settings, MS Excel can switch between commas and tabs.
-		I don't think there is any spreadsheet software uses tabs by default, but TSV is frequently used by
-		CKE, and it doesn't hurt to implement. */
-		$firstLine = fgets($handle);
-		if ($firstLine === false) {
-			return response()->json(["success" => false, "errors" => ["EMPTY_FILE"]], 422);
-		}
-		if (str_contains($firstLine, "\t")) {
-			$separator = "\t";
-		} else if (str_contains($firstLine, ",")) {
-			$separator = ",";
-		} else {
-			$separator = ";";
-		}
-		rewind($handle);
-
-		$headers = fgetcsv($handle, 0, $separator);
-
-		/* Strip UTF-8 BOM if present.
-		MS Excel usually exports with a BOM at the beginning of the file, while other software (LibreOffice,
-		Google Sheets, Apple Numbers) doesn't. */
-		if (str_starts_with($headers[0], "\xEF\xBB\xBF")) {
-			$headers[0] = substr($headers[0], 3);
-		}
-		$headers = array_map("trim", $headers);
-
 		$rules = (new CreatePersonRequest())->rules();
-		$rowsToInsert = [];
-		$errors = [];
-		$rowNumber = 2; // 1 is headers
-
 		$seenPesels = [];
 		$seenAltDocs = [];
-
-		while (($data = fgetcsv($handle, 0, $separator)) !== false) {
-			if (count($headers) !== count($data)) {
-				$errors[] = "Rząd $rowNumber: Liczba kolumn nie zgadza się z wymaganą liczbą.";
-				$rowNumber++;
-				continue;
-			}
-
-			$rowData = array_combine($headers, $data);
-
-			// treat empty spaces as nulls
-			$rowData = array_map(function ($value) {
-				$val = trim($value);
-				return $val === "" ? null : $val;
-			}, $rowData);
-
-			if ($request->has("studentRegistryId")) {
-				$rowData["studentRegistryId"] = $request->input("studentRegistryId");
-			}
-			if ($request->has("childrenRegistryId")) {
-				$rowData["childrenRegistryId"] = $request->input("childrenRegistryId");
-			}
-
-			$validator = Validator::make($rowData, $rules);
-
-			if ($validator->fails()) {
-				foreach ($validator->errors()->all() as $errorMsg) {
-					$errors[] = "Rząd $rowNumber: $errorMsg";
+		$rows = CsvImportAssistant::import($request->file("csvFile"),
+			function (array $row, Closure $error, Closure $pass)
+			use (&$seenAltDocs, &$seenPesels, $rules, $request, $schoolUnitId) {
+				if ($request->has("studentRegistryId")) {
+					$row["studentRegistryId"] = $request->input("studentRegistryId");
 				}
-				$rowNumber++;
-				continue;
-			}
-
-			$validated = $validator->validated();
-
-			$duplicate = false;
-			if (isset($validated["pesel"])) {
-				if (in_array($validated["pesel"], $seenPesels) ||
-					Person::where("pesel", "=", $validated["pesel"])->where("school_unit_id", $schoolUnitId)->exists()) {
-					$duplicate = true;
-				} else {
-					$seenPesels[] = $validated["pesel"];
+				if ($request->has("childrenRegistryId")) {
+					$row["childrenRegistryId"] = $request->input("childrenRegistryId");
 				}
-			} elseif (isset($validated["alternateIdentityDocument"])) {
-				if (in_array($validated["alternateIdentityDocument"], $seenAltDocs) ||
-					Person::where("alternate_identity_document", "=", $validated["alternateIdentityDocument"])
-						->where("school_unit_id", $schoolUnitId)->exists()) {
-					$duplicate = true;
-				} else {
-					$seenAltDocs[] = $validated["alternateIdentityDocument"];
+
+				$validator = Validator::make($row, $rules);
+
+				if ($validator->fails()) {
+					foreach ($validator->errors()->all() as $errorMsg) {
+						$error($errorMsg);
+					}
+					return;
 				}
-			}
 
-			if ($duplicate) {
-				$errors[] = "Rząd $rowNumber: Osoba o tym numerze PESEL / innym dokumencie identyfikacyjnym już istnieje.";
-				$rowNumber++;
-				continue;
-			}
+				$validated = $validator->validated();
 
-			$rowsToInsert[] = $validated;
-			$rowNumber++;
-		}
-		fclose($handle);
-
-		if (!empty($errors)) {
-			return response()->json([
-				"success" => false,
-				"errors" => $errors
-			], 422);
-		}
-
-		try {
-			DB::transaction(function () use ($rowsToInsert, $schoolUnitId) {
-				foreach ($rowsToInsert as $validatedRow) {
-					$this->savePersonAndAddressToDatabase($validatedRow, $schoolUnitId);
+				$duplicate = false;
+				if (isset($validated["pesel"])) {
+					if (in_array($validated["pesel"], $seenPesels) ||
+						Person::where("pesel", "=", $validated["pesel"])->where("school_unit_id", $schoolUnitId)->exists()) {
+						$duplicate = true;
+					} else {
+						$seenPesels[] = $validated["pesel"];
+					}
+				} elseif (isset($validated["alternateIdentityDocument"])) {
+					if (in_array($validated["alternateIdentityDocument"], $seenAltDocs) ||
+						Person::where("alternate_identity_document", "=", $validated["alternateIdentityDocument"])
+							->where("school_unit_id", $schoolUnitId)->exists()) {
+						$duplicate = true;
+					} else {
+						$seenAltDocs[] = $validated["alternateIdentityDocument"];
+					}
 				}
+
+				if ($duplicate) {
+					$error("Osoba o tym numerze PESEL / innym dokumencie identyfikacyjnym już istnieje.");
+					return;
+				}
+
+				$pass($validated);
 			});
-		} catch (Throwable $e) {
-			Log::error($e);
-			return response()->json([
-				"success" => false,
-				"errors" => ["UNKNOWN_SERVER_ERROR"]
-			], 500);
-		}
+
+		DB::transaction(function () use ($rows, $schoolUnitId) {
+			foreach ($rows as $row) {
+				$this->savePersonAndAddressToDatabase($row, $schoolUnitId);
+			}
+		});
 
 		return response()->json([
 			"success" => true,
-			"importedCount" => count($rowsToInsert)
+			"importedCount" => count($rows)
 		], 201);
 	}
 
