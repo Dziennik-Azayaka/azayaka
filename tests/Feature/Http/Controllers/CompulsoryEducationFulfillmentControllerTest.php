@@ -21,9 +21,11 @@ final class CompulsoryEducationFulfillmentControllerTest extends TestCase
 		$payload = [
 			"schoolYear" => 2025,
 			"controlDate" => Carbon::now()->format("Y-m-d"),
-			"fulfillmentForm" => "w szkole w której obwodzie mieszka uczeń",
-			"level" => 5,
-			"relationship" => "podlega obowiązku szkolnemu w szkole podstawowej"
+			"kindergartenInfo" => "Przedszkole nr 1",
+			"postponementInfo" => "Informacje o odroczeniu",
+			"schoolInfo" => "Informacje o szkole, w tym o szkole za granicą lub przy przedstawicielstwie dyplomatycznym innego państwa w Polsce",
+			"outOfSchoolInfo" => "Informacje o spełnianiu przez dziecko obowiązku szkolnego poza szkołą",
+			"level" => 5
 		];
 		$response = $this->post("/api/children/$child->id/fulfillment", $payload);
 		$response->assertCreated();
@@ -31,9 +33,11 @@ final class CompulsoryEducationFulfillmentControllerTest extends TestCase
 			"child_id" => $child->id,
 			"school_year" => $payload["schoolYear"],
 			"control_date" => $payload["controlDate"],
-			"fulfillment_form" => $payload["fulfillmentForm"],
-			"level" => $payload["level"],
-			"relationship" => $payload["relationship"]
+			"kindergarten_info" => $payload["kindergartenInfo"],
+			"postponement_info" => $payload["postponementInfo"],
+			"school_info" => $payload["schoolInfo"],
+			"out_of_school_info" => $payload["outOfSchoolInfo"],
+			"level" => $payload["level"]
 		]);
     }
 
@@ -45,19 +49,23 @@ final class CompulsoryEducationFulfillmentControllerTest extends TestCase
 		$updatedPayload = [
 			"schoolYear" => 2026,
 			"controlDate" => Carbon::now()->addYear()->format("Y-m-d"),
-			"fulfillmentForm" => "w szkole poza obwodem w którym mieszka uczeń",
-			"level" => 2,
-			"relationship" => "podlega obowiązkowi szkolnemu w szkole ponadpodstawowej"
+			"kindergartenInfo" => "Przedszkole nr 1",
+			"postponementInfo" => "Informacje o odroczeniu",
+			"schoolInfo" => "Informacje o szkole, w tym o szkole za granicą lub przy przedstawicielstwie dyplomatycznym innego państwa w Polsce",
+			"outOfSchoolInfo" => "Informacje o spełnianiu przez dziecko obowiązku szkolnego poza szkołą",
+			"level" => 2
 		];
 		$response = $this->put("/api/children/$child->id/fulfillment/$fulfillment->id", $updatedPayload);
 		$response->assertOk();
 		$this->assertDatabaseHas("compulsory_education_fulfillments", [
-			"id" => $fulfillment->id,
+			"child_id" => $child->id,
 			"school_year" => $updatedPayload["schoolYear"],
 			"control_date" => $updatedPayload["controlDate"],
-			"fulfillment_form" => $updatedPayload["fulfillmentForm"],
-			"level" => $updatedPayload["level"],
-			"relationship" => $updatedPayload["relationship"]
+			"kindergarten_info" => $updatedPayload["kindergartenInfo"],
+			"postponement_info" => $updatedPayload["postponementInfo"],
+			"school_info" => $updatedPayload["schoolInfo"],
+			"out_of_school_info" => $updatedPayload["outOfSchoolInfo"],
+			"level" => $updatedPayload["level"]
 		]);
 	}
 

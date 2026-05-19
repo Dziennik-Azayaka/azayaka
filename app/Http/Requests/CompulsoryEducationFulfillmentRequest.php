@@ -25,9 +25,11 @@ class CompulsoryEducationFulfillmentRequest extends FormRequest
         return [
 			"schoolYear" => "required|integer",
 			"controlDate" => "required|date",
-			"fulfillmentForm" => "required|string|max:255",
-			"level" => "required|integer",
-			"relationship" => "required|string|max:255"
+			"kindergartenInfo" => "nullable|string|max:512",
+			"postponementInfo" => "nullable|string|max:512",
+			"schoolInfo" => "nullable|string|max:512",
+			"outOfSchoolInfo" => "nullable|string|max:512",
+			"level" => "required|integer"
         ];
     }
 }

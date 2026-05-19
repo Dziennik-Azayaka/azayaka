@@ -18,9 +18,11 @@ class CompulsoryEducationFulfillmentController extends Controller
 		$fulfillment->child_id = $child->id;
 		$fulfillment->school_year = $validated["schoolYear"];
 		$fulfillment->control_date = $validated["controlDate"];
-		$fulfillment->fulfillment_form = $validated["fulfillmentForm"];
+		$fulfillment->kindergarten_info = $validated["kindergartenInfo"] ?? null;
+		$fulfillment->postponement_info = $validated["postponementInfo"] ?? null;
+		$fulfillment->school_info = $validated["schoolInfo"] ?? null;
+		$fulfillment->out_of_school_info = $validated["outOfSchoolInfo"] ?? null;
 		$fulfillment->level = $validated["level"];
-		$fulfillment->relationship = $validated["relationship"];
 		$fulfillment->save();
 
 		return \Response::json([
@@ -34,9 +36,11 @@ class CompulsoryEducationFulfillmentController extends Controller
 		$validated = $request->validated();
 		$fulfillment->school_year = $validated["schoolYear"];
 		$fulfillment->control_date = $validated["controlDate"];
-		$fulfillment->fulfillment_form = $validated["fulfillmentForm"];
+		$fulfillment->kindergarten_info = $validated["kindergartenInfo"] ?? null;
+		$fulfillment->postponement_info = $validated["postponementInfo"] ?? null;
+		$fulfillment->school_info = $validated["schoolInfo"] ?? null;
+		$fulfillment->out_of_school_info = $validated["outOfSchoolInfo"] ?? null;
 		$fulfillment->level = $validated["level"];
-		$fulfillment->relationship = $validated["relationship"];
 		$fulfillment->save();
 		return [
 			"success" => true

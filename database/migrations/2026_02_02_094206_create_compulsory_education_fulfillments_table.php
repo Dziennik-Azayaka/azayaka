@@ -16,9 +16,11 @@ return new class extends Migration
 			$table->foreignId("child_id")->constrained("children")->onDelete("cascade");
 			$table->integer("school_year");
 			$table->date("control_date");
-			$table->string("fulfillment_form");
+			$table->string("kindergarten_info")->nullable();
+			$table->string("postponement_info")->nullable();
+			$table->string("school_info")->nullable();
+			$table->string("out_of_school_info")->nullable();
 			$table->integer("level");
-			$table->string("relationship");
             $table->timestamps();
         });
     }

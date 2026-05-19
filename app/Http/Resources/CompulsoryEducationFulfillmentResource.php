@@ -18,9 +18,11 @@ class CompulsoryEducationFulfillmentResource extends JsonResource
 			"id" => $this->id,
 			"schoolYear" => $this->school_year,
 			"controlDate" => $this->control_date,
-			"fulfillmentForm" => $this->fulfillmentForm,
-			"level" => $this->level,
-			"relationship" => $this->relationship
+			"kindergarten_info" => $this->kindergartenInfo,
+			"postponement_info" => $this->postponementInfo,
+			"school_info" => $this->schoolInfo,
+			"out_of_school_info" => $this->outOfSchoolInfo,
+			"level" => $this->level
 		];
     }
 }

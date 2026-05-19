@@ -109,6 +109,7 @@ Route::middleware(["auth", "auth.session"])->group(function () {
 		Route::post("/api/childrenRegistry", [ChildrenRegistryController::class, "create"]);
 		Route::get("/api/childrenRegistry/{childrenRegistry}", [ChildController::class, "list"]);
 		Route::post("/api/childrenRegistry/{childrenRegistry}", [ChildController::class, "create"]);
+		Route::get("/api/childrenRegistry/{childrenRegistry}/export", [ChildrenRegistryController::class, "export"]);
 		Route::get("/api/children/{child}", [ChildController::class, "show"]);
 		Route::delete("/api/children/{child}", [ChildController::class, "destroy"]);
 		Route::post("/api/children/{child}/fulfillment", [CompulsoryEducationFulfillmentController::class, "create"]);
