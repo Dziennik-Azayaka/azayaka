@@ -41,11 +41,9 @@ class StudentRegistryController extends Controller
 	}
 
 	public function export(Request $request, StudentRegistry $studentRegistry) {
-		$students = Student::where("students.student_registry_id", $studentRegistry->id)
-			->with(["guardians", "classUnits"])->get();
 		$xmlExport = new StudentsRegisterXmlExport(
 			SchoolUnit::where("id", "=", $studentRegistry->school_unit_id)->first(),
-			$studentRegistry->created_at, $students
+			$studentRegistry->created_at, $studentRegistry
 		);
 		return $request->input("format") == "xml" ? $xmlExport->downloadXml() : $xmlExport->downloadHtml();
 	}

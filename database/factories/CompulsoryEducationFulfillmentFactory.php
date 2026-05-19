@@ -2,7 +2,8 @@
 
 namespace Database\Factories;
 
-use App\Models\Student;
+use App\Models\Child;
+use App\Models\ChildrenRegistry;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -18,8 +19,7 @@ class CompulsoryEducationFulfillmentFactory extends Factory
 	public function definition(): array
 	{
 		return [
-			"student_id" => Student::factory(),
-			"children_registry_id" => 1,
+			"child_id" => Child::factory(),
 			"school_year" => rand(2020, 2024),
 			"control_date" => $this->faker->date(),
 			"fulfillment_form" => "w szkole w której obwodzie mieszka uczeń",

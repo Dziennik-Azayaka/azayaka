@@ -11,14 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create("compulsory_education_fulfillments", function (Blueprint $table) {
+        Schema::create("children", function (Blueprint $table) {
             $table->id();
-			$table->foreignId("child_id")->constrained("children")->onDelete("cascade");
-			$table->integer("school_year");
-			$table->date("control_date");
-			$table->string("fulfillment_form");
-			$table->integer("level");
-			$table->string("relationship");
+			$table->foreignId("person_id")->constrained("people")->cascadeOnDelete();
             $table->timestamps();
         });
     }
@@ -28,6 +23,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists("compulsory_education_fulfillments");
+        Schema::dropIfExists("children");
     }
 };

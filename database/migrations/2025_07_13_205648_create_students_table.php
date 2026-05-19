@@ -12,15 +12,7 @@ return new class extends Migration {
 	{
 		Schema::create("students", function (Blueprint $table) {
 			$table->id();
-			$table->string("first_name");
-			$table->string("last_name");
-			$table->string("second_name")->nullable();
-			$table->string("pesel")->nullable();
-			$table->string("alternate_identity_document")->nullable();
-			$table->date("birthdate");
-			$table->string("birthplace")->nullable();
-			$table->string("gender")->nullable();
-			$table->string("last_modified_by")->nullable();
+			$table->foreignId("person_id")->constrained("people")->cascadeOnDelete();
 			$table->date("admission_date");
 			$table->date("leave_date")->nullable();
 			$table->string("leave_reason")->nullable();

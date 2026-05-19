@@ -16,7 +16,7 @@ return new class extends Migration {
 			$table->timestamps();
 		});
 
-		Schema::table("students", function (Blueprint $table) {
+		Schema::table("children", function (Blueprint $table) {
 			$table->foreignId("children_registry_id")->nullable()->constrained("children_registries")->cascadeOnDelete();
 		});
 	}

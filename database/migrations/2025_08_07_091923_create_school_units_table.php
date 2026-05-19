@@ -29,6 +29,10 @@ return new class extends Migration
 			$table->foreignId("school_complex_id")->nullable()->constrained("school_complexes")->cascadeOnDelete();
             $table->timestamps();
         });
+
+		Schema::table("people", function (Blueprint $table) {
+			$table->foreignId("school_unit_id")->constrained("school_units")->cascadeOnDelete();
+		});
     }
 
     /**

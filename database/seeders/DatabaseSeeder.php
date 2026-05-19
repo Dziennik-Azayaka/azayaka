@@ -4,11 +4,13 @@ namespace Database\Seeders;
 
 use App\Models\AccountAccess;
 use App\Models\AccountLog;
+use App\Models\Child;
 use App\Models\ChildrenRegistry;
 use App\Models\ClassificationPeriod;
 use App\Models\ClassUnit;
 use App\Models\CompulsoryEducationFulfillment;
 use App\Models\Guardian;
+use App\Models\Person;
 use App\Models\ResidenceAddress;
 use App\Models\SchoolComplex;
 use App\Models\SchoolUnit;
@@ -46,10 +48,8 @@ class DatabaseSeeder extends Seeder
 			"school_unit_id" => 1,
 			"created_at" => "2024-09-01"
 		]);
-		$students = Student::factory(10)->create([
-			"student_registry_id" => $studentRegistry->id,
-			"children_registry_id" => $childrenRegistry->id
-		]);
+		$people = Person::factory(10)->create();
+		Student::factory(10)->recycle($people)->recycle($studentRegistry)->create();
 		Guardian::factory(10)->create();
 		Employee::factory(10)->create();
 		AccountAccess::factory(10)->create();
@@ -123,6 +123,7 @@ class DatabaseSeeder extends Seeder
 			]);
 		});
 
-		CompulsoryEducationFulfillment::factory(10)->recycle($students)->create();
+		$children = Child::factory(10)->recycle($people)->recycle($childrenRegistry)->create();
+		CompulsoryEducationFulfillment::factory(10)->recycle($children)->create();
 	}
 }

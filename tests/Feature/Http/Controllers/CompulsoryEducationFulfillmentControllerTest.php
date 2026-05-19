@@ -2,13 +2,12 @@
 
 namespace Tests\Feature\Http\Controllers;
 
+use App\Models\Child;
 use App\Models\ChildrenRegistry;
 use App\Models\CompulsoryEducationFulfillment;
 use App\Models\SchoolUnit;
-use App\Models\Student;
 use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 
 final class CompulsoryEducationFulfillmentControllerTest extends TestCase
@@ -18,12 +17,7 @@ final class CompulsoryEducationFulfillmentControllerTest extends TestCase
     public function test_can_create_compulsory_education_fulfillment(): void
     {
 		$this->actingUser();
-		$childrenRegistry = ChildrenRegistry::create([
-			"school_unit_id" => SchoolUnit::factory()->create()->id,
-		]);
-		$student = Student::factory()->create([
-			"children_registry_id" => $childrenRegistry->id
-		]);
+		$child = Child::factory()->create();
 		$payload = [
 			"schoolYear" => 2025,
 			"controlDate" => Carbon::now()->format("Y-m-d"),
@@ -31,11 +25,10 @@ final class CompulsoryEducationFulfillmentControllerTest extends TestCase
 			"level" => 5,
 			"relationship" => "podlega obowiązku szkolnemu w szkole podstawowej"
 		];
-		$response = $this->post("/api/childrenRegistry/$childrenRegistry->id/$student->id/fulfillment", $payload);
+		$response = $this->post("/api/children/$child->id/fulfillment", $payload);
 		$response->assertCreated();
-		$payload["children_registry_id"] = $childrenRegistry->id;
-		$payload["student_id"] = $student->id;
 		$this->assertDatabaseHas("compulsory_education_fulfillments", [
+			"child_id" => $child->id,
 			"school_year" => $payload["schoolYear"],
 			"control_date" => $payload["controlDate"],
 			"fulfillment_form" => $payload["fulfillmentForm"],
@@ -47,15 +40,8 @@ final class CompulsoryEducationFulfillmentControllerTest extends TestCase
 	public function test_can_update_compulsory_education_fulfillment(): void
 	{
 		$this->actingUser();
-		$childrenRegistry = ChildrenRegistry::create([
-			"school_unit_id" => SchoolUnit::factory()->create()->id,
-		]);
-		$student = Student::factory()->create([
-			"children_registry_id" => $childrenRegistry->id,
-		]);
-		$fulfillment = CompulsoryEducationFulfillment::factory()->recycle($student)->create([
-			"children_registry_id" => $childrenRegistry->id,
-		]);
+		$child = Child::factory()->create();
+		$fulfillment = CompulsoryEducationFulfillment::factory()->recycle($child)->create();
 		$updatedPayload = [
 			"schoolYear" => 2026,
 			"controlDate" => Carbon::now()->addYear()->format("Y-m-d"),
@@ -63,7 +49,7 @@ final class CompulsoryEducationFulfillmentControllerTest extends TestCase
 			"level" => 2,
 			"relationship" => "podlega obowiązkowi szkolnemu w szkole ponadpodstawowej"
 		];
-		$response = $this->put("/api/childrenRegistry/$childrenRegistry->id/$student->id/fulfillment/$fulfillment->id", $updatedPayload);
+		$response = $this->put("/api/children/$child->id/fulfillment/$fulfillment->id", $updatedPayload);
 		$response->assertOk();
 		$this->assertDatabaseHas("compulsory_education_fulfillments", [
 			"id" => $fulfillment->id,
@@ -78,24 +64,12 @@ final class CompulsoryEducationFulfillmentControllerTest extends TestCase
 	public function test_can_delete_compulsory_education_fulfillment(): void
 	{
 		$this->actingUser();
-		$childrenRegistry = ChildrenRegistry::create([
-			"school_unit_id" => SchoolUnit::factory()->create()->id,
-		]);
-		$student = Student::factory()->create([
-			"children_registry_id" => $childrenRegistry->id,
-		]);
-		$fulfillment = CompulsoryEducationFulfillment::factory()->recycle($student)->create([
-			"children_registry_id" => $childrenRegistry->id,
-		]);
-		$response = $this->delete("/api/childrenRegistry/$childrenRegistry->id/$student->id/fulfillment/$fulfillment->id");
+		$child = Child::factory()->create();
+		$fulfillment = CompulsoryEducationFulfillment::factory()->recycle($child)->create();
+		$response = $this->delete("/api/children/$child->id/fulfillment/$fulfillment->id");
 		$response->assertOk();
 		$this->assertDatabaseMissing("compulsory_education_fulfillments", [
-			"id" => $fulfillment->id,
-			"school_year" => $fulfillment->school_year,
-			"control_date" => $fulfillment->control_date,
-			"fulfillment_form" => $fulfillment->fulfillment_form,
-			"level" => $fulfillment->level,
-			"relationship" => $fulfillment->relationship
+			"id" => $fulfillment->id
 		]);
 	}
 }

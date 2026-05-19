@@ -11,8 +11,8 @@ class ResidenceAddress extends Model
     use HasFactory;
 
 	protected $fillable = ["country", "commune", "town", "postal_code", "street", "house_number", "flat_number"];
-	public function students()
+	public function people()
 	{
-		return $this->hasMany(Student::class, 'residence_address_id');
+		return $this->hasMany(Person::class, "residence_address_id");
 	}
 }

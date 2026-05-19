@@ -22,7 +22,7 @@ return new class extends Migration {
 			$table->timestamps();
 		});
 
-		Schema::table("students", function (Blueprint $table) {
+		Schema::table("people", function (Blueprint $table) {
 			$table->foreignId("residence_address_id")->nullable()->constrained("residence_addresses")->cascadeOnDelete();
 		});
 
@@ -37,7 +37,7 @@ return new class extends Migration {
 	public function down(): void
 	{
 		Schema::dropIfExists("residence_addresses");
-		Schema::table("students", function (Blueprint $table) {
+		Schema::table("people", function (Blueprint $table) {
 			$table->dropForeign(["residence_address_id"]);
 		});
 		Schema::table("guardians", function (Blueprint $table) {

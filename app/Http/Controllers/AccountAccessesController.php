@@ -6,6 +6,7 @@ use App\Enums\AccountEventType;
 use App\Enums\FrontendModule;
 use App\Models\AccountAccess;
 use App\Models\Employee;
+use App\Models\Guardian;
 use App\Models\Student;
 use App\Models\User;
 use App\Utilities\AccountEventLogger;
@@ -143,8 +144,8 @@ class AccountAccessesController extends Controller
 	private function getFirstAndLastNameFromActivationCode(AccountAccess $activation_code)
 	{
 		if ($activation_code->student) {
-			$first_name = $activation_code->student->first_name;
-			$last_name = $activation_code->student->last_name;
+			$first_name = $activation_code->student->person->first_name;
+			$last_name = $activation_code->student->person->last_name;
 		} else if ($activation_code->employee) {
 			$first_name = $activation_code->employee->first_name;
 			$last_name = $activation_code->employee->last_name;
@@ -169,17 +170,17 @@ class AccountAccessesController extends Controller
 			if ($access->guardian) {
 				$accessesWithPersonas[] = [
 					"id" => $access->id,
-					"name" => $access->guardian->student->first_name . " " . $access->guardian->student->last_name,
+					"name" => $access->guardian->person->first_name . " " . $access->guardian->person->last_name,
 					"type" => "guardian",
 					"updatedAt" => $access->updated_at,
-					"modulesAvailable" => $this->getAvailableModules($access->guardian->student)
+					"modulesAvailable" => $this->getAvailableModules($access->guardian)
 				];
 			}
 
 			if ($access->student) {
 				$accessesWithPersonas[] = [
 					"id" => $access->id,
-					"name" => $access->student->first_name . " " . $access->student->last_name,
+					"name" => $access->student->person->first_name . " " . $access->student->person->last_name,
 					"type" => "student",
 					"updatedAt" => $access->updated_at,
 					"modulesAvailable" => $this->getAvailableModules($access->student)
@@ -203,11 +204,11 @@ class AccountAccessesController extends Controller
 		];
 	}
 
-	private function getAvailableModules(Student|Employee $entity)
+	private function getAvailableModules(Student|Employee|Guardian $entity)
 	{
 		$modules = [];
 
-		if ($entity instanceof Student) {
+		if ($entity instanceof Student || $entity instanceof Guardian) {
 			$modules[] = FrontendModule::STUDENT;
 		} else {
 			if ($entity->is_admin || $entity->is_headmaster || $entity->is_secretary) {

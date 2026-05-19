@@ -12,8 +12,8 @@ class Guardian extends BaseModel
     use HasFactory;
 	protected $fillable = ["first_name", "last_name", "phone_number", "email"];
 
-	function student() {
-		return $this->belongsTo(Student::class);
+	function person(): BelongsTo {
+		return $this->belongsTo(Person::class);
 	}
 
 	public function residenceAddress(): BelongsTo

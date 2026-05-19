@@ -12,8 +12,7 @@ class CompulsoryEducationFulfillment extends Model
 	use HasFactory;
 
 	protected $fillable = [
-		"student_id",
-		"children_registry_id",
+		"child_id",
 		"school_year",
 		"control_date",
 		"fulfillment_form",
@@ -21,13 +20,8 @@ class CompulsoryEducationFulfillment extends Model
 		"relationship"
 	];
 
-	public function student(): BelongsTo
+	public function child(): BelongsTo
 	{
-		return $this->belongsTo(Student::class);
-	}
-
-	public function childrenRegistry(): BelongsTo
-	{
-		return $this->belongsTo(ChildrenRegistry::class);
+		return $this->belongsTo(Child::class);
 	}
 }

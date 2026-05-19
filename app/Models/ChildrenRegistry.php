@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class ChildrenRegistry extends Model
 {
+	use HasFactory;
 
 	protected $fillable = ["school_unit_id"];
 	public function schoolUnit(): BelongsTo
@@ -17,12 +18,13 @@ class ChildrenRegistry extends Model
 		return $this->belongsTo(SchoolUnit::class);
 	}
 
-	public function students(): HasMany
+	public function children(): HasMany
 	{
-		return $this->hasMany(Student::class);
+		return $this->hasMany(Child::class);
 	}
 
-	public function isArchived() {
+	public function isArchived(): bool
+	{
 		return $this->schoolUnit->active == false;
 	}
 }

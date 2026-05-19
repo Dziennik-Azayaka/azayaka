@@ -22,7 +22,8 @@ class StudentRegistry extends Model
 		return $this->hasMany(Student::class);
 	}
 
-	public function isArchived() {
+	public function isArchived(): bool
+	{
 		return $this->schoolUnit->active == false;
 	}
 }

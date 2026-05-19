@@ -2,12 +2,14 @@
 
 use App\Http\Controllers\AccountAccessesController;
 use App\Http\Controllers\AccountLogController;
+use App\Http\Controllers\ChildController;
 use App\Http\Controllers\ChildrenRegistryController;
 use App\Http\Controllers\ClassificationPeriodController;
 use App\Http\Controllers\ClassUnitController;
 use App\Http\Controllers\CompulsoryEducationFulfillmentController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\GuardianController;
+use App\Http\Controllers\PersonController;
 use App\Http\Controllers\SchoolComplexController;
 use App\Http\Controllers\SchoolUnitController;
 use App\Http\Controllers\SessionController;
@@ -82,28 +84,36 @@ Route::middleware(["auth", "auth.session"])->group(function () {
 	});
 
 	Route::middleware(["employee.role:secretary"])->group(function () {
-		Route::get("/api/studentRegistry", [StudentRegistryController::class, "list"]);
-		Route::post("/api/studentRegistry", [StudentRegistryController::class, "create"]);
-		Route::get("/api/studentRegistry/{studentRegistry}", [StudentController::class, "listByStudentRegistry"]);
-		Route::post("/api/studentRegistry/{studentRegistry}", [StudentController::class, "create"]);
-		Route::get("/api/studentRegistry/{studentRegistry}/export", [StudentRegistryController::class, "export"]);
-		Route::post("/api/studentRegistry/{studentRegistry}/massCreate", [StudentController::class, "massCreateFromCSV"]);
-
-		Route::get("/api/students/{student}", [StudentController::class, "show"]);
-		Route::put("/api/students/{student}", [StudentController::class, "update"]);
-		Route::delete("/api/students/{student}", [StudentController::class, "destroy"]);
-		Route::get("/api/students/{student}/guardians", [GuardianController::class, "list"]);
-		Route::post("/api/students/{student}/guardians", [GuardianController::class, "create"]);
+		Route::post("/api/schoolUnits/{schoolUnitId}/people/lookup", [PersonController::class, "lookup"]);
+		Route::post("/api/schoolUnits/{schoolUnitId}/people", [PersonController::class, "create"]);
+		Route::post("/api/schoolUnits/{schoolUnitId}/people/import", [PersonController::class, "import"]);
+		Route::put("/api/schoolUnits/{schoolUnitId}/people/{person}", [PersonController::class, "update"]);
+		Route::delete("/api/people/{person}", [PersonController::class, "destroy"]);
+		Route::get("/api/people/{person}/guardians", [GuardianController::class, "list"]);
+		Route::post("/api/people/{person}/guardians", [GuardianController::class, "create"]);
 
 		Route::put("/api/guardians/{guardian}", [GuardianController::class, "update"]);
 		Route::delete("/api/guardians/{guardian}", [GuardianController::class, "destroy"]);
 
+		Route::get("/api/studentRegistry", [StudentRegistryController::class, "list"]);
+		Route::post("/api/studentRegistry", [StudentRegistryController::class, "create"]);
+		Route::get("/api/studentRegistry/{studentRegistry}", [StudentController::class, "list"]);
+		Route::post("/api/studentRegistry/{studentRegistry}", [StudentController::class, "create"]);
+		Route::get("/api/studentRegistry/{studentRegistry}/export", [StudentRegistryController::class, "export"]);
+
+		Route::get("/api/students/{student}", [StudentController::class, "show"]);
+		Route::put("/api/students/{student}", [StudentController::class, "update"]);
+		Route::delete("/api/students/{student}", [StudentController::class, "destroy"]);
+
 		Route::get("/api/childrenRegistry", [ChildrenRegistryController::class, "list"]);
 		Route::post("/api/childrenRegistry", [ChildrenRegistryController::class, "create"]);
-		Route::get("/api/childrenRegistry/{studentRegistry}", [StudentController::class, "listByChildrenRegistry"]);
-		Route::post("/api/childrenRegistry/{childrenRegistry}/{student}/fulfillment", [CompulsoryEducationFulfillmentController::class, "create"]);
-		Route::put("/api/childrenRegistry/{childrenRegistry}/{student}/fulfillment/{fulfillment}", [CompulsoryEducationFulfillmentController::class, "update"]);
-		Route::delete("/api/childrenRegistry/{childrenRegistry}/{student}/fulfillment/{fulfillment}", [CompulsoryEducationFulfillmentController::class, "destroy"]);
+		Route::get("/api/childrenRegistry/{childrenRegistry}", [ChildController::class, "list"]);
+		Route::post("/api/childrenRegistry/{childrenRegistry}", [ChildController::class, "create"]);
+		Route::get("/api/children/{child}", [ChildController::class, "show"]);
+		Route::delete("/api/children/{child}", [ChildController::class, "destroy"]);
+		Route::post("/api/children/{child}/fulfillment", [CompulsoryEducationFulfillmentController::class, "create"]);
+		Route::put("/api/children/{child}/fulfillment/{fulfillment}", [CompulsoryEducationFulfillmentController::class, "update"]);
+		Route::delete("/api/children/{child}/fulfillment/{fulfillment}", [CompulsoryEducationFulfillmentController::class, "destroy"]);
 	});
 });
 

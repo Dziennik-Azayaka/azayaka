@@ -11,14 +11,18 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create("guardians", function (Blueprint $table) {
+        Schema::create("people", function (Blueprint $table) {
             $table->id();
 			$table->string("first_name");
 			$table->string("last_name");
-			$table->string("phone_number")->nullable();
-			$table->string("email")->nullable();
-			$table->foreignId("person_id")->constrained("people")->cascadeOnDelete();
-			$table->timestamps();
+			$table->string("second_name")->nullable();
+			$table->string("pesel")->nullable();
+			$table->string("alternate_identity_document")->nullable();
+			$table->date("birthdate");
+			$table->string("birthplace")->nullable();
+			$table->string("gender")->nullable();
+			$table->string("last_modified_by")->nullable();
+            $table->timestamps();
         });
     }
 
@@ -27,6 +31,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists("guardians");
+        Schema::dropIfExists("people");
     }
 };

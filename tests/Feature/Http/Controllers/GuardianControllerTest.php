@@ -3,23 +3,31 @@
 namespace Tests\Feature\Http\Controllers;
 
 use App\Models\Guardian;
-use App\Models\Student;
+use App\Models\Person;
+use App\Models\SchoolUnit;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 
 final class GuardianControllerTest extends TestCase
 {
 	use RefreshDatabase;
 
+	private function createPerson(): Person
+	{
+		$schoolUnit = SchoolUnit::factory()->create();
+		return Person::factory()->create([
+			"school_unit_id" => $schoolUnit->id
+		]);
+	}
+
 	public function test_can_list_guardians(): void
 	{
 		$this->actingUser();
-		$student = Student::factory()->create();
+		$person = $this->createPerson();
 		Guardian::factory()->count(5)->create([
-			"student_id" => $student->id
+			"person_id" => $person->id
 		]);
-		$response = $this->get("/api/students/$student->id/guardians");
+		$response = $this->get("/api/people/$person->id/guardians");
 		$response->assertOk();
 		$response->assertJsonIsArray();
 		$response->assertJsonCount(5);
@@ -37,8 +45,8 @@ final class GuardianControllerTest extends TestCase
 	public function test_can_create_guardian(): void
 	{
 		$this->actingUser();
-		$student = Student::factory()->create();
-		$response = $this->post("/api/students/$student->id/guardians", [
+		$person = $this->createPerson();
+		$response = $this->post("/api/people/$person->id/guardians", [
 			"firstName" => "John",
 			"lastName" => "Doe",
 			"email" => null,
@@ -47,7 +55,7 @@ final class GuardianControllerTest extends TestCase
 		]);
 		$response->assertCreated();
 		$this->assertDatabaseHas("guardians", [
-			"student_id" => $student->id,
+			"person_id" => $person->id,
 			"first_name" => "John",
 			"last_name" => "Doe",
 			"email" => null,

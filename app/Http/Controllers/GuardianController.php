@@ -6,6 +6,7 @@ use App\Exceptions\CustomValidationException;
 use App\Http\Requests\GuardianRequest;
 use App\Models\ChildrenRegistry;
 use App\Models\Guardian;
+use App\Models\Person;
 use App\Models\ResidenceAddress;
 use App\Models\Student;
 use App\Models\StudentRegistry;
@@ -15,15 +16,16 @@ use Illuminate\Http\Request;
 
 class GuardianController extends Controller
 {
-	public function list(Student $student) {
-		return $student->guardians()->get()->toresourceCollection();
+	public function list(Person $person) {
+		return $person->guardians->toResourceCollection();
 	}
 
-	public function create(GuardianRequest $request, Student $student) {
-		$this->checkIfRegistriesAreActive($student->studentRegistry, $student->childrenRegistry);
+	public function create(GuardianRequest $request, Person $person) {
+		$this->checkIfSchoolUnitIsActive($person);
+
 		$validated = CaseConverter::toSnakeCase($request->validated());
 		$guardian = new Guardian($validated);
-		$guardian->student()->associate($student);
+		$guardian->person()->associate($person);
 		$residenceAddress = $this->saveResidenceAddress($validated);
 		$guardian->residenceAddress()->associate($residenceAddress);
 		$guardian->save();
@@ -34,7 +36,7 @@ class GuardianController extends Controller
 	}
 
 	public function update(GuardianRequest $request, Guardian $guardian) {
-		$this->checkIfRegistriesAreActive($guardian->student->studentRegistry, $guardian->student->childrenRegistry);
+		$this->checkIfSchoolUnitIsActive($guardian->person);
 		$validated = CaseConverter::toSnakeCase($request->validated());
 		$guardian->update($validated);
 		$this->saveResidenceAddress($validated, $guardian->residenceAddress);
@@ -44,7 +46,7 @@ class GuardianController extends Controller
 	}
 
 	public function destroy(Guardian $guardian) {
-		$this->checkIfRegistriesAreActive($guardian->student->studentRegistry, $guardian->student->childrenRegistry);
+		$this->checkIfSchoolUnitIsActive($guardian->person);
 		$guardian->residenceAddress->delete();
 		$guardian->delete();
 		return \Response::json([
@@ -66,10 +68,9 @@ class GuardianController extends Controller
 		return $residenceAddress;
 	}
 
-	private function checkIfRegistriesAreActive(StudentRegistry $studentRegistry, ?ChildrenRegistry $childrenRegistry): void
-	{
-		if ($studentRegistry->isArchived() || $childrenRegistry?->isArchived()) {
-			throw CustomValidationException::withMessages(["STUDENT_REGISTRY_OR_CHILDREN_REGISTRY_ARCHIVED"]);
+	private function checkIfSchoolUnitIsActive(Person $person) {
+		if (!$person->schoolUnit->active) {
+			throw CustomValidationException::withMessages(["SCHOOL_UNIT_NOT_ACTIVE"]);
 		}
 	}
 }

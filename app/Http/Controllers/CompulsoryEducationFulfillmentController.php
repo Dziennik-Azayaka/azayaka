@@ -2,23 +2,20 @@
 
 namespace App\Http\Controllers;
 
+use App\Exceptions\CustomValidationException;
+use App\Http\Requests\CompulsoryEducationFulfillmentRequest;
+use App\Models\Child;
 use App\Models\ChildrenRegistry;
 use App\Models\CompulsoryEducationFulfillment;
-use App\Models\Student;
-use App\Utilities\ValidatorAssistant\ValidatorAssistant;
-use Illuminate\Http\Request;
 
 class CompulsoryEducationFulfillmentController extends Controller
 {
-	public function create(Request $request, ChildrenRegistry $childrenRegistry, Student $student)
+	public function create(CompulsoryEducationFulfillmentRequest $request, Child $child)
 	{
-		$validated = $this->validateFulfillmentData($request);
-		$validated["children_registry_id"] = $childrenRegistry->id;
-		$validated["student_id"] = $student->id;
-
+		$this->checkIfRegistryIsActive($child->childrenRegistry);
+		$validated = $request->validated();
 		$fulfillment = new CompulsoryEducationFulfillment();
-		$fulfillment->student_id = $student->id;
-		$fulfillment->children_registry_id = $childrenRegistry->id;
+		$fulfillment->child_id = $child->id;
 		$fulfillment->school_year = $validated["schoolYear"];
 		$fulfillment->control_date = $validated["controlDate"];
 		$fulfillment->fulfillment_form = $validated["fulfillmentForm"];
@@ -31,9 +28,10 @@ class CompulsoryEducationFulfillmentController extends Controller
 		], 201);
 	}
 
-	public function update(Request $request, ChildrenRegistry $childrenRegistry, Student $student, CompulsoryEducationFulfillment $fulfillment)
+	public function update(CompulsoryEducationFulfillmentRequest $request, Child $child, CompulsoryEducationFulfillment $fulfillment)
 	{
-		$validated = $this->validateFulfillmentData($request);
+		$this->checkIfRegistryIsActive($child->childrenRegistry);
+		$validated = $request->validated();
 		$fulfillment->school_year = $validated["schoolYear"];
 		$fulfillment->control_date = $validated["controlDate"];
 		$fulfillment->fulfillment_form = $validated["fulfillmentForm"];
@@ -45,22 +43,19 @@ class CompulsoryEducationFulfillmentController extends Controller
 		];
 	}
 
-	public function destroy(ChildrenRegistry $childrenRegistry, Student $student, CompulsoryEducationFulfillment $fulfillment)
+	public function destroy(Child $child, CompulsoryEducationFulfillment $fulfillment)
 	{
+		$this->checkIfRegistryIsActive($child->childrenRegistry);
 		$fulfillment->delete();
 		return [
 			"success" => true
 		];
 	}
 
-	protected function validateFulfillmentData(Request $request)
+	private function checkIfRegistryIsActive(ChildrenRegistry $childrenRegistry)
 	{
-		return ValidatorAssistant::validate($request, [
-			"schoolYear" => "required|integer",
-			"controlDate" => "required|date",
-			"fulfillmentForm" => "required|string|max:255",
-			"level" => "required|integer",
-			"relationship" => "required|string|max:255",
-		]);
+		if ($childrenRegistry->isArchived()) {
+			throw CustomValidationException::withMessages(["CHILDREN_REGISTRY_ARCHIVED"]);
+		}
 	}
 }

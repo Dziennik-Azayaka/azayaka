@@ -5,6 +5,7 @@ namespace App\XmlExports\Register;
 use App\Enums\XmlExportType;
 use App\Models\SchoolUnit;
 use App\Models\Student;
+use App\Models\StudentRegistry;
 use App\XmlExports\Register\RegisterXmlExport;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
@@ -21,12 +22,12 @@ class StudentsRegisterXmlExport extends RegisterXmlExport
 		return XmlExportType::STUDENTS_REGISTER;
 	}
 
-	public function __construct(SchoolUnit $schoolUnit, Carbon|string $date, Collection|array $students)
+	public function __construct(SchoolUnit $schoolUnit, Carbon|string $date, StudentRegistry $studentRegistry)
 	{
 		parent::__construct($schoolUnit, $date);
 		$this->studentsElement = $this->dom->createElement("Uczniowie");
 		$this->sectionNode->appendChild($this->studentsElement);
-		foreach ($students as $student) {
+		foreach ($studentRegistry->students()->with(["person", "person.residenceAddress"])->get() as $student) {
 			$this->addStudent($student);
 		}
 	}
@@ -36,25 +37,25 @@ class StudentsRegisterXmlExport extends RegisterXmlExport
 		$studentElement = $this->dom->createElement("Uczen");
 		$studentElement->setAttribute("id", $student->id);
 		$studentElement->appendChild($this->dom->createElement("Numer", $student->id));
-		$studentElement->appendChild($this->dom->createElement("Imie", $student->first_name));
-		if ($student->second_name) {
-			$studentElement->appendChild($this->dom->createElement("DrugieImie", $student->second_name));
+		$studentElement->appendChild($this->dom->createElement("Imie", $student->person->first_name));
+		if ($student->person->second_name) {
+			$studentElement->appendChild($this->dom->createElement("DrugieImie", $student->person->second_name));
 		}
-		$studentElement->appendChild($this->dom->createElement("Nazwisko", $student->last_name));
+		$studentElement->appendChild($this->dom->createElement("Nazwisko", $student->person->last_name));
 		$studentElement->appendChild($this->dom->createElement(
-			"DataUrodzenia", Carbon::parse($student->birthdate)->format("Y-m-d")));
-		if ($student->birthplace) {
-			$studentElement->appendChild($this->dom->createElement("MiejsceUrodzenia", $student->birthplace));
+			"DataUrodzenia", Carbon::parse($student->person->birthdate)->format("Y-m-d")));
+		if ($student->person->birthplace) {
+			$studentElement->appendChild($this->dom->createElement("MiejsceUrodzenia", $student->person->birthplace));
 		}
-		if ($student->pesel) {
-			$studentElement->appendChild($this->dom->createElement("Pesel", $student->pesel));
+		if ($student->person->pesel) {
+			$studentElement->appendChild($this->dom->createElement("Pesel", $student->person->pesel));
 		} else {
 			$studentElement->appendChild($this->dom->createElement(
-				"NazwaINumerDokumentuPotwierdzajacegoTozsamosc", $student->alternate_identity_document));
+				"NazwaINumerDokumentuPotwierdzajacegoTozsamosc", $student->person->alternate_identity_document));
 		}
-		$this->buildResidenceAddressData($studentElement, $student->residenceAddress);
+		$this->buildResidenceAddressData($studentElement, $student->person->residenceAddress);
 		$guardiansElement = $this->dom->createElement("Rodzice");
-		$student->guardians->each(function ($guardian) use ($guardiansElement) {
+		$student->person->guardians->each(function ($guardian) use ($guardiansElement) {
 			$parentElement = $this->dom->createElement("Rodzic");
 			$parentElement->setAttribute("id", $guardian->id);
 			$parentElement->appendChild($this->dom->createElement("Imie", $guardian->first_name));

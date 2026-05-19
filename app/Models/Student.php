@@ -13,9 +13,6 @@ class Student extends BaseModel
 	/** @use HasFactory<\Database\Factories\StudentFactory> */
 	use HasFactory;
 
-	protected $fillable = ["first_name", "last_name", "second_name", "pesel", "alternate_identity_document",
-		"birthdate", "birthplace", "gender", "admission_date"];
-
 	function guardians(): HasMany
 	{
 		return $this->hasMany(Guardian::class);
@@ -26,22 +23,9 @@ class Student extends BaseModel
 		return $this->belongsTo(StudentRegistry::class);
 	}
 
-	public function childrenRegistry(): BelongsTo
+	public function person(): BelongsTo
 	{
-		return $this->belongsTo(ChildrenRegistry::class);
-	}
-
-	public function residenceAddress(): BelongsTo
-	{
-		return $this->belongsTo(
-			ResidenceAddress::class,
-			'residence_address_id'
-		);
-	}
-
-	public function compulsoryEducationFulfillment(): HasMany
-	{
-		return $this->hasMany(CompulsoryEducationFulfillment::class);
+		return $this->belongsTo(Person::class);
 	}
 
 	public function classUnits(): BelongsToMany

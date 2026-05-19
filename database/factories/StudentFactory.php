@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\Person;
 use App\Models\ResidenceAddress;
 use App\Models\StudentRegistry;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -18,23 +19,13 @@ class StudentFactory extends Factory
 	 */
 	public function definition(): array
 	{
-		$hasPolishCitizenship = rand(1, 10) > 3;
 		$leftSchool = rand(1, 10) > 8;
 
 		return [
-			"first_name" => $this->faker->firstName,
-			"last_name" => $this->faker->lastName,
-			"second_name" => rand(1, 10) > 7 ? $this->faker->firstName : null,
-			"pesel" => $hasPolishCitizenship ? $this->faker->unique()->numerify("###########") : null,
-			"alternate_identity_document" => $hasPolishCitizenship ? null : "ALT-" . $this->faker->unique()->numerify("#######"),
-			"birthdate" => $this->faker->date(),
-			"birthplace" => $this->faker->city(),
-			"gender" => rand(1, 2) == 1 ? "male" : "female",
-			"last_modified_by" => "System (Bezpośredni wpis do bazy danych)",
+			"person_id" => Person::factory()->create(),
 			"admission_date" => "2025-09-01",
 			"leave_date" => $leftSchool ? null : "2025-12-31",
 			"leave_reason" => $leftSchool ? "Przeniesienie do innej placówki edukacyjnej." : null,
-			"residence_address_id" => ResidenceAddress::factory()->create()->id,
 			"student_registry_id" => StudentRegistry::factory(),
 		];
 	}
