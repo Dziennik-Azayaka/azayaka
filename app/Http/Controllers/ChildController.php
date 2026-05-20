@@ -11,9 +11,23 @@ use Illuminate\Http\Request;
 
 class ChildController extends Controller
 {
-	public function list(ChildrenRegistry $childrenRegistry)
+	public function list(ChildrenRegistry $childrenRegistry, Request $request)
 	{
-		return $childrenRegistry->children()->with(["person", "person.residenceAddress", "person.guardians"])->get()->toResourceCollection();
+		$query = $childrenRegistry->children()->with(["person", "person.residenceAddress", "person.guardians"]);
+
+		if ($request->has("birthYear")) {
+			$query = $query->whereHas("person", function ($personQuery) use ($request) {
+				$personQuery->whereYear("birthdate", "=", $request->input("birthYear"));
+			});
+		}
+
+		if ($request->has("gender")) {
+			$query = $query->whereHas("person", function ($personQuery) use ($request) {
+				$personQuery->where("gender", "=", $request->input("gender"));
+			});
+		}
+
+		return $query->get()->toResourceCollection();
 	}
 
 	public function show(Child $child)

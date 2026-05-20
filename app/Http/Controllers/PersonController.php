@@ -200,7 +200,7 @@ class PersonController extends Controller
 	 */
 	private function savePersonAndAddressToDatabase(
 		array   $validated,
-		int     $schoolUnitId = null,
+		?int     $schoolUnitId = null,
 		?Person $person = null): Person
 	{
 		$updating = !($person == null);
