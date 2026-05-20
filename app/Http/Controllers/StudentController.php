@@ -17,9 +17,53 @@ use Illuminate\Validation\Rules\File;
 
 class StudentController extends Controller
 {
-	public function list(StudentRegistry $studentRegistry)
+	public function list(StudentRegistry $studentRegistry, Request $request)
 	{
-		return $studentRegistry->students()->with(["person", "person.residenceAddress", "person.guardians"])->get()->toResourceCollection();
+		$query = $studentRegistry->students()->with(["person", "person.residenceAddress", "person.guardians"]);
+
+		if ($request->has("birthYear")) {
+			$query = $query->whereHas("person", function ($personQuery) use ($request) {
+				$personQuery->whereYear("birthdate", "=", $request->input("birthYear"));
+			});
+		}
+
+		if ($request->has("gender")) {
+			$query = $query->whereHas("person", function ($personQuery) use ($request) {
+				$personQuery->where("gender", "=", $request->input("gender"));
+			});
+		}
+
+		if ($request->has("status")) {
+			switch ($request->input("status")) {
+				case "active":
+					$query = $query->whereNull("leave_date");
+					break;
+				case "inactive":
+					$query = $query->whereNotNull("leave_date");
+					break;
+				case "trashed":
+					$query = $query->onlyTrashed();
+					break;
+			}
+		}
+
+		if ($request->has("classUnitId")) {
+			$query = $query->whereHas("classUnits", function ($classUnitQuery) use ($request) {
+				$classUnitQuery->where("class_units.id", "=", $request->input("classUnitId"));
+			});
+		} else if ($request->has("level")) {
+			$query = $query->whereHas("classUnits", function ($classUnitQuery) use ($request) {
+				$classUnitQuery->whereHas("periods", function ($periodQuery) use ($request) {
+					$now = now();
+
+					$periodQuery->where("period_start", "<=", $now)
+						->where("period_end", ">=", $now)
+						->where("class_units_periods.level", "=", $request->input("level"));
+				});
+			});
+		}
+
+		return $query->get()->toResourceCollection();
 	}
 
 	public function show(Student $student)
@@ -73,7 +117,7 @@ class StudentController extends Controller
 		];
 	}
 
-	private	function checkIfRegistryIsActive(StudentRegistry $studentRegistry)
+	private function checkIfRegistryIsActive(StudentRegistry $studentRegistry)
 	{
 		if ($studentRegistry->isArchived()) {
 			throw CustomValidationException::withMessages(["STUDENT_REGISTRY_ARCHIVED"]);
