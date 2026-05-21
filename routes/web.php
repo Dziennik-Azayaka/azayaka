@@ -8,6 +8,7 @@ use App\Http\Controllers\ClassificationPeriodController;
 use App\Http\Controllers\ClassUnitController;
 use App\Http\Controllers\CompulsoryEducationFulfillmentController;
 use App\Http\Controllers\EmployeeController;
+use App\Http\Controllers\GradebookController;
 use App\Http\Controllers\GuardianController;
 use App\Http\Controllers\PersonController;
 use App\Http\Controllers\SchoolComplexController;
@@ -116,6 +117,11 @@ Route::middleware(["auth", "auth.session"])->group(function () {
 		Route::post("/api/children/{child}/fulfillment", [CompulsoryEducationFulfillmentController::class, "create"]);
 		Route::put("/api/children/{child}/fulfillment/{fulfillment}", [CompulsoryEducationFulfillmentController::class, "update"]);
 		Route::delete("/api/children/{child}/fulfillment/{fulfillment}", [CompulsoryEducationFulfillmentController::class, "destroy"]);
+	});
+
+	Route::middleware(["employee.role:administrator,headmaster,teacher"])->group(function () {
+		Route::get("/api/schoolUnits/{schoolUnitId}/gradebooks", [GradebookController::class, "list"]);
+		Route::post("/api/gradebooks", [GradebookController::class, "create"]);
 	});
 });
 

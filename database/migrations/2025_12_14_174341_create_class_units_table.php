@@ -31,15 +31,6 @@ return new class extends Migration
 			$table->date("date_to");
 			$table->timestamps();
 		});
-
-		Schema::create("class_units_students", function (Blueprint $table) {
-			$table->id();
-			$table->foreignId("class_unit_id")->constrained("class_units")->onDelete("cascade");
-			$table->foreignId("student_id")->constrained("students")->onDelete("cascade");
-			$table->date("date_from");
-			$table->date("date_to");
-			$table->timestamps();
-		});
     }
 
     /**
@@ -49,6 +40,5 @@ return new class extends Migration
     {
         Schema::dropIfExists("class_units");
 		Schema::dropIfExists("class_units_employees");
-		Schema::dropIfExists("class_units_students");
     }
 };

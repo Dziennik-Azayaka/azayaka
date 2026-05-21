@@ -24,9 +24,9 @@ class Student extends BaseModel
 		return $this->belongsTo(Person::class);
 	}
 
-	public function classUnits(): BelongsToMany
+	public function gradebooks(): BelongsToMany
 	{
-		return $this->belongsToMany(ClassUnit::class, "class_units_students", "student_id", "class_unit_id");
+		return $this->belongsToMany(Gradebook::class, "gradebooks_students", "student_id", "gradebook_id");
 	}
 
 	public function classUnits(): BelongsToMany

@@ -27,12 +27,13 @@ class ClassUnit extends Model
 	public function students(): BelongsToMany
 	{
 		return $this->belongsToMany(Student::class, "class_units_form_students", "class_unit_id", "student_id")
-			->using(ClassUnitStudents::class)
+			->using(GradebookStudents::class)
 			->withPivot("id", "date_from", "date_to")
 			->withTimestamps();
 	}
 
-	public function schoolUnit() {
+	public function schoolUnit()
+	{
 		return $this->belongsTo(SchoolUnit::class);
 	}
 
@@ -41,11 +42,17 @@ class ClassUnit extends Model
 		return $this->belongsTo(ClassificationPeriod::class, "starting_classification_period_id");
 	}
 
-	public function periods() {
+	public function periods()
+	{
 		return $this->belongsToMany(ClassificationPeriod::class, "class_units_periods",
 			"class_unit_id", "classification_period_id")
 			->using(ClassUnitPeriod::class)
 			->withPivot("level", "id");
+	}
+
+	public function getLevelDuringClassificationPeriod(int $classificationPeriodId): ?int
+	{
+		return $this->periods()->where("classification_period_id", $classificationPeriodId)->first()?->pivot?->level ?? null;
 	}
 
 	public function currentPeriodEntry($date = null)
@@ -56,7 +63,8 @@ class ClassUnit extends Model
 		return $this->periods()->where("period_start", "<=", $date)->where("period_end", ">=", $date)->first();
 	}
 
-	public function getCurrentLevelAttribute() {
+	public function getCurrentLevelAttribute(): ?int
+	{
 		return $this->currentPeriodEntry()->pivot->level ?? null;
 	}
 
@@ -68,8 +76,8 @@ class ClassUnit extends Model
 			}),
 			ClassUnitCategory::ARCHIVE => $query->whereHas("periods")
 				->whereDoesntHave("periods", function ($query) {
-				$query->where("period_end", ">=", now());
-			}),
+					$query->where("period_end", ">=", now());
+				}),
 			ClassUnitCategory::FUTURE => $query->whereHas("startingPeriod", function ($query) {
 				$query->where("period_start", ">", now());
 			})

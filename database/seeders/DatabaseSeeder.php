@@ -9,6 +9,7 @@ use App\Models\ChildrenRegistry;
 use App\Models\ClassificationPeriod;
 use App\Models\ClassUnit;
 use App\Models\CompulsoryEducationFulfillment;
+use App\Models\Gradebook;
 use App\Models\Guardian;
 use App\Models\Person;
 use App\Models\ResidenceAddress;
@@ -125,5 +126,7 @@ class DatabaseSeeder extends Seeder
 
 		$children = Child::factory(10)->recycle($people)->recycle($childrenRegistry)->create();
 		CompulsoryEducationFulfillment::factory(10)->recycle($children)->create();
+
+		Gradebook::factory(20)->recycle($classUnits, $classificationPeriods)->create();
 	}
 }

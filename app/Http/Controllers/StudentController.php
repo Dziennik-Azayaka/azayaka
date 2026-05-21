@@ -48,12 +48,12 @@ class StudentController extends Controller
 		}
 
 		if ($request->has("classUnitId")) {
-			$query = $query->whereHas("classUnits", function ($classUnitQuery) use ($request) {
-				$classUnitQuery->where("class_units.id", "=", $request->input("classUnitId"));
+			$query = $query->whereHas("gradebooks", function ($gradebookQuery) use ($request) {
+				$gradebookQuery->where("class_unit_id", "=", $request->input("classUnitId"));
 			});
 		} else if ($request->has("level")) {
-			$query = $query->whereHas("classUnits", function ($classUnitQuery) use ($request) {
-				$classUnitQuery->whereHas("periods", function ($periodQuery) use ($request) {
+			$query = $query->whereHas("gradebooks", function ($gradebookQuery) use ($request) {
+				$gradebookQuery->whereHas("startingClassificationPeriod", function ($periodQuery) use ($request) {
 					$now = now();
 
 					$periodQuery->where("period_start", "<=", $now)
