@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Enums\AccountEventType;
 use App\Utilities\AccountEventLogger;
-use App\Utilities\ArrayCameliser;
+use App\Utilities\CaseConverter;
 use App\Utilities\ValidatorAssistant\ValidatorAssistant;
 use DB;
 use Illuminate\Auth\AuthenticationException;
@@ -58,7 +58,7 @@ class SessionController extends Controller
 			$session->last_activity = date("Y-m-d\TH:i:s.u\Z", $session->last_activity);
 		}
 
-		return ArrayCameliser::camelise([
+		return CaseConverter::toCamelCase([
 			"currentSession" => $request->session()->getId(),
 			"sessions" => $sessions
 		]);

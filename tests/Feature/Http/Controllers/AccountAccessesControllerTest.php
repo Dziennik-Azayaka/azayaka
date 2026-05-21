@@ -6,6 +6,8 @@ use App\Models\AccountAccess;
 use App\Models\AccountLog;
 use App\Models\Employee;
 use App\Models\Guardian;
+use App\Models\Person;
+use App\Models\ResidenceAddress;
 use App\Models\Student;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -16,19 +18,9 @@ final class AccountAccessesControllerTest extends TestCase
 {
 	use RefreshDatabase;
 
-	private function actingUser(): User
-	{
-		$user = User::factory()->create();
-		$this->be($user);
-		return $user;
-	}
-
 	public function test_lookup_success_and_not_found(): void
 	{
-		$student = Student::factory()->create([
-			"first_name" => "Jan",
-			"last_name" => "Kowalski",
-		]);
+		$student = Student::factory()->create();
 
 		$access = AccountAccess::factory()->create([
 			"student_id" => $student->id,
@@ -70,7 +62,7 @@ final class AccountAccessesControllerTest extends TestCase
 
 	public function test_createAccountOrAttachAccess_creates_new_user_and_logs_in_when_email_unused(): void
 	{
-		$student = Student::factory()->create(["first_name" => "Antoni", "last_name" => "Nowak"]);
+		$student = Student::factory()->create();
 		$code = "alpha,beta,gamma";
 		$access = AccountAccess::factory()->create([
 			"student_id" => $student->id,
@@ -84,7 +76,7 @@ final class AccountAccessesControllerTest extends TestCase
 			"password" => "password"
 		]);
 
-		$response->assertOk();
+		$response->assertCreated();
 		$response->assertJson(["success" => true]);
 
 		$this->assertAuthenticated();
@@ -103,7 +95,7 @@ final class AccountAccessesControllerTest extends TestCase
 
 	public function test_createAccountOrAttachAccess_attaches_to_existing_user_with_correct_password_and_fails_with_wrong(): void
 	{
-		$student = Student::factory()->create(["first_name" => "Tadeusz", "last_name" => "Nowak"]);
+		$student = Student::factory()->create();
 		$code = "1,2,3";
 		$access = AccountAccess::factory()->create([
 			"student_id" => $student->id,
@@ -130,7 +122,7 @@ final class AccountAccessesControllerTest extends TestCase
 			"email" => "tadeusz.nowak@example.com",
 			"password" => "password",
 		]);
-		$responseOk->assertOk();
+		$responseOk->assertCreated();
 		$responseOk->assertJson(["success" => true]);
 
 		$this->assertAuthenticatedAs($existing->fresh());
@@ -200,7 +192,8 @@ final class AccountAccessesControllerTest extends TestCase
 		$user = $this->actingUser();
 
 		// Student access
-		$student = Student::factory()->create(["first_name" => "Krzysztof", "last_name" => "Nowak"]);
+		$person = Person::factory()->create(["first_name" => "Krzysztof", "last_name" => "Nowak"]);
+		$student = Student::factory()->create(["person_id" => $person->id]);
 		$studentAccess = AccountAccess::factory()->create([
 			"student_id" => $student->id,
 			"employee_id" => null,
@@ -219,10 +212,10 @@ final class AccountAccessesControllerTest extends TestCase
 		]);
 
 		// Guardian access with a linked student
-		$guardian = Guardian::factory()->create(["first_name" => "Ewa", "last_name" => "Nowak"]);
-		$student2 = Student::factory()->create(["first_name" => "Rozalia", "last_name" => "Nowak"]);
-		$guardian->students()->attach($student2->id);
-		$guardianAccess = AccountAccess::factory()->create([
+		$person2 = Person::factory()->create(["first_name" => "Rozalia", "last_name" => "Nowak"]);
+		Student::factory()->create(["person_id" => $person2->id]);
+		$guardian = Guardian::factory()->create(["first_name" => "Ewa", "last_name" => "Nowak", "person_id" => $person2->id]);
+		AccountAccess::factory()->create([
 			"student_id" => null,
 			"employee_id" => null,
 			"guardian_id" => $guardian->id,

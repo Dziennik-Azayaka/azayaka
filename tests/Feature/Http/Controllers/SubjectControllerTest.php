@@ -13,25 +13,11 @@ final class SubjectControllerTest extends TestCase
 {
 	use RefreshDatabase;
 
-	private function actingUser(): array
-	{
-		$user = User::factory()->create();
-		$this->be($user);
-		$employee = Employee::factory()->create([
-			"is_admin" => true
-		]);
-		$accountAccess = AccountAccess::create();
-		$accountAccess->employee_id = $employee->id;
-		$accountAccess->user_id = $user->id;
-		$accountAccess->save();
-		return ["user" => $user, "access" => $accountAccess->id];
-	}
-
 	public function test_can_list_subjects(): void
 	{
-		$actingUser = $this->actingUser();
+		$this->actingUser();
 		Subject::factory()->count(10)->create();
-		$response = $this->get("/api/subjects", ["Access-ID" => $actingUser["access"]]);
+		$response = $this->get("/api/subjects");
 		$response->assertOk();
 		$response->assertJsonIsArray();
 		$response->assertJsonStructure([
@@ -46,13 +32,13 @@ final class SubjectControllerTest extends TestCase
 
 	public function test_can_create_subject(): void
 	{
-		$actingUser = $this->actingUser();
+		$this->actingUser();
 		$response = $this->post("/api/subjects", [
 			"name" => "Test Subject",
 			"shortcut" => "TSubject"
-		], ["Access-ID" => $actingUser["access"]]);
+		]);
 
-		$response->assertOk();
+		$response->assertCreated();
 		$this->assertDatabaseHas("subjects", ["name" => "Test Subject", "shortcut" => "TSubject"]);
 	}
 
@@ -63,18 +49,18 @@ final class SubjectControllerTest extends TestCase
 			"shortcut" => "CSubject"
 		]);
 
-		$actingUser = $this->actingUser();
+		$this->actingUser();
 		$response = $this->post("/api/subjects", [
 			"name" => "Colliding Subject 2",
 			"shortcut" => "CSubject"
-		], ["Access-ID" => $actingUser["access"]]);
+		]);
 
 		$response->assertUnprocessable();
 	}
 
 	public function test_can_update_subject(): void
 	{
-		$actingUser = $this->actingUser();
+		$this->actingUser();
 		$subject = Subject::factory()->create([
 			"name" => "Old Subject",
 			"shortcut" => "OSubject"
@@ -83,7 +69,7 @@ final class SubjectControllerTest extends TestCase
 		$response = $this->put("/api/subjects/{$subject->id}", [
 			"name" => "New Subject",
 			"shortcut" => "NSubject"
-		], ["Access-ID" => $actingUser["access"]]);
+		]);
 		$response->assertOk();
 		$this->assertDatabaseHas("subjects", ["name" => "New Subject", "shortcut" => "NSubject"]);
 		$this->assertDatabaseMissing("subjects", ["name" => "Old Subject", "shortcut" => "OSubject"]);
@@ -91,20 +77,20 @@ final class SubjectControllerTest extends TestCase
 
 	public function test_can_archive_subject(): void
 	{
-		$actingUser = $this->actingUser();
+		$this->actingUser();
 		$subject = Subject::factory()->create();
-		$response = $this->put("/api/subjects/{$subject->id}/activity", [], ["Access-ID" => $actingUser["access"]]);
+		$response = $this->put("/api/subjects/{$subject->id}/activity");
 		$response->assertOk();
 		$this->assertDatabaseHas("subjects", ["id" => $subject->id, "active" => false]);
 	}
 
 	public function test_can_unarchive_subject(): void
 	{
-		$actingUser = $this->actingUser();
+		$this->actingUser();
 		$subject = Subject::factory()->create([
 			"active" => false
 		]);
-		$response = $this->put("/api/subjects/{$subject->id}/activity", [], ["Access-ID" => $actingUser["access"]]);
+		$response = $this->put("/api/subjects/{$subject->id}/activity");
 		$response->assertOk();
 		$this->assertDatabaseHas("subjects", ["id" => $subject->id, "active" => true]);
 	}

@@ -2,6 +2,9 @@
 
 namespace Database\Factories;
 
+use App\Models\Person;
+use App\Models\ResidenceAddress;
+use App\Models\StudentRegistry;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -9,16 +12,21 @@ use Illuminate\Database\Eloquent\Factories\Factory;
  */
 class StudentFactory extends Factory
 {
-    /**
-     * Define the model's default state.
-     *
-     * @return array<string, mixed>
-     */
-    public function definition(): array
-    {
-        return [
-            "first_name" => $this->faker->firstName,
-			"last_name" => $this->faker->lastName,
-        ];
-    }
+	/**
+	 * Define the model's default state.
+	 *
+	 * @return array<string, mixed>
+	 */
+	public function definition(): array
+	{
+		$leftSchool = rand(1, 10) > 8;
+
+		return [
+			"person_id" => Person::factory()->create(),
+			"admission_date" => "2025-09-01",
+			"leave_date" => $leftSchool ? null : "2025-12-31",
+			"leave_reason" => $leftSchool ? "Przeniesienie do innej placówki edukacyjnej." : null,
+			"student_registry_id" => StudentRegistry::factory(),
+		];
+	}
 }

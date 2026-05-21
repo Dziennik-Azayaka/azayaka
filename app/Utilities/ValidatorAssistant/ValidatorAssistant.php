@@ -5,6 +5,9 @@ namespace App\Utilities\ValidatorAssistant;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
+/**
+ * @deprecated Use Laravel's built-in Validator instead with the CustomValidationException class.
+ */
 class ValidatorAssistant
 {
 	private static function toUppercaseWithUnderscores($string): string
@@ -35,9 +38,13 @@ class ValidatorAssistant
 	}
 
 
-	public static function validate(Request $request, array $rules): array
+	public static function validate(Request|array $values, array $rules): array
 	{
-		$validator = Validator::make($request->all(), $rules);
+		if ($values instanceof Request) {
+			$values = $values->all();
+		}
+
+		$validator = Validator::make($values, $rules);
 
 		if ($validator->fails()) {
 			$errors = $validator->errors()->toArray();
@@ -64,7 +71,7 @@ class ValidatorAssistant
 					} else if (str_contains($fieldError, "true or false")) {
 						$errorCodes[] = strtoupper($field) . "_MUST_BE_A_BOOLEAN";
 					} else {
-						$errorCodes[] = self::toUppercaseWithUnderscores($field);
+						$errorCodes[] = self::toUppercaseWithUnderscores($field) . "_" . self::toUppercaseWithUnderscores($fieldError);
 					}
 				}
 			}

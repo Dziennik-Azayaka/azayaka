@@ -44,14 +44,18 @@ class SchoolUnitController extends Controller
 		$unit->student_category = $data["studentCategory"];
 		$unit->municipality = $data["municipality"];
 		$unit->voivodeship = $data["voivodeship"];
+		$unit->town = $data["town"];
 		$unit->district = $data["district"];
-		$unit->address = $data["address"];
+		$unit->postal_code = $data["postalCode"];
+		$unit->street = $data["street"];
+		$unit->house_number = $data["houseNumber"];
+		$unit->flat_number = $data["flatNumber"];
 		$unit->short_name = $data["shortName"];
 		$unit->school_complex_id = $data["schoolComplexId"];
 		$unit->save();
-		return [
+		return \Response::json([
 			"success" => true
-		];
+		], 201);
 	}
 
 	public function update(Request $request, SchoolUnit $schoolUnit) {
@@ -80,8 +84,12 @@ class SchoolUnitController extends Controller
 		$schoolUnit->student_category = $data["studentCategory"];
 		$schoolUnit->municipality = $data["municipality"];
 		$schoolUnit->voivodeship = $data["voivodeship"];
+		$schoolUnit->town = $data["town"];
 		$schoolUnit->district = $data["district"];
-		$schoolUnit->address = $data["address"];
+		$schoolUnit->postal_code = $data["postalCode"];
+		$schoolUnit->street = $data["street"];
+		$schoolUnit->house_number = $data["houseNumber"];
+		$schoolUnit->flat_number = $data["flatNumber"];
 		$schoolUnit->short_name = $data["shortName"];
 		$schoolUnit->school_complex_id = $data["schoolComplexId"];
 		$schoolUnit->save();
@@ -111,8 +119,12 @@ class SchoolUnitController extends Controller
 			"studentCategory" => ["required"],
 			"municipality" => ["required", "max:255"],
 			"voivodeship" => ["required", Rule::enum(Voivodeship::class)],
+			"town" => ["nullable", "max:255"],
 			"district" => ["nullable", "max:255"],
-			"address" => ["required", "max:255"],
+			"postalCode" => ["required", "max:7"],
+			"street" => ["required", "max:255"],
+			"houseNumber" => ["required", "max:255"],
+			"flatNumber" => ["nullable", "max:255"],
 			"shortName" => ["required", "max:255"],
 			"schoolComplexId" => ["nullable", "exists:school_complexes,id"]
 		]);

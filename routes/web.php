@@ -2,13 +2,19 @@
 
 use App\Http\Controllers\AccountAccessesController;
 use App\Http\Controllers\AccountLogController;
+use App\Http\Controllers\ChildController;
+use App\Http\Controllers\ChildrenRegistryController;
 use App\Http\Controllers\ClassificationPeriodController;
-use App\Http\Controllers\ClassificationPeriodDefaultsController;
 use App\Http\Controllers\ClassUnitController;
+use App\Http\Controllers\CompulsoryEducationFulfillmentController;
 use App\Http\Controllers\EmployeeController;
+use App\Http\Controllers\GuardianController;
+use App\Http\Controllers\PersonController;
 use App\Http\Controllers\SchoolComplexController;
 use App\Http\Controllers\SchoolUnitController;
 use App\Http\Controllers\SessionController;
+use App\Http\Controllers\StudentController;
+use App\Http\Controllers\StudentRegistryController;
 use App\Http\Controllers\SubjectController;
 use App\Http\Controllers\UserController;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
@@ -41,7 +47,7 @@ Route::middleware(["auth", "auth.session"])->group(function () {
 
 	Route::get("/api/user", [AccountAccessesController::class, "list"]);
 
-	Route::middleware(["headmasters.admins"])->group(function () {
+	Route::middleware(["employee.role:administrator"])->group(function () {
 		Route::get("/api/schoolComplex", [SchoolComplexController::class, "list"]);
 		Route::post("/api/schoolComplex", [SchoolComplexController::class, "create"]);
 		Route::put("/api/schoolComplex/{schoolComplex}", [SchoolComplexController::class, "update"]);
@@ -76,6 +82,38 @@ Route::middleware(["auth", "auth.session"])->group(function () {
 		Route::post("/api/schoolUnits/{schoolUnitId}/classificationPeriods/{schoolYear}", [ClassificationPeriodController::class, "save"]);
 		Route::delete("/api/schoolUnits/{schoolUnitId}/classificationPeriods/{schoolYear}", [ClassificationPeriodController::class, "delete"]);
 	});
+
+	Route::middleware(["employee.role:secretary"])->group(function () {
+		Route::post("/api/schoolUnits/{schoolUnitId}/people/lookup", [PersonController::class, "lookup"]);
+		Route::post("/api/schoolUnits/{schoolUnitId}/people", [PersonController::class, "create"]);
+		Route::post("/api/schoolUnits/{schoolUnitId}/people/import", [PersonController::class, "import"]);
+		Route::put("/api/schoolUnits/{schoolUnitId}/people/{person}", [PersonController::class, "update"]);
+		Route::get("/api/people/{person}", [PersonController::class, "show"]);
+		Route::delete("/api/people/{person}", [PersonController::class, "destroy"]);
+		Route::post("/api/people/{person}/guardians", [GuardianController::class, "create"]);
+
+		Route::put("/api/guardians/{guardian}", [GuardianController::class, "update"]);
+		Route::delete("/api/guardians/{guardian}", [GuardianController::class, "destroy"]);
+
+		Route::get("/api/studentRegistry", [StudentRegistryController::class, "list"]);
+		Route::post("/api/studentRegistry", [StudentRegistryController::class, "create"]);
+		Route::get("/api/studentRegistry/{studentRegistry}", [StudentController::class, "list"]);
+		Route::post("/api/studentRegistry/{studentRegistry}", [StudentController::class, "create"]);
+		Route::get("/api/studentRegistry/{studentRegistry}/export", [StudentRegistryController::class, "export"]);
+
+		Route::put("/api/students/{student}", [StudentController::class, "update"]);
+		Route::delete("/api/students/{student}", [StudentController::class, "destroy"]);
+
+		Route::get("/api/childrenRegistry", [ChildrenRegistryController::class, "list"]);
+		Route::post("/api/childrenRegistry", [ChildrenRegistryController::class, "create"]);
+		Route::get("/api/childrenRegistry/{childrenRegistry}", [ChildController::class, "list"]);
+		Route::post("/api/childrenRegistry/{childrenRegistry}", [ChildController::class, "create"]);
+		Route::get("/api/childrenRegistry/{childrenRegistry}/export", [ChildrenRegistryController::class, "export"]);
+		Route::delete("/api/children/{child}", [ChildController::class, "destroy"]);
+		Route::post("/api/children/{child}/fulfillment", [CompulsoryEducationFulfillmentController::class, "create"]);
+		Route::put("/api/children/{child}/fulfillment/{fulfillment}", [CompulsoryEducationFulfillmentController::class, "update"]);
+		Route::delete("/api/children/{child}/fulfillment/{fulfillment}", [CompulsoryEducationFulfillmentController::class, "destroy"]);
+	});
 });
 
 // Email Verification
@@ -90,6 +128,7 @@ Route::post("/api/email/verification-notification", function (Request $request) 
 })->middleware(["auth", "throttle:6,1"])->name("verification.send");
 
 // SPA
+
 Route::redirect("/rejestracja", "/authentication/access-activation/code")->name("activateAccess");
 Route::view("/authentication/log-in", "index")->name("login");
 Route::view("/{any?}", "index")->where("any", ".*");

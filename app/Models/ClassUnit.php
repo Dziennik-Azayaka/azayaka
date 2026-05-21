@@ -7,6 +7,7 @@ use App\Utilities\ClassificationPeriodAssistant;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class ClassUnit extends Model
 {
@@ -15,10 +16,18 @@ class ClassUnit extends Model
 
 	protected $fillable = ["alias", "school_unit_id", "mark", "starting_classification_period_id", "teaching_cycle_length"];
 
-	public function formTutors(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
+	public function formTutors(): BelongsToMany
 	{
 		return $this->belongsToMany(Employee::class, "class_units_form_tutors", "class_unit_id", "employee_id")
 			->using(ClassUnitFormTutors::class)
+			->withPivot("id", "date_from", "date_to")
+			->withTimestamps();
+	}
+
+	public function students(): BelongsToMany
+	{
+		return $this->belongsToMany(Student::class, "class_units_form_students", "class_unit_id", "student_id")
+			->using(ClassUnitStudents::class)
 			->withPivot("id", "date_from", "date_to")
 			->withTimestamps();
 	}

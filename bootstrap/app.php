@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Middleware\AllowOnlyHeadmastersAndAdmins;
+use App\Http\Middleware\EnsureEmployeeHasRole;
 use App\Http\Middleware\CustomThrottleRequests;
 use App\Http\Middleware\DenyIfAuthenticated;
 use Illuminate\Foundation\Application;
@@ -19,7 +19,7 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->alias([
 			"auth.deny" => DenyIfAuthenticated::class,
-			"headmasters.admins" => AllowOnlyHeadmastersAndAdmins::class,
+			"employee.role" => EnsureEmployeeHasRole::class,
 			"throttle" => CustomThrottleRequests::class
 		]);
 			$middleware->validateCsrfTokens(except: [
@@ -35,8 +35,25 @@ return Application::configure(basePath: dirname(__DIR__))
 						"USER_NOT_LOGGED_IN"
 					]
 				], 401);
+			} else if ($response->getStatusCode() == 500) {
+				return \Illuminate\Support\Facades\Response::json([
+					"success" => false,
+					"errors" => [
+						"UNKNOWN_SERVER_ERROR"
+					]
+				], 500);
 			}
 
 			return $response;
+		});
+
+		$exceptions->renderable(function (\Illuminate\Validation\ValidationException $exception, $request) {
+			if (!$request->wantsJson()) {
+				return null; // return null to display the default Laravel error page
+			}
+
+			throw \App\Exceptions\CustomValidationException::withMessages(
+				$exception->validator?->errors()?->toArray() ?? ["UNKNOWN_ERROR"]
+			);
 		});
     })->create();

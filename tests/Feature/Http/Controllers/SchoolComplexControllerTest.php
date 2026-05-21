@@ -15,26 +15,12 @@ final class SchoolComplexControllerTest extends TestCase
 {
 	use RefreshDatabase;
 
-	private function actingUser(): array
-	{
-		$user = User::factory()->create();
-		$this->be($user);
-		$employee = Employee::factory()->create([
-			"is_admin" => true
-		]);
-		$accountAccess = AccountAccess::create();
-		$accountAccess->employee_id = $employee->id;
-		$accountAccess->user_id = $user->id;
-		$accountAccess->save();
-		return ["user" => $user, "access" => $accountAccess->id];
-	}
-
 	public function test_list_returns_complexes_with_expected_fields(): void
 	{
-		$actingUser = $this->actingUser();
+		$this->actingUser();
 		SchoolComplex::factory()->count(2)->create();
 
-		$response = $this->get("/api/schoolComplex", ["Access-ID" => $actingUser["access"]]);
+		$response = $this->get("/api/schoolComplex");
 		$response->assertOk();
 		$response->assertJsonStructure([
 			"*" => ["id", "name", "type"],
@@ -43,12 +29,12 @@ final class SchoolComplexControllerTest extends TestCase
 
 	public function test_create_without_existing_units_creates_complex_with_correct_type(): void
 	{
-		$actingUser = $this->actingUser();
+		$this->actingUser();
 		$response = $this->post("/api/schoolComplex", [
 			"name" => "Zespół Szkół im. Dzienniczkowców",
-		], ["Access-ID" => $actingUser["access"]]);
+		]);
 
-		$response->assertOk();
+		$response->assertCreated();
 		$response->assertJson(["success" => true]);
 
 		$this->assertDatabaseCount("school_complexes", 1);
@@ -59,13 +45,13 @@ final class SchoolComplexControllerTest extends TestCase
 
 	public function test_create_with_existing_units_assigns_parent_to_all_units(): void
 	{
-		$actingUser = $this->actingUser();
+		$this->actingUser();
 		$units = SchoolUnit::factory()->count(3)->create(["school_complex_id" => null]);
 
 		$response = $this->post("/api/schoolComplex", [
 			"name" => "Zespół Szkół im. Dzienniczkowców",
-		], ["Access-ID" => $actingUser["access"]]);
-		$response->assertOk();
+		]);
+		$response->assertCreated();
 		$response->assertJson(["success" => true]);
 
 		$complex = SchoolComplex::first();
@@ -79,12 +65,12 @@ final class SchoolComplexControllerTest extends TestCase
 
 	public function test_update_changes_name_and_sets_type(): void
 	{
-		$actingUser = $this->actingUser();
+		$this->actingUser();
 		$complex = SchoolComplex::factory()->create(["name" => "Old Name", "type" => SchoolType::LICEUM_OGOLNOKSZTALCACE->value]);
 
 		$response = $this->put("/api/schoolComplex/{$complex->id}", [
 			"name" => "Zespół Szkół im. Dzienniczkowców",
-		], ["Access-ID" => $actingUser["access"]]);
+		]);
 		$response->assertOk();
 		$response->assertJson(["success" => true]);
 

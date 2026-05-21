@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Enums\AccountEventType;
 use App\Models\AccountLog;
-use App\Utilities\ArrayCameliser;
+use App\Utilities\CaseConverter;
 use Illuminate\Http\Request;
 
 class AccountLogController extends Controller
@@ -18,7 +18,7 @@ class AccountLogController extends Controller
 			"created_at"
 		]);
 
-		return ArrayCameliser::camelise($paginator->toArray());
+		return CaseConverter::toCamelCase($paginator->toArray());
 	}
 
 	public function getDateOfLastUpdateToCredentials(Request $request)

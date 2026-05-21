@@ -2,6 +2,9 @@
 
 namespace Database\Factories;
 
+use App\Models\Person;
+use App\Models\ResidenceAddress;
+use App\Models\Student;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -9,16 +12,20 @@ use Illuminate\Database\Eloquent\Factories\Factory;
  */
 class GuardianFactory extends Factory
 {
-    /**
-     * Define the model's default state.
-     *
-     * @return array<string, mixed>
-     */
-    public function definition(): array
-    {
-        return [
+	/**
+	 * Define the model's default state.
+	 *
+	 * @return array<string, mixed>
+	 */
+	public function definition(): array
+	{
+		return [
 			"first_name" => $this->faker->firstName,
 			"last_name" => $this->faker->lastName,
-        ];
-    }
+			"phone_number" => rand(1, 10) > 3 ? $this->faker->phoneNumber : null,
+			"email" => rand(1, 10) > 3 ? $this->faker->email : null,
+			"residence_address_id" => ResidenceAddress::factory(),
+			"person_id" => Person::factory()
+		];
+	}
 }
