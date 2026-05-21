@@ -15,13 +15,13 @@ class CompulsoryEducationFulfillmentRequest extends FormRequest
     public function rules(): array
     {
         return [
-			"schoolYear" => "required|integer",
-			"controlDate" => "required|date",
-			"kindergartenInfo" => "nullable|string|max:512",
-			"postponementInfo" => "nullable|string|max:512",
-			"schoolInfo" => "nullable|string|max:512",
-			"outOfSchoolInfo" => "nullable|string|max:512",
-			"level" => "required|integer"
+			"schoolYear" => ["required", "integer"],
+			"controlDate" => ["required", "date"],
+			"kindergartenInfo" => ["nullable", "string", "max:512"],
+			"postponementInfo" => ["nullable", "string", "max:512"],
+			"schoolInfo" => ["nullable", "string", "max:512"],
+			"outOfSchoolInfo" => ["nullable", "string", "max:512"],
+			"level" => ["required", "integer"]
         ];
     }
 }

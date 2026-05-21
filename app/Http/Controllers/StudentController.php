@@ -66,10 +66,6 @@ class StudentController extends Controller
 		return $query->get()->toResourceCollection();
 	}
 
-	public function show(Student $student)
-	{
-		return $student->load(["person", "person.residenceAddress"])->toResource();
-	}
 
 	public function create(Request $request, StudentRegistry $studentRegistry)
 	{

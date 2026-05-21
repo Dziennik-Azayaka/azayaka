@@ -73,15 +73,6 @@ final class StudentControllerTest extends TestCase
 		$response->assertUnprocessable();
 	}
 
-	public function test_can_show_student(): void
-	{
-		$this->actingUser();
-		$student = Student::factory()->create();
-		$response = $this->get("/api/students/$student->id");
-		$response->assertOk();
-		$response->assertJsonStructure(["admissionDate"]);
-	}
-
 	public function test_can_update_student(): void
 	{
 		$this->actingUser();

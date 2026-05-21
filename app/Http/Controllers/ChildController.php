@@ -30,11 +30,6 @@ class ChildController extends Controller
 		return $query->get()->toResourceCollection();
 	}
 
-	public function show(Child $child)
-	{
-		return $child->load(["person", "person.residenceAddress"])->toResource();
-	}
-
 	public function create(Request $request, ChildrenRegistry $childrenRegistry)
 	{
 		$validated = $request->validate([

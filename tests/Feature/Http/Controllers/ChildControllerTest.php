@@ -57,14 +57,6 @@ final class ChildControllerTest extends TestCase
 		$response->assertUnprocessable();
 	}
 
-	public function test_can_show_child(): void
-	{
-		$this->actingUser();
-		$child = Child::factory()->create();
-		$response = $this->get("/api/children/$child->id");
-		$response->assertOk();
-	}
-
 	public function test_can_delete_child(): void
 	{
 		$this->actingUser();
