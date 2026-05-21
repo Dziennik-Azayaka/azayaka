@@ -23,8 +23,9 @@ return new class extends Migration
 			$table->id();
 			$table->foreignId("gradebook_id")->constrained("gradebooks")->onDelete("cascade");
 			$table->foreignId("student_id")->constrained("students")->onDelete("cascade");
+			$table->integer("position");
 			$table->date("date_from");
-			$table->date("date_to");
+			$table->date("date_to")->nullable();
 			$table->timestamps();
 		});
     }

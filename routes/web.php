@@ -122,6 +122,8 @@ Route::middleware(["auth", "auth.session"])->group(function () {
 	Route::middleware(["employee.role:administrator,headmaster,teacher"])->group(function () {
 		Route::get("/api/schoolUnits/{schoolUnitId}/gradebooks", [GradebookController::class, "list"]);
 		Route::post("/api/gradebooks", [GradebookController::class, "create"]);
+		Route::get("/api/gradebooks/{gradebook}/students", [GradebookController::class, "listStudents"]);
+		Route::post("/api/gradebooks/{gradebook}/students", [GradebookController::class, "attachStudentsToGradebook"]);
 	});
 });
 

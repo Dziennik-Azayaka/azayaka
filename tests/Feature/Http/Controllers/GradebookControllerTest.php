@@ -5,13 +5,17 @@ namespace Tests\Feature\Http\Controllers;
 use App\Models\ClassificationPeriod;
 use App\Models\ClassUnit;
 use App\Models\Gradebook;
+use App\Models\GradebookStudents;
 use App\Models\SchoolUnit;
+use App\Models\Student;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 
 final class GradebookControllerTest extends TestCase
 {
+	use RefreshDatabase;
+
 	public function test_can_list_gradebooks(): void
 	{
 		$this->actingUser();
@@ -114,5 +118,103 @@ final class GradebookControllerTest extends TestCase
 			"classificationPeriodId" => $classificationPeriod->id,
 		]);
 		$response->assertConflict();
+	}
+
+	public function test_can_list_students_in_gradebook(): void
+	{
+		$this->actingUser();
+		$gradebook = Gradebook::factory()->create();
+		$student = Student::factory()->create();
+
+		GradebookStudents::insert([
+			"gradebook_id" => $gradebook->id,
+			"student_id" => $student->id,
+			"position" => 5,
+			"date_from" => now(),
+			"created_at" => now(),
+			"updated_at" => now(),
+		]);
+
+		$response = $this->get("/api/gradebooks/$gradebook->id/students");
+
+		$response->assertOk();
+		$response->assertJsonCount(1);
+		$response->assertJsonFragment([
+			"studentId" => $student->id,
+			"studentName" => $student->person->first_name,
+			"studentSecondName" => $student->person->second_name,
+			"studentLastName" => $student->person->last_name,
+			"position" => 5
+		]);
+	}
+
+	public function test_can_attach_students_to_gradebook(): void
+	{
+		$this->actingUser();
+		$schoolUnit = SchoolUnit::factory()->create();
+		$classificationPeriod = ClassificationPeriod::create([
+			"school_unit_id" => $schoolUnit->id,
+			"school_year" => 2025,
+			"period_number" => 1,
+			"period_start" => "2025-09-01",
+			"period_end" => "2025-12-31"
+		]);
+		$gradebook = Gradebook::factory()->create([
+			"classification_period_id" => $classificationPeriod->id
+		]);
+
+		$student1 = Student::factory()->create();
+		$student2 = Student::factory()->create();
+
+		$response = $this->post("/api/gradebooks/$gradebook->id/students", [
+			"studentIds" => [$student1->id, $student2->id],
+			"positions" => [1, 2]
+		]);
+
+		$response->assertOk();
+		$response->assertJson(["success" => true]);
+
+		$this->assertDatabaseHas("gradebooks_students", [
+			"gradebook_id" => $gradebook->id,
+			"student_id" => $student1->id,
+			"position" => 1
+		]);
+		$this->assertDatabaseHas("gradebooks_students", [
+			"gradebook_id" => $gradebook->id,
+			"student_id" => $student2->id,
+			"position" => 2
+		]);
+	}
+
+	public function test_attaching_students_fails_if_arrays_length_mismatch(): void
+	{
+		$this->actingUser();
+		$gradebook = Gradebook::factory()->create();
+		$student = Student::factory()->create();
+
+		$response = $this->post("/api/gradebooks/$gradebook->id/students", [
+			"studentIds" => [$student->id],
+			"positions" => [1, 2]
+		]);
+
+		$response->assertStatus(422);
+		$response->assertJsonFragment([
+			"errors" => ["NUMBER_OF_STUDENTS_AND_POSITIONS_DO_NOT_MATCH"]
+		]);
+	}
+
+	public function test_attaching_students_fails_on_validation_errors(): void
+	{
+		$this->actingUser();
+		$gradebook = Gradebook::factory()->create();
+		$student = Student::factory()->create();
+
+		$response = $this->post("/api/gradebooks/$gradebook->id/students", [
+			"studentIds" => [$student->id, $student->id],
+			"positions" => [1, 2]
+		]);
+
+		$response->assertStatus(422);
+		$response->assertSee("HAS_A_DUPLICATE_VALUE");
 	}
 }
