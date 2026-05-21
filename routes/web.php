@@ -21,9 +21,6 @@ use App\Http\Controllers\UserController;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Support\Facades\Route;
 
-Route::get("/api/studentRegistry/{studentRegistry}/export", [StudentRegistryController::class, "export"]);
-
-
 Route::middleware(["auth.deny", "throttle:16,1"])->group(function () {
 	Route::post("/api/login", [SessionController::class, "authenticate"]);
 });

@@ -16,7 +16,6 @@ return new class extends Migration {
 			$table->date("admission_date");
 			$table->date("leave_date")->nullable();
 			$table->string("leave_reason")->nullable();
-			$table->foreignId("student_registry_id")->constrained("student_registries")->onDelete("cascade");
 			$table->timestamps();
 			$table->softDeletes();
 		});
