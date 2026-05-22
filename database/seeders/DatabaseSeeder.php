@@ -10,6 +10,7 @@ use App\Models\ClassificationPeriod;
 use App\Models\ClassUnit;
 use App\Models\CompulsoryEducationFulfillment;
 use App\Models\Gradebook;
+use App\Models\GradebookGroupSubject;
 use App\Models\Guardian;
 use App\Models\Person;
 use App\Models\ResidenceAddress;
@@ -38,7 +39,10 @@ class DatabaseSeeder extends Seeder
 			"email" => "test@example.com",
 		]);
 
-		ResidenceAddress::factory(10)->create();
+		SchoolComplex::factory(1)->create();
+		$schoolUnits = SchoolUnit::factory(4)->create([
+			"school_complex_id" => 1,
+		]);
 
 		$studentRegistry = StudentRegistry::create([
 			"school_unit_id" => 1,
@@ -49,10 +53,10 @@ class DatabaseSeeder extends Seeder
 			"school_unit_id" => 1,
 			"created_at" => "2024-09-01"
 		]);
-		$people = Person::factory(10)->create();
+		$people = Person::factory(10)->recycle($schoolUnits)->create();
 		Student::factory(10)->recycle($people)->recycle($studentRegistry)->create();
-		Guardian::factory(10)->create();
-		Employee::factory(10)->create();
+		Guardian::factory(10)->recycle($schoolUnits)->create();
+		Employee::factory(10)->recycle($schoolUnits)->create();
 		AccountAccess::factory(10)->create();
 
 		$rootEmployee = Employee::factory()->create([
@@ -65,11 +69,6 @@ class DatabaseSeeder extends Seeder
 		]);
 
 		AccountLog::factory(20)->create();
-
-		SchoolComplex::factory(1)->create();
-		$schoolUnits = SchoolUnit::factory(4)->create([
-			"school_complex_id" => 1,
-		]);
 
 		$classificationPeriods = [];
 		$currentYear = now()->year;
@@ -127,6 +126,9 @@ class DatabaseSeeder extends Seeder
 		$children = Child::factory(10)->recycle($people)->recycle($childrenRegistry)->create();
 		CompulsoryEducationFulfillment::factory(10)->recycle($children)->create();
 
-		Gradebook::factory(20)->recycle($classUnits, $classificationPeriods)->create();
+		$gradebooks = Gradebook::factory(20)->recycle($classUnits, $classificationPeriods)->create();
+
+		$allSubjects = Subject::all();
+		GradebookGroupSubject::factory(10)->recycle($gradebooks)->recycle($allSubjects)->create();
 	}
 }

@@ -11,24 +11,33 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Gradebook extends Model
 {
-    /** @use HasFactory<\Database\Factories\GradebookFactory> */
-    use HasFactory;
+	/** @use HasFactory<\Database\Factories\GradebookFactory> */
+	use HasFactory;
 
 	protected $fillable = ["classification_period_id", "class_unit_id"];
 
-	public function classUnit(): BelongsTo {
+	public function classUnit(): BelongsTo
+	{
 		return $this->belongsTo(ClassUnit::class);
 	}
 
-	public function startingClassificationPeriod(): BelongsTo {
+	public function startingClassificationPeriod(): BelongsTo
+	{
 		return $this->belongsTo(ClassificationPeriod::class, "classification_period_id");
 	}
 
-	public function students(): BelongsToMany {
+	public function students(): BelongsToMany
+	{
 		return $this->belongsToMany(Student::class, "gradebooks_students", "gradebook_id", "student_id");
 	}
 
-	public function getLevelAttribute(): ?int {
+	public function getLevelAttribute(): ?int
+	{
 		return $this->classUnit->getLevelDuringClassificationPeriod($this->startingClassificationPeriod->id);
+	}
+
+	public function groups(): HasMany
+	{
+		return $this->hasMany(GradebookGroup::class);
 	}
 }

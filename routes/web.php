@@ -9,6 +9,7 @@ use App\Http\Controllers\ClassUnitController;
 use App\Http\Controllers\CompulsoryEducationFulfillmentController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\GradebookController;
+use App\Http\Controllers\GradebookGroupController;
 use App\Http\Controllers\GuardianController;
 use App\Http\Controllers\PersonController;
 use App\Http\Controllers\SchoolComplexController;
@@ -121,6 +122,15 @@ Route::middleware(["auth", "auth.session"])->group(function () {
 		Route::post("/api/gradebooks", [GradebookController::class, "create"]);
 		Route::get("/api/gradebooks/{gradebook}/students", [GradebookController::class, "listStudents"]);
 		Route::post("/api/gradebooks/{gradebook}/students", [GradebookController::class, "attachStudentsToGradebook"]);
+
+		Route::get("/api/gradebooks/{gradebook}/groups", [GradebookGroupController::class, "list"]);
+		Route::post("/api/gradebooks/{gradebook}/groups", [GradebookGroupController::class, "create"]);
+		Route::put("/api/gradebooks/groups/{gradebookGroup}", [GradebookGroupController::class, "update"]);
+		Route::delete("/api/gradebooks/groups/{gradebookGroup}", [GradebookGroupController::class, "destroy"]);
+		Route::post("/api/gradebooks/groups/{gradebookGroup}/subjects", [GradebookGroupController::class, "addSubject"]);
+		Route::put("/api/gradebooks/groups/{gradebookGroup}/subjects/{groupSubject}", [GradebookGroupController::class, "updateSubject"]);
+		Route::delete("/api/gradebooks/groups/{gradebookGroup}/subjects/{groupSubject}", [GradebookGroupController::class, "destroySubject"]);
+		Route::put("/api/gradebooks/groups/{gradebookGroup}/subjects/{groupSubject}/teachers", [GradebookGroupController::class, "updateTeachers"]);
 	});
 });
 

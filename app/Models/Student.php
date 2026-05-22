@@ -28,4 +28,9 @@ class Student extends BaseModel
 	{
 		return $this->belongsToMany(Gradebook::class, "gradebooks_students", "student_id", "gradebook_id");
 	}
+
+	public function gradebookGroups(): BelongsToMany
+	{
+		return $this->belongsToMany(GradebookGroup::class);
+	}
 }
