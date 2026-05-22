@@ -77,7 +77,7 @@ const moduleIcons: Record<Module, Component> = {
         <DropdownMenuItem v-for="module in access.modulesAvailable" :key="module" as-child>
           <RouterLink
             :to="{
-              name: module === 'administrator' ? module : 'auth.logIn',
+              name: ['administrator', 'secretary'].includes(module) ? module : 'auth.logIn',
               params: { accessId: access.id },
             }"
             target="_blank"
@@ -122,7 +122,7 @@ const moduleIcons: Record<Module, Component> = {
             <li v-for="module in access.modulesAvailable" :key="module">
               <RouterLink
                 :to="{
-                  name: module === 'administrator' ? module : 'auth.logIn',
+                  name: ['administrator', 'secretary'].includes(module) ? module : 'auth.logIn',
                   params: { accessId: access.id },
                 }"
                 target="_blank"
