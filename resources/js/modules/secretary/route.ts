@@ -34,6 +34,15 @@ const route: RouteRecordRaw = {
           name: 'secretary.studentRegistery',
           path: '/secretary/:accessId/school-units/:unitId/student-registery',
           component: () => import('./pages/StudentRegistery.vue'),
+          meta: {
+            breadcrumb: [
+              { name: 'secretary.title' },
+              {
+                name: 'secretary.studentRegistery.title',
+                route: { name: 'secretary.studentRegistery' },
+              },
+            ],
+          },
         },
         {
           name: 'secretary.childrenRegistery',
@@ -43,6 +52,15 @@ const route: RouteRecordRaw = {
             const secretaryStore = useSecretaryStore();
             if (secretaryStore.selectedUnit?.type !== 25)
               return { name: 'secretary.unit', params: to.params };
+          },
+          meta: {
+            breadcrumb: [
+              { name: 'secretary.title' },
+              {
+                name: 'secretary.childrenRegistery.title',
+                route: { name: 'secretary.childrenRegistery' },
+              },
+            ],
           },
         },
       ],
