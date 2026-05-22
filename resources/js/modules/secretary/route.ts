@@ -10,7 +10,11 @@ const route: RouteRecordRaw = {
     const secretaryStore = useSecretaryStore();
     await secretaryStore.setup();
 
-    if (to.name === 'secretary') return { name: 'secretary.unit', params: { ...to.params, unitId: secretaryStore.schoolUnits![0]!.id } }
+    if (to.name === 'secretary')
+      return {
+        name: 'secretary.unit',
+        params: { ...to.params, unitId: secretaryStore.schoolUnits![0]!.id },
+      };
   },
   children: [
     {
@@ -19,15 +23,31 @@ const route: RouteRecordRaw = {
       component: RouterView,
       beforeEnter: (to) => {
         const secretaryStore = useSecretaryStore();
-        const idParam = Number(to.params.unitId);
+        const idParam = Number(to.params?.unitId);
         const idSet = secretaryStore.switchUnit(idParam);
 
-        console.log(idParam, idSet)
-
         if (idParam !== idSet) return { name: to.name, params: { ...to.params, unitId: idSet } };
-      }
-    }
-  ]
+      },
+      redirect: () => ({ name: 'secretary.studentRegistery' }),
+      children: [
+        {
+          name: 'secretary.studentRegistery',
+          path: '/secretary/:accessId/school-units/:unitId/student-registery',
+          component: () => import('./pages/StudentRegistery.vue'),
+        },
+        {
+          name: 'secretary.childrenRegistery',
+          path: '/secretary/:accessId/school-units/:unitId/children-registery',
+          component: () => import('./pages/ChildrenRegistery.vue'),
+          beforeEnter: (to) => {
+            const secretaryStore = useSecretaryStore();
+            if (secretaryStore.selectedUnit?.type !== 25)
+              return { name: 'secretary.unit', params: to.params };
+          },
+        },
+      ],
+    },
+  ],
 };
 
 export default route;

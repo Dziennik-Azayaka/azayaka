@@ -291,7 +291,13 @@
 		}
 	},
 	"secretary": {
-		"title": "Secretary"
+		"title": "Secretary",
+		"studentRegistery": {
+			"title": "Student registery"
+		},
+		"childrenRegistery": {
+			"title": "Children registery"
+		}
 	},
 	"validationErrors": {
 		"fieldRequired": "This field is required.",

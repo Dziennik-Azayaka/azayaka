@@ -17,13 +17,13 @@ const router = useRouter();
 const route = useRoute();
 
 async function handleUnitChange(unitId: number) {
-  await router.push({ name: route.name, params: { ...route.params, unitId } });
+  await router.push({ name: 'secretary.unit', params: { ...route.params, unitId } });
   secretaryStore.switchUnit(unitId);
 }
 </script>
 
 <template>
-  <div class="space-y-1.5 mx-2" v-if="secretaryStore.selectedUnit && secretaryStore.schoolUnits">
+  <div class="space-y-1.5 mx-2 mb-2" v-if="secretaryStore.selectedUnit && secretaryStore.schoolUnits">
     <Label>{{ t('common.data.schoolUnit') }}</Label>
     <Select @update:model-value="(v) => handleUnitChange(Number(v))">
       <SelectTrigger class="w-full bg-background">

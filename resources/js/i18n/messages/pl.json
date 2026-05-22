@@ -291,7 +291,13 @@
 		}
 	},
 	"secretary": {
-		"title": "Sekretariat"
+		"title": "Sekretariat",
+		"studentRegistery": {
+			"title": "Księga uczniów"
+		},
+		"childrenRegistery": {
+			"title": "Księga ewidencji dzieci"
+		}
 	},
 	"validationErrors": {
 		"fieldRequired": "To pole jest wymagane.",
