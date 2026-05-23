@@ -33,4 +33,9 @@ class Student extends BaseModel
 	{
 		return $this->belongsToMany(GradebookGroup::class);
 	}
+
+	public function accountAccesses(): HasMany
+	{
+		return $this->hasMany(AccountAccess::class);
+	}
 }

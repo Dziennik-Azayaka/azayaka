@@ -4,12 +4,14 @@ namespace App\Http\Controllers;
 
 use App\Exceptions\CustomValidationException;
 use App\Http\Requests\GuardianRequest;
+use App\Models\AccountAccess;
 use App\Models\ChildrenRegistry;
 use App\Models\Guardian;
 use App\Models\Person;
 use App\Models\ResidenceAddress;
 use App\Models\Student;
 use App\Models\StudentRegistry;
+use App\Utilities\AccountAccessWordsGenerator;
 use App\Utilities\CaseConverter;
 use App\Utilities\ValidatorAssistant\ValidatorAssistantException;
 use Illuminate\Http\Request;
@@ -47,6 +49,51 @@ class GuardianController extends Controller
 		$guardian->delete();
 		return \Response::json([
 			"success" => true
+		]);
+	}
+
+	public function generateOrRegenerateAccess(Guardian $guardian, Student $student)
+	{
+		AccountAccess::where("guardian_id", $guardian->id)
+			->where("student_id", $student->id)->delete();
+		$accountAccess = new AccountAccess();
+		$accountAccess->guardian_id = $guardian->id;
+		$accountAccess->student_id = $student->id;
+		$accountAccess->words = AccountAccessWordsGenerator::generate();
+		$accountAccess->save();
+		return [
+			"success" => true,
+			"words" => $accountAccess->words
+		];
+	}
+
+	public function listAccesses(Request $request)
+	{
+		$guardians = Guardian::query();
+		if ($request->has("classUnitId")) {
+			$guardians->whereHas("person", function ($personQuery) use ($request) {
+				$personQuery->whereHas("students", function ($studentQuery) use ($request) {
+					$studentQuery->whereHas("gradebooks", function ($gradebookQuery) use ($request) {
+						$gradebookQuery->where("class_unit_id", "=", $request->input("classUnitId"));
+					});
+				});
+			});
+		}
+
+		return $guardians->with(["accountAccesses", "person"])->get()->map(fn($guardian) => [
+			"guardianFirstName" => $guardian->first_name,
+			"guardianSecondName" => $guardian->second_name,
+			"guardianLastName" => $guardian->last_name,
+			"guardianId" => $guardian->id,
+			"students" => $guardian->person->students->map(fn($student) => [
+				"studentId" => $student->id,
+				"firstName" => $student->person->first_name,
+				"secondName" => $student->person->second_name,
+				"lastName" => $student->person->last_name
+			]),
+			"accessWords" => $guardian->accountAccesses->filter(function ($access) {
+				return $access->guardian_id != null && $access->student_id != null;
+			})->first()
 		]);
 	}
 

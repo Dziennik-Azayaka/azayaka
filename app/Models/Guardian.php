@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Guardian extends BaseModel
 {
@@ -22,5 +23,10 @@ class Guardian extends BaseModel
 			ResidenceAddress::class,
 			'residence_address_id'
 		);
+	}
+
+	public function accountAccesses(): HasMany
+	{
+		return $this->hasMany(AccountAccess::class);
 	}
 }

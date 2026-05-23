@@ -3,11 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Exceptions\CustomValidationException;
+use App\Models\AccountAccess;
 use App\Models\ChildrenRegistry;
+use App\Models\Employee;
 use App\Models\ResidenceAddress;
 use App\Models\Student;
 use App\Models\StudentRegistry;
 use App\Rules\Pesel;
+use App\Utilities\AccountAccessWordsGenerator;
 use App\Utilities\ValidatorAssistant\ValidatorAssistant;
 use App\Utilities\ValidatorAssistant\ValidatorAssistantException;
 use DB;
@@ -111,6 +114,39 @@ class StudentController extends Controller
 		return [
 			"success" => true
 		];
+	}
+
+	public function generateOrRegenerateAccess(Student $student)
+	{
+		AccountAccess::where("student_id", $student->id)->delete();
+		$accountAccess = new AccountAccess();
+		$accountAccess->student_id = $student->id;
+		$accountAccess->words = AccountAccessWordsGenerator::generate();
+		$accountAccess->save();
+		return [
+			"success" => true,
+			"words" => $accountAccess->words
+		];
+	}
+
+	public function listAccesses(Request $request)
+	{
+		$students = Student::where("active", "=", "1");
+		if ($request->has("classUnitId")) {
+			$students->whereHas("gradebooks", function ($gradebookQuery) use ($request) {
+				$gradebookQuery->where("class_unit_id", "=", $request->input("classUnitId"));
+			});
+		}
+
+		return $students->with("accountAccesses")->get()->map(fn($student) => [
+			"firstName" => $student->person->first_name,
+			"secondName" => $student->person->second_name,
+			"lastName" => $student->person->last_name,
+			"studentId" => $student->id,
+			"accessWords" => $student->accountAccesses->filter(function ($access) {
+				return $access->guardian_id == null;
+			})->first()
+		]);
 	}
 
 	private function checkIfRegistryIsActive(StudentRegistry $studentRegistry)

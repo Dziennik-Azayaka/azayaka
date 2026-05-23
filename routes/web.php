@@ -94,8 +94,10 @@ Route::middleware(["auth", "auth.session"])->group(function () {
 		Route::delete("/api/people/{person}", [PersonController::class, "destroy"]);
 		Route::post("/api/people/{person}/guardians", [GuardianController::class, "create"]);
 
+		Route::get("/api/guardians/access", [GuardianController::class, "listAccesses"]);
 		Route::put("/api/guardians/{guardian}", [GuardianController::class, "update"]);
 		Route::delete("/api/guardians/{guardian}", [GuardianController::class, "destroy"]);
+		Route::get("/api/guardians/{guardian}/students/{student}/generateAccess", [GuardianController::class, "generateOrRegenerateAccess"]);
 
 		Route::get("/api/studentRegistry", [StudentRegistryController::class, "list"]);
 		Route::post("/api/studentRegistry", [StudentRegistryController::class, "create"]);
@@ -103,8 +105,10 @@ Route::middleware(["auth", "auth.session"])->group(function () {
 		Route::post("/api/studentRegistry/{studentRegistry}", [StudentController::class, "create"]);
 		Route::get("/api/studentRegistry/{studentRegistry}/export", [StudentRegistryController::class, "export"]);
 
+		Route::get("/api/students/accesses", [StudentController::class, "listAccesses"]);
 		Route::put("/api/students/{student}", [StudentController::class, "update"]);
 		Route::delete("/api/students/{student}", [StudentController::class, "destroy"]);
+		Route::get("/api/students/{student}/generateAccess", [StudentController::class, "generateOrRegenerateAccess"]);
 
 		Route::get("/api/childrenRegistry", [ChildrenRegistryController::class, "list"]);
 		Route::post("/api/childrenRegistry", [ChildrenRegistryController::class, "create"]);

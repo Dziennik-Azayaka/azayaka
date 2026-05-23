@@ -8,6 +8,7 @@ use App\Enums\AccountEventType;
 use App\Models\AccountAccess;
 use App\Models\AccountLog;
 use App\Models\Employee;
+use App\Utilities\AccountAccessWordsGenerator;
 use App\Utilities\ValidatorAssistant\ValidatorAssistant;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -130,16 +131,7 @@ class EmployeeController extends Controller
 	{
 		$accountAccess = new AccountAccess();
 		$accountAccess->employee_id = $employee->id;
-
-		$words = explode("\n", file_get_contents(resource_path("data/dictionary.txt")));
-		$keys = array_rand($words, 10);
-		$oneTimeWords = "";
-		foreach ($keys as $key) {
-			$oneTimeWords .= $words[$key] . ",";
-		}
-		$oneTimeWords = rtrim($oneTimeWords, ",");
-
-		$accountAccess->words = $oneTimeWords;
+		$accountAccess->words = AccountAccessWordsGenerator::generate();
 		$accountAccess->save();
 		return $accountAccess;
 	}
