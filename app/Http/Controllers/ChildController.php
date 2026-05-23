@@ -27,7 +27,7 @@ class ChildController extends Controller
 			});
 		}
 
-		return $query->get()->toResourceCollection();
+		return $query->paginate(100)->toResourceCollection();
 	}
 
 	public function create(Request $request, ChildrenRegistry $childrenRegistry)

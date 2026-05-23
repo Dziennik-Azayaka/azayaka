@@ -12,6 +12,7 @@ return new class extends Migration {
 	{
 		Schema::create("students", function (Blueprint $table) {
 			$table->id();
+			$table->integer("student_registry_number");
 			$table->foreignId("person_id")->constrained("people")->cascadeOnDelete();
 			$table->date("admission_date");
 			$table->date("leave_date")->nullable();

@@ -7,19 +7,10 @@ use App\Enums\AccessType;
 use App\Exceptions\CustomValidationException;
 use App\Http\Resources\ResidenceAddressResource;
 use App\Models\AccountAccess;
-use App\Models\ChildrenRegistry;
-use App\Models\Employee;
-use App\Models\ResidenceAddress;
 use App\Models\Student;
 use App\Models\StudentRegistry;
-use App\Rules\Pesel;
 use App\Utilities\AccountAccessWordsGenerator;
-use App\Utilities\ValidatorAssistant\ValidatorAssistant;
-use App\Utilities\ValidatorAssistant\ValidatorAssistantException;
-use DB;
 use Illuminate\Http\Request;
-use Illuminate\Validation\Rule;
-use Illuminate\Validation\Rules\File;
 use Response;
 
 class StudentController extends Controller
@@ -70,7 +61,7 @@ class StudentController extends Controller
 			});
 		}
 
-		return $query->get()->toResourceCollection();
+		return $query->paginate(100)->toResourceCollection();
 	}
 
 
@@ -78,13 +69,26 @@ class StudentController extends Controller
 	{
 		$validated = $request->validate([
 			"personId" => ["required", "exists:people,id"],
-			"admissionDate" => ["required", "date"]
+			"admissionDate" => ["required", "date"],
+			"studentRegistryNumber" => ["nullable", "integer"]
 		]);
+
+		if ($validated["studentRegistryNumber"] == null) {
+			$validated["studentRegistryNumber"] = $studentRegistry->students()->max("student_registry_number") + 1;
+		} else if ($studentRegistry->students()->where("student_registry_number", $validated["studentRegistryNumber"])->exists()) {
+			return \Response::json([
+				"success" => false,
+				"errors" => [
+					"STUDENT_REGISTRY_NUMBER_ALREADY_EXISTS"
+				]
+			], 409);
+		}
 
 		$student = new Student();
 		$student->person_id = $validated["personId"];
 		$student->student_registry_id = $studentRegistry->id;
 		$student->admission_date = $validated["admissionDate"];
+		$student->student_registry_number = $validated["studentRegistryNumber"];
 		$student->saveOrFail();
 
 		return \Response::json(["success" => true,
