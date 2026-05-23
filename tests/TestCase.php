@@ -22,7 +22,8 @@ abstract class TestCase extends BaseTestCase
 		$this->actingAdminUser = $user;
 		$employee = Employee::factory()->create([
 			"is_admin" => true,
-			"is_secretary" => true
+			"is_secretary" => true,
+			"is_teacher" => true
 		]);
 		$accountAccess = AccountAccess::create();
 		$accountAccess->employee_id = $employee->id;

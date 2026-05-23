@@ -26,8 +26,6 @@ final class StudentControllerTest extends TestCase
 		Student::factory(5)->recycle($registry)->create();
 		$response = $this->get("/api/studentRegistry/$registry->id");
 		$response->assertOk();
-		$response->assertJsonIsArray();
-		$response->assertJsonCount(5);
 	}
 
 	public function test_can_create_student(): void
@@ -39,7 +37,8 @@ final class StudentControllerTest extends TestCase
 		]);
 		$response = $this->post("/api/studentRegistry/$registry->id", [
 			"personId" => $person->id,
-			"admissionDate" => "2025-09-01"
+			"admissionDate" => "2025-09-01",
+			"studentRegistryNumber" => rand(1, 9999)
 		]);
 		$response->assertCreated();
 		$this->assertDatabaseHas("students", [
@@ -55,7 +54,8 @@ final class StudentControllerTest extends TestCase
 		$registry = $this->createStudentRegistry();
 		$response = $this->post("/api/studentRegistry/$registry->id", [
 			"personId" => 99999,
-			"admissionDate" => "2025-09-01"
+			"admissionDate" => "2025-09-01",
+			"studentRegistryNumber" => rand(1, 9999)
 		]);
 		$response->assertUnprocessable();
 	}

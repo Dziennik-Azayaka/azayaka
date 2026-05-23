@@ -32,6 +32,8 @@ class EnsureEmployeeHasRole
 			case "secretary":
 				if ($employeeAccess->employee->is_headmaster || $employeeAccess->employee->is_secretary) $hasAccess = true;
 				break;
+			case "teacher":
+				if ($employeeAccess->employee->is_teacher) $hasAccess = true;
 		}
 
 		if (!$hasAccess) return $this->returnForbiddenResponse($request->wantsJson());

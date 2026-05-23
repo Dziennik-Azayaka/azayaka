@@ -77,6 +77,20 @@ class PersonController extends Controller
 			], 409);
 		}
 
+		if (isset($validated["studentRegistryId"])) {
+			$studentRegistry = StudentRegistry::where("id", "=", $validated["studentRegistryId"])->first();
+			if ($validated["studentRegistryNumber"] == null) {
+				$validated["studentRegistryNumber"] = $studentRegistry->students()->max("student_registry_number") + 1;
+			} else if ($studentRegistry->students()->where("student_registry_number", $validated["studentRegistryNumber"])->exists()) {
+				return \Response::json([
+					"success" => false,
+					"errors" => [
+						"STUDENT_REGISTRY_NUMBER_ALREADY_EXISTS"
+					]
+				], 409);
+			}
+		}
+
 		$registryCheck = $this->checkIfRegistriesAreActive($validated);
 		if ($registryCheck != null) {
 			return $registryCheck;
@@ -132,6 +146,8 @@ class PersonController extends Controller
 		if ($registryCheck != null) {
 			return $registryCheck;
 		}
+
+		// TODO: Better handle student registry numbers (rn we're blindly trusting the user)
 
 		$rules = (new CreatePersonRequest())->rules();
 		$seenPesels = [];
@@ -241,6 +257,7 @@ class PersonController extends Controller
 			if (!$updating) {
 				if (isset($validated["studentRegistryId"])) {
 					$student = new Student();
+					$student->student_registry_number = $validated["studentRegistryNumber"];
 					$student->student_registry_id = $validated["studentRegistryId"];
 					$student->admission_date = $validated["admissionDate"];
 					$student->person_id = $person->id;

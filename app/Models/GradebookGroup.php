@@ -32,4 +32,14 @@ class GradebookGroup extends Model
 	{
 		return $this->hasMany(GradebookGroupSubject::class);
 	}
+
+	public function lessons(): BelongsToMany
+	{
+		return $this->belongsToMany(
+			Lesson::class,
+			"lessons_gradebook_group",
+			"gradebook_group_id",
+			"lesson_id"
+		);
+	}
 }

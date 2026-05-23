@@ -12,6 +12,7 @@ use App\Models\CompulsoryEducationFulfillment;
 use App\Models\Gradebook;
 use App\Models\GradebookGroupSubject;
 use App\Models\Guardian;
+use App\Models\Lesson;
 use App\Models\Person;
 use App\Models\ResidenceAddress;
 use App\Models\SchoolComplex;
@@ -56,7 +57,7 @@ class DatabaseSeeder extends Seeder
 		$people = Person::factory(10)->recycle($schoolUnits)->create();
 		Student::factory(10)->recycle($people)->recycle($studentRegistry)->create();
 		Guardian::factory(10)->recycle($schoolUnits)->create();
-		Employee::factory(10)->recycle($schoolUnits)->create();
+		$employees = Employee::factory(10)->recycle($schoolUnits)->create();
 		AccountAccess::factory(10)->create();
 
 		$rootEmployee = Employee::factory()->create([
@@ -130,5 +131,7 @@ class DatabaseSeeder extends Seeder
 
 		$allSubjects = Subject::all();
 		GradebookGroupSubject::factory(10)->recycle($gradebooks)->recycle($allSubjects)->create();
+
+		Lesson::factory(10)->recycle($gradebooks)->recycle($allSubjects)->recycle($employees)->create();
 	}
 }

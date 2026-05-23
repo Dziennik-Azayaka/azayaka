@@ -40,4 +40,9 @@ class Gradebook extends Model
 	{
 		return $this->hasMany(GradebookGroup::class);
 	}
+
+	public function lessons(): HasMany
+	{
+		return $this->hasMany(Lesson::class);
+	}
 }

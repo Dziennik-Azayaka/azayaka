@@ -57,6 +57,7 @@ final class PersonControllerTest extends TestCase
 		$response = $this->post("/api/schoolUnits/$schoolUnit->id/people", $this->personPayload([
 			"studentRegistryId" => $registry->id,
 			"admissionDate" => "2025-09-01",
+			"studentRegistryNumber" => rand(1, 9999)
 		]));
 		$response->assertCreated();
 		$this->assertDatabaseHas("students", [
@@ -226,9 +227,9 @@ final class PersonControllerTest extends TestCase
 		]);
 
 		$csvContent = $this->generateCsv(
-			["firstName", "lastName", "alternateIdentityDocument", "birthdate", "birthplace", "residenceAddressCountry", "admissionDate"],
+			["studentRegistryNumber", "firstName", "lastName", "alternateIdentityDocument", "birthdate", "birthplace", "residenceAddressCountry", "admissionDate"],
 			[
-				["Grzegorz", "Nowak", "ABC123", "2012-03-03", "Łódź", "Polska", "2023-09-01"]
+				[1, "Grzegorz", "Nowak", "ABC123", "2012-03-03", "Łódź", "Polska", "2023-09-01"]
 			]
 		);
 
@@ -261,9 +262,9 @@ final class PersonControllerTest extends TestCase
 		$this->actingAdminUser();
 		$schoolUnitId = SchoolUnit::factory()->create()->id;
 		$csvContent = $this->generateCsv(
-			["firstName", "lastName", "pesel", "birthdate", "birthplace", "residenceAddressCountry"],
+			["studentRegistryNumber", "firstName", "lastName", "pesel", "birthdate", "birthplace", "residenceAddressCountry"],
 			[
-				["", "Doe", "08290823273", "2010-01-01", "Warsaw", "Polska"]
+				[1, "", "Doe", "08290823273", "2010-01-01", "Warsaw", "Polska"]
 			]
 		);
 
@@ -287,10 +288,10 @@ final class PersonControllerTest extends TestCase
 		$this->actingAdminUser();
 		$schoolUnitId = SchoolUnit::factory()->create()->id;
 		$csvContent = $this->generateCsv(
-			["firstName", "lastName", "pesel", "birthdate", "birthplace", "residenceAddressCountry"],
+			["studentRegistryNumber", "firstName", "lastName", "pesel", "birthdate", "birthplace", "residenceAddressCountry"],
 			[
-				["Jan", "Kowalski", "08290823273", "2010-01-01", "Łódź", "Polska"],
-				["Tadeusz", "Nowak", "08290823273", "2011-05-05", "Sosnowiec", "Polska"]
+				[1, "Jan", "Kowalski", "08290823273", "2010-01-01", "Łódź", "Polska"],
+				[2, "Tadeusz", "Nowak", "08290823273", "2011-05-05", "Sosnowiec", "Polska"]
 			]
 		);
 
@@ -316,9 +317,9 @@ final class PersonControllerTest extends TestCase
 		]);
 
 		$csvContent = $this->generateCsv(
-			["firstName", "lastName", "pesel", "birthdate", "birthplace", "residenceAddressCountry"],
+			["studentRegistryNumber", "firstName", "lastName", "pesel", "birthdate", "birthplace", "residenceAddressCountry"],
 			[
-				["Jan", "Kowalski", "08290823273", "2010-01-01", "Łódź", "Polska"]
+				[1, "Jan", "Kowalski", "08290823273", "2010-01-01", "Łódź", "Polska"]
 			]
 		);
 
@@ -339,9 +340,9 @@ final class PersonControllerTest extends TestCase
 		$studentRegistry = StudentRegistry::factory()->create(["school_unit_id" => $schoolUnit->id]);
 
 		$csvContent = $this->generateCsv(
-			["firstName", "lastName", "alternateIdentityDocument", "birthdate", "birthplace", "residenceAddressCountry", "admissionDate"],
+			["studentRegistryNumber", "firstName", "lastName", "alternateIdentityDocument", "birthdate", "birthplace", "residenceAddressCountry", "admissionDate"],
 			[
-				["Grzegorz", "Nowak", "ABC123", "2012-03-03", "Łódź", "Polska", "2023-09-01"]
+				[1, "Grzegorz", "Nowak", "ABC123", "2012-03-03", "Łódź", "Polska", "2023-09-01"]
 			]
 		);
 

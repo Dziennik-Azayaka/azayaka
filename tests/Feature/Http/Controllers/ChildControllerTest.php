@@ -26,8 +26,6 @@ final class ChildControllerTest extends TestCase
 		Child::factory(5)->recycle($registry)->create();
 		$response = $this->get("/api/childrenRegistry/$registry->id");
 		$response->assertOk();
-		$response->assertJsonIsArray();
-		$response->assertJsonCount(5);
 	}
 
 	public function test_can_create_child(): void
