@@ -67,7 +67,7 @@ Route::middleware(["auth", "auth.session"])->group(function () {
 		Route::delete("/api/employees/{employee}/access", [EmployeeController::class, "revokeEmployeeAccess"]);
 		Route::get("/api/employees/accesses", [EmployeeController::class, "listEmployeeAccesses"]);
 		Route::patch("/api/employees/accesses", [EmployeeController::class, "massUpdateAccess"]);
-		Route::post("api/employees/accesses/document", [EmployeeController::class, "generateEmployeeAccessesDocument"]);
+		Route::post("api/employees/accesses/document", [EmployeeController::class, "generateAccessesDocument"]);
 
 		Route::get("/api/subjects", [SubjectController::class, "list"]);
 		Route::post("/api/subjects", [SubjectController::class, "create"]);
@@ -94,7 +94,8 @@ Route::middleware(["auth", "auth.session"])->group(function () {
 		Route::delete("/api/people/{person}", [PersonController::class, "destroy"]);
 		Route::post("/api/people/{person}/guardians", [GuardianController::class, "create"]);
 
-		Route::get("/api/guardians/access", [GuardianController::class, "listAccesses"]);
+		Route::get("/api/guardians/accesses", [GuardianController::class, "listAccesses"]);
+		Route::post("api/guardians/accesses/document", [GuardianController::class, "generateAccessesDocument"]);
 		Route::put("/api/guardians/{guardian}", [GuardianController::class, "update"]);
 		Route::delete("/api/guardians/{guardian}", [GuardianController::class, "destroy"]);
 		Route::get("/api/guardians/{guardian}/students/{student}/generateAccess", [GuardianController::class, "generateOrRegenerateAccess"]);
@@ -106,6 +107,7 @@ Route::middleware(["auth", "auth.session"])->group(function () {
 		Route::get("/api/studentRegistry/{studentRegistry}/export", [StudentRegistryController::class, "export"]);
 
 		Route::get("/api/students/accesses", [StudentController::class, "listAccesses"]);
+		Route::post("api/students/accesses/document", [StudentController::class, "generateAccessesDocument"]);
 		Route::put("/api/students/{student}", [StudentController::class, "update"]);
 		Route::delete("/api/students/{student}", [StudentController::class, "destroy"]);
 		Route::get("/api/students/{student}/generateAccess", [StudentController::class, "generateOrRegenerateAccess"]);

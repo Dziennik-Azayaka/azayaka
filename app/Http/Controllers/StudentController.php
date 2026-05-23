@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Documents\AccountAccessesActivation\AccountAccessesActivationDocument;
+use App\Enums\AccessType;
 use App\Exceptions\CustomValidationException;
 use App\Models\AccountAccess;
 use App\Models\ChildrenRegistry;
@@ -17,6 +19,7 @@ use DB;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\File;
+use Response;
 
 class StudentController extends Controller
 {
@@ -147,6 +150,40 @@ class StudentController extends Controller
 				return $access->guardian_id == null;
 			})->first()
 		]);
+	}
+
+	// TODO: Abstract this away, as it's used in EmployeeController and GuardianController as well.
+	// TODO: Write tests
+	public function generateAccessesDocument(Request $request)
+	{
+		$validatedData = $request->validate([
+			"ids" => "required|array"
+		]);
+
+		$ids = array_unique($validatedData["ids"]);
+		$students = Student::whereIn("id", $ids)->get();
+		$studentIds = $students->pluck("id");
+		$accesses = AccountAccess::whereIn("student_id", $studentIds)->get();
+
+		$document = new AccountAccessesActivationDocument();
+
+		foreach ($students as $student) {
+			$access = $accesses->where("student_id", $student->id)->first();
+			if ($access?->words == null) {
+				return Response::json([
+					"success" => false,
+					"errors" => [
+						"STUDENT_HAS_NO_ACCESS_WORDS"
+					]
+				], 422);
+			}
+			$document->addAccess(AccessType::STUDENT,
+				$student->person->first_name . " " . $student->person->last_name,
+				explode(",", $access->words));
+		}
+
+		$document->generateDocument();
+		return $document->streamDocument();
 	}
 
 	private function checkIfRegistryIsActive(StudentRegistry $studentRegistry)

@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Documents\AccountAccessesActivation\AccountAccessesActivationDocument;
+use App\Enums\AccessType;
 use App\Exceptions\CustomValidationException;
 use App\Http\Requests\GuardianRequest;
 use App\Models\AccountAccess;
@@ -15,10 +17,12 @@ use App\Utilities\AccountAccessWordsGenerator;
 use App\Utilities\CaseConverter;
 use App\Utilities\ValidatorAssistant\ValidatorAssistantException;
 use Illuminate\Http\Request;
+use Response;
 
 class GuardianController extends Controller
 {
-	public function create(GuardianRequest $request, Person $person) {
+	public function create(GuardianRequest $request, Person $person)
+	{
 		$this->checkIfSchoolUnitIsActive($person);
 
 		$validated = CaseConverter::toSnakeCase($request->validated());
@@ -33,7 +37,8 @@ class GuardianController extends Controller
 		], 201);
 	}
 
-	public function update(GuardianRequest $request, Guardian $guardian) {
+	public function update(GuardianRequest $request, Guardian $guardian)
+	{
 		$this->checkIfSchoolUnitIsActive($guardian->person);
 		$validated = CaseConverter::toSnakeCase($request->validated());
 		$guardian->update($validated);
@@ -43,7 +48,8 @@ class GuardianController extends Controller
 		]);
 	}
 
-	public function destroy(Guardian $guardian) {
+	public function destroy(Guardian $guardian)
+	{
 		$this->checkIfSchoolUnitIsActive($guardian->person);
 		$guardian->residenceAddress->delete();
 		$guardian->delete();
@@ -97,6 +103,38 @@ class GuardianController extends Controller
 		]);
 	}
 
+	public function generateAccessesDocument(Request $request)
+	{
+		$validatedData = $request->validate([
+			"ids" => "required|array"
+		]);
+
+		$ids = array_unique($validatedData["ids"]);
+		$guardians = Guardian::whereIn("id", $ids)->get();
+		$guardianIds = $guardians->pluck("id");
+		$accesses = AccountAccess::whereIn("guardian_id", $guardianIds)->get();
+
+		$document = new AccountAccessesActivationDocument();
+
+		foreach ($guardians as $guardian) {
+			$access = $accesses->where("guardian_id", $guardian->id)->first();
+			if ($access?->words == null) {
+				return Response::json([
+					"success" => false,
+					"errors" => [
+						"GUARDIAN_HAS_NO_ACCESS_WORDS"
+					]
+				], 422);
+			}
+			$document->addAccess(AccessType::PARENT,
+				$guardian->first_name . " " . $guardian->last_name,
+				explode(",", $access->words));
+		}
+
+		$document->generateDocument();
+		return $document->streamDocument();
+	}
+
 	private function saveResidenceAddress(array $data, ?ResidenceAddress $residenceAddress = null): ResidenceAddress
 	{
 		if ($residenceAddress == null) $residenceAddress = new ResidenceAddress();
@@ -111,7 +149,8 @@ class GuardianController extends Controller
 		return $residenceAddress;
 	}
 
-	private function checkIfSchoolUnitIsActive(Person $person) {
+	private function checkIfSchoolUnitIsActive(Person $person)
+	{
 		if (!$person->schoolUnit->active) {
 			throw CustomValidationException::withMessages(["SCHOOL_UNIT_NOT_ACTIVE"]);
 		}

@@ -290,13 +290,13 @@ class EmployeeController extends Controller
 		return $validator;
 	}
 
-	public function generateEmployeeAccessesDocument(Request $request)
+	public function generateAccessesDocument(Request $request)
 	{
-		$validator = ValidatorAssistant::validate($request, [
+		$validatedData = $request->validate([
 			"ids" => "required|array"
 		]);
 
-		$ids = array_unique($validator["ids"]);
+		$ids = array_unique($validatedData["ids"]);
 		$employees = Employee::whereIn("id", $ids)->get();
 		$employeeIds = $employees->pluck("id");
 		$accesses = AccountAccess::whereIn("employee_id", $employeeIds)->get();
@@ -311,7 +311,7 @@ class EmployeeController extends Controller
 					"errors" => [
 						"EMPLOYEE_NOT_ACTIVE_OR_HAS_NO_ACCESS_WORDS"
 					]
-				], 400);
+				], 422);
 			}
 			$document->addAccess(AccessType::EMPLOYEE,
 				$employee->first_name . " " . $employee->last_name,
