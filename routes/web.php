@@ -109,6 +109,7 @@ Route::middleware(["auth", "auth.session"])->group(function () {
 
 		Route::get("/api/studentRegistry", [StudentRegistryController::class, "list"]);
 		Route::post("/api/studentRegistry", [StudentRegistryController::class, "create"]);
+		Route::get("/api/studentRegistry/lookup/{schoolUnit}", [StudentRegistryController::class, "lookup"]);
 		Route::get("/api/studentRegistry/{studentRegistry}", [StudentController::class, "list"]);
 		Route::post("/api/studentRegistry/{studentRegistry}", [StudentController::class, "create"]);
 		Route::get("/api/studentRegistry/{studentRegistry}/export", [StudentRegistryController::class, "export"]);

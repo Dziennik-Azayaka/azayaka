@@ -8,14 +8,14 @@ export function getMenuItems(unit: SchoolUnit) {
 
   items.push({
     icon: BookUser,
-    title: unit.studentCategory === 'adultsOnly' ? 'secretary.listenerRegistery.title' : 'secretary.studentRegistery.title',
-    link: { name: 'secretary.studentRegistery' }
+    title: unit.studentCategory === 'adultsOnly' ? 'secretary.listenerRegistry.title' : 'secretary.studentRegistry.title',
+    link: { name: 'secretary.studentRegistry' }
   });
 
   if (unit.type === 25) items.push({
     icon: BookCheck,
-    title: 'secretary.childrenRegistery.title',
-    link: { name: 'secretary.childrenRegistery' }
+    title: 'secretary.childrenRegistry.title',
+    link: { name: 'secretary.childrenRegistry' }
   })
 
   return items;
