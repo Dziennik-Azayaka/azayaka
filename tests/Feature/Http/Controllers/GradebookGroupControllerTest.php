@@ -19,7 +19,7 @@ class GradebookGroupControllerTest extends TestCase
 
 	public function test_can_list_groups_for_gradebook()
 	{
-		$this->actingUser();
+		$this->actingAdminUser();
 		$gradebook = Gradebook::factory()->create();
 		GradebookGroup::factory()->create(["gradebook_id" => $gradebook->id]);
 
@@ -31,7 +31,7 @@ class GradebookGroupControllerTest extends TestCase
 
 	public function test_can_create_group()
 	{
-		$this->actingUser();
+		$this->actingAdminUser();
 		$gradebook = Gradebook::factory()->create();
 		$student = Student::factory()->create();
 
@@ -59,7 +59,7 @@ class GradebookGroupControllerTest extends TestCase
 
 	public function test_creating_group_validation_fails_without_required_fields()
 	{
-		$this->actingUser();
+		$this->actingAdminUser();
 		$gradebook = Gradebook::factory()->create();
 
 		$response = $this->post("/api/gradebooks/$gradebook->id/groups", [
@@ -71,7 +71,7 @@ class GradebookGroupControllerTest extends TestCase
 
 	public function test_can_update_group()
 	{
-		$this->actingUser();
+		$this->actingAdminUser();
 		$gradebook = Gradebook::factory()->create();
 		$group = GradebookGroup::factory()->create([
 			"gradebook_id" => $gradebook->id,
@@ -109,7 +109,7 @@ class GradebookGroupControllerTest extends TestCase
 
 	public function test_can_add_subject_to_group()
 	{
-		$this->actingUser();
+		$this->actingAdminUser();
 		$group = GradebookGroup::factory()->create();
 		$subject = Subject::factory()->create();
 
@@ -129,7 +129,7 @@ class GradebookGroupControllerTest extends TestCase
 
 	public function test_cannot_add_subject_if_already_assigned()
 	{
-		$this->actingUser();
+		$this->actingAdminUser();
 		$group = GradebookGroup::factory()->create();
 		$subject = Subject::factory()->create();
 
@@ -153,7 +153,7 @@ class GradebookGroupControllerTest extends TestCase
 
 	public function test_can_update_subject()
 	{
-		$this->actingUser();
+		$this->actingAdminUser();
 		$group = GradebookGroup::factory()->create();
 		$subject = Subject::factory()->create();
 
@@ -177,7 +177,7 @@ class GradebookGroupControllerTest extends TestCase
 
 	public function test_can_remove_subject()
 	{
-		$this->actingUser();
+		$this->actingAdminUser();
 		$group = GradebookGroup::factory()->create();
 		$subject = Subject::factory()->create();
 
@@ -197,7 +197,7 @@ class GradebookGroupControllerTest extends TestCase
 
 	public function test_can_update_teachers()
 	{
-		$this->actingUser();
+		$this->actingAdminUser();
 		$group = GradebookGroup::factory()->create();
 		$subject = Subject::factory()->create();
 

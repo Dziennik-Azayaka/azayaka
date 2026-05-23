@@ -189,7 +189,7 @@ final class AccountAccessesControllerTest extends TestCase
 
 	public function test_list_returns_accesses_with_personas_for_authenticated_user(): void
 	{
-		$user = $this->actingUser();
+		$user = $this->actingAdminUser();
 
 		// Student access
 		$person = Person::factory()->create(["first_name" => "Krzysztof", "last_name" => "Nowak"]);

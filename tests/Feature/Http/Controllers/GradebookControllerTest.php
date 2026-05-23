@@ -18,7 +18,7 @@ final class GradebookControllerTest extends TestCase
 
 	public function test_can_list_gradebooks(): void
 	{
-		$this->actingUser();
+		$this->actingAdminUser();
 		$schoolUnit = SchoolUnit::factory()->create();
 		$classUnit = ClassUnit::factory()->create(["school_unit_id" => $schoolUnit->id]);
 		$gradebook = Gradebook::factory()->create(["class_unit_id" => $classUnit->id]);
@@ -34,7 +34,7 @@ final class GradebookControllerTest extends TestCase
 
 	public function test_can_list_gradebooks_by_class_unit_and_school_year(): void
 	{
-		$this->actingUser();
+		$this->actingAdminUser();
 		$schoolUnit = SchoolUnit::factory()->create();
 		$classUnit1 = ClassUnit::factory()->create(["school_unit_id" => $schoolUnit->id]);
 		$classUnit2 = ClassUnit::factory()->create(["school_unit_id" => $schoolUnit->id]);
@@ -76,7 +76,7 @@ final class GradebookControllerTest extends TestCase
 
 	public function test_can_create_gradebook(): void
 	{
-		$this->actingUser();
+		$this->actingAdminUser();
 		$schoolUnit = SchoolUnit::factory()->create();
 		$classUnit = ClassUnit::factory()->create(["school_unit_id" => $schoolUnit->id]);
 		$classificationPeriod = ClassificationPeriod::create([
@@ -99,7 +99,7 @@ final class GradebookControllerTest extends TestCase
 
 	public function test_creating_gradebook_when_one_already_exists_for_classification_period_fails(): void
 	{
-		$this->actingUser();
+		$this->actingAdminUser();
 		$schoolUnit = SchoolUnit::factory()->create();
 		$classUnit = ClassUnit::factory()->create(["school_unit_id" => $schoolUnit->id]);
 		$classificationPeriod = ClassificationPeriod::create([
@@ -122,7 +122,7 @@ final class GradebookControllerTest extends TestCase
 
 	public function test_can_list_students_in_gradebook(): void
 	{
-		$this->actingUser();
+		$this->actingAdminUser();
 		$gradebook = Gradebook::factory()->create();
 		$student = Student::factory()->create();
 
@@ -150,7 +150,7 @@ final class GradebookControllerTest extends TestCase
 
 	public function test_can_attach_students_to_gradebook(): void
 	{
-		$this->actingUser();
+		$this->actingAdminUser();
 		$schoolUnit = SchoolUnit::factory()->create();
 		$classificationPeriod = ClassificationPeriod::create([
 			"school_unit_id" => $schoolUnit->id,
@@ -188,7 +188,7 @@ final class GradebookControllerTest extends TestCase
 
 	public function test_attaching_students_fails_if_arrays_length_mismatch(): void
 	{
-		$this->actingUser();
+		$this->actingAdminUser();
 		$gradebook = Gradebook::factory()->create();
 		$student = Student::factory()->create();
 
@@ -205,7 +205,7 @@ final class GradebookControllerTest extends TestCase
 
 	public function test_attaching_students_fails_on_validation_errors(): void
 	{
-		$this->actingUser();
+		$this->actingAdminUser();
 		$gradebook = Gradebook::factory()->create();
 		$student = Student::factory()->create();
 

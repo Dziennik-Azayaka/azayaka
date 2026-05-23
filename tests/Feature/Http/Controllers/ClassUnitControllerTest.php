@@ -20,7 +20,7 @@ final class ClassUnitControllerTest extends TestCase
 
 	public function test_can_list_class_units(): void
 	{
-		$this->actingUser();
+		$this->actingAdminUser();
 		$complex = SchoolComplex::factory()->create();
 		$unit = SchoolUnit::factory()->create(["school_complex_id" => $complex->id]);
 		ClassUnit::factory()->count(5)->create([
@@ -60,7 +60,7 @@ final class ClassUnitControllerTest extends TestCase
 
 	public function test_can_list_future_class_units(): void
 	{
-		$this->actingUser();
+		$this->actingAdminUser();
 		$complex = SchoolComplex::factory()->create();
 		$unit = SchoolUnit::factory()->create([
 			"school_complex_id" => $complex->id,
@@ -105,7 +105,7 @@ final class ClassUnitControllerTest extends TestCase
 
 	public function test_can_list_current_class_units(): void
 	{
-		$this->actingUser();
+		$this->actingAdminUser();
 		$complex = SchoolComplex::factory()->create();
 		$unit = SchoolUnit::factory()->create([
 			"school_complex_id" => $complex->id,
@@ -176,7 +176,7 @@ final class ClassUnitControllerTest extends TestCase
 
 	public function test_can_list_past_class_units(): void
 	{
-		$this->actingUser();
+		$this->actingAdminUser();
 		$complex = SchoolComplex::factory()->create();
 		$unit = SchoolUnit::factory()->create(["school_complex_id" => $complex->id]);
 
@@ -244,7 +244,7 @@ final class ClassUnitControllerTest extends TestCase
 
 	public function test_can_create_a_class_unit(): void
 	{
-		$this->actingUser();
+		$this->actingAdminUser();
 		$complex = SchoolComplex::factory()->create();
 		$unit = SchoolUnit::factory()->create(["school_complex_id" => $complex->id]);
 		$employee = Employee::factory()->create();
@@ -308,7 +308,7 @@ final class ClassUnitControllerTest extends TestCase
 
 	public function test_can_create_a_class_unit_with_promotion_every_semester(): void
 	{
-		$this->actingUser();
+		$this->actingAdminUser();
 		$complex = SchoolComplex::factory()->create();
 		$unit = SchoolUnit::factory()->create(["school_complex_id" => $complex->id]);
 		$employee = Employee::factory()->create();
@@ -374,7 +374,7 @@ final class ClassUnitControllerTest extends TestCase
 
 	public function test_creating_a_class_unit_with_disabled_employees_fails(): void
 	{
-		$this->actingUser();
+		$this->actingAdminUser();
 		$complex = SchoolComplex::factory()->create();
 		$unit = SchoolUnit::factory()->create(["school_complex_id" => $complex->id]);
 		$disabledEmployee = Employee::factory()->create(["active" => false]);
@@ -423,7 +423,7 @@ final class ClassUnitControllerTest extends TestCase
 
 	public function test_creating_a_class_unit_with_nonexistent_employees_fails(): void
 	{
-		$this->actingUser();
+		$this->actingAdminUser();
 		$complex = SchoolComplex::factory()->create();
 		$unit = SchoolUnit::factory()->create(["school_complex_id" => $complex->id]);
 		$employee = Employee::factory()->create();
@@ -467,7 +467,7 @@ final class ClassUnitControllerTest extends TestCase
 
 	public function test_can_update_a_class_unit(): void
 	{
-		$this->actingUser();
+		$this->actingAdminUser();
 		$complex = SchoolComplex::factory()->create();
 		$unit = SchoolUnit::factory()->create(["school_complex_id" => $complex->id]);
 		$oldEmployee = Employee::factory()->create();
@@ -522,7 +522,7 @@ final class ClassUnitControllerTest extends TestCase
 
 	public function test_can_delete_a_class_unit(): void
 	{
-		$this->actingUser();
+		$this->actingAdminUser();
 		$complex = SchoolComplex::factory()->create();
 		$unit = SchoolUnit::factory()->create(["school_complex_id" => $complex->id]);
 		$classUnit = ClassUnit::factory()->create(["school_unit_id" => $unit->id]);

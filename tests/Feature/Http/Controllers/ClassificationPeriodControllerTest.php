@@ -18,7 +18,7 @@ final class ClassificationPeriodControllerTest extends TestCase
 
 	public function test_can_list_classification_periods(): void
 	{
-		$this->actingUser();
+		$this->actingAdminUser();
 		$complex = SchoolComplex::factory()->create();
 		$schoolUnit = SchoolUnit::factory()->create(["school_complex_id" => $complex->id]);
 		$periodOne = new ClassificationPeriod();
@@ -53,7 +53,7 @@ final class ClassificationPeriodControllerTest extends TestCase
 
 	public function test_can_save_new_classification_periods(): void
 	{
-		$this->actingUser();
+		$this->actingAdminUser();
 		$complex = SchoolComplex::factory()->create();
 		$schoolUnit = SchoolUnit::factory()->create(["school_complex_id" => $complex->id]);
 		$response = $this->post("/api/schoolUnits/$schoolUnit->id/classificationPeriods/2025", [
@@ -89,7 +89,7 @@ final class ClassificationPeriodControllerTest extends TestCase
 	}
 
 	public function test_can_delete_classification_periods(): void {
-		$this->actingUser();
+		$this->actingAdminUser();
 		$complex = SchoolComplex::factory()->create();
 		$schoolUnit = SchoolUnit::factory()->create(["school_complex_id" => $complex->id]);
 		$periodOne = new ClassificationPeriod();

@@ -34,7 +34,7 @@ final class PersonControllerTest extends TestCase
 
 	public function test_can_create_person(): void
 	{
-		$this->actingUser();
+		$this->actingAdminUser();
 		$schoolUnit = $this->createSchoolUnit();
 		$response = $this->post("/api/schoolUnits/$schoolUnit->id/people", $this->personPayload());
 		$response->assertCreated();
@@ -51,7 +51,7 @@ final class PersonControllerTest extends TestCase
 
 	public function test_can_create_person_with_student_registry(): void
 	{
-		$this->actingUser();
+		$this->actingAdminUser();
 		$schoolUnit = $this->createSchoolUnit();
 		$registry = $schoolUnit->studentRegistry()->create();
 		$response = $this->post("/api/schoolUnits/$schoolUnit->id/people", $this->personPayload([
@@ -67,7 +67,7 @@ final class PersonControllerTest extends TestCase
 
 	public function test_can_create_person_with_children_registry(): void
 	{
-		$this->actingUser();
+		$this->actingAdminUser();
 		$schoolUnit = $this->createSchoolUnit();
 		$registry = $schoolUnit->childrenRegistry()->create();
 		$response = $this->post("/api/schoolUnits/$schoolUnit->id/people", $this->personPayload([
@@ -81,7 +81,7 @@ final class PersonControllerTest extends TestCase
 
 	public function test_cannot_create_person_without_required_fields(): void
 	{
-		$this->actingUser();
+		$this->actingAdminUser();
 		$schoolUnit = $this->createSchoolUnit();
 		$response = $this->post("/api/schoolUnits/$schoolUnit->id/people", [
 			"firstName" => "Jan",
@@ -91,7 +91,7 @@ final class PersonControllerTest extends TestCase
 
 	public function test_can_create_person_with_alternate_identity_document(): void
 	{
-		$this->actingUser();
+		$this->actingAdminUser();
 		$schoolUnit = $this->createSchoolUnit();
 		$response = $this->post("/api/schoolUnits/$schoolUnit->id/people", $this->personPayload([
 			"pesel" => null,
@@ -107,7 +107,7 @@ final class PersonControllerTest extends TestCase
 
 	public function test_can_update_person(): void
 	{
-		$this->actingUser();
+		$this->actingAdminUser();
 		$schoolUnit = $this->createSchoolUnit();
 		$person = Person::factory()->create([
 			"school_unit_id" => $schoolUnit->id,
@@ -126,7 +126,7 @@ final class PersonControllerTest extends TestCase
 
 	public function test_can_delete_person(): void
 	{
-		$this->actingUser();
+		$this->actingAdminUser();
 		$schoolUnit = $this->createSchoolUnit();
 		$person = Person::factory()->create([
 			"school_unit_id" => $schoolUnit->id,
@@ -140,7 +140,7 @@ final class PersonControllerTest extends TestCase
 
 	public function test_can_lookup_person_by_pesel(): void
 	{
-		$this->actingUser();
+		$this->actingAdminUser();
 		$schoolUnit = $this->createSchoolUnit();
 		$person = Person::factory()->create([
 			"school_unit_id" => $schoolUnit->id,
@@ -158,7 +158,7 @@ final class PersonControllerTest extends TestCase
 
 	public function test_lookup_returns_not_found_for_unknown_pesel(): void
 	{
-		$this->actingUser();
+		$this->actingAdminUser();
 		$schoolUnit = $this->createSchoolUnit();
 		$response = $this->post("/api/schoolUnits/$schoolUnit->id/people/lookup", [
 			"pesel" => "55082669838",
@@ -180,7 +180,7 @@ final class PersonControllerTest extends TestCase
 
 	public function test_can_import_people_successfully()
 	{
-		$this->actingUser();
+		$this->actingAdminUser();
 		$schoolUnitId = SchoolUnit::factory()->create()->id;
 		$csvContent = $this->generateCsv(
 			["firstName", "lastName", "pesel", "birthdate", "birthplace", "residenceAddressCountry"],
@@ -219,7 +219,7 @@ final class PersonControllerTest extends TestCase
 
 	public function test_import_can_import_people_and_assign_to_registries()
 	{
-		$this->actingUser();
+		$this->actingAdminUser();
 		$studentRegistry = StudentRegistry::factory()->create();
 		$childrenRegistry = ChildrenRegistry::factory()->create([
 			"school_unit_id" => $studentRegistry->school_unit_id,
@@ -258,7 +258,7 @@ final class PersonControllerTest extends TestCase
 
 	public function test_import_fails_when_missing_required_fields_in_csv()
 	{
-		$this->actingUser();
+		$this->actingAdminUser();
 		$schoolUnitId = SchoolUnit::factory()->create()->id;
 		$csvContent = $this->generateCsv(
 			["firstName", "lastName", "pesel", "birthdate", "birthplace", "residenceAddressCountry"],
@@ -284,7 +284,7 @@ final class PersonControllerTest extends TestCase
 
 	public function test_import_fails_when_csv_contains_duplicates_inside_itself()
 	{
-		$this->actingUser();
+		$this->actingAdminUser();
 		$schoolUnitId = SchoolUnit::factory()->create()->id;
 		$csvContent = $this->generateCsv(
 			["firstName", "lastName", "pesel", "birthdate", "birthplace", "residenceAddressCountry"],
@@ -308,7 +308,7 @@ final class PersonControllerTest extends TestCase
 
 	public function test_import_fails_when_csv_contains_duplicates_against_database()
 	{
-		$this->actingUser();
+		$this->actingAdminUser();
 		$schoolUnitId = SchoolUnit::factory()->create()->id;
 		Person::factory()->create([
 			"school_unit_id" => $schoolUnitId,
@@ -334,7 +334,7 @@ final class PersonControllerTest extends TestCase
 
 	public function test_import_fails_when_importing_to_archived_registry()
 	{
-		$this->actingUser();
+		$this->actingAdminUser();
 		$schoolUnit = SchoolUnit::factory()->create(["active" => false]);
 		$studentRegistry = StudentRegistry::factory()->create(["school_unit_id" => $schoolUnit->id]);
 

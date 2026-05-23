@@ -27,7 +27,7 @@ final class GuardianControllerTest extends TestCase
 
 	public function test_can_create_guardian(): void
 	{
-		$this->actingUser();
+		$this->actingAdminUser();
 		$person = $this->createPerson();
 		$response = $this->post("/api/people/$person->id/guardians", [
 			"firstName" => "John",
@@ -51,7 +51,7 @@ final class GuardianControllerTest extends TestCase
 
 	public function test_can_update_guardian(): void
 	{
-		$this->actingUser();
+		$this->actingAdminUser();
 		$guardian = Guardian::factory()->create();
 		$response = $this->put("/api/guardians/$guardian->id", [
 			"firstName" => "Jane",
@@ -75,7 +75,7 @@ final class GuardianControllerTest extends TestCase
 
 	public function test_can_delete_guardian(): void
 	{
-		$this->actingUser();
+		$this->actingAdminUser();
 		$guardian = Guardian::factory()->create();
 		$response = $this->delete("/api/guardians/$guardian->id");
 		$response->assertOk();
@@ -86,11 +86,11 @@ final class GuardianControllerTest extends TestCase
 
 	public function test_can_generate_guardian_access_for_student()
 	{
-		$this->actingUser();
+		$this->actingAdminUser();
 		$guardian = Guardian::factory()->create();
 		$student = Student::factory()->create();
 
-		$response = $this->get("/api/guardians/{$guardian->id}/students/{$student->id}/generateAccess");
+		$response = $this->get("/api/guardians/$guardian->id/students/$student->id/generateAccess");
 
 		$response->assertStatus(200)
 			->assertJsonStructure([
@@ -106,7 +106,7 @@ final class GuardianControllerTest extends TestCase
 
 	public function test_can_list_active_guardians_with_accesses()
 	{
-		$this->actingUser();
+		$this->actingAdminUser();
 		$person = Person::factory()->create([
 			"first_name" => "Jan",
 			"last_name" => "Nowak",
@@ -124,7 +124,7 @@ final class GuardianControllerTest extends TestCase
 			"words" => "a,b,c"
 		]);
 
-		$response = $this->getJson("/api/guardians/access");
+		$response = $this->get("/api/guardians/accesses");
 
 		$response->assertStatus(200)
 			->assertJsonFragment([
@@ -140,7 +140,7 @@ final class GuardianControllerTest extends TestCase
 
 	public function test_can_filter_guardian_accesses_by_class_unit_id()
 	{
-		$this->actingUser();
+		$this->actingAdminUser();
 		$student = Student::factory()->create();
 		$guardian = Guardian::factory()->create(["person_id" => $student->person_id]);
 
@@ -155,10 +155,10 @@ final class GuardianControllerTest extends TestCase
 		$pivotEntry->date_to = null;
 		$pivotEntry->save();
 
-		$response = $this->getJson("/api/guardians/access?classUnitId={$classUnit->id}");
+		$response = $this->get("/api/guardians/accesses?classUnitId=$classUnit->id");
 		$response->assertStatus(200)->assertJsonCount(1);
 
-		$emptyResponse = $this->getJson("/api/guardians/access?classUnitId=9999");
+		$emptyResponse = $this->get("/api/guardians/accesses?classUnitId=9999");
 		$emptyResponse->assertStatus(200)->assertJsonCount(0);
 	}
 }

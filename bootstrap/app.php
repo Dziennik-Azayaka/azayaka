@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Middleware\AllowOnlyStudentsOrGuardians;
 use App\Http\Middleware\EnsureEmployeeHasRole;
 use App\Http\Middleware\CustomThrottleRequests;
 use App\Http\Middleware\DenyIfAuthenticated;
@@ -18,6 +19,7 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->alias([
+			"students.guardians" => AllowOnlyStudentsOrGuardians::class,
 			"auth.deny" => DenyIfAuthenticated::class,
 			"employee.role" => EnsureEmployeeHasRole::class,
 			"throttle" => CustomThrottleRequests::class

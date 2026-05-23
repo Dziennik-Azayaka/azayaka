@@ -15,7 +15,7 @@ final class AccountLogControllerTest extends TestCase
 
     public function test_list_returns_paginated_camelised_logs_for_authenticated_user(): void
     {
-        $user = $this->actingUser();
+        $user = $this->actingAdminUser();
         AccountLog::factory()->count(60)->create([
             "user_id" => $user->id,
             "created_at" => now(),
@@ -45,7 +45,7 @@ final class AccountLogControllerTest extends TestCase
 
     public function test_getDateOfLastUpdateToCredentials_returns_earliest_date_or_null(): void
     {
-        $user = $this->actingUser();
+        $user = $this->actingAdminUser();
 
         $earlier = now()->subDays(3);
         $later = now()->subDay();

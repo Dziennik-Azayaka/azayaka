@@ -17,7 +17,7 @@ final class ChildrenRegistryControllerTest extends TestCase
 
 	public function test_can_list_children_registries(): void
 	{
-		$this->actingUser();
+		$this->actingAdminUser();
 		$schoolUnit = SchoolUnit::factory()->create();
 		$registry = $schoolUnit->childrenRegistry()->create();
 		$response = $this->get("/api/childrenRegistry");
@@ -31,7 +31,7 @@ final class ChildrenRegistryControllerTest extends TestCase
 
 	public function test_can_create_a_children_registry(): void
 	{
-		$this->actingUser();
+		$this->actingAdminUser();
 		$schoolUnit = SchoolUnit::factory()->create();
 		$response = $this->post("/api/childrenRegistry", [
 			"schoolUnitId" => $schoolUnit->id
@@ -44,7 +44,7 @@ final class ChildrenRegistryControllerTest extends TestCase
 
 	public function test_cannot_create_a_children_registry_without_a_valid_school_unit_id(): void
 	{
-		$this->actingUser();
+		$this->actingAdminUser();
 		$response = $this->post("/api/childrenRegistry", [
 			"schoolUnitId" => "invalid-id"
 		]);
@@ -56,7 +56,7 @@ final class ChildrenRegistryControllerTest extends TestCase
 
 	public function test_cannot_create_a_children_registry_when_the_school_unit_already_has_one(): void
 	{
-		$this->actingUser();
+		$this->actingAdminUser();
 		$schoolUnit = SchoolUnit::factory()->create();
 		$schoolUnit->childrenRegistry()->create();
 		$response = $this->post("/api/childrenRegistry", [
@@ -67,7 +67,7 @@ final class ChildrenRegistryControllerTest extends TestCase
 
 	public function test_can_export_children_registry_as_xml(): void
 	{
-		$this->actingUser();
+		$this->actingAdminUser();
 
 		$schoolUnit = SchoolUnit::factory()->create([
 			"name" => "Szkoła im. Microsoftowców",

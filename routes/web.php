@@ -138,6 +138,10 @@ Route::middleware(["auth", "auth.session"])->group(function () {
 		Route::delete("/api/gradebooks/groups/{gradebookGroup}/subjects/{groupSubject}", [GradebookGroupController::class, "destroySubject"]);
 		Route::put("/api/gradebooks/groups/{gradebookGroup}/subjects/{groupSubject}/teachers", [GradebookGroupController::class, "updateTeachers"]);
 	});
+
+	Route::middleware(["students.guardians"])->group(function () {
+		Route::get("/api/students/me", [StudentController::class, "getStudentInfo"]);
+	});
 });
 
 // Email Verification

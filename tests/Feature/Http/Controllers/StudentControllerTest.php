@@ -21,7 +21,7 @@ final class StudentControllerTest extends TestCase
 
 	public function test_can_list_students(): void
 	{
-		$this->actingUser();
+		$this->actingAdminUser();
 		$registry = $this->createStudentRegistry();
 		Student::factory(5)->recycle($registry)->create();
 		$response = $this->get("/api/studentRegistry/$registry->id");
@@ -32,7 +32,7 @@ final class StudentControllerTest extends TestCase
 
 	public function test_can_create_student(): void
 	{
-		$this->actingUser();
+		$this->actingAdminUser();
 		$registry = $this->createStudentRegistry();
 		$person = Person::factory()->create([
 			"school_unit_id" => $registry->schoolUnit->id
@@ -51,7 +51,7 @@ final class StudentControllerTest extends TestCase
 
 	public function test_cannot_create_student_without_valid_person_id(): void
 	{
-		$this->actingUser();
+		$this->actingAdminUser();
 		$registry = $this->createStudentRegistry();
 		$response = $this->post("/api/studentRegistry/$registry->id", [
 			"personId" => 99999,
@@ -62,7 +62,7 @@ final class StudentControllerTest extends TestCase
 
 	public function test_cannot_create_student_without_admission_date(): void
 	{
-		$this->actingUser();
+		$this->actingAdminUser();
 		$registry = $this->createStudentRegistry();
 		$person = Person::factory()->create([
 			"school_unit_id" => $registry->schoolUnit->id
@@ -75,7 +75,7 @@ final class StudentControllerTest extends TestCase
 
 	public function test_can_update_student(): void
 	{
-		$this->actingUser();
+		$this->actingAdminUser();
 		$student = Student::factory()->create();
 		$response = $this->put("/api/students/$student->id", [
 			"admissionDate" => "2024-09-01",
@@ -93,11 +93,35 @@ final class StudentControllerTest extends TestCase
 
 	public function test_can_delete_student(): void
 	{
-		$this->actingUser();
+		$this->actingAdminUser();
 		$student = Student::factory()->create();
 		$response = $this->delete("/api/students/$student->id");
 		$response->assertOk();
 		$student = $student->refresh();
 		$this->assertTrue($student->trashed());
+	}
+
+	public function test_can_get_own_info_as_student(): void
+	{
+		$this->actingStudent();
+		$response = $this->get("/api/students/me");
+		$response->assertOk();
+		$response->assertJsonStructure([
+			"id",
+			"firstName",
+			"secondName",
+			"lastName",
+			"residenceAddress" => [
+				"id",
+				"country",
+				"commune",
+				"town",
+				"postalCode",
+				"street",
+				"houseNumber",
+				"flatNumber"
+			],
+			"gender"
+		]);
 	}
 }

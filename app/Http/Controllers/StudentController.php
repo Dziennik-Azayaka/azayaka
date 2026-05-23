@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Documents\AccountAccessesActivation\AccountAccessesActivationDocument;
 use App\Enums\AccessType;
 use App\Exceptions\CustomValidationException;
+use App\Http\Resources\ResidenceAddressResource;
 use App\Models\AccountAccess;
 use App\Models\ChildrenRegistry;
 use App\Models\Employee;
@@ -191,5 +192,22 @@ class StudentController extends Controller
 		if ($studentRegistry->isArchived()) {
 			throw CustomValidationException::withMessages(["STUDENT_REGISTRY_ARCHIVED"]);
 		}
+	}
+
+	public function getStudentInfo(Request $request)
+	{
+		$accessID = $request->header("Access-ID") ?? $request->route("accessId");
+		$student = AccountAccess::where("user_id", $request->user()->id)
+			->where("id", $accessID)->first()->student()->with(["person", "person.residenceAddress"])->first();
+
+		// TODO: Turn into resource?
+		return [
+			"id" => $student->id,
+			"firstName" => $student->person->first_name,
+			"secondName" => $student->person->first_name,
+			"lastName" => $student->person->last_name,
+			"residenceAddress" => new ResidenceAddressResource($student->person->residenceAddress),
+			"gender" => $student->person->gender
+		];
 	}
 }

@@ -16,7 +16,7 @@ final class CompulsoryEducationFulfillmentControllerTest extends TestCase
 
     public function test_can_create_compulsory_education_fulfillment(): void
     {
-		$this->actingUser();
+		$this->actingAdminUser();
 		$child = Child::factory()->create();
 		$payload = [
 			"schoolYear" => 2025,
@@ -43,7 +43,7 @@ final class CompulsoryEducationFulfillmentControllerTest extends TestCase
 
 	public function test_can_update_compulsory_education_fulfillment(): void
 	{
-		$this->actingUser();
+		$this->actingAdminUser();
 		$child = Child::factory()->create();
 		$fulfillment = CompulsoryEducationFulfillment::factory()->recycle($child)->create();
 		$updatedPayload = [
@@ -71,7 +71,7 @@ final class CompulsoryEducationFulfillmentControllerTest extends TestCase
 
 	public function test_can_delete_compulsory_education_fulfillment(): void
 	{
-		$this->actingUser();
+		$this->actingAdminUser();
 		$child = Child::factory()->create();
 		$fulfillment = CompulsoryEducationFulfillment::factory()->recycle($child)->create();
 		$response = $this->delete("/api/children/$child->id/fulfillment/$fulfillment->id");
