@@ -29,6 +29,9 @@ class EnsureEmployeeHasRole
 			case "administrator":
 				if ($employeeAccess->employee->is_headmaster || $employeeAccess->employee->is_admin) $hasAccess = true;
 				break;
+			case "headmaster":
+				if ($employeeAccess->employee->is_headmaster) $hasAccess = true;
+				break;
 			case "secretary":
 				if ($employeeAccess->employee->is_headmaster || $employeeAccess->employee->is_secretary) $hasAccess = true;
 				break;
