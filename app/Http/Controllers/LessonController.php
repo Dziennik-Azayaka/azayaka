@@ -14,8 +14,12 @@ class LessonController extends Controller
 			->with(["gradebookGroups", "primaryTeacher", "subject", "assistingTeachers"])
 			->where("gradebook_id", $gradebook->id);
 
-		if ($request->has("date")) {
-			$lessons = $lessons->whereDate("date", "=", $request->input("date"));
+		if ($request->has("dateFrom")) {
+			$lessons = $lessons->whereDate("date", ">=", $request->input("dateFrom"));
+		}
+
+		if ($request->has("dateTo")) {
+			$lessons = $lessons->whereDate("date", "<=", $request->input("dateTo"));
 		}
 
 		if ($request->has("completed")) {

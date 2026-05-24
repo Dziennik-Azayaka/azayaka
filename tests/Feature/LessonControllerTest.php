@@ -37,7 +37,7 @@ class LessonControllerTest extends TestCase
 		]);
 
 		$response = $this->getJson(
-			"/api/gradebooks/$gradebook->id/lessons?date=2026-05-24&completed=1&topic=Wielowątkowe programowanie obiektowe w języku Scratch"
+			"/api/gradebooks/$gradebook->id/lessons?dateFrom=2026-05-24&dateTo=2026-05-24&completed=1&topic=Wielowątkowe programowanie obiektowe w języku Scratch"
 		);
 
 		$response->assertStatus(200);

@@ -138,10 +138,14 @@ Route::middleware(["auth", "auth.session"])->group(function () {
 		Route::put("/api/gradebooks/groups/{gradebookGroup}/subjects/{groupSubject}", [GradebookGroupController::class, "updateSubject"]);
 		Route::delete("/api/gradebooks/groups/{gradebookGroup}/subjects/{groupSubject}", [GradebookGroupController::class, "destroySubject"]);
 		Route::put("/api/gradebooks/groups/{gradebookGroup}/subjects/{groupSubject}/teachers", [GradebookGroupController::class, "updateTeachers"]);
+
+	});
+
+	Route::middleware(["employee.role:headmaster,teacher"])->group(function () {
+		Route::get("/api/gradebooks/{gradebook}/lessons", [LessonController::class, "list"]);
 	});
 
 	Route::middleware(["employee.role:teacher"])->group(function () {
-		Route::get("/api/gradebooks/{gradebook}/lessons", [LessonController::class, "list"]);
 		Route::post("/api/lessons", [LessonController::class, "create"]);
 		Route::put("/api/lessons/{lesson}", [LessonController::class, "update"]);
 		Route::patch("/api/lessons/{lesson}/completed", [LessonController::class, "markAsCompleted"]);
