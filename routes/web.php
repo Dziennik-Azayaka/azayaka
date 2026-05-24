@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AccountAccessesController;
 use App\Http\Controllers\AccountLogController;
+use App\Http\Controllers\AttendanceComplexTypeController;
 use App\Http\Controllers\ChildController;
 use App\Http\Controllers\ChildrenRegistryController;
 use App\Http\Controllers\ClassificationPeriodController;
@@ -84,6 +85,11 @@ Route::middleware(["auth", "auth.session"])->group(function () {
 		Route::get("/api/schoolUnits/{schoolUnitId}/classificationPeriods/{schoolYear}", [ClassificationPeriodController::class, "list"]);
 		Route::post("/api/schoolUnits/{schoolUnitId}/classificationPeriods/{schoolYear}", [ClassificationPeriodController::class, "save"]);
 		Route::delete("/api/schoolUnits/{schoolUnitId}/classificationPeriods/{schoolYear}", [ClassificationPeriodController::class, "delete"]);
+
+		Route::get("/api/attendanceComplexTypes", [AttendanceComplexTypeController::class, "list"]);
+		Route::post("/api/attendanceComplexTypes", [AttendanceComplexTypeController::class, "create"]);
+		Route::put("/api/attendanceComplexTypes/{type}", [AttendanceComplexTypeController::class, "update"]);
+		Route::patch("/api/attendanceComplexTypes/{type}", [AttendanceComplexTypeController::class, "changeActivity"]);
 	});
 
 	Route::middleware(["employee.role:secretary"])->group(function () {

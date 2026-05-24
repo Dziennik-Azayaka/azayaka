@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\AccountAccess;
 use App\Models\AccountLog;
+use App\Models\AttendanceComplexType;
 use App\Models\Child;
 use App\Models\ChildrenRegistry;
 use App\Models\ClassificationPeriod;
@@ -133,5 +134,7 @@ class DatabaseSeeder extends Seeder
 		GradebookGroupSubject::factory(10)->recycle($gradebooks)->recycle($allSubjects)->create();
 
 		Lesson::factory(10)->recycle($gradebooks)->recycle($allSubjects)->recycle($employees)->create();
+
+		AttendanceComplexType::factory(1)->create();
 	}
 }
