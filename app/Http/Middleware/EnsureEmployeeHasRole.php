@@ -25,16 +25,19 @@ class EnsureEmployeeHasRole
 		if (!$employeeAccess) return $this->returnForbiddenResponse($request->wantsJson());
 
 		$hasAccess = false;
+		/* not having breaks is fine in this scenario, because only one of these needs to pass - we don't want to stop
+		a user when the route allows admins or teachers, but the check fails because of the
+		break statement in the admin case. */
 		switch ($module) {
+			/** @noinspection PhpMissingBreakStatementInspection */
 			case "administrator":
 				if ($employeeAccess->employee->is_headmaster || $employeeAccess->employee->is_admin) $hasAccess = true;
-				break;
+			/** @noinspection PhpMissingBreakStatementInspection */
 			case "headmaster":
 				if ($employeeAccess->employee->is_headmaster) $hasAccess = true;
-				break;
+			/** @noinspection PhpMissingBreakStatementInspection */
 			case "secretary":
 				if ($employeeAccess->employee->is_headmaster || $employeeAccess->employee->is_secretary) $hasAccess = true;
-				break;
 			case "teacher":
 				if ($employeeAccess->employee->is_teacher) $hasAccess = true;
 		}

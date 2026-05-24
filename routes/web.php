@@ -153,6 +153,8 @@ Route::middleware(["auth", "auth.session"])->group(function () {
 
 	Route::middleware(["students.guardians"])->group(function () {
 		Route::get("/api/students/me", [StudentController::class, "getStudentInfo"]);
+		Route::get("/api/students/me/gradebooks", [GradebookController::class, "getStudentGradebooks"]);
+		Route::get("/api/students/me/gradebooks/{gradebook}/lessons", [LessonController::class, "getStudentLessons"]);
 	});
 });
 

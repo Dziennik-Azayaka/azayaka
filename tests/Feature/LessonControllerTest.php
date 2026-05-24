@@ -152,4 +152,26 @@ class LessonControllerTest extends TestCase
 			"completed" => true
 		]);
 	}
+
+	public function test_student_can_see_their_lessons(): void
+	{
+		$this->actingStudent();
+		$gradebook = Gradebook::factory()->create();
+		$subject = Subject::factory()->create();
+		$primaryTeacher = Employee::factory()->create();
+		$gradebookGroup = GradebookGroup::factory()->create([
+			"gradebook_id" => $gradebook->id,
+		]);
+		$gradebookGroup->students()->attach($this->actingStudentUser->students->first());
+		$lesson = Lesson::factory()->create([
+			"gradebook_id" => $gradebook->id,
+			"subject_id" => $subject->id,
+			"primary_teacher_id" => $primaryTeacher->id
+		]);
+		$lesson->gradebookGroups()->attach($gradebookGroup);
+		$response = $this->getJson("/api/students/me/gradebooks/$gradebook->id/lessons");
+		$response->assertStatus(200);
+		$response->assertJsonCount(1);
+		$response->assertJsonPath("0.id", $lesson->id);
+	}
 }

@@ -13,4 +13,9 @@ class GradebookStudents extends Pivot
 	{
 		return $this->belongsTo(Student::class);
 	}
+
+	public function gradebook(): BelongsTo
+	{
+		return $this->belongsTo(Gradebook::class);
+	}
 }

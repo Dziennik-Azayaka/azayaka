@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\AccountAccess;
 use App\Models\Gradebook;
 use App\Models\GradebookStudents;
+use App\Models\Student;
 use App\Utilities\CaseConverter;
 use Illuminate\Http\Request;
 
@@ -59,7 +61,7 @@ class GradebookController extends Controller
 		return $pivotEntries->map(function ($entry) {
 			return [
 				"studentId" => $entry->student->id,
-				"studentName" => $entry->student->person-> first_name,
+				"studentName" => $entry->student->person->first_name,
 				"studentSecondName" => $entry->student->person->second_name,
 				"studentLastName" => $entry->student->person->last_name,
 				"position" => $entry->position
@@ -122,5 +124,20 @@ class GradebookController extends Controller
 		return \Response::json([
 			"success" => true
 		]);
+	}
+
+	public function getStudentGradebooks(Request $request)
+	{
+		$student = Student::getStudentFromAccessId($request);
+		$gradebooks = GradebookStudents::where("student_id", $student->id)
+			->with(["gradebook", "gradebook.classUnit"])->get();
+
+		return $gradebooks->map(function ($gradebook) {
+			return [
+				"id" => $gradebook->gradebook->id,
+				"classUnit" => $gradebook->gradebook->classUnit->toResource(),
+				"schoolYear" => $gradebook->gradebook->startingClassificationPeriod->school_year
+			];
+		});
 	}
 }

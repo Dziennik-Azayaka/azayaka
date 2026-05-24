@@ -200,9 +200,7 @@ class StudentController extends Controller
 
 	public function getStudentInfo(Request $request)
 	{
-		$accessID = $request->header("Access-ID") ?? $request->route("accessId");
-		$student = AccountAccess::where("user_id", $request->user()->id)
-			->where("id", $accessID)->first()->student()->with(["person", "person.residenceAddress"])->first();
+		$student = Student::getStudentFromAccessId($request);
 
 		// TODO: Turn into resource?
 		return [

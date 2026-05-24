@@ -217,4 +217,23 @@ final class GradebookControllerTest extends TestCase
 		$response->assertStatus(422);
 		$response->assertSee("HAS_A_DUPLICATE_VALUE");
 	}
+
+	public function test_student_can_see_their_own_gradebooks(): void
+	{
+		$this->actingStudent();
+		$gradebook = Gradebook::factory()->create();
+		GradebookStudents::insert([
+			"gradebook_id" => $gradebook->id,
+			"student_id" => $this->actingStudentUser->students->first()->id,
+			"position" => 1,
+			"date_from" => now()
+		]);
+		$response = $this->get("/api/students/me/gradebooks");
+		$response->assertOk();
+		$response->assertJsonCount(1);
+		$response->assertJsonFragment([
+			"id" => $gradebook->id,
+			"schoolYear" => $gradebook->startingClassificationPeriod->school_year,
+		]);
+	}
 }

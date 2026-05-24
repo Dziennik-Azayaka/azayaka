@@ -5,38 +5,19 @@ namespace App\Http\Controllers;
 use App\Http\Requests\LessonRequest;
 use App\Models\Gradebook;
 use App\Models\Lesson;
+use App\Models\Student;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Http\Request;
 
 class LessonController extends Controller
 {
-	public function list(Request $request, Gradebook $gradebook) {
+	public function list(Request $request, Gradebook $gradebook)
+	{
 		$lessons = $gradebook->lessons()
 			->with(["gradebookGroups", "primaryTeacher", "subject", "assistingTeachers"])
 			->where("gradebook_id", $gradebook->id);
-
-		if ($request->has("dateFrom")) {
-			$lessons = $lessons->whereDate("date", ">=", $request->input("dateFrom"));
-		}
-
-		if ($request->has("dateTo")) {
-			$lessons = $lessons->whereDate("date", "<=", $request->input("dateTo"));
-		}
-
-		if ($request->has("completed")) {
-			$lessons = $lessons->where("completed", "=", $request->input("completed"));
-		}
-
-		if ($request->has("subjectId")) {
-			$lessons = $lessons->where("subject_id", "=", $request->input("subjectId"));
-		}
-
-		if ($request->has("primaryTeacherId")) {
-			$lessons = $lessons->where("primary_teacher_id", "=", $request->input("primaryTeacherId"));
-		}
-
-		if ($request->has("topic")) {
-			$lessons = $lessons->where("topic", "like", "%" . $request->input("topic") . "%");
-		}
+		$lessons = $this->applyFilters($request, $lessons);
 
 		return $lessons->get()->toResourceCollection();
 	}
@@ -110,5 +91,60 @@ class LessonController extends Controller
 		return [
 			"success" => true
 		];
+	}
+
+	public function getStudentLessons(Request $request, Gradebook $gradebook)
+	{
+		$student = Student::getStudentFromAccessId($request);
+		$lessons = $gradebook->lessons()->with(["primaryTeacher", "subject", "assistingTeachers"])
+			->where("gradebook_id", $gradebook->id)
+			->whereHas("gradebookGroups", function ($groupQuery) use ($student) {
+				$groupQuery->whereHas("students", function ($query) use ($student) {
+					$query->where("student_id", $student->id);
+				});
+			});
+		$lessons = $this->applyFilters($request, $lessons);
+
+		return $lessons->get()->map(fn(Lesson $lesson) => [
+			"id" => $lesson->id,
+			"number" => $lesson->number,
+			"topic" => $lesson->topic,
+			"date" => $lesson->date,
+			"startTime" => $lesson->start_time,
+			"endTime" => $lesson->end_time,
+			"completed" => $lesson->completed,
+			"primaryTeacher" => $lesson->primaryTeacher->first_name . " " . $lesson->primaryTeacher->last_name,
+			"subject" => $lesson->subject->name,
+			"assistingTeachers" => $lesson->assistingTeachers->map(fn($teacher) => $teacher->first_name . " " . $teacher->last_name)
+		]);
+	}
+
+	private function applyFilters(Request $request, Builder|HasMany $query): Builder|HasMany
+	{
+		if ($request->has("dateFrom")) {
+			$query = $query->whereDate("date", ">=", $request->input("dateFrom"));
+		}
+
+		if ($request->has("dateTo")) {
+			$query = $query->whereDate("date", "<=", $request->input("dateTo"));
+		}
+
+		if ($request->has("completed")) {
+			$query = $query->where("completed", "=", $request->input("completed"));
+		}
+
+		if ($request->has("subjectId")) {
+			$query = $query->where("subject_id", "=", $request->input("subjectId"));
+		}
+
+		if ($request->has("primaryTeacherId")) {
+			$query = $query->where("primary_teacher_id", "=", $request->input("primaryTeacherId"));
+		}
+
+		if ($request->has("topic")) {
+			$query = $query->where("topic", "like", "%" . $request->input("topic") . "%");
+		}
+
+		return $query;
 	}
 }
