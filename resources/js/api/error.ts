@@ -26,6 +26,12 @@ export class ApiError {
         return 'apiErrors.incorrectPassword';
       case 'EMAIL_TAKEN':
         return 'apiErrors.takenEmail';
+      case 'PERSON_ALREADY_EXISTS':
+        return 'apiErrors.personAlreadyExists';
+      case 'STUDENT_REGISTRY_NUMBER_ALREADY_EXISTS':
+        return 'apiErrors.studentRegistryNumberAlreadyExists';
+      case 'REGISTRY_ARCHIVED':
+        return 'apiErrors.registryArchived';
       default:
         return 'apiErrors.unexpectedError';
     }

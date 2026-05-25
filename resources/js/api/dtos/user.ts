@@ -13,4 +13,4 @@ export type UserAccessDTO = {
   modulesAvailable: Module[];
 };
 
-export type Module = 'student' | 'secretary' | 'administrator' | 'teacher';
+export type Module = 'student' | 'secretary' | 'administrator' | 'teacher' | 'register';

@@ -1,8 +1,6 @@
 <script setup lang="ts">
-import { useGetClassUnits } from '@/api/hooks/class-unit/getClassUnits';
-import { useGetFilteredStudents } from '@/api/hooks/student/getFilteredStudents';
-import { type StudentStatusFilter } from '@/api/services/student';
-import type { Student } from '@/api/types/student';
+import { useGetFilteredChildren } from '@/api/hooks/child/useGetFilteredChildren';
+import type { Child } from '@/api/types/child';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -33,12 +31,12 @@ import {
   LucideFilter,
   LucidePlus,
 } from 'lucide-vue-next';
-import AddStudentDialog from './AddStudentDialog.vue';
-import EditStudentDialog from './EditStudentDialog.vue';
+import AddChildDialog from './AddChildDialog.vue';
+import EditChildDialog from './EditChildDialog.vue';
 import { computed, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 
-const props = defineProps<{ registryId: number; schoolUnitId?: number }>();
+const props = defineProps<{ registryId: number; schoolUnitId: number }>();
 
 const { d, t } = useI18n();
 
@@ -47,16 +45,8 @@ const ALL_FILTER = '_all';
 const page = ref(1);
 const gender = ref<string | null>(null);
 const birthYear = ref<string>();
-const status = ref<StudentStatusFilter | null>(null);
-const classUnitId = ref<string | null>(null);
 
-	const addDialogOpen = ref(false);
-const statusValue = computed({
-  get: () => status.value ?? ALL_FILTER,
-  set: (v: string) => {
-    status.value = v === ALL_FILTER ? null : (v as StudentStatusFilter);
-  },
-});
+const addDialogOpen = ref(false);
 
 const genderValue = computed({
   get: () => gender.value ?? ALL_FILTER,
@@ -65,46 +55,25 @@ const genderValue = computed({
   },
 });
 
-const classUnitValue = computed({
-  get: () => classUnitId.value ?? ALL_FILTER,
-  set: (v: string) => {
-    classUnitId.value = v === ALL_FILTER ? null : v;
-  },
-});
-
 const sorting = ref<SortingState>([]);
 const sortField = computed(() => sorting.value[0]?.id ?? null);
 const sortOrder = computed(() => (sorting.value[0]?.desc ? 'desc' : 'asc'));
-
-const classUnitIdNumber = computed(() => {
-  const v = classUnitId.value;
-  return v !== null ? Number(v) : null;
-});
-
-const { data: allClassUnits } = useGetClassUnits();
-const classUnits = computed(() =>
-  (allClassUnits.value ?? []).filter(
-    (cu) => props.schoolUnitId === undefined || cu.schoolUnit.id === props.schoolUnitId,
-  ),
-);
 
 const {
   data: resource,
   isFetching,
   isError,
   refetch,
-} = useGetFilteredStudents(
+} = useGetFilteredChildren(
   props.registryId,
   page,
-  classUnitIdNumber,
-  sortField,
-  sortOrder,
   birthYear,
   gender,
-  status,
+  sortField,
+  sortOrder,
 );
 
-watch([gender, birthYear, status, classUnitId], () => {
+watch([gender, birthYear], () => {
   page.value = 1;
 });
 
@@ -113,14 +82,14 @@ watch(sorting, () => {
 });
 
 const columnVisibility = ref<VisibilityState>({});
-const columnHelper = createColumnHelper<Student>();
+const columnHelper = createColumnHelper<Child>();
 
 const columns = [
   columnHelper.accessor('id', {
     header: () => t('common.data.numberShort'),
   }),
   columnHelper.accessor(
-    (student) => student.person.pesel ?? student.person.alternateIdentityDocument,
+    (child) => child.person.pesel ?? child.person.alternateIdentityDocument,
     {
       id: 'peselAlternateDocument',
       header: () => `${t('common.data.pesel')} / ${t('common.data.alternateDocument')}`,
@@ -131,10 +100,10 @@ const columns = [
     header: () => t('common.data.lastName'),
   }),
   columnHelper.accessor(
-    (student) =>
-      student.person.secondName
-        ? `${student.person.firstName} ${student.person.secondName}`
-        : student.person.firstName,
+    (child) =>
+      child.person.secondName
+        ? `${child.person.firstName} ${child.person.secondName}`
+        : child.person.firstName,
     { id: 'names', header: () => t('common.data.names'), enableSorting: false },
   ),
   columnHelper.accessor('person.birthdate', {
@@ -146,17 +115,13 @@ const columns = [
     header: () => 'Miejsce zamieszkania',
     enableSorting: false,
   }),
-  columnHelper.accessor('admissionDate', {
-    header: () => t('common.data.admissionDate'),
-    cell: ({ getValue }) => d(getValue(), 'numericDate'),
-  }),
 ];
 
 const table = useVueTable({
   get data() {
     return resource.value?.data ?? [];
   },
-  getRowId: (student) => student.id.toString(),
+  getRowId: (child) => child.id.toString(),
   columns,
   getCoreRowModel: getCoreRowModel(),
   manualPagination: true,
@@ -179,12 +144,12 @@ const table = useVueTable({
   <div class="mb-3 flex gap-3">
     <Button @click="addDialogOpen = true">
       <LucidePlus />
-      {{ t('secretary.studentRegistry.addStudent') }}
+      {{ t('secretary.childrenRegistry.addChild') }}
     </Button>
-    <AddStudentDialog
+    <AddChildDialog
       v-model:open="addDialogOpen"
       :registry-id="props.registryId"
-      :school-unit-id="props.schoolUnitId!"
+      :school-unit-id="props.schoolUnitId"
     />
     <DropdownMenu>
       <DropdownMenuTrigger as-child>
@@ -217,22 +182,6 @@ const table = useVueTable({
       <PopoverContent>
         <div class="grid grid-cols-[max-content_1fr] items-center gap-3">
           <div>
-            <Label for="status-select">Status</Label>
-          </div>
-          <div>
-            <Select v-model="statusValue">
-              <SelectTrigger id="status-select" class="w-full">
-                <SelectValue :placeholder="t('common.actions.select')" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem :value="ALL_FILTER">--</SelectItem>
-                <SelectItem value="active">Aktywny</SelectItem>
-                <SelectItem value="inactive">Nieaktywny</SelectItem>
-                <SelectItem value="trashed">Omyłkowy</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-          <div>
             <Label for="gender-select">Płeć</Label>
           </div>
           <div>
@@ -253,22 +202,6 @@ const table = useVueTable({
           <div>
             <Input id="birthYear-input" v-model="birthYear" />
           </div>
-          <div>
-            <Label for="class-unit-select">{{ t('gradebook.selector.classUnit') }}</Label>
-          </div>
-          <div>
-            <Select v-model="classUnitValue">
-              <SelectTrigger id="class-unit-select" class="w-full">
-                <SelectValue :placeholder="t('common.actions.select')" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem :value="ALL_FILTER">--</SelectItem>
-                <SelectItem v-for="cu in classUnits" :key="cu.id" :value="String(cu.id)">
-                  {{ cu.mark }}
-                </SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
         </div>
       </PopoverContent>
     </Popover>
@@ -279,12 +212,12 @@ const table = useVueTable({
   <template v-else-if="resource">
     <TableTemplate :table="table">
       <template #row="{ row, templateRow }">
-        <EditStudentDialog
-          :student="row.original"
-          :school-unit-id="props.schoolUnitId!"
+        <EditChildDialog
+          :child="row.original"
+          :school-unit-id="props.schoolUnitId"
         >
           <component :is="templateRow" />
-        </EditStudentDialog>
+        </EditChildDialog>
       </template>
     </TableTemplate>
     <div class="flex justify-between mt-3">

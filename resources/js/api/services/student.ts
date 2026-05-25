@@ -21,4 +21,19 @@ export const StudentService = {
       method: 'GET',
       query: { birthYear, gender, status, page, classUnitId, sort, order },
     }).then((res) => ({ ...res, data: res.data.map(studentFromDTO) })),
+
+  enroll: (
+    registryId: number,
+    data: { personId: number; admissionDate: string },
+  ): Promise<{ success: true; studentId: number }> =>
+    http(`/studentRegistry/${registryId}`, { method: 'POST', body: data }),
+
+  update: (
+    id: number,
+    body: { admissionDate: string; leaveDate?: string | null; leaveReason?: string | null },
+  ): Promise<{ success: true }> =>
+    http(`/students/${id}`, { method: 'PUT', body }),
+
+  delete: (id: number): Promise<{ success: true }> =>
+    http(`/students/${id}`, { method: 'DELETE' }),
 };

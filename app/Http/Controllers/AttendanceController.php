@@ -21,8 +21,8 @@ class AttendanceController extends Controller
 {
 	public function dayView(Request $request, Gradebook $gradebook)
 	{
-		$gradebook = $gradebook->load(["students", "groups.students"]);
-		$date = $request->input("date", now()->toDateString());;
+		$gradebook = $gradebook->load(["students.person"]);
+		$date = $request->input("date", now()->toDateString());
 
 		$lessons = Lesson::with([
 			"subject",
@@ -41,13 +41,13 @@ class AttendanceController extends Controller
 			"number" => $lesson->number,
 			"startTime" => $lesson->start_time,
 			"endTime" => $lesson->end_time,
-			"students" => $gradebook->groups->flatMap(fn($group) => $group->students->map(fn(Student $student) => [
+			"students" => $gradebook->students->map(fn(Student $student) => [
 				"id" => $student->id,
 				"firstName" => $student->person->first_name,
 				"secondName" => $student->person->second_name,
 				"lastName" => $student->person->last_name,
-				"position" => $gradebook->students()->find($student->id)->pivot->position
-			])),
+				"position" => $student->pivot->position,
+			]),
 			"attendances" => $lesson->attendances->map(fn(Attendance $attendance) => [
 				"id" => $attendance->id,
 				"primitiveType" => $attendance->primitive_type,

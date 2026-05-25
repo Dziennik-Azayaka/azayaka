@@ -28,6 +28,16 @@ const route: RouteRecordRaw = {
           path: '/teacher/:accessId/gradebook/class-unit/:classUnitId/school-year/:schoolYear/groups',
           component: () => import('./pages/GradebookGroupsTab.vue'),
         },
+        {
+          name: 'gradebook.view.lessons',
+          path: '/teacher/:accessId/gradebook/class-unit/:classUnitId/school-year/:schoolYear/lessons',
+          component: () => import('./pages/GradebookLessonsTab.vue'),
+        },
+        {
+          name: 'gradebook.view.attendance',
+          path: '/teacher/:accessId/gradebook/class-unit/:classUnitId/school-year/:schoolYear/attendance',
+          component: () => import('./pages/GradebookAttendanceTab.vue'),
+        },
       ],
     },
   ],

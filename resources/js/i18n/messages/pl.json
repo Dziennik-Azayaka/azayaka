@@ -193,7 +193,8 @@
 			"skipToContent": "Przejdź do treści",
 			"toggleMenu": "Otwórz/zamknij menu",
 			"tryAgain": "Spróbuj ponownie",
-			"unarchive": "Odarchiwizuj"
+			"unarchive": "Odarchiwizuj",
+			"retry": "Ponów"
 		},
 		"actions_": "Akcje",
 		"auto": "(auto)",
@@ -218,7 +219,19 @@
 			"names": "Imiona",
 			"pesel": "PESEL",
 			"alternateDocument": "Inny dokument",
-			"admissionDate": "Data przyjęcia"
+			"admissionDate": "Data przyjęcia",
+			"birthplace": "Miejsce urodzenia",
+			"commune": "Gmina",
+			"country": "Kraj",
+			"female": "Kobieta",
+			"flatNumber": "Numer mieszkania",
+			"gender": "Płeć",
+			"houseNumber": "Numer domu",
+			"male": "Mężczyzna",
+			"postalCode": "Kod pocztowy",
+			"secondName": "Drugie imię",
+			"street": "Ulica",
+			"town": "Miejscowość"
 		},
 		"loadingDataError": "Nie udało się załadować danych. Spróbuj ponownie później.",
 		"modulesMenuTitle": "Przjedź do",
@@ -304,15 +317,111 @@
 		"studentRegistry": {
 			"title": "Księga uczniów",
 			"notCreatedInfo": {
-				"title": "Księga uczniów nie została założona dla tej jednostki.",
+				"title": "Nie utworzono jeszcze księgi uczniów dla tej jednostki.",
 				"button": "Załóż księgę uczniów"
+			},
+			"addStudent": "Dodaj ucznia",
+			"addStudentDialog": {
+				"title": "Dodaj ucznia",
+				"step1": {
+					"description": "Wprowadź numer PESEL lub alternatywny dokument tożsamości, aby wyszukać osobę.",
+					"pesel": "PESEL",
+					"alternateDocument": "Alternatywny dokument tożsamości",
+					"noPesel": "Brak PESEL",
+					"hasPesel": "Ma PESEL"
+				},
+				"step2": {
+					"lookingUp": "Wyszukiwanie osoby..."
+				},
+				"step3a": {
+					"title": "Osoba znaleziona",
+					"description": "Ta osoba już istnieje w systemie. Potwierdź, aby zapisać ją jako ucznia.",
+					"admissionDate": "Data przyjęcia"
+				},
+				"step3b": {
+					"title": "Nowa osoba",
+					"description": "Nie znaleziono tej osoby w systemie. Wypełnij poniższe dane, aby ją zarejestrować."
+				},
+				"next": "Dalej",
+				"back": "Wstecz",
+				"confirm": "Zatwierdź",
+				"addToChildrenRegistry": "Dodaj również do ewidencji dzieci"
+			},
+			"editStudentDialog": {
+				"title": "Edytuj ucznia",
+				"description": "Zaktualizuj dane osobowe i informacje o rejestracji ucznia.",
+				"delete": "Usuń ucznia",
+				"deleteConfirm": {
+					"title": "Usunąć ucznia?",
+					"description": "Czy na pewno chcesz usunąć tego ucznia z księgi? Tej operacji nie można cofnąć.",
+					"cancel": "Anuluj",
+					"confirm": "Usuń"
+				}
 			}
 		},
 		"listenerRegistry": {
 			"title": "Księga słuchaczy"
 		},
 		"childrenRegistry": {
-			"title": "Księga ewidencji dzieci"
+			"title": "Księga ewidencji dzieci",
+			"addChild": "Dodaj dziecko",
+			"notCreatedInfo": {
+				"title": "Nie utworzono jeszcze ewidencji dzieci dla tej jednostki.",
+				"button": "Załóż ewidencję dzieci"
+			},
+			"addChildDialog": {
+				"title": "Dodaj dziecko",
+				"step1": {
+					"description": "Wprowadź numer PESEL lub alternatywny dokument tożsamości, aby wyszukać osobę.",
+					"pesel": "PESEL",
+					"alternateDocument": "Alternatywny dokument tożsamości",
+					"noPesel": "Brak PESEL",
+					"hasPesel": "Ma PESEL"
+				},
+				"step2": {
+					"lookingUp": "Wyszukiwanie osoby..."
+				},
+				"step3a": {
+					"title": "Osoba znaleziona",
+					"description": "Ta osoba już istnieje w systemie. Potwierdź, aby zapisać ją do ewidencji dzieci."
+				},
+				"step3b": {
+					"title": "Nowa osoba",
+					"description": "Nie znaleziono tej osoby w systemie. Wypełnij poniższe dane, aby ją zarejestrować."
+				},
+				"next": "Dalej",
+				"back": "Wstecz",
+				"confirm": "Zatwierdź",
+				"addToStudentRegistry": "Dodaj również do księgi uczniów"
+			},
+			"editChildDialog": {
+				"title": "Edytuj dziecko",
+				"description": "Zaktualizuj dane osobowe i informacje o rejestracji dziecka.",
+				"delete": "Usuń dziecko",
+				"deleteConfirm": {
+					"title": "Usunąć dziecko?",
+					"description": "Czy na pewno chcesz usunąć to dziecko z ewidencji? Tej operacji nie można cofnąć.",
+					"cancel": "Anuluj",
+					"confirm": "Usuń"
+				}
+			},
+			"fulfillment": {
+				"title": "Spełnianie obowiązku szkolnego",
+				"addFulfillment": "Dodaj spełnianie",
+				"empty": "Brak wpisów o spełnianiu obowiązku.",
+				"deleteConfirm": "Czy na pewno chcesz usunąć ten wpis?",
+				"cancel": "Anuluj",
+				"delete": "Usuń",
+				"save": "Zapisz",
+				"edit": "Edytuj",
+				"schoolYear": "Rok szkolny",
+				"controlDate": "Data kontroli",
+				"level": "Poziom",
+				"kindergartenInfo": "Informacje o przedszkolu",
+				"postponementInfo": "Informacje o odroczeniu",
+				"schoolInfo": "Informacje o szkole",
+				"outOfSchoolInfo": "Informacje o zajęciach pozaszkolnych"
+			}
 		}
 	},
 	"gradebook": {
@@ -338,7 +447,9 @@
 			"groups": "Grupy",
 			"studentsEmpty": "Brak uczniów do wyświetlenia.",
 			"groupsEmpty": "Brak grup do wyświetlenia.",
-			"groupStudents": "Uczniowie grupy"
+			"groupStudents": "Uczniowie grupy",
+			"attendance": "Frekwencja",
+			"lessons": "Realizacja zajęć"
 		},
 		"students": {
 			"attach": "Dołącz uczniów",
@@ -397,12 +508,31 @@
 			"deleteSubjectConfirmTitle": "Usunąć przedmiot?",
 			"deleteSubjectConfirmDescription": "Czy na pewno chcesz usunąć ten przedmiot z grupy? Tej operacji nie można cofnąć.",
 			"deleteSubjectCancel": "Anuluj usuwanie",
-		"groupStudentsTitle": "Przypisz uczniów do grup",
-		"groupStudentsSave": "Zapisz zmiany",
-		"groupStudentsSaved": "Zmiany zapisane",
-		"groupStudentsNoStudents": "Brak uczniów w tym dzienniku.",
-		"groupStudentsNoGroups": "Nie utworzono jeszcze żadnych grup.",
-		"groupStudentsFullName": "Uczeń"
+			"groupStudentsTitle": "Przypisz uczniów do grup",
+			"groupStudentsSave": "Zapisz zmiany",
+			"groupStudentsSaved": "Zmiany zapisane",
+			"groupStudentsNoStudents": "Brak uczniów w tym dzienniku.",
+			"groupStudentsNoGroups": "Nie utworzono jeszcze żadnych grup.",
+			"groupStudentsFullName": "Uczeń"
+		},
+		"attendance": {
+			"today": "Dzisiaj",
+			"position": "Nr",
+			"student": "Uczeń",
+			"emptyTitle": "Brak zajęć",
+			"emptyDescription": "Nie znaleziono zajęć w wybranym dniu."
+		},
+		"lessons": {
+			"infoBanner": "Ten widok służy wyłącznie do przeglądania zrealizowanych zajęć. Aby utworzyć lub edytować zajęcia, przejdź do panelu nauczyciela.",
+			"today": "Dzisiaj",
+			"time": "Godzina",
+			"subject": "Przedmiot",
+			"topic": "Temat",
+			"teacher": "Nauczyciel",
+			"withTeachers": "z",
+			"emptyTitle": "Brak zajęć",
+			"emptyDescription": "Nie znaleziono zrealizowanych zajęć w tym tygodniu.",
+			"lessonCount": "{count} zajęć"
 		}
 	},
 	"validationErrors": {

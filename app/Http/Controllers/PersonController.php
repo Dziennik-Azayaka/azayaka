@@ -79,7 +79,7 @@ class PersonController extends Controller
 
 		if (isset($validated["studentRegistryId"])) {
 			$studentRegistry = StudentRegistry::where("id", "=", $validated["studentRegistryId"])->first();
-			if ($validated["studentRegistryNumber"] == null) {
+			if (!isset($validated["studentRegistryNumber"])) {
 				$validated["studentRegistryNumber"] = $studentRegistry->students()->max("student_registry_number") + 1;
 			} else if ($studentRegistry->students()->where("student_registry_number", $validated["studentRegistryNumber"])->exists()) {
 				return \Response::json([

@@ -40,6 +40,12 @@ const userStore = useUserStore();
 const isMobile = useMediaQuery('(width < 80rem)');
 const { t } = useI18n();
 
+const moduleRouteMap: Partial<Record<Module, string>> = {
+  administrator: 'administrator',
+  secretary: 'secretary',
+  register: 'gradebook',
+};
+
 const moduleIcons: Record<Module, Component> = {
   myAccount: LucideUserCog,
   administrator: LucideSettings2,
@@ -77,7 +83,7 @@ const moduleIcons: Record<Module, Component> = {
         <DropdownMenuItem v-for="module in access.modulesAvailable" :key="module" as-child>
           <RouterLink
             :to="{
-              name: ['administrator', 'secretary'].includes(module) ? module : 'auth.logIn',
+              name: moduleRouteMap[module] || 'auth.logIn',
               params: { accessId: access.id },
             }"
             target="_blank"
@@ -122,7 +128,7 @@ const moduleIcons: Record<Module, Component> = {
             <li v-for="module in access.modulesAvailable" :key="module">
               <RouterLink
                 :to="{
-                  name: ['administrator', 'secretary'].includes(module) ? module : 'auth.logIn',
+                  name: moduleRouteMap[module] || 'auth.logIn',
                   params: { accessId: access.id },
                 }"
                 target="_blank"

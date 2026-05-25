@@ -193,7 +193,8 @@
 			"skipToContent": "Skip to content",
 			"toggleMenu": "Open/close menu",
 			"tryAgain": "Try again",
-			"unarchive": "Unarchive"
+			"unarchive": "Unarchive",
+			"retry": "Retry"
 		},
 		"actions_": "Actions",
 		"auto": "(auto)",
@@ -218,7 +219,19 @@
 			"names": "Names",
 			"pesel": "PESEL",
 			"alternateDocument": "Alt. document",
-			"admissionDate": "Admission date"
+			"admissionDate": "Admission date",
+			"birthplace": "Place of birth",
+			"commune": "Commune",
+			"country": "Country",
+			"female": "Female",
+			"flatNumber": "Flat number",
+			"gender": "Gender",
+			"houseNumber": "House number",
+			"male": "Male",
+			"postalCode": "Postal code",
+			"secondName": "Second name",
+			"street": "Street",
+			"town": "Town"
 		},
 		"loadingDataError": "The data could not be loaded. Please try again later.",
 		"modulesMenuTitle": "Go to",
@@ -302,13 +315,113 @@
 	"secretary": {
 		"title": "Secretary",
 		"studentRegistry": {
-			"title": "Student registry"
+			"title": "Student registry",
+			"addStudent": "Add student",
+			"notCreatedInfo": {
+				"title": "No student register has been created for this school unit.",
+				"button": "Create student register"
+			},
+			"addStudentDialog": {
+				"title": "Add student",
+				"step1": {
+					"description": "Enter the PESEL number or an alternate identity document to look up the person.",
+					"pesel": "PESEL",
+					"alternateDocument": "Alternate identity document",
+					"noPesel": "No PESEL",
+					"hasPesel": "Has PESEL"
+				},
+				"step2": {
+					"lookingUp": "Looking up the person..."
+				},
+				"step3a": {
+					"title": "Person found",
+					"description": "This person already exists in the system. Confirm to enroll them as a student.",
+					"admissionDate": "Admission date"
+				},
+				"step3b": {
+					"title": "New person",
+					"description": "This person was not found in the system. Fill in the details below to register them."
+				},
+				"next": "Next",
+				"back": "Back",
+				"confirm": "Confirm",
+				"addToChildrenRegistry": "Also add to children registry"
+			},
+			"editStudentDialog": {
+				"title": "Edit student",
+				"description": "Update the student's personal data and registration details.",
+				"delete": "Delete student",
+				"deleteConfirm": {
+					"title": "Delete student?",
+					"description": "Are you sure you want to remove this student from the registry? This action cannot be undone.",
+					"cancel": "Cancel",
+					"confirm": "Delete"
+				}
+			}
 		},
 		"listenerRegistry": {
 			"title": "Listener registry"
 		},
 		"childrenRegistry": {
-			"title": "Children registry"
+			"title": "Children registry",
+			"addChild": "Add child",
+			"notCreatedInfo": {
+				"title": "No children register has been created for this school unit.",
+				"button": "Create children register"
+			},
+			"addChildDialog": {
+				"title": "Add child",
+				"step1": {
+					"description": "Enter the PESEL number or an alternate identity document to look up the person.",
+					"pesel": "PESEL",
+					"alternateDocument": "Alternate identity document",
+					"noPesel": "No PESEL",
+					"hasPesel": "Has PESEL"
+				},
+				"step2": {
+					"lookingUp": "Looking up the person..."
+				},
+				"step3a": {
+					"title": "Person found",
+					"description": "This person already exists in the system. Confirm to enroll them in the children registry."
+				},
+				"step3b": {
+					"title": "New person",
+					"description": "This person was not found in the system. Fill in the details below to register them."
+				},
+				"next": "Next",
+				"back": "Back",
+				"confirm": "Confirm",
+				"addToStudentRegistry": "Also add to student registry"
+			},
+			"editChildDialog": {
+				"title": "Edit child",
+				"description": "Update the child's personal data and registration details.",
+				"delete": "Delete child",
+				"deleteConfirm": {
+					"title": "Delete child?",
+					"description": "Are you sure you want to remove this child from the registry? This action cannot be undone.",
+					"cancel": "Cancel",
+					"confirm": "Delete"
+				}
+			},
+			"fulfillment": {
+				"title": "Compulsory education fulfillment",
+				"addFulfillment": "Add fulfillment",
+				"empty": "No fulfillment records yet.",
+				"deleteConfirm": "Are you sure you want to delete this fulfillment record?",
+				"cancel": "Cancel",
+				"delete": "Delete",
+				"save": "Save",
+				"edit": "Edit",
+				"schoolYear": "School year",
+				"controlDate": "Control date",
+				"level": "Level",
+				"kindergartenInfo": "Kindergarten info",
+				"postponementInfo": "Postponement info",
+				"schoolInfo": "School info",
+				"outOfSchoolInfo": "Out-of-school info"
+			}
 		}
 	},
 	"gradebook": {
@@ -334,7 +447,9 @@
 			"groups": "Groups",
 			"studentsEmpty": "No students to display.",
 			"groupsEmpty": "No groups to display.",
-			"groupStudents": "Group students"
+			"groupStudents": "Group students",
+			"attendance": "Attendance",
+			"lessons": "Lesson Log"
 		},
 		"students": {
 			"attach": "Attach students",
@@ -393,12 +508,31 @@
 			"deleteSubjectConfirmTitle": "Delete subject?",
 			"deleteSubjectConfirmDescription": "Are you sure you want to remove this subject from the group? This action cannot be undone.",
 			"deleteSubjectCancel": "Cancel delete",
-		"groupStudentsTitle": "Assign students to groups",
-		"groupStudentsSave": "Save changes",
-		"groupStudentsSaved": "Changes saved",
-		"groupStudentsNoStudents": "No students in this gradebook yet.",
-		"groupStudentsNoGroups": "No groups created yet.",
-		"groupStudentsFullName": "Student"
+			"groupStudentsTitle": "Assign students to groups",
+			"groupStudentsSave": "Save changes",
+			"groupStudentsSaved": "Changes saved",
+			"groupStudentsNoStudents": "No students in this gradebook yet.",
+			"groupStudentsNoGroups": "No groups created yet.",
+			"groupStudentsFullName": "Student"
+		},
+		"attendance": {
+			"today": "Today",
+			"position": "No.",
+			"student": "Student",
+			"emptyTitle": "No lessons",
+			"emptyDescription": "No lessons were found for the selected day."
+		},
+		"lessons": {
+			"infoBanner": "This view allows you to review completed lessons. To create or modify lessons, use the teacher's panel.",
+			"today": "Today",
+			"time": "Time",
+			"subject": "Subject",
+			"topic": "Topic",
+			"teacher": "Teacher",
+			"withTeachers": "with",
+			"emptyTitle": "No lessons",
+			"emptyDescription": "No completed lessons were found for this week.",
+			"lessonCount": "{count} lessons"
 		}
 	},
 	"validationErrors": {
