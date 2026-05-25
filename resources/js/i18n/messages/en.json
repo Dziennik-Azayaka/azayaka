@@ -123,20 +123,20 @@
 	"assets": {
 		"institutionTypes": {
 			"complementaryGeneralSecondarySchoolForVocationalGraduates": "Complementary general secondary school for graduates of basic vocational schools",
-            "generalBalletSchool": "General ballet school",
+			"generalBalletSchool": "General ballet school",
 			"generalMusicSchoolStageOne": "General music school, stage one",
-            "generalMusicSchoolStageTwo": "General music school, stage two",
-            "generalSchoolOfFineArts": "General school of fine arts",
+			"generalMusicSchoolStageTwo": "General music school, stage two",
+			"generalSchoolOfFineArts": "General school of fine arts",
 			"generalSecondarySchool": "General secondary school",
-            "postSecondaryArtSchool": "Post-secondary art school",
-            "postSecondaryMusicSchool": "Post-secondary music school",
-            "postSecondarySchool": "Post-secondary school",
+			"postSecondaryArtSchool": "Post-secondary art school",
+			"postSecondaryMusicSchool": "Post-secondary music school",
+			"postSecondarySchool": "Post-secondary school",
 			"primarySchool": "Primary school",
-            "schoolOfFineArts": "Secondary school of fine arts",
-            "specialSchoolForWorkPreparation": "Special school for work preparation",
-            "technicalSecondarySchool": "Technical secondary school",
+			"schoolOfFineArts": "Secondary school of fine arts",
+			"specialSchoolForWorkPreparation": "Special school for work preparation",
+			"technicalSecondarySchool": "Technical secondary school",
 			"vocationalSchoolStageOne": "First-stage vocational school",
-            "vocationalSchoolStageTwo": "Second-stage vocational school"
+			"vocationalSchoolStageTwo": "Second-stage vocational school"
 		},
 		"studentCategories": {
 			"adultsOnly": "Adults",
@@ -198,6 +198,7 @@
 		"actions_": "Actions",
 		"auto": "(auto)",
 		"data": {
+			"numberShort": "No.",
 			"address": "Address",
 			"date": "Date",
 			"district": "District",
@@ -212,13 +213,18 @@
 			"schoolYear": "School year",
 			"short": "Shortcut",
 			"schoolUnit": "School unit",
-			"voivodeship": "Voivodeship"
+			"voivodeship": "Voivodeship",
+			"birthDate": "Date of birth",
+			"names": "Names",
+			"pesel": "PESEL",
+			"alternateDocument": "Alt. document",
+			"admissionDate": "Admission date"
 		},
 		"loadingDataError": "The data could not be loaded. Please try again later.",
 		"modulesMenuTitle": "Go to",
 		"pagination": {
-			"nextPage": "Next page",
-			"previousPage": "Previous page"
+			"nextPage": "Next",
+			"previousPage": "Previous"
 		},
 		"pleaseWait": "Please wait...",
 		"print": {
@@ -228,7 +234,10 @@
 		"repeatPassword": "Repeat password",
 		"requiredFieldsInfo": "Fields marked with * are required.",
 		"table": {
-			"empty": "No results."
+			"empty": "No results.",
+			"columns": "Columns",
+			"filters": "Filters",
+			"sorting": "Sorting"
 		}
 	},
 	"notFound": {
@@ -302,13 +311,103 @@
 			"title": "Children registry"
 		}
 	},
+	"gradebook": {
+		"title": "Gradebook",
+		"selector": {
+			"title": "Select gradebook",
+			"classUnit": "Class unit",
+			"classUnitPlaceholder": "Select a class unit...",
+			"schoolYear": "School year",
+			"schoolYearPlaceholder": "Select a school year...",
+			"openGradebook": "Open gradebook",
+			"notCreatedInfo": {
+				"title": "No gradebook has yet been created for {classUnitMark} {schoolYear}.",
+				"formTutorHint": "Since you are the form tutor, you can create one.",
+				"button": "Create gradebook"
+			}
+		},
+		"view": {
+			"title": "Gradebook"
+		},
+		"tabs": {
+			"students": "Students",
+			"groups": "Groups",
+			"studentsEmpty": "No students to display.",
+			"groupsEmpty": "No groups to display.",
+			"groupStudents": "Group students"
+		},
+		"students": {
+			"attach": "Attach students",
+			"position": "No.",
+			"emptyTitle": "No students",
+			"emptyDescription": "No students have been added to this gradebook yet. Use the button above to attach students from the school register.",
+			"dialogTitle": "Attach students to gradebook",
+			"dialogDescription": "Select students from the school register to attach to this gradebook.",
+			"searchPlaceholder": "Search students...",
+			"selectedCount": "{count} selected",
+			"noRegistry": "No student register exists for this school unit."
+		},
+		"groups": {
+			"create": "Create group",
+			"dialogTitle": "Create group",
+			"dialogDescription": "Create a new group in this gradebook.",
+			"name": "Name",
+			"namePlaceholder": "Enter group name...",
+			"shortcut": "Shortcut",
+			"shortcutPlaceholder": "e.g. WF-1",
+			"subject": "Subject",
+			"description": "Description",
+			"teachers": "Teachers",
+			"noTeachers": "—",
+			"emptyTitle": "No groups",
+			"emptyDescription": "No groups have been created in this gradebook yet.",
+			"addSubject": "Add subject",
+			"addSubjectDialogTitle": "Add subject to group",
+			"addSubjectDialogDescription": "Assign a subject with a description and teachers to this group.",
+			"subjectPlaceholder": "Select a subject...",
+			"descriptionPlaceholder": "Select a type...",
+			"addTeacher": "Add teacher",
+			"selectTeacher": "Select teacher...",
+			"descriptionHelp": {
+				"title": "Help me choose a description",
+				"subtitle": "Answer a few questions to find the right subject type.",
+				"question1": "Is the subject a linguistic one (foreign language)?",
+				"option1Linguistic": "Yes, a foreign language",
+				"option1NonLinguistic": "No, a non-linguistic subject",
+				"question2": "What type of school?",
+				"option2Primary": "Primary school",
+				"option2Trade1": "Trade school, 1st level",
+				"option2Trade2": "Trade school, 2nd level",
+				"option2LiceumTechnikum": "Liceum / Technikum",
+				"question3": "Is the subject continued from earlier grades?",
+				"option3FromScratch": "Starting from scratch",
+				"option3ContinuedI-III": "Continued from grades I-III",
+				"option3ContinuedVII-VIII": "Continued from grades VII-VIII",
+				"resultsTitle": "Suggested descriptions",
+				"pleaseContinue": "Answer all questions to see suggestions.",
+				"cancel": "Cancel"
+			},
+			"editSubjectDialogTitle": "Edit subject",
+			"editSubjectDialogDescription": "Change the description and teachers of this subject in the group.",
+			"deleteSubject": "Delete subject",
+			"deleteSubjectConfirmTitle": "Delete subject?",
+			"deleteSubjectConfirmDescription": "Are you sure you want to remove this subject from the group? This action cannot be undone.",
+			"deleteSubjectCancel": "Cancel delete",
+		"groupStudentsTitle": "Assign students to groups",
+		"groupStudentsSave": "Save changes",
+		"groupStudentsSaved": "Changes saved",
+		"groupStudentsNoStudents": "No students in this gradebook yet.",
+		"groupStudentsNoGroups": "No groups created yet.",
+		"groupStudentsFullName": "Student"
+		}
+	},
 	"validationErrors": {
 		"fieldRequired": "This field is required.",
 		"invalidEmail": "The email address is incorrect.",
 		"maxLength": "The value must not exceed {number} characters.",
 		"maxValue": "The value must not exceed {number}.",
 		"minLength": "The value must be at least {number} characters long.",
-        "minValue": "The value must be at least {number}.",
-        "passwordsMustMatch": "A different password has been entered in the \"Confirm password\" field."
+		"minValue": "The value must be at least {number}.",
+		"passwordsMustMatch": "A different password has been entered in the \"Confirm password\" field."
 	}
 }

@@ -1,13 +1,13 @@
 <script setup lang="ts">
-import { computed } from 'vue';
-import PanelPageHeader from '@/components/panel-layout/PanelPageHeader.vue';
-import { useSecretaryStore } from '@/stores/secretary';
-import { useI18n } from 'vue-i18n';
 import NotCreatedInfo from '../components/student-registry/NotCreatedInfo.vue';
+import StudentRegistryContainer from '../components/student-registry/StudentRegistryContainer.vue';
 import { useGetStudentRegistryId } from '@/api/hooks/student-registry/getStudentRegistryId';
+import PanelPageHeader from '@/components/panel-layout/PanelPageHeader.vue';
 import { EmptyLoading } from '@/components/ui/empty';
 import EmptyLoadingError from '@/components/ui/empty/EmptyLoadingError.vue';
-import StudentRegistryContainer from '../components/student-registry/StudentRegistryContainer.vue';
+import { useSecretaryStore } from '@/stores/secretary';
+import { computed } from 'vue';
+import { useI18n } from 'vue-i18n';
 
 const { t } = useI18n();
 const secretaryStore = useSecretaryStore();
@@ -26,6 +26,10 @@ const { data: registryId, refetch, isFetching, isError } = useGetStudentRegistry
   />
   <EmptyLoading v-if="isFetching" />
   <EmptyLoadingError v-else-if="isError" @refresh="refetch" />
-  <StudentRegistryContainer :registry-id="registryId" v-else-if="registryId !== null && registryId !== undefined" />
+  <StudentRegistryContainer
+    :registry-id="registryId"
+    :school-unit-id="unitId"
+    v-else-if="registryId !== null && registryId !== undefined"
+  />
   <NotCreatedInfo v-else />
 </template>

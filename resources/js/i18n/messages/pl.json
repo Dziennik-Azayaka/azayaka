@@ -198,6 +198,7 @@
 		"actions_": "Akcje",
 		"auto": "(auto)",
 		"data": {
+			"numberShort": "Nr",
 			"address": "Adres",
 			"date": "Data",
 			"district": "Dzielnica",
@@ -212,13 +213,18 @@
 			"schoolYear": "Rok szkolny",
 			"short": "Skrót",
 			"schoolUnit": "Jednostka",
-			"voivodeship": "Województwo"
+			"voivodeship": "Województwo",
+			"birthDate": "Data urodzenia",
+			"names": "Imiona",
+			"pesel": "PESEL",
+			"alternateDocument": "Inny dokument",
+			"admissionDate": "Data przyjęcia"
 		},
 		"loadingDataError": "Nie udało się załadować danych. Spróbuj ponownie później.",
 		"modulesMenuTitle": "Przjedź do",
 		"pagination": {
-			"nextPage": "Następna strona",
-			"previousPage": "Poprzednia strona"
+			"nextPage": "Następna",
+			"previousPage": "Poprzednia"
 		},
 		"pleaseWait": "Proszę czekać...",
 		"print": {
@@ -228,7 +234,10 @@
 		"repeatPassword": "Powtórz hasło",
 		"requiredFieldsInfo": "Pola oznaczone * są wymagane.",
 		"table": {
-			"empty": "Brak wyników."
+			"empty": "Brak wyników.",
+			"columns": "Kolumny",
+			"filters": "Filtry",
+			"sorting": "Sortowanie"
 		}
 	},
 	"notFound": {
@@ -304,6 +313,96 @@
 		},
 		"childrenRegistry": {
 			"title": "Księga ewidencji dzieci"
+		}
+	},
+	"gradebook": {
+		"title": "Dziennik",
+		"selector": {
+			"title": "Wybierz dziennik",
+			"classUnit": "Oddział",
+			"classUnitPlaceholder": "Wybierz oddział...",
+			"schoolYear": "Rok szkolny",
+			"schoolYearPlaceholder": "Wybierz rok szkolny...",
+			"openGradebook": "Otwórz dziennik",
+			"notCreatedInfo": {
+				"title": "Nie założono jeszcze dziennika dla oddziału {classUnitMark} w roku szkolnym {schoolYear}.",
+				"formTutorHint": "Jako wychowawca możesz go założyć.",
+				"button": "Załóż dziennik"
+			}
+		},
+		"view": {
+			"title": "Dziennik"
+		},
+		"tabs": {
+			"students": "Uczniowie",
+			"groups": "Grupy",
+			"studentsEmpty": "Brak uczniów do wyświetlenia.",
+			"groupsEmpty": "Brak grup do wyświetlenia.",
+			"groupStudents": "Uczniowie grupy"
+		},
+		"students": {
+			"attach": "Dołącz uczniów",
+			"position": "Nr",
+			"emptyTitle": "Brak uczniów",
+			"emptyDescription": "Do dziennika nie zostali jeszcze dodani żadni uczniowie. Użyj przycisku powyżej, aby dołączyć uczniów z księgi uczniów.",
+			"dialogTitle": "Dołącz uczniów do dziennika",
+			"dialogDescription": "Wybierz uczniów z księgi uczniów, aby dołączyć ich do dziennika.",
+			"searchPlaceholder": "Szukaj uczniów...",
+			"selectedCount": "Wybrano: {count}",
+			"noRegistry": "Księga uczniów nie istnieje dla tej jednostki."
+		},
+		"groups": {
+			"create": "Utwórz grupę",
+			"dialogTitle": "Utwórz grupę",
+			"dialogDescription": "Utwórz nową grupę w tym dzienniku.",
+			"name": "Nazwa",
+			"namePlaceholder": "Wprowadź nazwę grupy...",
+			"shortcut": "Skrót",
+			"shortcutPlaceholder": "np. WF-1",
+			"subject": "Przedmiot",
+			"description": "Opis",
+			"teachers": "Nauczyciele",
+			"noTeachers": "—",
+			"emptyTitle": "Brak grup",
+			"emptyDescription": "Nie utworzono jeszcze żadnych grup w tym dzienniku.",
+			"addSubject": "Dodaj przedmiot",
+			"addSubjectDialogTitle": "Dodaj przedmiot do grupy",
+			"addSubjectDialogDescription": "Przypisz przedmiot z opisem i nauczycielami do tej grupy.",
+			"subjectPlaceholder": "Wybierz przedmiot...",
+			"descriptionPlaceholder": "Wybierz typ...",
+			"addTeacher": "Dodaj nauczyciela",
+			"selectTeacher": "Wybierz nauczyciela...",
+			"descriptionHelp": {
+				"title": "Pomoc w wyborze opisu",
+				"subtitle": "Odpowiedz na pytania, aby znaleźć odpowiedni typ przedmiotu.",
+				"question1": "Czy dodawany przedmiot jest językowy (język obcy)?",
+				"option1Linguistic": "Tak, język obcy",
+				"option1NonLinguistic": "Nie, przedmiot niejęzykowy",
+				"question2": "Jaki to typ szkoły?",
+				"option2Primary": "Szkoła podstawowa",
+				"option2Trade1": "Szkoła branżowa I stopnia",
+				"option2Trade2": "Szkoła branżowa II stopnia",
+				"option2LiceumTechnikum": "Liceum / Technikum",
+				"question3": "Czy przedmiot jest kontynuacją z wcześniejszych klas?",
+				"option3FromScratch": "Od początku (bez kontynuacji)",
+				"option3ContinuedI-III": "Kontynuacja z klas I-III",
+				"option3ContinuedVII-VIII": "Kontynuacja z klas VII-VIII",
+				"resultsTitle": "Proponowane opisy",
+				"pleaseContinue": "Odpowiedz na wszystkie pytania, aby zobaczyć propozycje.",
+				"cancel": "Anuluj"
+			},
+			"editSubjectDialogTitle": "Edytuj przedmiot",
+			"editSubjectDialogDescription": "Zmień opis i nauczycieli przedmiotu w tej grupie.",
+			"deleteSubject": "Usuń przedmiot",
+			"deleteSubjectConfirmTitle": "Usunąć przedmiot?",
+			"deleteSubjectConfirmDescription": "Czy na pewno chcesz usunąć ten przedmiot z grupy? Tej operacji nie można cofnąć.",
+			"deleteSubjectCancel": "Anuluj usuwanie",
+		"groupStudentsTitle": "Przypisz uczniów do grup",
+		"groupStudentsSave": "Zapisz zmiany",
+		"groupStudentsSaved": "Zmiany zapisane",
+		"groupStudentsNoStudents": "Brak uczniów w tym dzienniku.",
+		"groupStudentsNoGroups": "Nie utworzono jeszcze żadnych grup.",
+		"groupStudentsFullName": "Uczeń"
 		}
 	},
 	"validationErrors": {

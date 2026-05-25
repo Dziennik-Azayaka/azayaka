@@ -1,14 +1,14 @@
 <script setup lang="ts">
+import UnitSelector from './components/layout/UnitSelector.vue';
 import { getMenuItems } from './navigation';
 import PanelNavigation from '@/components/panel-layout/PanelNavigation.vue';
 import PanelNavigationHeaderMenu from '@/components/panel-layout/PanelNavigationHeaderMenu.vue';
 import PanelNavigationItem from '@/components/panel-layout/PanelNavigationItem.vue';
 import PanelLayout from '@/layouts/PanelLayout.vue';
 import { usePreferencesStore } from '@/stores/preferences';
+import { useSecretaryStore } from '@/stores/secretary';
 import { useUserStore } from '@/stores/user';
 import { useI18n } from 'vue-i18n';
-import UnitSelector from './components/layout/UnitSelector.vue';
-import { useSecretaryStore } from '@/stores/secretary';
 
 const { t } = useI18n();
 const userStore = useUserStore();

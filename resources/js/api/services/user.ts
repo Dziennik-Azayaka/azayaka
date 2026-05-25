@@ -1,15 +1,30 @@
-import { type ActivityLogEntryDTO, activityLogEntryFromDTO } from '../dtos/activity-log-entry';
-import type { PaginatedResourceDTO } from '../dtos/paginated-resource';
+import { activityLogEntryFromDTO, type ActivityLogEntryDTO } from '../dtos/activity-log-entry';
 import type { UserDTO } from '../dtos/user';
 import type { ActivityLogEntry } from '../types/activity-log-entry';
-import type { PaginatedResource } from '../types/paginated-resource';
 import type { User } from '../types/user';
 import { http } from '@/config/ofetch';
 
+interface ActivityLogPaginatedResponse {
+  currentPage: number;
+  data: ActivityLogEntryDTO[];
+  from: number;
+  lastPage: number;
+  perPage: number;
+  to: number;
+  total: number;
+}
+
 export const UserService = {
   getCurrent: (): Promise<User> => http<UserDTO>('/user', { method: 'GET' }),
-  getActvityLog: (page: number): Promise<PaginatedResource<ActivityLogEntry>> =>
-    http<PaginatedResourceDTO<ActivityLogEntryDTO>>('/user/logs', {
+  getActvityLog: (
+    page: number,
+  ): Promise<{
+    data: ActivityLogEntry[];
+    currentPage: number;
+    perPage: number;
+    total: number;
+  }> =>
+    http<ActivityLogPaginatedResponse>('/user/logs', {
       method: 'GET',
       query: { page },
     }).then((res) => ({

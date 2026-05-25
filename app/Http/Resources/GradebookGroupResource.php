@@ -18,6 +18,7 @@ class GradebookGroupResource extends JsonResource
 			"id" => $this->id,
 			"name" => $this->name,
 			"shortcut" => $this->shortcut,
+			"studentIds" => $this->students->pluck("id"),
 			"subjects" => $this->groupSubjects->map(fn($groupSubject) => [
 				"id" => $groupSubject->id,
 				"description" => $groupSubject->description,

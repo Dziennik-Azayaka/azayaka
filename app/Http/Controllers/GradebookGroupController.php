@@ -18,7 +18,7 @@ class GradebookGroupController extends Controller
 	function list(Gradebook $gradebook)
 	{
 		return $gradebook
-			->groups()->with(["groupSubjects.subject", "groupSubjects.teachers"])
+			->groups()->with(["groupSubjects.subject", "groupSubjects.teachers", "students"])
 			->get()->toResourceCollection();
 	}
 
@@ -78,7 +78,9 @@ class GradebookGroupController extends Controller
 	{
 		$validated = $request->validate([
 			"subject_id" => ["required", "exists:subjects,id"],
-			"description" => ["required", "string", "max:255", Rule::enum(GradebookSubjectType::class)]
+			"description" => ["required", "string", "max:255", Rule::enum(GradebookSubjectType::class)],
+			"teachers" => ["nullable", "array"],
+			"teachers.*" => ["exists:employees,id"],
 		]);
 
 		if ($gradebookGroup->groupSubjects()->where("subject_id", $validated["subject_id"])->exists()) {
@@ -90,10 +92,14 @@ class GradebookGroupController extends Controller
 			], 409);
 		}
 
-		$gradebookGroup->groupSubjects()->create([
+		$groupSubject = $gradebookGroup->groupSubjects()->create([
 			"subject_id" => $validated["subject_id"],
 			"description" => $validated["description"],
 		]);
+
+		if (!empty($validated["teachers"])) {
+			$groupSubject->teachers()->sync($validated["teachers"]);
+		}
 
 		return [
 			"success" => true

@@ -172,6 +172,7 @@ class AccountAccessesController extends Controller
 					"id" => $access->id,
 					"name" => $access->guardian->person->first_name . " " . $access->guardian->person->last_name,
 					"type" => "guardian",
+					"guardianId" => $access->guardian_id,
 					"updatedAt" => $access->updated_at,
 					"modulesAvailable" => $this->getAvailableModules($access->guardian)
 				];
@@ -182,6 +183,7 @@ class AccountAccessesController extends Controller
 					"id" => $access->id,
 					"name" => $access->student->person->first_name . " " . $access->student->person->last_name,
 					"type" => "student",
+					"studentId" => $access->student_id,
 					"updatedAt" => $access->updated_at,
 					"modulesAvailable" => $this->getAvailableModules($access->student)
 				];
@@ -192,6 +194,7 @@ class AccountAccessesController extends Controller
 					"id" => $access->id,
 					"name" => $access->employee->first_name . " " . $access->employee->last_name,
 					"type" => "employee",
+					"employeeId" => $access->employee_id,
 					"updatedAt" => $access->updated_at,
 					"modulesAvailable" => $this->getAvailableModules($access->employee)
 				];

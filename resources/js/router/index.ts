@@ -12,16 +12,20 @@ router.beforeEach(async (to) => {
 
   const user = await userStore.getUser();
 
-  if ((to.meta.onlyLoggedIn || to.meta.onlyAdministrators) && !user) return { name: 'auth.logIn' };
+  if ((to.meta.onlyLoggedIn || to.meta.onlyAdministrators || to.meta.onlyTeacher) && !user)
+    return { name: 'auth.logIn' };
   if (to.meta.onlyGuests && user) return { name: 'myAccount' };
 
   const accessId = to.params.accessId;
   const access = user?.accesses.find((access) => Number(accessId) === access.id);
 
   if (
-    (to.meta.onlyAdministrators && (!access || !access.modulesAvailable.includes('administrator')))
-    || (to.meta.onlySecretary && (!access || !access.modulesAvailable.includes('secretary')))
-  ) return { name: 'myAccount' };
+    (to.meta.onlyAdministrators &&
+      (!access || !access.modulesAvailable.includes('administrator'))) ||
+    (to.meta.onlySecretary && (!access || !access.modulesAvailable.includes('secretary'))) ||
+    (to.meta.onlyTeacher && (!access || !access.modulesAvailable.includes('teacher')))
+  )
+    return { name: 'myAccount' };
 
   if (access) userStore.access = access;
 

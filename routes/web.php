@@ -61,7 +61,6 @@ Route::middleware(["auth", "auth.session"])->group(function () {
 		Route::put("/api/schoolUnits/{schoolUnit}", [SchoolUnitController::class, "update"]);
 		Route::put("/api/schoolUnits/{schoolUnit}/activity", [SchoolUnitController::class, "archive"]);
 
-		Route::get("/api/employees", [EmployeeController::class, "list"]);
 		Route::post("/api/employees", [EmployeeController::class, "create"]);
 		Route::put("/api/employees/{employee}", [EmployeeController::class, "update"]);
 		Route::put("/api/employees/{employee}/activity", [EmployeeController::class, "archive"]);
@@ -72,7 +71,6 @@ Route::middleware(["auth", "auth.session"])->group(function () {
 		Route::patch("/api/employees/accesses", [EmployeeController::class, "massUpdateAccess"]);
 		Route::post("api/employees/accesses/document", [EmployeeController::class, "generateAccessesDocument"]);
 
-		Route::get("/api/subjects", [SubjectController::class, "list"]);
 		Route::post("/api/subjects", [SubjectController::class, "create"]);
 		Route::put("/api/subjects/{subject}", [SubjectController::class, "update"]);
 		Route::put("/api/subjects/{subject}/activity", [SubjectController::class, "archive"]);
@@ -147,6 +145,9 @@ Route::middleware(["auth", "auth.session"])->group(function () {
 		Route::put("/api/gradebooks/groups/{gradebookGroup}/subjects/{groupSubject}/teachers", [GradebookGroupController::class, "updateTeachers"]);
 
 		Route::get("/api/attendanceComplexTypes", [AttendanceComplexTypeController::class, "list"]);
+
+		Route::get("/api/employees", [EmployeeController::class, "list"]);
+		Route::get("/api/subjects", [SubjectController::class, "list"]);
 	});
 
 	Route::middleware(["employee.role:headmaster,teacher"])->group(function () {

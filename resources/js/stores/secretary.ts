@@ -14,7 +14,7 @@ export const useSecretaryStore = defineStore('secretary', () => {
   function switchUnit(id: number) {
     if (!schoolUnits.value) throw new Error("School units aren't loaded.");
 
-    const unit = schoolUnits.value.find(unit => unit.id === id);
+    const unit = schoolUnits.value.find((unit) => unit.id === id);
     selectedUnit.value = unit ?? schoolUnits.value[0]!;
 
     return selectedUnit.value.id;

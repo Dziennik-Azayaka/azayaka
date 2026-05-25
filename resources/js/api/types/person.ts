@@ -1,5 +1,5 @@
-import type { Guardian } from "./guardian";
-import type { ResidenceAddress } from "./residence-address";
+import type { Guardian } from './guardian';
+import type { ResidenceAddress } from './residence-address';
 
 export interface Person {
   id: number;
@@ -8,7 +8,7 @@ export interface Person {
   lastName: string;
   pesel: string | null;
   alternateIdentityDocument: string | null;
-  birthdate: string | null;
+  birthdate: Date;
   birthplace: string | null;
   gender: string;
   residenceAddress: ResidenceAddress;

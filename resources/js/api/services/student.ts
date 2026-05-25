@@ -1,18 +1,24 @@
+import type { PaginatedResourceDTO } from '../dtos/paginated-resource';
 import { studentFromDTO, type StudentDTO } from '../dtos/student';
+import type { PaginatedResource } from '../types/paginated-resource';
 import type { Student } from '../types/student';
 import { http } from '@/config/ofetch';
 
-export type StudentStatusFilter = 'active' | 'inactive' | 'trashesd';
+export type StudentStatusFilter = 'active' | 'inactive' | 'trashed';
 
 export const StudentService = {
   getFiltered: (
     registryId: number,
-    birthYear: number | null,
+    page: number,
+    birthYear: string | undefined,
     gender: string | null,
     status: StudentStatusFilter | null,
-  ): Promise<Student[]> =>
-    http<StudentDTO[]>(`/studentRegistry/${registryId}`, {
+    classUnitId: number | null = null,
+    sort: string | null = null,
+    order: string | null = null,
+  ): Promise<PaginatedResource<Student>> =>
+    http<PaginatedResourceDTO<StudentDTO>>(`/studentRegistry/${registryId}`, {
       method: 'GET',
-      query: { birthYear, gender, status },
-    }).then((res) => res.map(studentFromDTO)),
+      query: { birthYear, gender, status, page, classUnitId, sort, order },
+    }).then((res) => ({ ...res, data: res.data.map(studentFromDTO) })),
 };

@@ -1,5 +1,6 @@
-import type { GuardianDTO } from "./guardian";
-import type { ResidenceAddressDTO } from "./residence-address";
+import type { Person } from '../types/person';
+import type { GuardianDTO } from './guardian';
+import type { ResidenceAddressDTO } from './residence-address';
 
 export interface PersonDTO {
   id: number;
@@ -8,9 +9,14 @@ export interface PersonDTO {
   lastName: string;
   pesel: string | null;
   alternateIdentityDocument: string | null;
-  birthdate: string | null;
+  birthdate: string;
   birthplace: string | null;
   gender: string;
   residenceAddress: ResidenceAddressDTO;
   guardians: GuardianDTO[];
 }
+
+export const personFromDTO = (dto: PersonDTO): Person => ({
+  ...dto,
+  birthdate: new Date(dto.birthdate),
+});

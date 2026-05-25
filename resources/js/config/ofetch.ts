@@ -28,8 +28,8 @@ export const http = ofetch.create({
 
     if (options.query) {
       options.query = Object.fromEntries(
-        Object.entries(options.query).filter(([_, v]) => v !== null)
-      )
+        Object.entries(options.query).filter(([_, v]) => v !== null && v !== ''),
+      );
     }
   },
 });

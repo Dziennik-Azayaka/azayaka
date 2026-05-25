@@ -1,5 +1,5 @@
-import { ApiError } from '@/api/error';
 import { StudentRegistryService } from '../../services/student-registry';
+import { ApiError } from '@/api/error';
 import { useQuery } from '@tanstack/vue-query';
 import { type MaybeRef, computed, toValue } from 'vue';
 

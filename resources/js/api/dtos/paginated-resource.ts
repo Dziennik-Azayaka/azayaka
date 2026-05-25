@@ -1,8 +1,7 @@
 export interface PaginatedResourceDTO<T> {
-  currentPage: number;
   data: T[];
-  from: number;
-  perPage: number;
-  to: number;
-  total: number;
+  meta: {
+    current_page: number;
+    last_page: number;
+  };
 }
