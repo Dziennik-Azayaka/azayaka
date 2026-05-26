@@ -375,8 +375,8 @@
 					"description": "Enter the PESEL number or an alternate identity document to look up the person.",
 					"pesel": "PESEL",
 					"alternateDocument": "Alternate identity document",
-					"noPesel": "No PESEL",
-					"hasPesel": "Has PESEL"
+					"noPesel": "Student doesn't have a PESEL number",
+					"hasPesel": "Student has a PESEL number"
 				},
 				"step2": {
 					"lookingUp": "Looking up the person..."

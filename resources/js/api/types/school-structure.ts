@@ -7,7 +7,11 @@ export interface SchoolUnit {
   voivodeship: number;
   district: string | null;
   schoolComplexId: number;
-  address: string;
+  town: string | null;
+  postalCode: string;
+  street: string;
+  houseNumber: string;
+  flatNumber: string | null;
   shortName: string;
   active: boolean;
 }

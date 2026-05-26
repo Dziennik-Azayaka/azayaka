@@ -26,7 +26,7 @@ const { mutate: create, isPending, error } = useCreateSchoolUnit();
 
 const onSubmit = (values: SchoolUnitValues) =>
   create(
-    { ...values, district: values.district ?? null, schoolComplexId: props.complexId },
+    { ...values, district: values.district ?? null, town: values.town ?? null, flatNumber: values.flatNumber ?? null, schoolComplexId: props.complexId },
     {
       onSuccess: () => {
         dialogOpen.value = false;

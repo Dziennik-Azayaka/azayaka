@@ -28,7 +28,7 @@ const onSubmit = (values: SchoolUnitValues) =>
   edit(
     {
       id: props.unitId,
-      body: { ...values, district: values.district ?? null, schoolComplexId: props.complexId },
+      body: { ...values, district: values.district ?? null, town: values.town ?? null, flatNumber: values.flatNumber ?? null, schoolComplexId: props.complexId },
     },
     {
       onSuccess: () => {

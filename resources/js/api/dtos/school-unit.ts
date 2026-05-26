@@ -9,7 +9,11 @@ export interface SchoolUnitDTO {
   voivodeship: number;
   district: string | null;
   schoolComplexId: number;
-  address: string;
+  town: string | null;
+  postalCode: string;
+  street: string;
+  houseNumber: string;
+  flatNumber: string | null;
   shortName: string;
   active: boolean;
 }
@@ -23,7 +27,11 @@ export const schoolUnitFromDTO = (dto: SchoolUnitDTO): SchoolUnit => ({
   voivodeship: dto.voivodeship,
   district: dto.district,
   schoolComplexId: dto.schoolComplexId,
-  address: dto.address,
+  town: dto.town,
+  postalCode: dto.postalCode,
+  street: dto.street,
+  houseNumber: dto.houseNumber,
+  flatNumber: dto.flatNumber,
   shortName: dto.shortName,
   active: dto.active,
 });
@@ -31,10 +39,14 @@ export const schoolUnitFromDTO = (dto: SchoolUnitDTO): SchoolUnit => ({
 export interface SchoolUnitBodyDTO {
   name: string;
   type: number;
-  address: string;
   voivodeship: number;
   municipality: string;
   district: string | null;
+  town: string | null;
+  postalCode: string;
+  street: string;
+  houseNumber: string;
+  flatNumber: string | null;
   studentCategory: string;
   shortName: string;
   schoolComplexId: number;

@@ -56,8 +56,24 @@ defineProps<{ unit: SchoolUnit }>();
         <dd class="text-sm/6 text-foreground/80">{{ unit.district || '-' }}</dd>
       </div>
       <div class="grid sm:grid-cols-[1fr_4fr] gap-x-4 sm:px-5 p-3 border-t">
-        <dt class="text-sm/6 font-medium">{{ t('common.data.address') }}</dt>
-        <dd class="text-sm/6 text-foreground/80">{{ unit.address }}</dd>
+        <dt class="text-sm/6 font-medium">{{ t('common.data.town') }}</dt>
+        <dd class="text-sm/6 text-foreground/80">{{ unit.town || '-' }}</dd>
+      </div>
+      <div class="grid sm:grid-cols-[1fr_4fr] gap-x-4 sm:px-5 p-3 border-t">
+        <dt class="text-sm/6 font-medium">{{ t('common.data.street') }}</dt>
+        <dd class="text-sm/6 text-foreground/80">{{ unit.street }}</dd>
+      </div>
+      <div class="grid sm:grid-cols-[1fr_4fr] gap-x-4 sm:px-5 p-3 border-t">
+        <dt class="text-sm/6 font-medium">{{ t('common.data.houseNumber') }}</dt>
+        <dd class="text-sm/6 text-foreground/80">{{ unit.houseNumber }}</dd>
+      </div>
+      <div class="grid sm:grid-cols-[1fr_4fr] gap-x-4 sm:px-5 p-3 border-t">
+        <dt class="text-sm/6 font-medium">{{ t('common.data.flatNumber') }}</dt>
+        <dd class="text-sm/6 text-foreground/80">{{ unit.flatNumber || '-' }}</dd>
+      </div>
+      <div class="grid sm:grid-cols-[1fr_4fr] gap-x-4 sm:px-5 p-3 border-t">
+        <dt class="text-sm/6 font-medium">{{ t('common.data.postalCode') }}</dt>
+        <dd class="text-sm/6 text-foreground/80">{{ unit.postalCode }}</dd>
       </div>
       <div class="grid sm:grid-cols-[1fr_4fr] gap-x-4 sm:px-5 p-3 border-t">
         <dt class="text-sm/6 font-medium">

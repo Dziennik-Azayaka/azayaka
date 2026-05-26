@@ -327,8 +327,8 @@
 					"description": "Wprowadź numer PESEL lub alternatywny dokument tożsamości, aby wyszukać osobę.",
 					"pesel": "PESEL",
 					"alternateDocument": "Alternatywny dokument tożsamości",
-					"noPesel": "Brak PESEL",
-					"hasPesel": "Ma PESEL"
+					"noPesel": "Uczeń nie posiada numeru PESEL",
+					"hasPesel": "Uczeń posiada numer PESEL"
 				},
 				"step2": {
 					"lookingUp": "Wyszukiwanie osoby..."
