@@ -54,7 +54,8 @@
 			"unarchiveSchoolUnit": {
 				"description": "Aby potwierdzić akcję, wpisz swoje hasło.",
 				"title": "Czy na pewno chcesz odarchiwizować jednostkę?"
-			}
+			},
+			"unitArchived": "Zarchiwizowana"
 		},
 		"subjects": {
 			"add": "Dodaj przedmiot",
@@ -210,6 +211,7 @@
 			"roles": "Role",
 			"schoolYear": "Rok szkolny",
 			"short": "Skrót",
+			"schoolUnit": "Jednostka",
 			"voivodeship": "Województwo"
 		},
 		"loadingDataError": "Nie udało się załadować danych. Spróbuj ponownie później.",
@@ -286,6 +288,15 @@
 			"dark": "Ciemny",
 			"highContrast": "Wysoki kontrast",
 			"light": "Jasny"
+		}
+	},
+	"secretary": {
+		"title": "Sekretariat",
+		"studentRegistery": {
+			"title": "Księga uczniów"
+		},
+		"childrenRegistery": {
+			"title": "Księga ewidencji dzieci"
 		}
 	},
 	"validationErrors": {
