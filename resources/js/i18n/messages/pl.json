@@ -292,10 +292,17 @@
 	},
 	"secretary": {
 		"title": "Sekretariat",
-		"studentRegistery": {
-			"title": "Księga uczniów"
+		"studentRegistry": {
+			"title": "Księga uczniów",
+			"notCreatedInfo": {
+				"title": "Księga uczniów nie została założona dla tej jednostki.",
+				"button": "Załóż księgę uczniów"
+			}
 		},
-		"childrenRegistery": {
+		"listenerRegistry": {
+			"title": "Księga słuchaczy"
+		},
+		"childrenRegistry": {
 			"title": "Księga ewidencji dzieci"
 		}
 	},

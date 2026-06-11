@@ -28,21 +28,39 @@ const route: RouteRecordRaw = {
 
         if (idParam !== idSet) return { name: to.name, params: { ...to.params, unitId: idSet } };
       },
-      redirect: () => ({ name: 'secretary.studentRegistery' }),
+      redirect: () => ({ name: 'secretary.studentRegistry' }),
       children: [
         {
-          name: 'secretary.studentRegistery',
-          path: '/secretary/:accessId/school-units/:unitId/student-registery',
-          component: () => import('./pages/StudentRegistery.vue'),
+          name: 'secretary.studentRegistry',
+          path: '/secretary/:accessId/school-units/:unitId/student-registry',
+          component: () => import('./pages/StudentRegistry.vue'),
+          meta: {
+            breadcrumb: [
+              { name: 'secretary.title' },
+              {
+                name: 'secretary.studentRegistry.title',
+                route: { name: 'secretary.studentRegistry' },
+              },
+            ],
+          },
         },
         {
-          name: 'secretary.childrenRegistery',
-          path: '/secretary/:accessId/school-units/:unitId/children-registery',
-          component: () => import('./pages/ChildrenRegistery.vue'),
+          name: 'secretary.childrenRegistry',
+          path: '/secretary/:accessId/school-units/:unitId/children-registry',
+          component: () => import('./pages/ChildrenRegistry.vue'),
           beforeEnter: (to) => {
             const secretaryStore = useSecretaryStore();
             if (secretaryStore.selectedUnit?.type !== 25)
               return { name: 'secretary.unit', params: to.params };
+          },
+          meta: {
+            breadcrumb: [
+              { name: 'secretary.title' },
+              {
+                name: 'secretary.childrenRegistry.title',
+                route: { name: 'secretary.childrenRegistry' },
+              },
+            ],
           },
         },
       ],

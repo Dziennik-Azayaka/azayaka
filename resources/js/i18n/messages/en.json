@@ -292,11 +292,14 @@
 	},
 	"secretary": {
 		"title": "Secretary",
-		"studentRegistery": {
-			"title": "Student registery"
+		"studentRegistry": {
+			"title": "Student registry"
 		},
-		"childrenRegistery": {
-			"title": "Children registery"
+		"listenerRegistry": {
+			"title": "Listener registry"
+		},
+		"childrenRegistry": {
+			"title": "Children registry"
 		}
 	},
 	"validationErrors": {
