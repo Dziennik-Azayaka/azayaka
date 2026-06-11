@@ -45,7 +45,7 @@
 			"createSchoolComplex": "Create school complex",
 			"data": {
 				"institutionType": "Institution type",
-				"studentCategory": "Student cateogry"
+				"studentCategory": "Student category"
 			},
 			"editSchoolComplex": "Edit school complex data",
 			"editSchoolUnit": "Edit school unit data",
@@ -254,7 +254,7 @@
 				"failedLoginAttempt": "Failed login attempt",
 				"loggedIn": "Logged in",
 				"loggedOut": "Logged out",
-				"loggedOutByAnotherDevice": "Logget out by another device"
+				"loggedOutByAnotherDevice": "Logged out by another device"
 			},
 			"title": "Activity history"
 		},
@@ -266,7 +266,7 @@
 			"unknownDevice": "Unknown device"
 		},
 		"home": {
-			"currentSession": "Your curremt session",
+			"currentSession": "Your current session",
 			"description": "Welcome to your account settings. Here you can change your login details and view your account activity history.",
 			"logOutSession": {
 				"description": "Enter your password to log out the session.",
@@ -286,7 +286,7 @@
 		"theme": "Theme",
 		"themes": {
 			"dark": "Dark",
-			"highContrast": "High constrast",
+			"highContrast": "High contrast",
 			"light": "Light"
 		}
 	},
