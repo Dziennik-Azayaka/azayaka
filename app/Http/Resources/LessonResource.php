@@ -35,6 +35,7 @@ class LessonResource extends JsonResource
 				"name" => $group->name,
 				"shortcut" => $group->shortcut,
 			]),
+			"date" => $this->date->format("Y-m-d"),
 			"subject" => $this->subject->name,
 			"topic" => $this->topic,
 			"startTime" => $this->start_time,

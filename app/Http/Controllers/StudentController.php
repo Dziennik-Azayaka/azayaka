@@ -61,6 +61,26 @@ class StudentController extends Controller
 			});
 		}
 
+		$sortableColumns = [
+			"id" => "students.id",
+			"person.lastName" => "people.last_name",
+			"names" => "people.first_name",
+			"birthdate" => "people.birthdate",
+			"admissionDate" => "students.admission_date",
+		];
+
+		if ($request->has("sort") && isset($sortableColumns[$request->input("sort")])) {
+			$sortColumn = $sortableColumns[$request->input("sort")];
+			$sortDirection = $request->input("order", "asc") === "desc" ? "desc" : "asc";
+
+			if (str_starts_with($sortColumn, "people.")) {
+				$query->join("people", "students.person_id", "=", " people.id")
+					->select("students.*");
+			}
+
+			$query->orderBy($sortColumn, $sortDirection);
+		}
+
 		return $query->paginate(100)->toResourceCollection();
 	}
 
