@@ -5,17 +5,16 @@ namespace App\Http\Resources;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class
-StudentResource extends JsonResource
+class StudentResource extends JsonResource
 {
-    /**
-     * Transform the resource into an array.
-     *
-     * @return array<string, mixed>
-     */
-    public function toArray(Request $request): array
-    {
-        return [
+	/**
+	 * Transform the resource into an array.
+	 *
+	 * @return array<string, mixed>
+	 */
+	public function toArray(Request $request): array
+	{
+		return [
 			"id" => $this->id,
 			"studentRegistryNumber" => $this->studentRegistryNumber,
 			"person" => new PersonResource($this->whenLoaded("person")),
@@ -23,5 +22,5 @@ StudentResource extends JsonResource
 			"leaveDate" => $this->leave_date,
 			"leaveReason" => $this->leave_reason
 		];
-    }
+	}
 }

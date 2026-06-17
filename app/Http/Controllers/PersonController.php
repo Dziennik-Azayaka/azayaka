@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Exceptions\RegistryArchivedException;
 use App\Http\Requests\CreatePersonRequest;
 use App\Models\Child;
 use App\Models\ChildrenRegistry;
@@ -91,10 +92,7 @@ class PersonController extends Controller
 			}
 		}
 
-		$registryCheck = $this->checkIfRegistriesAreActive($validated);
-		if ($registryCheck != null) {
-			return $registryCheck;
-		}
+		$this->checkIfRegistriesAreActive($validated);
 
 		$personId = $this->savePersonAndAddressToDatabase($validated, $schoolUnitId);
 
@@ -106,10 +104,7 @@ class PersonController extends Controller
 
 	public function update(CreatePersonRequest $request, int $schoolUnitId, Person $person)
 	{
-		$registryCheck = $this->checkIfRegistriesAreActive($request->validated());
-		if ($registryCheck != null) {
-			return $registryCheck;
-		}
+		$this->checkIfRegistriesAreActive($request->validated());
 
 		try {
 			$this->savePersonAndAddressToDatabase($request->validated(), $schoolUnitId, $person);
@@ -142,10 +137,7 @@ class PersonController extends Controller
 			"childrenRegistryId" => ["nullable", "exists:children_registries,id"]
 		]);
 
-		$registryCheck = $this->checkIfRegistriesAreActive($request->only(["studentRegistryId", "childrenRegistryId"]));
-		if ($registryCheck != null) {
-			return $registryCheck;
-		}
+		$this->checkIfRegistriesAreActive($request->only(["studentRegistryId", "childrenRegistryId"]));
 
 		// TODO: Better handle student registry numbers (rn we're blindly trusting the user)
 
@@ -275,7 +267,10 @@ class PersonController extends Controller
 		return $person;
 	}
 
-	private function checkIfRegistriesAreActive(array $validated): ?JsonResponse
+	/**
+	 * @throws RegistryArchivedException
+	 */
+	private function checkIfRegistriesAreActive(array $validated)
 	{
 		if (isset($validated["studentRegistryId"])) {
 			$studentRegistry = StudentRegistry::where("id", "=", $validated["studentRegistryId"])->first();
@@ -286,13 +281,7 @@ class PersonController extends Controller
 
 		if ((isset($studentRegistry) && $studentRegistry->isArchived()) ||
 			(isset($childrenRegistry) && $childrenRegistry->isArchived())) {
-			return response()->json([
-				"success" => false,
-				"errors" => [
-					"REGISTRY_ARCHIVED"
-				]
-			], 422);
+			throw new RegistryArchivedException();
 		}
-		return null;
 	}
 }

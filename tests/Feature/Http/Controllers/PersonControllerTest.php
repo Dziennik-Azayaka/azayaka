@@ -353,7 +353,7 @@ final class PersonControllerTest extends TestCase
 			"studentRegistryId" => $studentRegistry->id
 		]);
 
-		$response->assertStatus(422);
+		$response->assertStatus(409);
 
 		$response->assertJson([
 			"success" => false,

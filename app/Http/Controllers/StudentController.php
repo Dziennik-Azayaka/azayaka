@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Documents\AccountAccessesActivation\AccountAccessesActivationDocument;
 use App\Enums\AccessType;
 use App\Exceptions\CustomValidationException;
+use App\Exceptions\RegistryArchivedException;
 use App\Http\Resources\ResidenceAddressResource;
 use App\Models\AccountAccess;
 use App\Models\Student;
@@ -214,7 +215,8 @@ class StudentController extends Controller
 	private function checkIfRegistryIsActive(StudentRegistry $studentRegistry)
 	{
 		if ($studentRegistry->isArchived()) {
-			throw CustomValidationException::withMessages(["STUDENT_REGISTRY_ARCHIVED"]);
+			throw new RegistryArchivedException("student");
+
 		}
 	}
 

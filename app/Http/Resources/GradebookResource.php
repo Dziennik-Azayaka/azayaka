@@ -16,7 +16,7 @@ class GradebookResource extends JsonResource
     {
         return [
 			"id" => $this->id,
-			"schoolYear" => $this->startingClassificationPeriod->school_year, // TODO: check if this is fine for class units which are promoted every semester?
+			"schoolYear" => $this->startingClassificationPeriod->school_year,
 			"level" => $this->level,
 			"classUnit" => new ClassUnitResource($this->whenLoaded("classUnit"))
 		];

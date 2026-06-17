@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Exceptions\CustomValidationException;
+use App\Exceptions\RegistryArchivedException;
 use App\Models\Child;
 use App\Models\ChildrenRegistry;
 use App\Models\Student;
@@ -59,7 +60,7 @@ class ChildController extends Controller
 	private function checkIfRegistryIsActive(ChildrenRegistry $childrenRegistry)
 	{
 		if ($childrenRegistry->isArchived()) {
-			throw CustomValidationException::withMessages(["CHILDREN_REGISTRY_ARCHIVED"]);
+			throw new RegistryArchivedException("children");
 		}
 	}
 }
