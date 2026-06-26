@@ -22,6 +22,7 @@ use App\Http\Controllers\StudentController;
 use App\Http\Controllers\StudentRegistryController;
 use App\Http\Controllers\SubjectController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\UserPreferenceController;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Support\Facades\Route;
 
@@ -51,6 +52,9 @@ Route::middleware(["auth", "auth.session"])->group(function () {
 	Route::get("/api/user/logs/lastCredentialUpdate", [AccountLogController::class, "getDateOfLastUpdateToCredentials"]);
 
 	Route::get("/api/user", [AccountAccessesController::class, "list"]);
+
+	Route::get("/api/user/preferences", [UserPreferenceController::class, "list"]);
+	Route::put("/api/user/preferences/{key}", [UserPreferenceController::class, "update"]);
 
 	Route::middleware(["employee.role:administrator"])->group(function () {
 		Route::get("/api/schoolComplex", [SchoolComplexController::class, "list"]);
@@ -143,6 +147,7 @@ Route::middleware(["auth", "auth.session"])->group(function () {
 		Route::put("/api/gradebooks/groups/{gradebookGroup}/subjects/{groupSubject}", [GradebookGroupController::class, "updateSubject"]);
 		Route::delete("/api/gradebooks/groups/{gradebookGroup}/subjects/{groupSubject}", [GradebookGroupController::class, "destroySubject"]);
 		Route::put("/api/gradebooks/groups/{gradebookGroup}/subjects/{groupSubject}/teachers", [GradebookGroupController::class, "updateTeachers"]);
+		Route::post("/api/gradebooks/{gradebook}/subjects", [GradebookGroupController::class, "addGradebookSubject"]);
 
 		Route::get("/api/attendanceComplexTypes", [AttendanceComplexTypeController::class, "list"]);
 
@@ -156,7 +161,7 @@ Route::middleware(["auth", "auth.session"])->group(function () {
 		Route::get("/api/gradebooks/{gradebook}/attendance/subjectView", [AttendanceController::class, "subjectView"]);
 		Route::post("/api/gradebooks/{gradebook}/attendance/{lesson}", [AttendanceController::class, "createOrUpdate"]);
 		Route::delete("/api/gradebooks/{gradebook}/attendance/{attendance}", [AttendanceController::class, "destroy"]);
-		Route::get("/api/gradebooks/{gradebook}/attendance/{lesson}/autofill", [AttendanceController::class, "autofill"]);
+		Route::post("/api/gradebooks/{gradebook}/attendance/{lesson}/autofill", [AttendanceController::class, "autofill"]);
 	});
 
 	Route::middleware(["employee.role:teacher"])->group(function () {

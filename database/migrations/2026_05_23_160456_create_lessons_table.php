@@ -21,7 +21,9 @@ return new class extends Migration {
 			$table->time("start_time");
 			$table->time("end_time");
 			$table->boolean("completed")->default(false);
+			$table->unique(["gradebook_id", "subject_id", "number"]);
 			$table->timestamps();
+			$table->softDeletes();
 		});
 
 		Schema::create("lessons_assisting_teachers", function (Blueprint $table) {
@@ -44,8 +46,8 @@ return new class extends Migration {
 	 */
 	public function down(): void
 	{
+		Schema::dropIfExists("lessons_gradebook_group");
+		Schema::dropIfExists("lessons_assisting_teachers");
 		Schema::dropIfExists("lessons");
-		Schema::dropIfExists('lessons_assisting_teachers');
-		Schema::dropIfExists('lessons_gradebook_group');
 	}
 };

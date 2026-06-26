@@ -147,7 +147,7 @@ final class GuardianControllerTest extends TestCase
 		$classUnit = ClassUnit::factory()->create();
 		$gradebook = Gradebook::factory()->create(["class_unit_id" => $classUnit->id]);
 
-		$pivotEntry = new GradebookStudents();
+		$pivotEntry = new GradebookStudents;
 		$pivotEntry->student_id = $student->id;
 		$pivotEntry->gradebook_id = $gradebook->id;
 		$pivotEntry->position = 1;
@@ -160,5 +160,50 @@ final class GuardianControllerTest extends TestCase
 
 		$emptyResponse = $this->get("/api/guardians/accesses?classUnitId=9999");
 		$emptyResponse->assertStatus(200)->assertJsonCount(0);
+	}
+
+	public function test_can_generate_guardian_accesses_document(): void
+	{
+		$this->actingAdminUser();
+		$guardian = Guardian::factory()->create();
+		AccountAccess::factory()->create([
+			"guardian_id" => $guardian->id,
+			"words" => "a,b,c",
+		]);
+
+		$response = $this->post("/api/guardians/accesses/document", [
+			"ids" => [$guardian->id],
+		]);
+
+		$response->assertOk();
+		$response->assertHeader("Content-Type", "application/pdf");
+		$this->assertMatchesRegularExpression(
+			"/\.pdf/",
+			$response->headers->get("Content-Disposition")
+		);
+	}
+
+	public function test_cannot_generate_guardian_accesses_document_without_words(): void
+	{
+		$this->actingAdminUser();
+		$guardian = Guardian::factory()->create();
+
+		$response = $this->post("/api/guardians/accesses/document", [
+			"ids" => [$guardian->id],
+		]);
+
+		$response->assertStatus(422);
+		$response->assertJsonFragment([
+			"ENTITY_HAS_NO_ACCESS_WORDS",
+		]);
+	}
+
+	public function test_generate_guardian_accesses_document_validates_ids_presence(): void
+	{
+		$this->actingAdminUser();
+
+		$response = $this->post("/api/guardians/accesses/document", []);
+
+		$response->assertUnprocessable();
 	}
 }

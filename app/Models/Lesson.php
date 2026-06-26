@@ -7,11 +7,12 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Lesson extends Model
 {
 	/** @use HasFactory<\Database\Factories\LessonFactory> */
-	use HasFactory;
+	use HasFactory, SoftDeletes;
 
 	protected $casts = [
 		"date" => "date",

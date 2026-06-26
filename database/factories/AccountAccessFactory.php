@@ -26,7 +26,7 @@ class AccountAccessFactory extends Factory
 
 		return [
 			"words" => $words_string,
-			"student_id" => Student::inRandomOrder()->first()->id
+			"student_id" => Student::inRandomOrder()->first()?->id,
 		];
 	}
 }

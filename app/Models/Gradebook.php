@@ -14,7 +14,7 @@ class Gradebook extends Model
 	/** @use HasFactory<\Database\Factories\GradebookFactory> */
 	use HasFactory;
 
-	protected $fillable = ["classification_period_id", "class_unit_id"];
+	protected $fillable = ["classification_period_id", "class_unit_id", "level"];
 
 	public function classUnit(): BelongsTo
 	{
@@ -33,12 +33,17 @@ class Gradebook extends Model
 
 	public function getLevelAttribute(): ?int
 	{
-		return $this->classUnit->getLevelDuringClassificationPeriod($this->startingClassificationPeriod->id);
+		return $this->attributes["level"] ?? $this->classUnit->getLevelDuringClassificationPeriod($this->startingClassificationPeriod->id);
 	}
 
 	public function groups(): HasMany
 	{
 		return $this->hasMany(GradebookGroup::class);
+	}
+
+	public function subjects(): HasMany
+	{
+		return $this->hasMany(GradebookGroupSubject::class, "gradebook_id")->whereNull("gradebook_group_id");
 	}
 
 	public function lessons(): HasMany

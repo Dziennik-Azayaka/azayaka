@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Feature;
+namespace Tests\Feature\Http\Controllers;
 
 use App\Models\Employee;
 use App\Models\Gradebook;
@@ -48,10 +48,9 @@ class LessonControllerTest extends TestCase
 
 	public function test_can_create_a_lesson(): void
 	{
-		$this->actingAdminUser();
+		$employee = $this->actingAdminUser()->employees->first();
 		$gradebook = Gradebook::factory()->create();
 		$subject = Subject::factory()->create();
-		$primaryTeacher = Employee::factory()->create();
 		$assistingTeacher = Employee::factory()->create();
 		$group = GradebookGroup::factory()->create();
 
@@ -59,7 +58,7 @@ class LessonControllerTest extends TestCase
 			"number" => 1,
 			"gradebookId" => $gradebook->id,
 			"subjectId" => $subject->id,
-			"primaryTeacherId" => $primaryTeacher->id,
+			"primaryTeacherId" => $employee->id,
 			"topic" => "Programowanie pojazdów autonomicznych w języku Scratch",
 			"date" => "2026-05-24",
 			"startTime" => "10:00",
@@ -77,7 +76,7 @@ class LessonControllerTest extends TestCase
 		$this->assertDatabaseHas("lessons", [
 			"topic" => "Programowanie pojazdów autonomicznych w języku Scratch",
 			"gradebook_id" => $gradebook->id,
-			"primary_teacher_id" => $primaryTeacher->id,
+			"primary_teacher_id" => $employee->id,
 		]);
 
 		$lessonId = $response->json("lessonId");
@@ -98,17 +97,17 @@ class LessonControllerTest extends TestCase
 		$this->actingAdminUser();
 		$lesson = Lesson::factory()->create([
 			"topic" => "Sieci neuronowe w Scratchu",
+			"primary_teacher_id" => $this->actingAdminUser->employees->first()->id
 		]);
 
 		$newSubject = Subject::factory()->create();
-		$newTeacher = Employee::factory()->create();
 		$newGroup = GradebookGroup::factory()->create();
 
 		$payload = [
 			"number" => 2,
 			"gradebookId" => $lesson->gradebook_id,
 			"subjectId" => $newSubject->id,
-			"primaryTeacherId" => $newTeacher->id,
+			"primaryTeacherId" => $lesson->primary_teacher_id,
 			"topic" => "Tworzenie dużych modeli językowych w języku Scratch",
 			"date" => "2026-05-25",
 			"startTime" => "12:00",
@@ -139,7 +138,8 @@ class LessonControllerTest extends TestCase
 	{
 		$this->actingAdminUser();
 		$lesson = Lesson::factory()->create([
-			"completed" => false
+			"completed" => false,
+			"primary_teacher_id" => $this->actingAdminUser->employees->first()->id
 		]);
 
 		$response = $this->patchJson("/api/lessons/$lesson->id/completed");

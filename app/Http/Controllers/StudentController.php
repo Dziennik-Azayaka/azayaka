@@ -10,6 +10,7 @@ use App\Http\Resources\ResidenceAddressResource;
 use App\Models\AccountAccess;
 use App\Models\Student;
 use App\Models\StudentRegistry;
+use App\Utilities\AccountAccessDocumentGenerator;
 use App\Utilities\AccountAccessWordsGenerator;
 use Illuminate\Http\Request;
 use Response;
@@ -147,6 +148,19 @@ class StudentController extends Controller
 
 	public function generateOrRegenerateAccess(Student $student)
 	{
+		$hasActiveClassUnit = $student->gradebooks()
+			->whereHas("classUnit.periods", function ($query) {
+				$query->where("period_start", "<=", now())
+					->where("period_end", ">=", now());
+			})->exists();
+
+		if (!$hasActiveClassUnit) {
+			return \Response::json([
+				"success" => false,
+				"errors" => ["STUDENT_NOT_IN_ACTIVE_CLASS_UNIT"]
+			], 422);
+		}
+
 		AccountAccess::where("student_id", $student->id)->delete();
 		$accountAccess = new AccountAccess();
 		$accountAccess->student_id = $student->id;
@@ -160,7 +174,7 @@ class StudentController extends Controller
 
 	public function listAccesses(Request $request)
 	{
-		$students = Student::where("active", "=", "1");
+		$students = Student::whereNull("leave_date");
 		if ($request->has("classUnitId")) {
 			$students->whereHas("gradebooks", function ($gradebookQuery) use ($request) {
 				$gradebookQuery->where("class_unit_id", "=", $request->input("classUnitId"));
@@ -178,38 +192,14 @@ class StudentController extends Controller
 		]);
 	}
 
-	// TODO: Abstract this away, as it's used in EmployeeController and GuardianController as well.
-	// TODO: Write tests
 	public function generateAccessesDocument(Request $request)
 	{
 		$validatedData = $request->validate([
 			"ids" => "required|array"
 		]);
 
-		$ids = array_unique($validatedData["ids"]);
-		$students = Student::whereIn("id", $ids)->get();
-		$studentIds = $students->pluck("id");
-		$accesses = AccountAccess::whereIn("student_id", $studentIds)->get();
-
-		$document = new AccountAccessesActivationDocument();
-
-		foreach ($students as $student) {
-			$access = $accesses->where("student_id", $student->id)->first();
-			if ($access?->words == null) {
-				return Response::json([
-					"success" => false,
-					"errors" => [
-						"STUDENT_HAS_NO_ACCESS_WORDS"
-					]
-				], 422);
-			}
-			$document->addAccess(AccessType::STUDENT,
-				$student->person->first_name . " " . $student->person->last_name,
-				explode(",", $access->words));
-		}
-
-		$document->generateDocument();
-		return $document->streamDocument();
+		$generator = new AccountAccessDocumentGenerator(AccessType::STUDENT, $validatedData["ids"]);
+		return $generator->generateDocument();
 	}
 
 	private function checkIfRegistryIsActive(StudentRegistry $studentRegistry)
@@ -224,7 +214,6 @@ class StudentController extends Controller
 	{
 		$student = Student::getStudentFromAccessId($request);
 
-		// TODO: Turn into resource?
 		return [
 			"id" => $student->id,
 			"firstName" => $student->person->first_name,

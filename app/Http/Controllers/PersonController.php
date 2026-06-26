@@ -139,17 +139,25 @@ class PersonController extends Controller
 
 		$this->checkIfRegistriesAreActive($request->only(["studentRegistryId", "childrenRegistryId"]));
 
-		// TODO: Better handle student registry numbers (rn we're blindly trusting the user)
+		$registryNumbers = [];
+		if ($request->has("studentRegistryId")) {
+			$registryNumbers = StudentRegistry::find($request->input("studentRegistryId"))
+				?->students->pluck("student_registry_number")->toArray() ?? [];
+		}
 
 		$rules = (new CreatePersonRequest())->rules();
 		$seenPesels = [];
 		$seenAltDocs = [];
 		$rows = CsvImportAssistant::import($request->file("csvFile"),
 			function (array $row, Closure $error, Closure $pass)
-			use (&$seenAltDocs, &$seenPesels, $rules, $request, $schoolUnitId) {
-				if ($request->has("studentRegistryId")) {
-					$row["studentRegistryId"] = $request->input("studentRegistryId");
+			use (&$seenAltDocs, &$seenPesels, &$registryNumbers, $rules, $request, $schoolUnitId) {
+			if ($request->has("studentRegistryId")) {
+				$row["studentRegistryId"] = $request->input("studentRegistryId");
+				if (in_array($row["studentRegistryNumber"], $registryNumbers)) {
+					$error("Osoba o tym numerze w dzienniku już istnieje");
 				}
+				$registryNumbers[] = $row["studentRegistryNumber"];
+			}
 				if ($request->has("childrenRegistryId")) {
 					$row["childrenRegistryId"] = $request->input("childrenRegistryId");
 				}
@@ -208,7 +216,7 @@ class PersonController extends Controller
 	 */
 	private function savePersonAndAddressToDatabase(
 		array   $validated,
-		?int     $schoolUnitId = null,
+		?int    $schoolUnitId = null,
 		?Person $person = null): Person
 	{
 		$updating = !($person == null);

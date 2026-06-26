@@ -16,6 +16,7 @@ return new class extends Migration
 			// starting classification period
 			$table->foreignId("classification_period_id")->constrained("classification_periods");
 			$table->foreignId("class_unit_id")->constrained("class_units");
+			$table->integer("level")->nullable();
             $table->timestamps();
         });
 
@@ -35,7 +36,7 @@ return new class extends Migration
      */
     public function down(): void
     {
-		Schema::dropIfExists("gradebooks");
 		Schema::dropIfExists("gradebooks_students");
+		Schema::dropIfExists("gradebooks");
     }
 };

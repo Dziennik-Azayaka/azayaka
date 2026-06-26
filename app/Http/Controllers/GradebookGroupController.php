@@ -8,25 +8,58 @@ use App\Models\Gradebook;
 use App\Models\GradebookGroup;
 use App\Models\GradebookGroupSubject;
 use App\Models\Subject;
+use Illuminate\Database\Query\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
 class GradebookGroupController extends Controller
 {
-	// TODO: Figure out assigning subjects to the entire class.
-	// Right now the workaround will be to create a group with everybody in it.
 	function list(Gradebook $gradebook)
 	{
-		return $gradebook
+		$this->authorize("manageGroups", [$gradebook]);
+
+		$gradebookSubjects = $gradebook
+			->subjects()->with(["subject", "teachers"])
+			->get();
+
+		$groups = $gradebook
 			->groups()->with(["groupSubjects.subject", "groupSubjects.teachers", "students"])
 			->get()->toResourceCollection();
+
+		if ($gradebookSubjects->isNotEmpty()) {
+			$all = [
+				"id" => null,
+				"name" => "All",
+				"shortcut" => "ALL",
+				"isGradebookLevel" => true,
+				"groupSubjects" => $gradebookSubjects->toResourceCollection(),
+				"students" => [],
+			];
+			return [$all, ...$groups];
+		}
+
+		return $groups;
 	}
 
 	public function create(Request $request, Gradebook $gradebook)
 	{
+		$this->authorize("manageGroups", [$gradebook]);
+
 		$validated = $request->validate([
-			"name" => ["required", "string", "max:255"],
-			"shortcut" => ["required", "string", "max:8"],
+			"name" => [
+				"required",
+				"string",
+				"max:255",
+				Rule::unique("gradebook_groups")
+					->where(fn(Builder $query) => $query->where("gradebook_id", $gradebook->id))
+			],
+			"shortcut" => [
+				"required",
+				"string",
+				"max:8",
+				Rule::unique("gradebook_groups")
+					->where(fn(Builder $query) => $query->where("gradebook_id", $gradebook->id))
+			],
 			"studentIds" => ["nullable", "array"],
 			"studentIds.*" => ["exists:students,id"],
 		]);
@@ -47,9 +80,25 @@ class GradebookGroupController extends Controller
 
 	public function update(Request $request, GradebookGroup $gradebookGroup)
 	{
+		$this->authorize("manageGroups", [$gradebookGroup->gradebook]);
+
 		$validated = $request->validate([
-			"name" => ["required", "string", "max:255"],
-			"shortcut" => ["required", "string", "max:8"],
+			"name" => [
+				"required",
+				"string",
+				"max:255",
+				Rule::unique("gradebook_groups")
+					->ignore($gradebookGroup->id)
+					->where(fn(Builder $query) => $query->where("gradebook_id", $gradebookGroup->gradebook->id))
+			],
+			"shortcut" => [
+				"required",
+				"string",
+				"max:8",
+				Rule::unique("gradebook_groups")
+					->ignore($gradebookGroup->id)
+					->where(fn(Builder $query) => $query->where("gradebook_id", $gradebookGroup->gradebook->id))
+			],
 			"studentIds" => ["nullable", "array"],
 			"studentIds.*" => ["exists:students,id"],
 		]);
@@ -68,6 +117,8 @@ class GradebookGroupController extends Controller
 
 	public function destroy(GradebookGroup $gradebookGroup)
 	{
+		$this->authorize("manageGroups", [$gradebookGroup->gradebook]);
+
 		$gradebookGroup->delete();
 		return [
 			"success" => true
@@ -76,6 +127,27 @@ class GradebookGroupController extends Controller
 
 	public function addSubject(Request $request, GradebookGroup $gradebookGroup)
 	{
+		$this->authorize("manageGroups", [$gradebookGroup->gradebook]);
+
+		return $this->createSubject(
+			$request,
+			$gradebookGroup->groupSubjects(),
+			$gradebookGroup->gradebook_id,
+		);
+	}
+
+	public function addGradebookSubject(Request $request, Gradebook $gradebook)
+	{
+		$this->authorize("manageGroups", [$gradebook]);
+
+		return $this->createSubject(
+			$request,
+			$gradebook->subjects(),
+		);
+	}
+
+	private function createSubject(Request $request, $relationship, ?int $gradebookId = null)
+	{
 		$validated = $request->validate([
 			"subject_id" => ["required", "exists:subjects,id"],
 			"description" => ["required", "string", "max:255", Rule::enum(GradebookSubjectType::class)],
@@ -83,33 +155,37 @@ class GradebookGroupController extends Controller
 			"teachers.*" => ["exists:employees,id"]
 		]);
 
-		if ($gradebookGroup->groupSubjects()->where("subject_id", $validated["subject_id"])->exists()) {
+		if ($relationship->where("subject_id", $validated["subject_id"])->exists()) {
 			return \Response::json([
 				"success" => false,
-				"errors" => [
-					"SUBJECT_ALREADY_ASSIGNED_TO_GROUP"
-				]
+				"errors" => ["SUBJECT_ALREADY_ASSIGNED_TO_GROUP"]
 			], 409);
 		}
 
-		$groupSubject = $gradebookGroup->groupSubjects()->create([
+		$data = [
 			"subject_id" => $validated["subject_id"],
 			"description" => $validated["description"],
-		]);
+		];
 
-		if (!empty($validated["teachers"])) {
-			$groupSubject->teachers()->sync($validated["teachers"]);
+		if ($gradebookId !== null) {
+			$data["gradebook_id"] = $gradebookId;
 		}
 
-		return [
-			"success" => true
-		];
+		$subject = $relationship->create($data);
+
+		if (!empty($validated["teachers"])) {
+			$subject->teachers()->sync($validated["teachers"]);
+		}
+
+		return ["success" => true];
 	}
 
 	public function updateSubject(Request $request, string $gradebookGroup, GradebookGroupSubject $groupSubject)
 	{
+		$this->authorize("manageGroups", [$groupSubject->gradebook]);
+
 		$validated = $request->validate([
-			"description" => ["required", "string", "max:255"],
+			"description" => ["required", "string", "max:255", Rule::enum(GradebookSubjectType::class)],
 		]);
 
 		$groupSubject->update([
@@ -123,6 +199,8 @@ class GradebookGroupController extends Controller
 
 	public function destroySubject(string $gradebookGroup, GradebookGroupSubject $groupSubject)
 	{
+		$this->authorize("manageGroups", [$groupSubject->gradebook]);
+
 		$groupSubject->delete(); // Since there's onDelete("cascade") on all foreignIds, any teachers will be deleted too.
 		return [
 			"success" => true,
@@ -131,6 +209,8 @@ class GradebookGroupController extends Controller
 
 	public function updateTeachers(Request $request, string $gradebookGroup, GradebookGroupSubject $groupSubject)
 	{
+		$this->authorize("manageGroups", [$groupSubject->gradebook]);
+
 		$validated = $request->validate([
 			"teachers" => ["required", "array"],
 			"teachers.*" => ["exists:employees,id"],

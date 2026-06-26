@@ -29,6 +29,43 @@ final class GradebookGroupControllerTest extends TestCase
 		$response->assertJsonCount(1);
 	}
 
+	public function test_list_includes_all_pseudo_groups_when_gradebook_has_subjects(): void
+	{
+		$this->actingAdminUser();
+		$gradebook = Gradebook::factory()->create();
+		$subject = Subject::factory()->create();
+		GradebookGroupSubject::factory()->create([
+			"gradebook_id" => $gradebook->id,
+			"gradebook_group_id" => null,
+			"subject_id" => $subject->id,
+			"description" => GradebookSubjectType::COMPULSORY,
+		]);
+
+		$response = $this->get("/api/gradebooks/$gradebook->id/groups");
+
+		$response->assertOk();
+		$response->assertJsonCount(1);
+		$response->assertJsonFragment([
+			"id" => null,
+			"name" => "All",
+			"shortcut" => "ALL",
+			"isGradebookLevel" => true,
+		]);
+	}
+
+	public function test_list_excludes_all_pseudo_groups_when_no_gradebook_subjects(): void
+	{
+		$this->actingAdminUser();
+		$gradebook = Gradebook::factory()->create();
+		GradebookGroup::factory()->create(["gradebook_id" => $gradebook->id]);
+
+		$response = $this->get("/api/gradebooks/$gradebook->id/groups");
+
+		$response->assertOk();
+		$response->assertJsonCount(1);
+		$response->assertJsonMissing(["isGradebookLevel" => true]);
+	}
+
 	public function test_can_create_group(): void
 	{
 		$this->actingAdminUser();
@@ -134,6 +171,7 @@ final class GradebookGroupControllerTest extends TestCase
 		$subject = Subject::factory()->create();
 
 		GradebookGroupSubject::factory()->create([
+			"gradebook_id" => $group->gradebook_id,
 			"gradebook_group_id" => $group->id,
 			"subject_id" => $subject->id,
 			"description" => GradebookSubjectType::BILINGUAL_REGULAR_SUBJECT,
@@ -158,6 +196,7 @@ final class GradebookGroupControllerTest extends TestCase
 		$subject = Subject::factory()->create();
 
 		$groupSubject = GradebookGroupSubject::factory()->create([
+			"gradebook_id" => $group->gradebook_id,
 			"gradebook_group_id" => $group->id,
 			"subject_id" => $subject->id,
 			"description" => GradebookSubjectType::BILINGUAL_REGULAR_SUBJECT,
@@ -182,6 +221,7 @@ final class GradebookGroupControllerTest extends TestCase
 		$subject = Subject::factory()->create();
 
 		$groupSubject = GradebookGroupSubject::factory()->create([
+			"gradebook_id" => $group->gradebook_id,
 			"gradebook_group_id" => $group->id,
 			"subject_id" => $subject->id,
 		]);
@@ -195,6 +235,79 @@ final class GradebookGroupControllerTest extends TestCase
 		]);
 	}
 
+	public function test_can_add_subject_to_gradebook(): void
+	{
+		$this->actingAdminUser();
+		$gradebook = Gradebook::factory()->create();
+		$subject = Subject::factory()->create();
+
+		$response = $this->post("/api/gradebooks/$gradebook->id/subjects", [
+			"subject_id" => $subject->id,
+			"description" => GradebookSubjectType::COMPULSORY->value
+		]);
+
+		$response->assertStatus(200)->assertJson(["success" => true]);
+
+		$this->assertDatabaseHas("gradebook_group_subjects", [
+			"gradebook_id" => $gradebook->id,
+			"gradebook_group_id" => null,
+			"subject_id" => $subject->id,
+			"description" => GradebookSubjectType::COMPULSORY
+		]);
+	}
+
+	public function test_cannot_add_subject_to_gradebook_if_already_assigned(): void
+	{
+		$this->actingAdminUser();
+		$gradebook = Gradebook::factory()->create();
+		$subject = Subject::factory()->create();
+
+		GradebookGroupSubject::factory()->create([
+			"gradebook_id" => $gradebook->id,
+			"gradebook_group_id" => null,
+			"subject_id" => $subject->id,
+			"description" => GradebookSubjectType::COMPULSORY
+		]);
+
+		$response = $this->post("/api/gradebooks/$gradebook->id/subjects", [
+			"subject_id" => $subject->id,
+			"description" => GradebookSubjectType::COMPULSORY->value
+		]);
+
+		$response->assertStatus(409)
+			->assertJson([
+				"success" => false,
+				"errors" => ["SUBJECT_ALREADY_ASSIGNED_TO_GROUP"]
+			]);
+	}
+
+	public function test_can_add_subject_to_gradebook_with_teachers(): void
+	{
+		$this->actingAdminUser();
+		$gradebook = Gradebook::factory()->create();
+		$subject = Subject::factory()->create();
+		$employee = Employee::factory()->create();
+
+		$response = $this->post("/api/gradebooks/$gradebook->id/subjects", [
+			"subject_id" => $subject->id,
+			"description" => GradebookSubjectType::COMPULSORY->value,
+			"teachers" => [$employee->id]
+		]);
+
+		$response->assertStatus(200)->assertJson(["success" => true]);
+
+		$groupSubject = GradebookGroupSubject::where("subject_id", $subject->id)
+			->where("gradebook_id", $gradebook->id)
+			->whereNull("gradebook_group_id")
+			->first();
+
+		$this->assertNotNull($groupSubject);
+		$this->assertDatabaseHas("employee_gradebook_group_subject", [
+			"gradebook_group_subject_id" => $groupSubject->id,
+			"employee_id" => $employee->id
+		]);
+	}
+
 	public function test_can_update_teachers(): void
 	{
 		$this->actingAdminUser();
@@ -202,6 +315,7 @@ final class GradebookGroupControllerTest extends TestCase
 		$subject = Subject::factory()->create();
 
 		$groupSubject = GradebookGroupSubject::factory()->create([
+			"gradebook_id" => $group->gradebook_id,
 			"gradebook_group_id" => $group->id,
 			"subject_id" => $subject->id,
 		]);
@@ -224,5 +338,61 @@ final class GradebookGroupControllerTest extends TestCase
 			"gradebook_group_subject_id" => $groupSubject->id,
 			"employee_id" => $employee2->id,
 		]);
+	}
+
+	public function test_creating_group_with_duplicate_name_fails(): void
+	{
+		$this->actingAdminUser();
+		$gradebook = Gradebook::factory()->create();
+		GradebookGroup::factory()->create([
+			"gradebook_id" => $gradebook->id,
+			"name" => "Angielski",
+			"shortcut" => "Ang1",
+		]);
+
+		$response = $this->post("/api/gradebooks/$gradebook->id/groups", [
+			"name" => "Angielski",
+			"shortcut" => "Ang2",
+		]);
+
+		$response->assertStatus(422);
+	}
+
+	public function test_creating_group_with_duplicate_shortcut_fails(): void
+	{
+		$this->actingAdminUser();
+		$gradebook = Gradebook::factory()->create();
+		GradebookGroup::factory()->create([
+			"gradebook_id" => $gradebook->id,
+			"name" => "Angielski 1",
+			"shortcut" => "Ang1",
+		]);
+
+		$response = $this->post("/api/gradebooks/$gradebook->id/groups", [
+			"name" => "Angielski 2",
+			"shortcut" => "Ang1",
+		]);
+
+		$response->assertStatus(422);
+	}
+
+	public function test_update_subject_rejects_invalid_enum(): void
+	{
+		$this->actingAdminUser();
+		$group = GradebookGroup::factory()->create();
+		$subject = Subject::factory()->create();
+
+		$groupSubject = GradebookGroupSubject::factory()->create([
+			"gradebook_id" => $group->gradebook_id,
+			"gradebook_group_id" => $group->id,
+			"subject_id" => $subject->id,
+			"description" => GradebookSubjectType::COMPULSORY,
+		]);
+
+		$response = $this->put("/api/gradebooks/groups/$group->id/subjects/$groupSubject->id", [
+			"description" => "obowiązkowy w dni nieparzyste",
+		]);
+
+		$response->assertStatus(422);
 	}
 }

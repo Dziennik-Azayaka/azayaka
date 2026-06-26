@@ -13,13 +13,19 @@ class GradebookGroupSubject extends Model
 	use HasFactory;
 
 	protected $fillable = [
-		'subject_id',
-		'description',
+		"gradebook_id",
+		"subject_id",
+		"description",
 	];
 
 	public $casts = [
 		"description" => GradebookSubjectType::class
 	];
+
+	public function gradebook(): BelongsTo
+	{
+		return $this->belongsTo(Gradebook::class);
+	}
 
 	public function group(): BelongsTo
 	{

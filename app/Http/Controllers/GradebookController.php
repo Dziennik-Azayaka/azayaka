@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\AccountAccess;
+use App\Models\ClassUnit;
 use App\Models\Gradebook;
 use App\Models\GradebookStudents;
 use App\Models\Student;
@@ -34,11 +35,50 @@ class GradebookController extends Controller
 	{
 		$validated = $request->validate([
 			"classificationPeriodId" => "required|exists:classification_periods,id",
-			"classUnitId" => "required|exists:class_units,id"
+			"classUnitId" => "required|exists:class_units,id",
+			"level" => "nullable|integer"
 		]);
 
-		if (Gradebook::where("classification_period_id", $validated["classificationPeriodId"])
+		$classUnit = ClassUnit::findOrFail($validated["classUnitId"]);
+		$this->authorize("create", [Gradebook::class, $classUnit]);
+
+		$classificationPeriodId = $validated["classificationPeriodId"];
+
+		if (isset($validated["level"])) {
+			$validLevels = $classUnit->periods()->pluck("class_units_periods.level")->toArray();
+			if (!in_array($validated["level"], $validLevels)) {
+				return \Response::json([
+					"success" => false,
+					"errors" => ["LEVEL_OUTSIDE_CLASS_UNIT_RANGE"]
+				], 422);
+			}
+
+			$existingLevelGradebooks = Gradebook::where("class_unit_id", $validated["classUnitId"])
+				->where(function ($query) use ($validated) {
+					$query->where("level", $validated["level"])
+						->orWhereNull("level");
+				})
+				->get()
+				->filter(fn($gradebook) => $gradebook->level === $validated["level"])
+				->count();
+
+			if ($existingLevelGradebooks > 0) {
+				return \Response::json([
+					"success" => false,
+					"errors" => ["GRADEBOOK_ALREADY_EXISTS_FOR_THIS_LEVEL"]
+				], 409);
+			}
+		}
+
+		if (Gradebook::where("classification_period_id", $classificationPeriodId)
 			->where("class_unit_id", $validated["classUnitId"])
+			->where(function ($query) use ($validated) {
+				if (isset($validated["level"])) {
+					$query->where("level", $validated["level"]);
+				} else {
+					$query->whereNull("level");
+				}
+			})
 			->exists()) {
 			return \Response::json([
 				"success" => false,
@@ -71,6 +111,8 @@ class GradebookController extends Controller
 
 	public function attachStudentsToGradebook(Request $request, Gradebook $gradebook)
 	{
+		$this->authorize("manageStudents", [$gradebook]);
+
 		$validated = $request->validate([
 			"studentIds" => "required|array|min:1|max:255",
 			"studentIds.*" => "required|distinct|exists:students,id",
@@ -85,6 +127,19 @@ class GradebookController extends Controller
 				"errors" => [
 					"NUMBER_OF_STUDENTS_AND_POSITIONS_DO_NOT_MATCH"
 				]
+			], 422);
+		}
+
+		$schoolUnitId = $gradebook->classUnit->school_unit_id;
+		$eligibleStudentIds = Student::whereHas("studentRegistry", function ($query) use ($schoolUnitId) {
+			$query->where("school_unit_id", $schoolUnitId);
+		})->whereIn("id", $validated["studentIds"])->pluck("id")->toArray();
+
+		$invalidStudentIds = array_diff($validated["studentIds"], $eligibleStudentIds);
+		if (!empty($invalidStudentIds)) {
+			return \Response::json([
+				"success" => false,
+				"errors" => ["STUDENTS_NOT_IN_SCHOOL_UNIT"]
 			], 422);
 		}
 

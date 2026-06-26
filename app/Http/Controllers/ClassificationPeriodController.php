@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\ClassificationPeriod;
 use App\Models\ClassUnit;
 use App\Models\ClassUnitPeriod;
+use App\Models\Gradebook;
 use App\Utilities\ClassificationPeriodAssistant;
 use App\Utilities\ValidatorAssistant\ValidatorAssistant;
 use Carbon\Carbon;
@@ -149,7 +150,19 @@ class ClassificationPeriodController extends Controller
 
 	public function delete(int $schoolUnitId, int $schoolYear)
 	{
-		// TODO: Implement checks to make sure no grade books have been created for this year
+		$periods = ClassificationPeriod::where("school_year", $schoolYear)
+			->where("school_unit_id", $schoolUnitId);
+		$gradebooksExist = Gradebook::whereIn("classification_period_id", $periods->pluck("id"))->exists();
+
+		if ($gradebooksExist) {
+			return \Response::json([
+				"success" => false,
+				"errors" => [
+					"GRADEBOOKS_EXIST_FOR_THIS_YEAR"
+				]
+			], 409);
+		}
+
 		ClassificationPeriod::where("school_year", $schoolYear)
 			->where("school_unit_id", $schoolUnitId)
 			->delete();

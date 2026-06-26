@@ -7,6 +7,7 @@ use App\Models\ClassificationPeriod;
 use App\Models\ClassUnit;
 use App\Models\ClassUnitFormTutors;
 use App\Models\Employee;
+use App\Models\Gradebook;
 use App\Models\SchoolComplex;
 use App\Models\SchoolUnit;
 use App\Models\User;
@@ -544,5 +545,21 @@ final class ClassUnitControllerTest extends TestCase
 			"employee_id" => $employee->id,
 			"class_unit_id" => $classUnit->id,
 		]);
+	}
+
+	public function test_cannot_delete_class_unit_with_gradebooks(): void
+	{
+		$this->actingAdminUser();
+		$classUnit = ClassUnit::factory()->create();
+		Gradebook::factory()->create(["class_unit_id" => $classUnit->id]);
+
+		$response = $this->delete("/api/classUnits/$classUnit->id");
+
+		$response->assertStatus(409);
+		$response->assertJson([
+			"success" => false,
+			"errors" => ["CLASS_UNIT_HAS_GRADEBOOKS"],
+		]);
+		$this->assertDatabaseHas("class_units", ["id" => $classUnit->id]);
 	}
 }

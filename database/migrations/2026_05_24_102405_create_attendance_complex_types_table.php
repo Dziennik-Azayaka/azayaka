@@ -13,7 +13,7 @@ return new class extends Migration {
 		Schema::create("attendance_complex_types", function (Blueprint $table) {
 			$table->id();
 			$table->string("name")->unique();
-			$table->string("shortcut")->unique();
+			$table->string("shortcut", 3)->unique();
 			$table->integer("maps_to_primitive_type");
 			$table->boolean("active")->default(true);
 			$table->timestamps();

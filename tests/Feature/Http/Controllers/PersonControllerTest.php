@@ -5,6 +5,7 @@ namespace Tests\Feature\Http\Controllers;
 use App\Models\ChildrenRegistry;
 use App\Models\Person;
 use App\Models\SchoolUnit;
+use App\Models\Student;
 use App\Models\StudentRegistry;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
@@ -331,6 +332,36 @@ final class PersonControllerTest extends TestCase
 
 		$response->assertStatus(422);
 		$this->assertStringContainsString("Rząd 2", $response->json("errors.0"));
+	}
+
+	public function test_import_fails_when_student_registry_number_already_exists(): void
+	{
+		$this->actingAdminUser();
+		$studentRegistry = StudentRegistry::factory()->create();
+		$person = Person::factory()->create(["school_unit_id" => $studentRegistry->school_unit_id]);
+		Student::factory()->create([
+			"person_id" => $person->id,
+			"student_registry_id" => $studentRegistry->id,
+			"student_registry_number" => 5,
+		]);
+
+		$csvContent = $this->generateCsv(
+			["studentRegistryNumber", "firstName", "lastName", "pesel", "birthdate", "birthplace", "residenceAddressCountry", "admissionDate"],
+			[
+				[5, "Jan", "Kowalski", "08290823273", "2010-01-01", "Łódź", "Polska", "2023-09-01"],
+			]
+		);
+
+		$file = UploadedFile::fake()->createWithContent("people.csv", $csvContent);
+
+		$response = $this->post("/api/schoolUnits/$studentRegistry->school_unit_id/people/import", [
+			"csvFile" => $file,
+			"studentRegistryId" => $studentRegistry->id,
+		]);
+
+		$response->assertStatus(422);
+		$this->assertStringContainsString("Osoba o tym numerze w dzienniku już istnieje", $response->json("errors.0"));
+		$this->assertDatabaseCount("students", 1);
 	}
 
 	public function test_import_fails_when_importing_to_archived_registry()

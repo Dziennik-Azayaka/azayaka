@@ -25,9 +25,14 @@ class LessonController extends Controller
 	public function create(LessonRequest $request)
 	{
 		$validated = $request->validated();
+
 		$lesson = \DB::transaction(function () use ($validated) {
 			$lesson = new Lesson();
+
 			$lesson = $this->saveLessonDetails($validated, $lesson);
+			$this->authorize("create", [
+				$lesson
+			]);
 
 			if (!empty($validated["assistingTeachers"])) {
 				$lesson->assistingTeachers()->attach($validated["assistingTeachers"]);
@@ -46,7 +51,15 @@ class LessonController extends Controller
 
 	public function update(LessonRequest $request, Lesson $lesson)
 	{
+		$this->authorize("update", [$lesson]);
+
 		$validated = $request->validated();
+		if ($validated["primaryTeacherId"] != $lesson->primary_teacher_id) {
+			return response()->json([
+				"success" => false,
+				"errors" => ["CHANGING_THE_PRIMARY_TEACHER_IS_FORBIDDEN"]
+			]);
+		}
 
 		\DB::transaction(function () use ($validated, $lesson) {
 			$lesson = $this->saveLessonDetails($validated, $lesson);
@@ -83,6 +96,8 @@ class LessonController extends Controller
 
 	public function markAsCompleted(Lesson $lesson)
 	{
+		$this->authorize("markAsCompleted", [$lesson]);
+
 		if (!$lesson->completed) {
 			$lesson->completed = true;
 			$lesson->save();

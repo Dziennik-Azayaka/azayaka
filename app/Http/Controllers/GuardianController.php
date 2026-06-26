@@ -13,6 +13,7 @@ use App\Models\Person;
 use App\Models\ResidenceAddress;
 use App\Models\Student;
 use App\Models\StudentRegistry;
+use App\Utilities\AccountAccessDocumentGenerator;
 use App\Utilities\AccountAccessWordsGenerator;
 use App\Utilities\CaseConverter;
 use App\Utilities\ValidatorAssistant\ValidatorAssistantException;
@@ -109,30 +110,8 @@ class GuardianController extends Controller
 			"ids" => "required|array"
 		]);
 
-		$ids = array_unique($validatedData["ids"]);
-		$guardians = Guardian::whereIn("id", $ids)->get();
-		$guardianIds = $guardians->pluck("id");
-		$accesses = AccountAccess::whereIn("guardian_id", $guardianIds)->get();
-
-		$document = new AccountAccessesActivationDocument();
-
-		foreach ($guardians as $guardian) {
-			$access = $accesses->where("guardian_id", $guardian->id)->first();
-			if ($access?->words == null) {
-				return Response::json([
-					"success" => false,
-					"errors" => [
-						"GUARDIAN_HAS_NO_ACCESS_WORDS"
-					]
-				], 422);
-			}
-			$document->addAccess(AccessType::PARENT,
-				$guardian->first_name . " " . $guardian->last_name,
-				explode(",", $access->words));
-		}
-
-		$document->generateDocument();
-		return $document->streamDocument();
+		$generator = new AccountAccessDocumentGenerator(AccessType::PARENT, $validatedData["ids"]);
+		return $generator->generateDocument();
 	}
 
 	private function saveResidenceAddress(array $data, ?ResidenceAddress $residenceAddress = null): ResidenceAddress

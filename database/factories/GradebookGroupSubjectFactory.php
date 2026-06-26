@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use App\Enums\GradebookSubjectType;
+use App\Models\Gradebook;
 use App\Models\GradebookGroup;
 use App\Models\GradebookGroupSubject;
 use App\Models\Subject;
@@ -21,6 +22,7 @@ class GradebookGroupSubjectFactory extends Factory
     public function definition(): array
     {
         return [
+			"gradebook_id" => Gradebook::factory(),
             "gradebook_group_id" => GradebookGroup::factory(),
 			"subject_id" => Subject::factory(),
 			"description" => $this->faker->randomElement(GradebookSubjectType::cases())

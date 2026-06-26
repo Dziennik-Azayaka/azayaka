@@ -27,7 +27,7 @@ class AttendanceComplexTypeController extends Controller
 	{
 		$validated = $request->validate([
 			"name" => ["required", "string", "max:255"],
-			"shortcut" => ["required", "string", "max:3"],
+			"shortcut" => ["required", "string", "max:3", "unique:attendance_complex_types"],
 			"mapsToPrimitiveType" => ["required", Rule::enum(AttendancePrimitiveType::class)]
 		]);
 
@@ -47,7 +47,7 @@ class AttendanceComplexTypeController extends Controller
 	{
 		$validated = $request->validate([
 			"name" => ["required", "string", "max:255"],
-			"shortcut" => ["required", "string", "max:3"],
+			"shortcut" => ["required", "string", "max:3", Rule::unique("attendance_complex_types")->ignore($type->id)],
 			"mapsToPrimitiveType" => ["required", Rule::enum(AttendancePrimitiveType::class)]
 		]);
 

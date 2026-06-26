@@ -3,16 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Enums\AttendancePrimitiveType;
-use App\Exceptions\CustomValidationException;
-use App\Models\AccountAccess;
 use App\Models\Attendance;
+use DB;
 use App\Models\AttendanceComplexType;
 use App\Models\Employee;
 use App\Models\Gradebook;
 use App\Models\Lesson;
 use App\Models\Student;
 use App\Models\Subject;
-use DB;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -53,7 +51,9 @@ class AttendanceController extends Controller
 				"primitiveType" => $attendance->primitive_type,
 				"complexType" => $attendance->attendance_complex_type_id,
 				"studentId" => $attendance->student_id,
-				"employee" => $attendance->employee->full_name . " " . $attendance->employee->last_name
+				"employee" => $attendance->employee_id != null ?
+					$attendance->employee->first_name . " " . $attendance->employee->last_name :
+					"System"
 			])
 		]);
 	}
@@ -88,14 +88,16 @@ class AttendanceController extends Controller
 				"firstName" => $student->person->first_name,
 				"secondName" => $student->person->second_name,
 				"lastName" => $student->person->last_name,
-				"position" => $gradebook->students()->find($student->id)->pivot->position
+				"position" => $gradebook->students->find($student->id)?->pivot?->position
 			]),
 			"attendances" => $lesson->attendances->map(fn(Attendance $attendance) => [
 				"id" => $attendance->id,
 				"primitiveType" => $attendance->primitive_type,
 				"complexType" => $attendance->attendance_complex_type_id,
 				"studentId" => $attendance->student_id,
-				"employee" => $attendance->employee->full_name . " " . $attendance->employee->last_name
+				"employee" => $attendance->employee_id != null ?
+					$attendance->employee->first_name . " " . $attendance->employee->last_name :
+					"System"
 			])
 		]);
 	}
@@ -103,7 +105,7 @@ class AttendanceController extends Controller
 	public function createOrUpdate(Request $request, Gradebook $gradebook, Lesson $lesson): JsonResponse
 	{
 		$employee = $this->getUserEmployee($request);
-		$this->authorizeLessonAttendanceEdit($employee, $lesson);
+		$this->authorize("editAttendance", [$lesson]);
 
 		$validated = $request->validate([
 			"attendances" => ["required", "array"],
@@ -166,7 +168,7 @@ class AttendanceController extends Controller
 
 	public function destroy(Request $request, Gradebook $gradebook, Attendance $attendance)
 	{
-		$this->authorizeAttendanceEdit($this->getUserEmployee($request), $attendance->lesson, $attendance->student);
+		$this->authorize("editAttendance", [$attendance->lesson]);
 		$attendance->delete();
 
 		return [
@@ -177,7 +179,7 @@ class AttendanceController extends Controller
 	public function autofill(Request $request, Gradebook $gradebook, Lesson $lesson)
 	{
 		$employee = $this->getUserEmployee($request);
-		$this->authorizeLessonAttendanceEdit($employee, $lesson);
+		$this->authorize("editAttendance", [$lesson]);
 
 		$previousLesson = Lesson::where("subject_id", $lesson->subject_id)
 			->where("gradebook_id", $lesson->gradebook_id)
@@ -221,62 +223,9 @@ class AttendanceController extends Controller
 			];
 		}
 
-		Attendance::insert($newAttendances);
+		Attendance::upsert($newAttendances, ["lesson_id", "student_id"]);
 
 		return ["success" => true];
 	}
 
-	private function authorizeAttendanceEdit(Employee $employee, Lesson $lesson, Student $student): void
-	{
-		if ($lesson->primary_teacher_id == $employee->id) {
-			return;
-		}
-
-		// Please excuse this mess for now.
-		// employee -> form tutor -> class unit -> gradebook -> group -> student
-		$isFormTutor = DB::table("class_units_form_tutors")
-			->join("class_units", "class_units_form_tutors.class_unit_id", "=", "class_units.id")
-			->join("gradebooks", "class_units.id", "=", "gradebooks.class_unit_id")
-			->join("gradebook_groups", "gradebooks.id", "=", "gradebook_groups.gradebook_id")
-			->join("gradebook_group_student", "gradebook_groups.id", "=", "gradebook_group_student.gradebook_group_id")
-			->where("class_units_form_tutors.employee_id", $employee->id)
-			->where("gradebook_group_student.student_id", $student->id)
-			->exists();
-
-		if ($isFormTutor) {
-			return;
-		}
-
-		throw CustomValidationException::withMessages(["UNAUTHORIZED_TO_EDIT_ATTENDANCE"]);
-	}
-
-	private function authorizeLessonAttendanceEdit(Employee $employee, Lesson $lesson): void
-	{
-		if ($lesson->primary_teacher_id === $employee->id) {
-			return;
-		}
-
-		$isFormTutor = DB::table("class_units_form_tutors")
-			->join("gradebooks", "class_units_form_tutors.class_unit_id", "=", "gradebooks.class_unit_id")
-			->where("gradebooks.id", $lesson->gradebook_id)
-			->where("class_units_form_tutors.employee_id", $employee->id)
-			->where("class_units_form_tutors.date_from", "<=", $lesson->date)
-			->where("class_units_form_tutors.date_to", ">=", $lesson->date)
-			->exists();
-
-		if ($isFormTutor) {
-			return;
-		}
-
-		throw CustomValidationException::withMessages(["UNAUTHORIZED_TO_EDIT_ATTENDANCE"]);
-	}
-
-	private function getUserEmployee(Request $request): Employee
-	{
-		$accessID = $request->header("Access-ID") ?? $request->route("accessId");
-		$employeeAccess = AccountAccess::where("user_id", $request->user()->id)
-			->where("id", $accessID)
-			->with("employee")->first();
-		return $employeeAccess->employee;
-	}
 }

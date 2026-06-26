@@ -8,6 +8,7 @@ use App\Models\ClassUnit;
 use App\Models\ClassUnitFormTutors;
 use App\Models\ClassUnitPeriod;
 use App\Models\Employee;
+use App\Models\Gradebook;
 use App\Models\SchoolUnit;
 use App\Utilities\ClassificationPeriodAssistant;
 use App\Utilities\ValidatorAssistant\ValidatorAssistant;
@@ -158,7 +159,14 @@ class ClassUnitController extends Controller
 
 	public function delete(ClassUnit $classUnit)
 	{
-		// TODO: Implement checks to make sure no grade books have been created for this class unit
+		if (Gradebook::where("class_unit_id", $classUnit->id)->exists()) {
+			return \Response::json([
+				"success" => false,
+				"errors" => [
+					"CLASS_UNIT_HAS_GRADEBOOKS"
+				]
+			], 409);
+		}
 		$classUnit->delete();
 		return [
 			"success" => true

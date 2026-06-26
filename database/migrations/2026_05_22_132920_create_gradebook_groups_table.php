@@ -33,12 +33,18 @@ return new class extends Migration
 
 		Schema::create("gradebook_group_subjects", function (Blueprint $table) {
 			$table->id();
-			$table->foreignId("gradebook_group_id")->constrained("gradebook_groups")->onDelete("cascade");
+			$table->foreignId("gradebook_id")->constrained("gradebooks")->onDelete("cascade");
+			$table->foreignId("gradebook_group_id")->nullable()->constrained("gradebook_groups")->onDelete("cascade");
 			$table->foreignId("subject_id")->constrained("subjects")->onDelete("cascade");
 			$table->string("description");
 			$table->timestamps();
 
-			$table->unique(["gradebook_group_id", "subject_id"]);
+			$table->unsignedBigInteger("gradebook_group_id_key")
+				->storedAs("COALESCE(gradebook_group_id, 0)");
+			$table->unique(
+				["gradebook_id", "gradebook_group_id_key", "subject_id"],
+				"gradebook_subject_unique"
+			);
 		});
 
 		Schema::create("employee_gradebook_group_subject", function (Blueprint $table) {
@@ -63,9 +69,9 @@ return new class extends Migration
 	 */
 	public function down(): void
 	{
-		Schema::dropIfExists("gradebook_groups");
-		Schema::dropIfExists("gradebook_group_subjects");
-		Schema::dropIfExists("gradebook_group_student");
 		Schema::dropIfExists("employee_gradebook_group_subject");
+		Schema::dropIfExists("gradebook_group_student");
+		Schema::dropIfExists("gradebook_group_subjects");
+		Schema::dropIfExists("gradebook_groups");
 	}
 };
