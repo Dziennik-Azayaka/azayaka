@@ -6,6 +6,7 @@ use App\Enums\AttendancePrimitiveType;
 use App\Models\Attendance;
 use DB;
 use App\Models\AttendanceComplexType;
+use App\Http\Resources\LessonAttendanceResource;
 use App\Models\Employee;
 use App\Models\Gradebook;
 use App\Models\Lesson;
@@ -33,29 +34,11 @@ class AttendanceController extends Controller
 			->orderBy("start_time")
 			->get();
 
-		return $lessons->map(fn(Lesson $lesson) => [
-			"id" => $lesson->id,
-			"subject" => $lesson->subject->name,
-			"number" => $lesson->number,
-			"startTime" => $lesson->start_time,
-			"endTime" => $lesson->end_time,
-			"students" => $gradebook->students->map(fn(Student $student) => [
-				"id" => $student->id,
-				"firstName" => $student->person->first_name,
-				"secondName" => $student->person->second_name,
-				"lastName" => $student->person->last_name,
-				"position" => $student->pivot->position,
-			]),
-			"attendances" => $lesson->attendances->map(fn(Attendance $attendance) => [
-				"id" => $attendance->id,
-				"primitiveType" => $attendance->primitive_type,
-				"complexType" => $attendance->attendance_complex_type_id,
-				"studentId" => $attendance->student_id,
-				"employee" => $attendance->employee_id != null ?
-					$attendance->employee->first_name . " " . $attendance->employee->last_name :
-					"System"
-			])
-		]);
+		return $lessons->map(fn(Lesson $lesson) => new LessonAttendanceResource(
+			$lesson,
+			$gradebook->students,
+			false
+		));
 	}
 
 	public function subjectView(Gradebook $gradebook, Subject $subject)
@@ -76,30 +59,11 @@ class AttendanceController extends Controller
 			$query->where("gradebook_id", $gradebook->id);
 		})->orderBy("student_registry_number")->get();
 
-		return $lessons->map(fn(Lesson $lesson) => [
-			"id" => $lesson->id,
-			"subject" => $lesson->subject->name,
-			"number" => $lesson->number,
-			"date" => $lesson->date,
-			"startTime" => $lesson->start_time,
-			"endTime" => $lesson->end_time,
-			"students" => $students->map(fn(Student $student) => [
-				"id" => $student->id,
-				"firstName" => $student->person->first_name,
-				"secondName" => $student->person->second_name,
-				"lastName" => $student->person->last_name,
-				"position" => $gradebook->students->find($student->id)?->pivot?->position
-			]),
-			"attendances" => $lesson->attendances->map(fn(Attendance $attendance) => [
-				"id" => $attendance->id,
-				"primitiveType" => $attendance->primitive_type,
-				"complexType" => $attendance->attendance_complex_type_id,
-				"studentId" => $attendance->student_id,
-				"employee" => $attendance->employee_id != null ?
-					$attendance->employee->first_name . " " . $attendance->employee->last_name :
-					"System"
-			])
-		]);
+		return $lessons->map(fn(Lesson $lesson) => new LessonAttendanceResource(
+			$lesson,
+			$students,
+			true
+		));
 	}
 
 	public function createOrUpdate(Request $request, Gradebook $gradebook, Lesson $lesson): JsonResponse
