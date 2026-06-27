@@ -7,7 +7,7 @@ use App\Models\Gradebook;
 use App\Models\Lesson;
 use App\Models\Student;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Http\Request;
 
 class LessonController extends Controller
@@ -15,8 +15,7 @@ class LessonController extends Controller
 	public function list(Request $request, Gradebook $gradebook)
 	{
 		$lessons = $gradebook->lessons()
-			->with(["gradebookGroups", "primaryTeacher", "subject", "assistingTeachers"])
-			->where("gradebook_id", $gradebook->id);
+			->with(["gradebookGroups", "primaryTeacher", "subject", "assistingTeachers"]);
 		$lessons = $this->applyFilters($request, $lessons);
 
 		return $lessons->get()->toResourceCollection();
@@ -30,6 +29,7 @@ class LessonController extends Controller
 			$lesson = new Lesson();
 
 			$lesson = $this->saveLessonDetails($validated, $lesson);
+			$lesson->gradebooks()->sync($validated["gradebookIds"]);
 			$this->authorize("create", [
 				$lesson
 			]);
@@ -63,6 +63,7 @@ class LessonController extends Controller
 
 		\DB::transaction(function () use ($validated, $lesson) {
 			$lesson = $this->saveLessonDetails($validated, $lesson);
+			$lesson->gradebooks()->sync($validated["gradebookIds"]);
 			$lesson->assistingTeachers()->sync($validated["assistingTeachers"]);
 			$lesson->gradebookGroups()->sync($validated["groups"]);
 		});
@@ -78,7 +79,6 @@ class LessonController extends Controller
 	private function saveLessonDetails(array $validated, Lesson $lesson): Lesson
 	{
 		$lesson->number = $validated["number"];
-		$lesson->gradebook_id = $validated["gradebookId"];
 		$lesson->primary_teacher_id = $validated["primaryTeacherId"];
 		$lesson->subject_id = $validated["subjectId"];
 		$lesson->topic = $validated["topic"];
@@ -112,7 +112,6 @@ class LessonController extends Controller
 	{
 		$student = Student::getStudentFromAccessId($request);
 		$lessons = $gradebook->lessons()->with(["primaryTeacher", "subject", "assistingTeachers"])
-			->where("gradebook_id", $gradebook->id)
 			->whereHas("gradebookGroups", function ($groupQuery) use ($student) {
 				$groupQuery->whereHas("students", function ($query) use ($student) {
 					$query->where("student_id", $student->id);
@@ -134,7 +133,7 @@ class LessonController extends Controller
 		]);
 	}
 
-	private function applyFilters(Request $request, Builder|HasMany $query): Builder|HasMany
+	private function applyFilters(Request $request, Builder|BelongsToMany $query): Builder|BelongsToMany
 	{
 		if ($request->has("dateFrom")) {
 			$query = $query->whereDate("date", ">=", $request->input("dateFrom"));

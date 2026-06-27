@@ -13,6 +13,13 @@ use Illuminate\Database\Eloquent\Factories\Factory;
  */
 class LessonFactory extends Factory
 {
+	public function configure(): static
+	{
+		return $this->afterCreating(function (Lesson $lesson) {
+			$lesson->gradebooks()->attach(Gradebook::factory()->create());
+		});
+	}
+
 	/**
 	 * Define the model's default state.
 	 *
@@ -24,7 +31,6 @@ class LessonFactory extends Factory
 		$endHour = $startHour + 1;
 		return [
 			"number" => $this->faker->numberBetween(1, 100),
-			"gradebook_id" => Gradebook::factory(),
 			"primary_teacher_id" => Employee::factory(),
 			"subject_id" => Subject::factory(),
 			"topic" => $this->faker->sentence(),

@@ -46,8 +46,13 @@ class Gradebook extends Model
 		return $this->hasMany(GradebookGroupSubject::class, "gradebook_id")->whereNull("gradebook_group_id");
 	}
 
-	public function lessons(): HasMany
+	public function lessons(): BelongsToMany
 	{
-		return $this->hasMany(Lesson::class);
+		return $this->belongsToMany(
+			Lesson::class,
+			"lessons_gradebooks",
+			"gradebook_id",
+			"lesson_id"
+		);
 	}
 }

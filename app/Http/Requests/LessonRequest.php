@@ -2,10 +2,8 @@
 
 namespace App\Http\Requests;
 
-use Illuminate\Contracts\Validation\ValidationRule;
-use Illuminate\Database\Query\Builder;
+use App\Models\Lesson;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
 
 class LessonRequest extends FormRequest
 {
@@ -16,22 +14,30 @@ class LessonRequest extends FormRequest
 	 */
 	public function rules(): array
 	{
-		$uniqueNumberRule = Rule::unique("lessons")
-			->where(fn(Builder $builder) => $builder->where("gradebook_id", $this->request->get("gradebookId")))
-			->where(fn(Builder $builder) => $builder->where("subject_id", $this->request->get("subjectId")));
-
-		// if editing, ignore the current lesson
-		if ($this->route("lesson")) {
-			$uniqueNumberRule = $uniqueNumberRule->ignore($this->route("lesson")->id);
-		}
+		$subjectId = $this->input("subjectId");
+		$gradebookIds = $this->input("gradebookIds", []);
+		$lessonId = $this->route("lesson")?->id;
 
 		return [
 			"number" => [
 				"required",
 				"integer",
-				$uniqueNumberRule
+				function (string $attribute, mixed $value, \Closure $fail) use ($subjectId, $gradebookIds, $lessonId) {
+					$query = Lesson::where("number", $value)
+						->where("subject_id", $subjectId)
+						->whereHas("gradebooks", fn($q) => $q->whereIn("gradebooks.id", $gradebookIds));
+
+					if ($lessonId) {
+						$query->where("id", "!=", $lessonId);
+					}
+
+					if ($query->exists()) {
+						$fail("LESSON_NUMBER_ALREADY_EXISTS");
+					}
+				}
 			],
-			"gradebookId" => ["required", "exists:gradebooks,id"],
+			"gradebookIds" => ["required", "array", "min:1"],
+			"gradebookIds.*" => ["exists:gradebooks,id"],
 			"subjectId" => ["required", "exists:subjects,id"],
 			"primaryTeacherId" => ["required", "exists:employees,id"],
 			"topic" => ["required", "string", "max:255"],

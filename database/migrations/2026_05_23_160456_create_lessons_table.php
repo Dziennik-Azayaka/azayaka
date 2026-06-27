@@ -13,7 +13,6 @@ return new class extends Migration {
 		Schema::create("lessons", function (Blueprint $table) {
 			$table->id();
 			$table->integer("number");
-			$table->foreignId("gradebook_id")->constrained("gradebooks");
 			$table->foreignId("primary_teacher_id")->constrained("employees")->onDelete("cascade");
 			$table->foreignId("subject_id")->constrained("subjects")->onDelete("cascade");
 			$table->string("topic");
@@ -21,9 +20,16 @@ return new class extends Migration {
 			$table->time("start_time");
 			$table->time("end_time");
 			$table->boolean("completed")->default(false);
-			$table->unique(["gradebook_id", "subject_id", "number"]);
 			$table->timestamps();
 			$table->softDeletes();
+		});
+
+		Schema::create("lessons_gradebooks", function (Blueprint $table) {
+			$table->id();
+			$table->foreignId("lesson_id")->constrained("lessons")->onDelete("cascade");
+			$table->foreignId("gradebook_id")->constrained("gradebooks")->onDelete("cascade");
+			$table->unique(["lesson_id", "gradebook_id"]);
+			$table->timestamps();
 		});
 
 		Schema::create("lessons_assisting_teachers", function (Blueprint $table) {
@@ -48,6 +54,7 @@ return new class extends Migration {
 	{
 		Schema::dropIfExists("lessons_gradebook_group");
 		Schema::dropIfExists("lessons_assisting_teachers");
+		Schema::dropIfExists("lessons_gradebooks");
 		Schema::dropIfExists("lessons");
 	}
 };

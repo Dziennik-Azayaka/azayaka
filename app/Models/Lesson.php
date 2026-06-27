@@ -19,9 +19,14 @@ class Lesson extends Model
 		"completed" => "boolean"
 	];
 
-	public function gradebook(): BelongsTo
+	public function gradebooks(): BelongsToMany
 	{
-		return $this->belongsTo(Gradebook::class);
+		return $this->belongsToMany(
+			Gradebook::class,
+			"lessons_gradebooks",
+			"lesson_id",
+			"gradebook_id"
+		);
 	}
 
 	public function subject(): BelongsTo

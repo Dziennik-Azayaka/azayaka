@@ -28,7 +28,7 @@ class AttendanceController extends Controller
 			"attendances",
 			"attendances.complexType",
 			"attendances.employee",
-		])->where("gradebook_id", $gradebook->id)
+		])->whereHas("gradebooks", fn ($q) => $q->where("gradebook_id", $gradebook->id))
 			->where("date", $date)
 			->orderBy("start_time")
 			->get();
@@ -67,7 +67,7 @@ class AttendanceController extends Controller
 			"attendances.employee"
 		])
 			->where("subject_id", $subject->id)
-			->where("gradebook_id", $gradebook->id)
+			->whereHas("gradebooks", fn ($q) => $q->where("gradebook_id", $gradebook->id))
 			->orderByDesc("date")
 			->orderByDesc("start_time")
 			->paginate(15);
@@ -109,9 +109,12 @@ class AttendanceController extends Controller
 
 		$validated = $request->validate([
 			"attendances" => ["required", "array"],
-			"attendances.*.student_id" => ["required", "exists:students,id"],
-			"attendances.*.primitive_type" => ["required_without:attendances.*.complex_type_id", Rule::enum(AttendancePrimitiveType::class)],
-			"attendances.*.complex_type_id" => ["required_without:attendances.*.primitive_type", "exists:attendance_complex_types,id"]
+			"attendances.*.student_id" => [
+				"required",
+				Rule::exists("gradebooks_students", "student_id")->where("gradebook_id", $gradebook->id)
+			],
+			"attendances.*.primitive_type" => ["nullable", Rule::enum(AttendancePrimitiveType::class)],
+			"attendances.*.complex_type_id" => ["nullable", "exists:attendance_complex_types,id"]
 		]);
 
 		$attendances = $validated["attendances"];
@@ -166,40 +169,32 @@ class AttendanceController extends Controller
 		], 201);
 	}
 
-	public function destroy(Request $request, Gradebook $gradebook, Attendance $attendance)
-	{
-		$this->authorize("editAttendance", [$attendance->lesson]);
-		$attendance->delete();
-
-		return [
-			"success" => true
-		];
-	}
-
 	public function autofill(Request $request, Gradebook $gradebook, Lesson $lesson)
 	{
-		$employee = $this->getUserEmployee($request);
 		$this->authorize("editAttendance", [$lesson]);
 
-		$previousLesson = Lesson::where("subject_id", $lesson->subject_id)
-			->where("gradebook_id", $lesson->gradebook_id)
+		$previousLessons = Lesson::where("subject_id", $lesson->subject_id)
+			->whereHas("gradebooks", fn ($q) => $q->whereIn("gradebook_id", $lesson->gradebooks->pluck("id")))
 			->where("date", $lesson->date)
 			->where("start_time", "<", $lesson->start_time)
 			->orderByDesc("start_time")
-			->first();
+			->get();
 
-		if (!$previousLesson) {
+		if ($previousLessons->isEmpty()) {
 			return \Response::json([
 				"success" => false,
-				"errors" => ["NO_PREVIOUS_LESSON_FOUND"]
+				"errors" => ["NO_PREVIOUS_LESSONS_FOUND"]
 			], 422);
 		}
 
-		$previousAttendances = Attendance::where("lesson_id", $previousLesson->id)->get();
+		$lessonIds = $previousLessons->pluck("id");
+		$previousAttendances = Attendance::whereIn("lesson_id", $lessonIds)
+			->get()
+			->sortBy(fn(Attendance $attendance) => $lessonIds->search($attendance->lesson_id));
 		$newAttendances = [];
 
 		foreach ($previousAttendances as $previousAttendance) {
-			if ($previousAttendance->attendance_complex_type_id != null) {
+			if (array_key_exists($previousAttendance->student_id, $newAttendances)) {
 				continue;
 			}
 
@@ -212,20 +207,14 @@ class AttendanceController extends Controller
 				AttendancePrimitiveType::EXEMPTION => AttendancePrimitiveType::EXEMPTION
 			};
 
-			$newAttendances[] = [
-				"lesson_id" => $lesson->id,
+			$newAttendances[$previousAttendance->student_id] = [
 				"student_id" => $previousAttendance->student_id,
 				"primitive_type" => $newType,
-				"attendance_complex_type_id" => null,
-				"employee_id" => $employee->id,
-				"created_at" => now(),
-				"updated_at" => now(),
+				"attendance_complex_type_id" => $previousAttendance->attendance_complex_type_id,
 			];
 		}
 
-		Attendance::upsert($newAttendances, ["lesson_id", "student_id"]);
-
-		return ["success" => true];
+		return array_values($newAttendances);
 	}
 
 }
