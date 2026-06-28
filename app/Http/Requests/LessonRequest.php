@@ -25,7 +25,8 @@ class LessonRequest extends FormRequest
 				function (string $attribute, mixed $value, \Closure $fail) use ($subjectId, $gradebookIds, $lessonId) {
 					$query = Lesson::where("number", $value)
 						->where("subject_id", $subjectId)
-						->whereHas("gradebooks", fn($q) => $q->whereIn("gradebooks.id", $gradebookIds));
+						->whereHas("gradebooks", fn($q) => $q->whereIn("gradebooks.id", $gradebookIds))
+						->whereHas("gradebookGroups", fn($q) => $q->where("gradebook_groups.id", $this->input("groups")));
 
 					if ($lessonId) {
 						$query->where("id", "!=", $lessonId);
