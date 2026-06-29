@@ -10,6 +10,7 @@ export interface SchoolUnitDTO {
   town: string;
   district: string | null;
   postalCode: string;
+  post: string;
   street: string | null;
   houseNumber: string;
   flatNumber: string | null;
@@ -29,6 +30,7 @@ export interface SchoolUnitBodyDTO {
   municipality: string;
   district: string | null;
   postalCode: string;
+  post: string;
   street: string | null;
   houseNumber: string;
   flatNumber: string | null;

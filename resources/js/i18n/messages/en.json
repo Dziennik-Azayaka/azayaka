@@ -201,6 +201,7 @@
 			"addressData": {
 				"town": "Town",
 				"postalCode": "Postal code",
+				"post": "Post",
 				"street": "Street",
 				"houseNumber": "House number",
 				"flatNumber": "Flat number"

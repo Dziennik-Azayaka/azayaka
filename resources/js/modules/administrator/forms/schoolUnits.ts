@@ -8,6 +8,7 @@ const schoolUnitForm = v.object({
   voivodeship: v.number(),
   town: v.pipe(v.string(), v.nonEmpty(), v.maxLength(255)),
   postalCode: v.pipe(v.string(), v.nonEmpty(), v.maxLength(7)),
+  post: v.pipe(v.string(), v.nonEmpty(), v.maxLength(255)),
   street: v.nullable(v.optional(v.pipe(v.string(), v.maxLength(255)))),
   houseNumber: v.pipe(v.string(), v.nonEmpty(), v.maxLength(255)),
   flatNumber: v.nullable(v.optional(v.pipe(v.string(), v.maxLength(255)))),

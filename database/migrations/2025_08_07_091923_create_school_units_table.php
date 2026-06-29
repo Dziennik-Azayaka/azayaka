@@ -23,6 +23,7 @@ return new class extends Migration
 			$table->string("district")->nullable();
 			$table->string("short_name");
 			$table->string("postal_code");
+			$table->string("post");
 			$table->string("street")->nullable();
 			$table->string("house_number");
 			$table->string("flat_number")->nullable();

@@ -26,6 +26,7 @@ class SchoolUnitRequest extends FormRequest
 			"town" => ["required", "max:255"],
 			"district" => ["nullable", "max:255"],
 			"postalCode" => ["required", "max:7"],
+			"post" => ["required", "max:255"],
 			"street" => ["nullable", "max:255"],
 			"houseNumber" => ["required", "max:255"],
 			"flatNumber" => ["nullable", "max:255"],

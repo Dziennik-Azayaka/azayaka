@@ -8,6 +8,7 @@ export interface SchoolUnit {
   town: string;
   district: string | null;
   postalCode: string;
+  post: string;
   street: string | null;
   houseNumber: string;
   flatNumber: string | null;

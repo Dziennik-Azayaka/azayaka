@@ -201,6 +201,7 @@
 			"addressData": {
 				"town": "Miejscowość",
 				"postalCode": "Kod pocztowy",
+				"post": "Poczta",
 				"street": "Ulica",
 				"houseNumber": "Numer budynku",
 				"flatNumber": "Numer mieszkania"

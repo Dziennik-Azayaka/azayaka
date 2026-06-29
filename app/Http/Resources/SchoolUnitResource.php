@@ -25,6 +25,7 @@ class SchoolUnitResource extends JsonResource
 			"town" => $this->town,
 			"district" => $this->district,
 			"postalCode" => $this->postal_code,
+			"post" => $this->post,
 			"street" => $this->street,
 			"houseNumber" => $this->house_number,
 			"flatNumber" => $this->flat_number,

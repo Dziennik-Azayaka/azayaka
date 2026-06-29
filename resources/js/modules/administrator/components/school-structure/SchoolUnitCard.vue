@@ -9,6 +9,14 @@ import { useI18n } from 'vue-i18n';
 
 const { t } = useI18n();
 defineProps<{ unit: SchoolUnit }>();
+
+function getFullAddress(unit: SchoolUnit) {
+  let address = unit.flatNumber ? `${unit.houseNumber}/${unit.flatNumber}` : unit.houseNumber;
+  address = unit.street ? `${unit.street} ${address}` : `${unit.town} ${address}`;
+  address += `, ${unit.postalCode} ${unit.post}`;
+
+  return address;
+}
 </script>
 
 <template>
@@ -57,7 +65,7 @@ defineProps<{ unit: SchoolUnit }>();
       </div>
       <div class="grid sm:grid-cols-[1fr_4fr] gap-x-4 sm:px-5 p-3 border-t">
         <dt class="text-sm/6 font-medium">{{ t('common.data.address') }}</dt>
-        <dd class="text-sm/6 text-foreground/80">TODO</dd>
+        <dd class="text-sm/6 text-foreground/80">{{ getFullAddress(unit) }}</dd>
       </div>
       <div class="grid sm:grid-cols-[1fr_4fr] gap-x-4 sm:px-5 p-3 border-t">
         <dt class="text-sm/6 font-medium">
