@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Enums\AccountEventType;
 use App\Enums\FrontendModule;
+use App\Exceptions\InvalidCredentialsException;
+use App\Exceptions\NotFoundException;
 use App\Models\AccountAccess;
 use App\Models\Employee;
 use App\Models\Guardian;
@@ -35,12 +37,7 @@ class AccountAccessesController extends Controller
 				"success" => true
 			];
 		} else {
-			return Response::json([
-				"success" => false,
-				"errors" => [
-					"CODE_NOT_FOUND"
-				]
-			], 404);
+			throw new NotFoundException("ACTIVATION_CODE");
 		}
 	}
 
@@ -81,10 +78,7 @@ class AccountAccessesController extends Controller
 		$activation_code = AccountAccess::where("words", $data["code"])->first();
 
 		if (!$activation_code) {
-			return Response::json([
-				"success" => false,
-				"errors" => ["ACTIVATION_CODE_NOT_FOUND"],
-			], 404);
+			throw new NotFoundException("ACTIVATION_CODE");
 		}
 
 		$activation_code_info = $this->getFirstAndLastNameFromActivationCode($activation_code);
@@ -92,10 +86,7 @@ class AccountAccessesController extends Controller
 		if (!$signedIn && User::whereEmail($data["email"])->exists()) {
 			$user = User::whereEmail($data["email"])->first();
 			if (!\Hash::check($data["password"], $user->password)) {
-				return Response::json([
-					"success" => false,
-					"errors" => ["WRONG_PASSWORD"]
-				], 401);
+				throw new InvalidCredentialsException();
 			}
 		} else {
 			$user = User::create([

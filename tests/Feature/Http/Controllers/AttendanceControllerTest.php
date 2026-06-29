@@ -200,10 +200,10 @@ final class AttendanceControllerTest extends TestCase
 		]);
 		$lesson->gradebooks()->sync([$gradebook->id]);
 
-		$response = $this->post("/api/gradebooks/$gradebook->id/attendance/$lesson->id/autofill");
+		$response = $this->postJson("/api/gradebooks/$gradebook->id/attendance/$lesson->id/autofill");
 
-		$response->assertStatus(422);
-		$response->assertJsonFragment(["NO_PREVIOUS_LESSONS_FOUND"]);
+		$response->assertStatus(404);
+		$response->assertJsonFragment(["PREVIOUS_LESSONS_NOT_FOUND"]);
 	}
 
 	public function test_create_or_update_fails_if_unauthorized(): void

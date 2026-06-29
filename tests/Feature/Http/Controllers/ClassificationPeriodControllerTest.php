@@ -145,12 +145,12 @@ final class ClassificationPeriodControllerTest extends TestCase
 			"classification_period_id" => $period->id,
 		]);
 
-		$response = $this->delete("/api/schoolUnits/$schoolUnit->id/classificationPeriods/2025");
+		$response = $this->deleteJson("/api/schoolUnits/$schoolUnit->id/classificationPeriods/2025");
 
 		$response->assertStatus(409);
 		$response->assertJson([
 			"success" => false,
-			"errors" => ["GRADEBOOKS_EXIST_FOR_THIS_YEAR"],
+			"errors" => ["GRADEBOOK_ALREADY_EXISTS"],
 		]);
 		$this->assertDatabaseHas("classification_periods", ["id" => $period->id]);
 	}

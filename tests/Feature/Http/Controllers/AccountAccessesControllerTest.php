@@ -35,7 +35,7 @@ final class AccountAccessesControllerTest extends TestCase
 			"success" => true
 		]);
 
-		$response404 = $this->post("/api/activation/lookup", [
+		$response404 = $this->postJson("/api/activation/lookup", [
 			"code" => "e,f,g",
 		]);
 		$response404->assertStatus(404);
@@ -133,7 +133,7 @@ final class AccountAccessesControllerTest extends TestCase
 
 	public function test_createAccountOrAttachAccess_returns_404_when_code_not_found(): void
 	{
-		$response = $this->post("/api/activation", [
+		$response = $this->postJson("/api/activation", [
 			"code" => "not,a,real,code",
 			"email" => "user@example.com",
 			"password" => "password1234",

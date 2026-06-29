@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Enums\AttendancePrimitiveType;
+use App\Exceptions\NotFoundException;
 use App\Models\Attendance;
 use DB;
 use App\Models\AttendanceComplexType;
@@ -145,10 +146,7 @@ class AttendanceController extends Controller
 			->get();
 
 		if ($previousLessons->isEmpty()) {
-			return \Response::json([
-				"success" => false,
-				"errors" => ["NO_PREVIOUS_LESSONS_FOUND"]
-			], 422);
+			throw new NotFoundException("PREVIOUS_LESSONS");
 		}
 
 		$lessonIds = $previousLessons->pluck("id");

@@ -7,16 +7,8 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-class InvalidAccessIdException extends Exception
+class InvalidAccessIdException extends SimpleException
 {
-	public function render(Request $request)
-	{
-		if ($request->wantsJson()) {
-			return new JsonResponse([
-				"success" => false,
-				"errors" => ["INVALID_ACCESS_ID_OR_INSUFFICIENT_PRIVILEGES"]
-			], Response::HTTP_FORBIDDEN);
-		}
-		abort(403);
-	}
+	protected $message = "INVALID_ACCESS_ID_OR_INSUFFICIENT_PRIVILEGES";
+	protected int $status = Response::HTTP_FORBIDDEN;
 }

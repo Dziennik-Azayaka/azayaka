@@ -65,7 +65,7 @@ class SchoolUnitController extends Controller
 				"errors" => [
 					"SCHOOL_UNIT_NOT_ACTIVE"
 				]
-			]);
+			], 409);
 		}
 
 		$data = $this->validateSchoolUnit($request);

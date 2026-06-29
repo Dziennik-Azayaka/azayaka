@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Documents\AccountAccessesActivation\AccountAccessesActivationDocument;
 use App\Enums\AccessType;
 use App\Exceptions\CustomValidationException;
+use App\Exceptions\EntityAlreadyExistsException;
 use App\Exceptions\RegistryArchivedException;
 use App\Http\Resources\ResidenceAddressResource;
 use App\Models\AccountAccess;
@@ -98,12 +99,8 @@ class StudentController extends Controller
 		if ($validated["studentRegistryNumber"] == null) {
 			$validated["studentRegistryNumber"] = $studentRegistry->students()->max("student_registry_number") + 1;
 		} else if ($studentRegistry->students()->where("student_registry_number", $validated["studentRegistryNumber"])->exists()) {
-			return \Response::json([
-				"success" => false,
-				"errors" => [
-					"STUDENT_REGISTRY_NUMBER_ALREADY_EXISTS"
-				]
-			], 409);
+			throw new EntityAlreadyExistsException("STUDENT_REGISTRY_NUMBER");
+
 		}
 
 		$student = new Student();

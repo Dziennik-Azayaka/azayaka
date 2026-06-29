@@ -136,8 +136,8 @@ final class SchoolUnitControllerTest extends TestCase
 		]);
 
 		$updatePayload = $this->validPayload(["name" => "Updated Name", "schoolComplexId" => $complex->id]);
-		$updateResponse = $this->put("/api/schoolUnits/$unit->id", $updatePayload);
-		$updateResponse->assertOk();
+		$updateResponse = $this->putJson("/api/schoolUnits/$unit->id", $updatePayload);
+		$updateResponse->assertConflict();
 		$updateResponse->assertJson([
 			"success" => false,
 			"errors" => ["SCHOOL_UNIT_NOT_ACTIVE"],

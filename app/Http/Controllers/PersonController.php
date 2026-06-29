@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Exceptions\EntityAlreadyExistsException;
 use App\Exceptions\RegistryArchivedException;
+use App\Exceptions\UnknownServerErrorException;
 use App\Http\Requests\CreatePersonRequest;
 use App\Models\Child;
 use App\Models\ChildrenRegistry;
@@ -70,12 +72,7 @@ class PersonController extends Controller
 			(isset($validated["alternateIdentityDocument"]) &&
 				Person::where("alternate_identity_document", "=", $validated["alternateIdentityDocument"])
 					->where("school_unit_id", "=", $schoolUnitId)->exists())) {
-			return response()->json([
-				"success" => false,
-				"errors" => [
-					"PERSON_ALREADY_EXISTS"
-				]
-			], 409);
+			throw new EntityAlreadyExistsException("PERSON");
 		}
 
 		if (isset($validated["studentRegistryId"])) {
@@ -83,12 +80,7 @@ class PersonController extends Controller
 			if (!isset($validated["studentRegistryNumber"])) {
 				$validated["studentRegistryNumber"] = $studentRegistry->students()->max("student_registry_number") + 1;
 			} else if ($studentRegistry->students()->where("student_registry_number", $validated["studentRegistryNumber"])->exists()) {
-				return \Response::json([
-					"success" => false,
-					"errors" => [
-						"STUDENT_REGISTRY_NUMBER_ALREADY_EXISTS"
-					]
-				], 409);
+				throw new EntityAlreadyExistsException("STUDENT_REGISTRY_NUMBER");
 			}
 		}
 
@@ -110,10 +102,7 @@ class PersonController extends Controller
 			$this->savePersonAndAddressToDatabase($request->validated(), $schoolUnitId, $person);
 		} catch (Throwable $e) {
 			Log::error($e);
-			return response()->json([
-				"success" => false,
-				"errors" => ["UNKNOWN_SERVER_ERROR"]
-			], 500);
+			throw new UnknownServerErrorException();
 		}
 
 		return [

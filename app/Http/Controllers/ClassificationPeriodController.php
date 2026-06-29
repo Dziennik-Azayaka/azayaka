@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Exceptions\EntityAlreadyExistsException;
+use App\Exceptions\GradebooksExistException;
 use App\Models\ClassificationPeriod;
 use App\Models\ClassUnit;
 use App\Models\ClassUnitPeriod;
@@ -155,12 +157,7 @@ class ClassificationPeriodController extends Controller
 		$gradebooksExist = Gradebook::whereIn("classification_period_id", $periods->pluck("id"))->exists();
 
 		if ($gradebooksExist) {
-			return \Response::json([
-				"success" => false,
-				"errors" => [
-					"GRADEBOOKS_EXIST_FOR_THIS_YEAR"
-				]
-			], 409);
+			throw new EntityAlreadyExistsException("GRADEBOOK");
 		}
 
 		ClassificationPeriod::where("school_year", $schoolYear)

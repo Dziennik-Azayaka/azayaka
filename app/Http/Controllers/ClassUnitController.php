@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Enums\ClassUnitCategory;
+use App\Exceptions\EntityAlreadyExistsException;
+use App\Exceptions\GradebooksExistException;
 use App\Models\ClassificationPeriod;
 use App\Models\ClassUnit;
 use App\Models\ClassUnitFormTutors;
@@ -160,12 +162,7 @@ class ClassUnitController extends Controller
 	public function delete(ClassUnit $classUnit)
 	{
 		if (Gradebook::where("class_unit_id", $classUnit->id)->exists()) {
-			return \Response::json([
-				"success" => false,
-				"errors" => [
-					"CLASS_UNIT_HAS_GRADEBOOKS"
-				]
-			], 409);
+			throw new EntityAlreadyExistsException("GRADEBOOK");
 		}
 		$classUnit->delete();
 		return [

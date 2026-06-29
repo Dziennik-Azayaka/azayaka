@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Exceptions\EntityAlreadyExistsException;
+use App\Exceptions\GradebooksExistException;
 use App\Models\AccountAccess;
 use App\Models\ClassUnit;
 use App\Models\Gradebook;
@@ -63,10 +65,7 @@ class GradebookController extends Controller
 				->count();
 
 			if ($existingLevelGradebooks > 0) {
-				return \Response::json([
-					"success" => false,
-					"errors" => ["GRADEBOOK_ALREADY_EXISTS_FOR_THIS_LEVEL"]
-				], 409);
+				throw new EntityAlreadyExistsException("GRADEBOOK");
 			}
 		}
 
@@ -80,12 +79,7 @@ class GradebookController extends Controller
 				}
 			})
 			->exists()) {
-			return \Response::json([
-				"success" => false,
-				"errors" => [
-					"GRADEBOOK_ALREADY_EXISTS"
-				]
-			], 409);
+			throw new EntityAlreadyExistsException("GRADEBOOK");
 		}
 
 		$gradebook = Gradebook::create(CaseConverter::toSnakeCase($validated));

@@ -553,12 +553,12 @@ final class ClassUnitControllerTest extends TestCase
 		$classUnit = ClassUnit::factory()->create();
 		Gradebook::factory()->create(["class_unit_id" => $classUnit->id]);
 
-		$response = $this->delete("/api/classUnits/$classUnit->id");
+		$response = $this->deleteJson("/api/classUnits/$classUnit->id");
 
 		$response->assertStatus(409);
 		$response->assertJson([
 			"success" => false,
-			"errors" => ["CLASS_UNIT_HAS_GRADEBOOKS"],
+			"errors" => ["GRADEBOOK_ALREADY_EXISTS"],
 		]);
 		$this->assertDatabaseHas("class_units", ["id" => $classUnit->id]);
 	}
