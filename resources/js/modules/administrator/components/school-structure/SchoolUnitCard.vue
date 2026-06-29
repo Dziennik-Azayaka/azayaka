@@ -57,7 +57,7 @@ defineProps<{ unit: SchoolUnit }>();
       </div>
       <div class="grid sm:grid-cols-[1fr_4fr] gap-x-4 sm:px-5 p-3 border-t">
         <dt class="text-sm/6 font-medium">{{ t('common.data.address') }}</dt>
-        <dd class="text-sm/6 text-foreground/80">{{ unit.address }}</dd>
+        <dd class="text-sm/6 text-foreground/80">TODO</dd>
       </div>
       <div class="grid sm:grid-cols-[1fr_4fr] gap-x-4 sm:px-5 p-3 border-t">
         <dt class="text-sm/6 font-medium">

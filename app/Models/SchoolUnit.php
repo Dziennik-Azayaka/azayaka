@@ -11,8 +11,10 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class SchoolUnit extends Model
 {
-    /** @use HasFactory<\Database\Factories\SchoolUnitFactory> */
-    use HasFactory;
+	/** @use HasFactory<\Database\Factories\SchoolUnitFactory> */
+	use HasFactory;
+
+	protected $fillable = ["name", "type", "active", "student_category", "municipality", "voivodeship", "town", "district", "short_name", "postal_code", "street", "house_number", "flat_number", "school_complex_id"];
 
 	public $casts = [
 		"type" => SchoolType::class,

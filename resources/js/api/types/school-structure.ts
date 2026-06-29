@@ -5,9 +5,13 @@ export interface SchoolUnit {
   studentCategory: 'childrenAndYouths' | 'adultsOnly';
   municipality: string;
   voivodeship: number;
+  town: string;
   district: string | null;
+  postalCode: string;
+  street: string | null;
+  houseNumber: string;
+  flatNumber: string | null;
   schoolComplexId: number;
-  address: string;
   shortName: string;
   active: boolean;
 }

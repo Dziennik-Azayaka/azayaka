@@ -7,35 +7,32 @@ export interface SchoolUnitDTO {
   studentCategory: 'childrenAndYouths' | 'adultsOnly';
   municipality: string;
   voivodeship: number;
+  town: string;
   district: string | null;
+  postalCode: string;
+  street: string | null;
+  houseNumber: string;
+  flatNumber: string | null;
   schoolComplexId: number;
-  address: string;
   shortName: string;
   active: boolean;
 }
 
-export const schoolUnitFromDTO = (dto: SchoolUnitDTO): SchoolUnit => ({
-  id: dto.id,
-  name: dto.name,
-  type: dto.type,
-  studentCategory: dto.studentCategory,
-  municipality: dto.municipality,
-  voivodeship: dto.voivodeship,
-  district: dto.district,
-  schoolComplexId: dto.schoolComplexId,
-  address: dto.address,
-  shortName: dto.shortName,
-  active: dto.active,
-});
+export const schoolUnitFromDTO = (dto: SchoolUnitDTO): SchoolUnit => dto;
 
 export interface SchoolUnitBodyDTO {
   name: string;
   type: number;
   address: string;
   voivodeship: number;
+  town: string;
   municipality: string;
   district: string | null;
+  postalCode: string;
+  street: string | null;
+  houseNumber: string;
+  flatNumber: string | null;
   studentCategory: string;
   shortName: string;
-  schoolComplexId: number;
+  schoolComplexId: number | null;
 }

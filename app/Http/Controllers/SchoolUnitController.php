@@ -30,7 +30,7 @@ class SchoolUnitController extends Controller
 
 		SchoolUnit::create(CaseConverter::toSnakeCase($data));
 
-		Response::json(["success" => true], 201);
+		return Response::json(["success" => true], 201);
 	}
 
 	public function update(SchoolUnitRequest $request, SchoolUnit $schoolUnit)
@@ -47,7 +47,7 @@ class SchoolUnitController extends Controller
 		$data = $request->validated();
 		$schoolUnit->create(CaseConverter::toSnakeCase($data));
 
-		Response::json(["success" => true]);
+		return Response::json(["success" => true]);
 	}
 
 	public function archive(Request $request, SchoolUnit $schoolUnit)
@@ -60,6 +60,6 @@ class SchoolUnitController extends Controller
 		$schoolUnit->active = $data["state"];
 		$schoolUnit->save();
 
-		Response::json(["success" => true]);
+		return Response::json(["success" => true]);
 	}
 }

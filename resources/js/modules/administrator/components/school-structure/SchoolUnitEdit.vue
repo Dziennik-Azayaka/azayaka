@@ -17,7 +17,7 @@ import { LucidePencil } from 'lucide-vue-next';
 import { ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 
-const props = defineProps<{ unitId: number; complexId: number; initialValues: SchoolUnitValues }>();
+const props = defineProps<{ unitId: number; complexId: number | null; initialValues: SchoolUnitValues }>();
 
 const { t } = useI18n();
 const dialogOpen = ref(false);
