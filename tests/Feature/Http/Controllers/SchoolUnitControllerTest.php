@@ -99,10 +99,10 @@ final class SchoolUnitControllerTest extends TestCase
 		$payload = $this->validPayload(["studentCategory" => "invalid-type"]);
 
 		$response = $this->post("/api/schoolUnits", $payload);
-		$response->assertStatus(400);
+		$response->assertStatus(422);
 		$response->assertJson([
 			"success" => false,
-			"errors" => ["INVALID_STUDENT_CATEGORY"],
+			"errors" => ["STUDENT_CATEGORY_THE_SELECTED_STUDENT_CATEGORY_IS_INVALID"],
 		]);
 	}
 
