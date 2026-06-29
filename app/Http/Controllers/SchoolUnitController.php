@@ -45,7 +45,7 @@ class SchoolUnitController extends Controller
 		}
 
 		$data = $request->validated();
-		$schoolUnit->create(CaseConverter::toSnakeCase($data));
+		$schoolUnit->update(CaseConverter::toSnakeCase($data));
 
 		return Response::json(["success" => true]);
 	}
