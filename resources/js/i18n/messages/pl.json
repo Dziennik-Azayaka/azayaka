@@ -198,6 +198,14 @@
 		"auto": "(auto)",
 		"data": {
 			"address": "Adres",
+			"addressData": {
+				"town": "Miejscowość",
+				"postalCode": "Kod pocztowy",
+				"post": "Poczta",
+				"street": "Ulica",
+				"houseNumber": "Numer budynku",
+				"flatNumber": "Numer mieszkania"
+			},
 			"date": "Data",
 			"district": "Dzielnica",
 			"email": "Adres e-mail",

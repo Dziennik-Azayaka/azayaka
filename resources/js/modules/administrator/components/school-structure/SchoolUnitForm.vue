@@ -111,16 +111,6 @@ const onSubmit = form.handleSubmit((values) => emit('submit', values));
 
     <Separator />
 
-    <FormField v-slot="{ componentField }" name="address">
-      <FormItem>
-        <FormLabel required>{{ t('common.data.address') }}</FormLabel>
-        <FormControl>
-          <Input v-bind="componentField" :disabled="isPending" />
-        </FormControl>
-        <FormMessage />
-      </FormItem>
-    </FormField>
-
     <div class="grid sm:grid-cols-2 gap-3">
       <FormField v-slot="{ componentField }" name="voivodeship">
         <FormItem>
@@ -149,9 +139,63 @@ const onSubmit = form.handleSubmit((values) => emit('submit', values));
           <FormMessage />
         </FormItem>
       </FormField>
+      <FormField v-slot="{ componentField }" name="postalCode">
+        <FormItem>
+          <FormLabel required>{{ t('common.data.addressData.postalCode') }}</FormLabel>
+          <FormControl>
+            <Input v-bind="componentField" :disabled="isPending" />
+          </FormControl>
+          <FormMessage />
+        </FormItem>
+      </FormField>
+      <FormField v-slot="{ componentField }" name="post">
+        <FormItem>
+          <FormLabel required>{{ t('common.data.addressData.post') }}</FormLabel>
+          <FormControl>
+            <Input v-bind="componentField" :disabled="isPending" />
+          </FormControl>
+          <FormMessage />
+        </FormItem>
+      </FormField>
+            <FormField v-slot="{ componentField }" name="town">
+        <FormItem>
+          <FormLabel required>{{ t('common.data.addressData.town') }}</FormLabel>
+          <FormControl>
+            <Input v-bind="componentField" :disabled="isPending" />
+          </FormControl>
+          <FormMessage />
+        </FormItem>
+      </FormField>
       <FormField v-slot="{ componentField }" name="district">
         <FormItem>
           <FormLabel>{{ t('common.data.district') }}</FormLabel>
+          <FormControl>
+            <Input v-bind="componentField" :disabled="isPending" />
+          </FormControl>
+          <FormMessage />
+        </FormItem>
+      </FormField>
+      <FormField v-slot="{ componentField }" name="street">
+        <FormItem class="col-start-1 col-end-3">
+          <FormLabel>{{ t('common.data.addressData.street') }}</FormLabel>
+          <FormControl>
+            <Input v-bind="componentField" :disabled="isPending" />
+          </FormControl>
+          <FormMessage />
+        </FormItem>
+      </FormField>
+      <FormField v-slot="{ componentField }" name="houseNumber">
+        <FormItem>
+          <FormLabel required>{{ t('common.data.addressData.houseNumber') }}</FormLabel>
+          <FormControl>
+            <Input v-bind="componentField" :disabled="isPending" />
+          </FormControl>
+          <FormMessage />
+        </FormItem>
+      </FormField>
+      <FormField v-slot="{ componentField }" name="flatNumber">
+        <FormItem>
+          <FormLabel>{{ t('common.data.addressData.flatNumber') }}</FormLabel>
           <FormControl>
             <Input v-bind="componentField" :disabled="isPending" />
           </FormControl>

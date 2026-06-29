@@ -27,6 +27,7 @@ final class SchoolUnitControllerTest extends TestCase
 			"town" => "Łódź",
 			"district" => "Bałuty",
 			"postalCode" => "90-001",
+			"post" => "Łódź",
 			"street" => "ul. Dzienniczkowa",
 			"houseNumber" => "23",
 			"flatNumber" => null,
@@ -55,6 +56,7 @@ final class SchoolUnitControllerTest extends TestCase
 				"town",
 				"district",
 				"postalCode",
+				"post",
 				"street",
 				"houseNumber",
 				"flatNumber",
@@ -83,6 +85,7 @@ final class SchoolUnitControllerTest extends TestCase
 			"town" => $payload["town"],
 			"district" => $payload["district"],
 			"postal_code" => $payload["postalCode"],
+			"post" => $payload["post"],
 			"street" => $payload["street"],
 			"house_number" => $payload["houseNumber"],
 			"short_name" => $payload["shortName"],
@@ -96,10 +99,10 @@ final class SchoolUnitControllerTest extends TestCase
 		$payload = $this->validPayload(["studentCategory" => "invalid-type"]);
 
 		$response = $this->post("/api/schoolUnits", $payload);
-		$response->assertStatus(400);
+		$response->assertStatus(422);
 		$response->assertJson([
 			"success" => false,
-			"errors" => ["INVALID_STUDENT_CATEGORY"],
+			"errors" => ["STUDENT_CATEGORY_THE_SELECTED_STUDENT_CATEGORY_IS_INVALID"],
 		]);
 	}
 
