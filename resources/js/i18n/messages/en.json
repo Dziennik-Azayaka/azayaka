@@ -199,6 +199,14 @@
 		"auto": "(auto)",
 		"data": {
 			"address": "Address",
+			"addressData": {
+				"town": "Town",
+				"postalCode": "Postal code",
+				"post": "Post",
+				"street": "Street",
+				"houseNumber": "House number",
+				"flatNumber": "Flat number"
+			},
 			"date": "Date",
 			"district": "District",
 			"email": "Email address",

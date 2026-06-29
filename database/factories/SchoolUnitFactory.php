@@ -43,6 +43,7 @@ class SchoolUnitFactory extends Factory
 			"voivodeship" => rand(1, 16),
 			"district" => rand(0, 1) == 0 ? "Bałuty" : null,
 			"postal_code" => "90-001",
+			"post" => "Łódź",
 			"street" => "ul. Dzienniczkowa",
 			"house_number" => "23",
 			"short_name" => $schoolNumber . " " . $schoolShortName,
