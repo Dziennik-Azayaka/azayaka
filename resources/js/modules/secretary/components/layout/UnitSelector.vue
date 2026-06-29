@@ -23,7 +23,7 @@ async function handleUnitChange(unitId: number) {
 </script>
 
 <template>
-  <div class="space-y-1.5 mx-2 mb-2" v-if="secretaryStore.selectedUnit && secretaryStore.schoolUnits">
+  <div class="space-y-1.5 mx-2 mb-2" v-if="secretaryStore.selectedUnit &&  secretaryStore.schoolUnits && secretaryStore.schoolUnits.length > 1">
     <Label>{{ t('common.data.schoolUnit') }}</Label>
     <Select @update:model-value="(v) => handleUnitChange(Number(v))">
       <SelectTrigger class="w-full bg-background">
