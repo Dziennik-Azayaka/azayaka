@@ -107,7 +107,7 @@ final class AccountAccessesControllerTest extends TestCase
 			"email" => "tadeusz.nowak@example.com",
 		]);
 
-		$responseWrong = $this->post("/api/activation", [
+		$responseWrong = $this->postJson("/api/activation", [
 			"code" => $code,
 			"email" => "tadeusz.nowak@example.com",
 			"password" => "incorrect123",
