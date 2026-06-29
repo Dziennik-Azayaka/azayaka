@@ -112,7 +112,7 @@ final class AccountAccessesControllerTest extends TestCase
 			"email" => "tadeusz.nowak@example.com",
 			"password" => "incorrect123",
 		]);
-		$responseWrong->assertStatus(401);
+		$responseWrong->assertStatus(403);
 		$responseWrong->assertJson([
 			"success" => false,
 		]);
