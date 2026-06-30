@@ -22,9 +22,9 @@ export const SchoolStructureService = {
   createSchoolComplex: (name: string) => http('/schoolComplex', { method: 'POST', body: { name } }),
   editSchoolComplex: (id: number, name: string) =>
     http(`/schoolComplex/${id}`, { method: 'PUT', body: { name, type: 90 } }),
-  setSchoolUnitActivity: (id: number, state: boolean, password: string) =>
+  toggleSchoolUnitActivity: (id: number, password: string) =>
     http(`/schoolUnits/${id}/activity`, {
       method: 'PUT',
-      body: { state, password },
+      body: { password },
     }),
 };

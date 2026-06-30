@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { setUnitActivityForm } from '../../forms/setUnitActivity';
-import { useSetSchoolUnitActivity } from '@/api/hooks/school-structure/setSchoolUnitActivity';
+import { useToggleSchoolUnitActivity } from '@/api/hooks/school-structure/toggleSchoolUnitActivity';
 import { ErrorBanner } from '@/components/ui/banner';
 import { Button } from '@/components/ui/button';
 import {
@@ -25,7 +25,7 @@ const props = defineProps<{ unitId: number; state: boolean }>();
 const { t } = useI18n();
 const dialogOpen = ref(false);
 
-const { mutate: setActivity, isPending, error } = useSetSchoolUnitActivity();
+const { mutate: setActivity, isPending, error } = useToggleSchoolUnitActivity();
 
 const form = useForm({
   validationSchema: setUnitActivityForm,
@@ -33,7 +33,7 @@ const form = useForm({
 
 const onSubmit = form.handleSubmit((values) =>
   setActivity(
-    { id: props.unitId, state: !props.state, password: values.password },
+    { id: props.unitId, password: values.password },
     {
       onSuccess: () => {
         dialogOpen.value = false;

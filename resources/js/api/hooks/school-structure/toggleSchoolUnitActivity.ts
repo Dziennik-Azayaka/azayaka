@@ -1,13 +1,13 @@
 import { SchoolStructureService } from '../../services/school-structure';
 import { useMutation, useQueryClient } from '@tanstack/vue-query';
 
-export const useSetSchoolUnitActivity = () => {
+export const useToggleSchoolUnitActivity = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationKey: ['setSchoolUnitActivity'],
-    mutationFn: ({ id, state, password }: { id: number; state: boolean; password: string }) =>
-      SchoolStructureService.setSchoolUnitActivity(id, state, password),
+    mutationFn: ({ id, password }: { id: number; password: string }) =>
+      SchoolStructureService.toggleSchoolUnitActivity(id, password),
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ['getSchoolStructure'] });
       await queryClient.invalidateQueries({ queryKey: ['getSchoolUnits'] });

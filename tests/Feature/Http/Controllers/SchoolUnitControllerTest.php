@@ -129,7 +129,6 @@ final class SchoolUnitControllerTest extends TestCase
 
 		$response = $this->put("/api/schoolUnits/$unit->id/activity", [
 			"password" => "password", // current_password rule
-			"state" => false,
 		]);
 		$response->assertOk();
 		$response->assertJson(["success" => true]);
@@ -148,7 +147,6 @@ final class SchoolUnitControllerTest extends TestCase
 
 		$response = $this->put("/api/schoolUnits/$unit->id/activity", [
 			"password" => "password",
-			"state" => true,
 		]);
 		$response->assertOk();
 		$this->assertDatabaseHas("school_units", [

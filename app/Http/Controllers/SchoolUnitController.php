@@ -52,12 +52,11 @@ class SchoolUnitController extends Controller
 
 	public function archive(Request $request, SchoolUnit $schoolUnit)
 	{
-		$data = $request->validate([
+		$request->validate([
 			"password" => "required|current_password",
-			"state" => "required|boolean"
 		]);
 
-		$schoolUnit->active = $data["state"];
+		$schoolUnit->active = !$schoolUnit->active;
 		$schoolUnit->save();
 
 		return Response::json(["success" => true]);
