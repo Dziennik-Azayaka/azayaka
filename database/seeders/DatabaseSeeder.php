@@ -60,6 +60,7 @@ class DatabaseSeeder extends Seeder
 		]);
 		AccountAccess::factory()->create([
 			"employee_id" => $rootEmployee->id,
+			"student_id" => null,
 			"user_id" => $rootUser->id,
 		]);
 
