@@ -11,6 +11,18 @@ use Illuminate\Http\Request;
 
 class StudentRegistryController extends Controller
 {
+	public function lookup(SchoolUnit $schoolUnit)
+	{
+		$studentRegistry = $schoolUnit->studentRegistry;
+		if (!$studentRegistry) return \Response::json([
+			"success" => false,
+			"errors" => [
+				"STUDENT_REGISTRY_NOT_CREATED"
+			]
+		], 404);
+		return response()->json([ "registryId" => $studentRegistry->id ]);
+	}
+
 	public function list()
 	{
 		return StudentRegistry::all()->toResourceCollection();

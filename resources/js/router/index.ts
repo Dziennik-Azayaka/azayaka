@@ -15,17 +15,15 @@ router.beforeEach(async (to) => {
   if ((to.meta.onlyLoggedIn || to.meta.onlyAdministrators) && !user) return { name: 'auth.logIn' };
   if (to.meta.onlyGuests && user) return { name: 'myAccount' };
 
-  if (to.meta.onlyAdministrators) {
-    const accessId = to.params.accessId;
-    const access = user?.accesses.find(
-      (access) =>
-        Number(accessId) === access.id && access.modulesAvailable.includes('administrator'),
-    );
+  const accessId = to.params.accessId;
+  const access = user?.accesses.find((access) => Number(accessId) === access.id);
 
-    if (!access) return { name: 'myAccount' };
+  if (
+    (to.meta.onlyAdministrators && (!access || !access.modulesAvailable.includes('administrator')))
+    || (to.meta.onlySecretary && (!access || !access.modulesAvailable.includes('secretary')))
+  ) return { name: 'myAccount' };
 
-    userStore.access = access;
-  }
+  if (access) userStore.access = access;
 
   return true;
 });

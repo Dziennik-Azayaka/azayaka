@@ -45,7 +45,7 @@
 			"createSchoolComplex": "Create school complex",
 			"data": {
 				"institutionType": "Institution type",
-				"studentCategory": "Student cateogry"
+				"studentCategory": "Student category"
 			},
 			"editSchoolComplex": "Edit school complex data",
 			"editSchoolUnit": "Edit school unit data",
@@ -54,7 +54,8 @@
 			"unarchiveSchoolUnit": {
 				"description": "To confirm the action, enter your password.",
 				"title": "Are you sure you want to unarchive the unit?"
-			}
+			},
+			"unitArchived": "Archived"
 		},
 		"subjects": {
 			"add": "Add subject",
@@ -218,6 +219,7 @@
 			"roles": "Roles",
 			"schoolYear": "School year",
 			"short": "Shortcut",
+			"schoolUnit": "School unit",
 			"voivodeship": "Voivodeship"
 		},
 		"loadingDataError": "The data could not be loaded. Please try again later.",
@@ -260,7 +262,7 @@
 				"failedLoginAttempt": "Failed login attempt",
 				"loggedIn": "Logged in",
 				"loggedOut": "Logged out",
-				"loggedOutByAnotherDevice": "Logget out by another device"
+				"loggedOutByAnotherDevice": "Logged out by another device"
 			},
 			"title": "Activity history"
 		},
@@ -272,7 +274,7 @@
 			"unknownDevice": "Unknown device"
 		},
 		"home": {
-			"currentSession": "Your curremt session",
+			"currentSession": "Your current session",
 			"description": "Welcome to your account settings. Here you can change your login details and view your account activity history.",
 			"logOutSession": {
 				"description": "Enter your password to log out the session.",
@@ -292,8 +294,20 @@
 		"theme": "Theme",
 		"themes": {
 			"dark": "Dark",
-			"highContrast": "High constrast",
+			"highContrast": "High contrast",
 			"light": "Light"
+		}
+	},
+	"secretary": {
+		"title": "Secretary",
+		"studentRegistry": {
+			"title": "Student registry"
+		},
+		"listenerRegistry": {
+			"title": "Listener registry"
+		},
+		"childrenRegistry": {
+			"title": "Children registry"
 		}
 	},
 	"validationErrors": {

@@ -25,5 +25,11 @@ export const http = ofetch.create({
   onRequest: ({ options }) => {
     const userStore = useUserStore();
     if (userStore.access) options.headers.set('Access-ID', userStore.access.id.toString());
+
+    if (options.query) {
+      options.query = Object.fromEntries(
+        Object.entries(options.query).filter(([_, v]) => v !== null)
+      )
+    }
   },
 });

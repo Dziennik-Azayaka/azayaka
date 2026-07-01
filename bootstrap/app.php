@@ -36,12 +36,12 @@ return Application::configure(basePath: dirname(__DIR__))
 					]
 				], 401);
 			} else if ($response->getStatusCode() == 500) {
-				return \Illuminate\Support\Facades\Response::json([
+				/*return \Illuminate\Support\Facades\Response::json([
 					"success" => false,
 					"errors" => [
 						"UNKNOWN_SERVER_ERROR"
 					]
-				], 500);
+				], 500);*/
 			}
 
 			return $response;
