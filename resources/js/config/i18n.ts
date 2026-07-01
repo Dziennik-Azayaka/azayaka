@@ -13,6 +13,16 @@ export const i18n = createI18n<[typeof MessagesEN], 'pl' | 'en', false>({
     pl: MessagesPL,
     en: MessagesEN,
   },
+  pluralRules: {
+    pl: (choice) => {
+      if (choice === 0) return 2;
+      if (choice === 1) return 0;
+      const teen = choice > 10 && choice < 20;
+      const lastDigit = choice % 10;
+      if (!teen && (lastDigit >= 2 && lastDigit <= 4)) return 1;
+      return 2;
+    }
+  },
   datetimeFormats: {
     pl: DatetimePL as unknown as IntlDateTimeFormats,
     en: DatetimeEN as unknown as IntlDateTimeFormats,

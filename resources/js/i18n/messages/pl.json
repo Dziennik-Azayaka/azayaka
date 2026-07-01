@@ -1,5 +1,48 @@
 {
 	"administrator": {
+		"classes": {
+			"description": "Aby zobaczyć szczegóły lub zmienić dane oddziału, kliknij na wiersz tabeli.",
+			"details": "Szczegóły oddziału",
+			"tabs": {
+				"archive": "Archiwum",
+				"current": "Obecne",
+				"future": "Przyszłe"
+			},
+			"title": "Oddziały",
+			"data": {
+				"startingSchoolYear": "Rok szkolny otwarcia",
+				"startingPeriod": "Okres",
+				"mark": "Oznaczenie",
+				"alias": "Alias",
+				"level": "Obecny poziom",
+				"promoteEvery": {
+					"label": "Promocja co",
+					"year": "Rok szkolny",
+					"semester": "Okres klasyfikacyjny"
+				},
+				"teachingCycleLength": "Długość cyklu nauczania",
+				"startingClassificationPeriod": "Pierwszy okres klasyfikacyjny",
+				"formTutors": "Wychowawcy"
+			},
+			"tableFilters": {
+				"schoolYear": {
+					"label": "Rok szkolny otwarica",
+					"all": "Wszystkie"
+				},
+				"schoolUnit": {
+					"label": "Jednostka",
+					"all": "Wszystkie"
+				}
+			},
+			"add": "Dodaj oddział",
+			"delete": {
+				"title": "Czy na pewno chcesz usunąć oddział?",
+				"description": "Ta operacja jest nieodwracalna. Wszystkie dane związane z oddziałem zostaną usunięte."
+			},
+			"periodSelect": {
+				"noPeriods": "Brak okresów"
+			}
+		},
 		"classificationPeriods": {
 			"changePeriods": "Zmień okresy",
 			"changePeriodsYear": "Zmień okresy na rok szkolny {schoolYear}",
@@ -192,7 +235,8 @@
 			"skipToContent": "Przejdź do treści",
 			"toggleMenu": "Otwórz/zamknij menu",
 			"tryAgain": "Spróbuj ponownie",
-			"unarchive": "Odarchiwizuj"
+			"unarchive": "Odarchiwizuj",
+			"delete": "Usuń"
 		},
 		"actions_": "Akcje",
 		"auto": "(auto)",
@@ -207,6 +251,8 @@
 				"flatNumber": "Numer mieszkania"
 			},
 			"date": "Data",
+			"dateFrom": "Data od",
+			"dateTo": "Data do",
 			"district": "Dzielnica",
 			"email": "Adres e-mail",
 			"firstName": "Imię",
@@ -218,7 +264,10 @@
 			"roles": "Role",
 			"schoolYear": "Rok szkolny",
 			"short": "Skrót",
-			"voivodeship": "Województwo"
+			"voivodeship": "Województwo",
+			"period": "Okres",
+			"schoolUnit": "Jednostka",
+			"class": "Oddział"
 		},
 		"loadingDataError": "Nie udało się załadować danych. Spróbuj ponownie później.",
 		"modulesMenuTitle": "Przjedź do",
@@ -235,6 +284,14 @@
 		"requiredFieldsInfo": "Pola oznaczone * są wymagane.",
 		"table": {
 			"empty": "Brak wyników."
+		},
+		"pluralization": {
+			"year": "rok | lata | lat"
+		},
+		"generalInfo": "Ogólne informacje",
+		"select": {
+			"search": "Szukaj...",
+			"noResults": "Brak wyników."
 		}
 	},
 	"notFound": {
