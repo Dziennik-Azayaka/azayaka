@@ -20,6 +20,7 @@ class AttendanceComplexType extends Model
 
 	public $casts = [
 		"maps_to_primitive_type" => AttendancePrimitiveType::class,
+		"built_in" => "boolean",
 		"active" => "boolean"
 	];
 }

@@ -4,6 +4,7 @@ namespace Database\Factories;
 
 use App\Enums\AttendancePrimitiveType;
 use App\Models\Attendance;
+use App\Models\AttendanceComplexType;
 use App\Models\Employee;
 use App\Models\Lesson;
 use App\Models\Student;
@@ -24,8 +25,7 @@ class AttendanceFactory extends Factory
         return [
             "student_id" => Student::factory(),
 			"lesson_id" => Lesson::factory(),
-			"primitive_type" => $this->faker->randomElement(AttendancePrimitiveType::cases()),
-			"attendance_complex_type_id" => null,
+			"attendance_complex_type_id" => AttendanceComplexType::factory(),
 			"employee_id" => Employee::factory()
         ];
     }

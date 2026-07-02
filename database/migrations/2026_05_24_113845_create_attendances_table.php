@@ -14,14 +14,13 @@ return new class extends Migration {
 			$table->id();
 			$table->foreignId("student_id")->constrained("students")->cascadeOnDelete();
 			$table->foreignId("lesson_id")->constrained("lessons")->cascadeOnDelete();
-			$table->tinyInteger("primitive_type")->unsigned()->nullable();
 			$table->foreignId("attendance_complex_type_id")
-				->nullable()
 				->constrained("attendance_complex_types")
 				->cascadeOnDelete();
 			// update every time the attendance is changed for an accurate edit history
 			$table->foreignId("employee_id")->nullable()->constrained("employees")->cascadeOnDelete();
 			$table->unique(["lesson_id", "student_id"]);
+			$table->index("student_id");
 			$table->timestamps();
 		});
 	}

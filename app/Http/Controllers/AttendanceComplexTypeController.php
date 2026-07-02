@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Enums\AttendancePrimitiveType;
+use App\Http\Requests\AttendanceComplexTypeRequest;
 use App\Models\AttendanceComplexType;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -23,14 +24,9 @@ class AttendanceComplexTypeController extends Controller
 		});
 	}
 
-	public function create(Request $request)
+	public function create(AttendanceComplexTypeRequest $request)
 	{
-		$validated = $request->validate([
-			"name" => ["required", "string", "max:255"],
-			"shortcut" => ["required", "string", "max:3", "unique:attendance_complex_types"],
-			"mapsToPrimitiveType" => ["required", Rule::enum(AttendancePrimitiveType::class)]
-		]);
-
+		$validated = $request->validated();
 		$type = new AttendanceComplexType();
 		$type->name = $validated["name"];
 		$type->shortcut = $validated["shortcut"];
@@ -43,14 +39,16 @@ class AttendanceComplexTypeController extends Controller
 		], 201);
 	}
 
-	public function update(Request $request, AttendanceComplexType $type)
+	public function update(AttendanceComplexTypeRequest $request, AttendanceComplexType $type)
 	{
-		$validated = $request->validate([
-			"name" => ["required", "string", "max:255"],
-			"shortcut" => ["required", "string", "max:3", Rule::unique("attendance_complex_types")->ignore($type->id)],
-			"mapsToPrimitiveType" => ["required", Rule::enum(AttendancePrimitiveType::class)]
-		]);
+		if ($type->built_in) {
+			return response()->json([
+				"success" => false,
+				"errors" => ["CANNOT_EDIT_BUILT_IN_TYPE"]
+			], 409);
+		}
 
+		$validated = $request->validated();
 		$type->update([
 			"name" => $validated["name"],
 			"shortcut" => $validated["shortcut"],

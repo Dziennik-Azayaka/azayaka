@@ -159,7 +159,7 @@ Route::middleware(["auth", "auth.session"])->group(function () {
 		Route::get("/api/gradebooks/{gradebook}/lessons", [LessonController::class, "list"]);
 		Route::get("/api/gradebooks/{gradebook}/attendance/dayView", [AttendanceController::class, "dayView"]);
 		Route::get("/api/gradebooks/{gradebook}/attendance/subjectView", [AttendanceController::class, "subjectView"]);
-		Route::post("/api/gradebooks/{gradebook}/attendance/{lesson}", [AttendanceController::class, "createOrUpdate"]);
+		Route::post("/api/gradebooks/{gradebook}/attendance/{lesson}", [AttendanceController::class, "sync"]);
 		Route::post("/api/gradebooks/{gradebook}/attendance/{lesson}/autofill", [AttendanceController::class, "autofill"]);
 	});
 

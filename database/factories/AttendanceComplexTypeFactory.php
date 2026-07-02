@@ -21,7 +21,7 @@ class AttendanceComplexTypeFactory extends Factory
 		$sampleNames = ["nieobecność z powodów szkolnych", "dojazd PKS", "nieobecność ucznia z Ukrainy"];
         return [
             "name" => $sampleNames[array_rand($sampleNames)],
-			"shortcut" => $this->faker->randomLetter(),
+			"shortcut" => $this->faker->randomLetter() . $this->faker->randomLetter() . $this->faker->randomLetter(),
 			"maps_to_primitive_type" => $this->faker->randomElement(AttendancePrimitiveType::cases()),
 			"active" => true
         ];

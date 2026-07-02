@@ -30,7 +30,7 @@ class AttendanceController extends Controller
 			"attendances",
 			"attendances.complexType",
 			"attendances.employee",
-		])->whereHas("gradebooks", fn ($q) => $q->where("gradebook_id", $gradebook->id))
+		])->whereHas("gradebooks", fn($q) => $q->where("gradebook_id", $gradebook->id))
 			->where("date", $date)
 			->orderBy("start_time")
 			->get();
@@ -51,7 +51,7 @@ class AttendanceController extends Controller
 			"attendances.employee"
 		])
 			->where("subject_id", $subject->id)
-			->whereHas("gradebooks", fn ($q) => $q->where("gradebook_id", $gradebook->id))
+			->whereHas("gradebooks", fn($q) => $q->where("gradebook_id", $gradebook->id))
 			->orderByDesc("date")
 			->orderByDesc("start_time")
 			->paginate(15);
@@ -67,7 +67,7 @@ class AttendanceController extends Controller
 		));
 	}
 
-	public function createOrUpdate(Request $request, Gradebook $gradebook, Lesson $lesson): JsonResponse
+	public function sync(Request $request, Gradebook $gradebook, Lesson $lesson): JsonResponse
 	{
 		$employee = $this->getUserEmployee($request);
 		$this->authorize("editAttendance", [$lesson]);
@@ -76,36 +76,35 @@ class AttendanceController extends Controller
 			"attendances" => ["required", "array"],
 			"attendances.*.student_id" => [
 				"required",
+				"distinct",
 				Rule::exists("gradebooks_students", "student_id")->where("gradebook_id", $gradebook->id)
 			],
-			"attendances.*.primitive_type" => ["nullable", Rule::enum(AttendancePrimitiveType::class)],
 			"attendances.*.complex_type_id" => ["nullable", "exists:attendance_complex_types,id"]
 		]);
 
 		$attendances = $validated["attendances"];
 
-		$complexTypeIds = collect($attendances)->pluck("complex_type_id")->filter()->unique();
-		$complexTypes = AttendanceComplexType::whereIn("id", $complexTypeIds)->get()->keyBy("id");
-
 		$upsertData = [];
+		$studentIdsToKeep = [];
 		$studentIdsToDelete = [];
+		$gradebookStudentIds = $gradebook->students()->pluck("students.id")->all();
 		$now = now();
 
 		foreach ($attendances as $item) {
 			$studentId = $item["student_id"];
-			$primitiveType = $item["primitive_type"] ?? null;
 			$complexTypeId = $item["complex_type_id"] ?? null;
 
 			// delete attendance if the user has removed an entry
-			if ($primitiveType === null && $complexTypeId === null) {
+			if ($complexTypeId === null) {
 				$studentIdsToDelete[] = $studentId;
 				continue;
 			}
 
+			$studentIdsToKeep[] = $studentId;
+
 			$upsertData[] = [
 				"lesson_id" => $lesson->id,
 				"student_id" => $studentId,
-				"primitive_type" => $primitiveType,
 				"attendance_complex_type_id" => $complexTypeId,
 				"employee_id" => $employee->id,
 				"created_at" => $now,
@@ -113,18 +112,23 @@ class AttendanceController extends Controller
 			];
 		}
 
-		DB::transaction(function () use ($lesson, $upsertData, $studentIdsToDelete) {
-			if (!empty($studentIdsToDelete)) {
-				Attendance::where("lesson_id", $lesson->id)
-					->whereIn("student_id", $studentIdsToDelete)
-					->delete();
-			}
+		DB::transaction(function () use ($studentIdsToKeep, $gradebookStudentIds, $lesson, $upsertData, $studentIdsToDelete) {
+			Attendance::where("lesson_id", $lesson->id)
+				->whereIn("student_id", $gradebookStudentIds)
+				->where(function ($query) use ($studentIdsToKeep, $studentIdsToDelete) {
+					$query->whereIn("student_id", $studentIdsToDelete);
+
+					if (!empty($studentIdsToKeep)) {
+						$query->orWhereNotIn("student_id", $studentIdsToKeep);
+					}
+				})
+				->delete();
 
 			if (!empty($upsertData)) {
 				Attendance::upsert(
 					$upsertData,
 					["lesson_id", "student_id"], // which fields are unique?
-					["primitive_type", "attendance_complex_type_id", "employee_id", "updated_at"] // if the entry already exists, update these.
+					["attendance_complex_type_id", "employee_id", "updated_at"] // if the entry already exists, update these.
 				);
 			}
 		});
@@ -134,12 +138,12 @@ class AttendanceController extends Controller
 		], 201);
 	}
 
-	public function autofill(Request $request, Gradebook $gradebook, Lesson $lesson)
+	public function autofill(Gradebook $gradebook, Lesson $lesson)
 	{
 		$this->authorize("editAttendance", [$lesson]);
 
 		$previousLessons = Lesson::where("subject_id", $lesson->subject_id)
-			->whereHas("gradebooks", fn ($q) => $q->whereIn("gradebook_id", $lesson->gradebooks->pluck("id")))
+			->whereHas("gradebooks", fn($q) => $q->whereIn("gradebook_id", $lesson->gradebooks->pluck("id")))
 			->where("date", $lesson->date)
 			->where("start_time", "<", $lesson->start_time)
 			->orderByDesc("start_time")
@@ -160,20 +164,20 @@ class AttendanceController extends Controller
 				continue;
 			}
 
-			$newType = match ($previousAttendance->primitive_type) {
-				AttendancePrimitiveType::PRESENCE,
-				AttendancePrimitiveType::LATENESS,
-				AttendancePrimitiveType::EXCUSED_LATENESS => AttendancePrimitiveType::PRESENCE,
-				AttendancePrimitiveType::ABSENCE => AttendancePrimitiveType::ABSENCE,
-				AttendancePrimitiveType::EXCUSED_ABSENCE => AttendancePrimitiveType::EXCUSED_ABSENCE,
-				AttendancePrimitiveType::EXEMPTION => AttendancePrimitiveType::EXEMPTION
-			};
-
-			$newAttendances[$previousAttendance->student_id] = [
-				"student_id" => $previousAttendance->student_id,
-				"primitive_type" => $newType,
-				"attendance_complex_type_id" => $previousAttendance->attendance_complex_type_id,
-			];
+			if ($previousAttendance->primitive_type === AttendancePrimitiveType::LATENESS ||
+				$previousAttendance->primitive_type === AttendancePrimitiveType::EXCUSED_LATENESS) {
+				$newAttendances[$previousAttendance->student_id] = [
+					"studentId" => $previousAttendance->student_id,
+					"complexTypeId" =>
+						AttendanceComplexType::where("maps_to_primitive_type", "=", AttendancePrimitiveType::PRESENCE)
+							->where("built_in", "=", true)->first()->id
+				];
+			} else {
+				$newAttendances[$previousAttendance->student_id] = [
+					"studentId" => $previousAttendance->student_id,
+					"complexTypeId" => $previousAttendance->attendance_complex_type_id,
+				];
+			}
 		}
 
 		return array_values($newAttendances);

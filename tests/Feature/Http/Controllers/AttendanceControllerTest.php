@@ -4,6 +4,7 @@ namespace Tests\Feature\Http\Controllers;
 
 use App\Enums\AttendancePrimitiveType;
 use App\Models\Attendance;
+use App\Models\AttendanceComplexType;
 use App\Models\Employee;
 use App\Models\Gradebook;
 use App\Models\GradebookGroup;
@@ -39,10 +40,11 @@ final class AttendanceControllerTest extends TestCase
 		]);
 		$lesson->gradebooks()->sync([$gradebook->id]);
 
+		$complexType = AttendanceComplexType::factory()->create();
 		Attendance::factory()->create([
 			"lesson_id" => $lesson->id,
 			"student_id" => $student->id,
-			"primitive_type" => AttendancePrimitiveType::PRESENCE->value,
+			"attendance_complex_type_id" => $complexType->id,
 			"employee_id" => $employee->id,
 		]);
 
@@ -52,7 +54,7 @@ final class AttendanceControllerTest extends TestCase
 		$response->assertJsonPath("0.id", $lesson->id);
 		$response->assertJsonPath("0.subject", $lesson->subject->name);
 		$response->assertJsonPath("0.students.0.id", $student->id);
-		$response->assertJsonPath("0.attendances.0.primitiveType", AttendancePrimitiveType::PRESENCE->value);
+		$response->assertJsonPath("0.attendances.0.complexType", $complexType->id);
 	}
 
 	public function test_can_create_or_update_attendance_as_primary_teacher(): void
@@ -69,11 +71,13 @@ final class AttendanceControllerTest extends TestCase
 			"date_from" => now()->toDateString(),
 		]);
 
+		$complexType = AttendanceComplexType::factory()->create();
+
 		$response = $this->post("/api/gradebooks/$gradebook->id/attendance/$lesson->id", [
 			"attendances" => [
 				[
 					"student_id" => $student->id,
-					"primitive_type" => AttendancePrimitiveType::ABSENCE->value,
+					"complex_type_id" => $complexType->id,
 				]
 			]
 		]);
@@ -82,10 +86,11 @@ final class AttendanceControllerTest extends TestCase
 		$this->assertDatabaseHas("attendances", [
 			"lesson_id" => $lesson->id,
 			"student_id" => $student->id,
-			"primitive_type" => AttendancePrimitiveType::ABSENCE->value,
+			"attendance_complex_type_id" => $complexType->id,
 			"employee_id" => $employee->id,
 		]);
 	}
+
 	public function test_can_delete_attendance_as_primary_teacher(): void
 	{
 		$employee = $this->actingAdminUser()->employees->first();
@@ -111,7 +116,6 @@ final class AttendanceControllerTest extends TestCase
 			"attendances" => [
 				[
 					"student_id" => $student->id,
-					"primitive_type" => null,
 					"complex_type_id" => null,
 				]
 			]
@@ -155,21 +159,27 @@ final class AttendanceControllerTest extends TestCase
 		$studentA = Student::factory()->create();
 		$studentB = Student::factory()->create();
 
+		$excusedAbsenceTypeId = AttendanceComplexType::where("maps_to_primitive_type", AttendancePrimitiveType::EXCUSED_ABSENCE)
+			->where("built_in", true)->first()->id;
+		$absenceTypeId = AttendanceComplexType::where("maps_to_primitive_type", AttendancePrimitiveType::ABSENCE)
+			->where("built_in", true)->first()->id;
+
 		Attendance::factory()->create([
 			"lesson_id" => $olderLesson->id,
 			"student_id" => $studentA->id,
-			"primitive_type" => AttendancePrimitiveType::LATENESS->value,
+			"attendance_complex_type_id" => AttendanceComplexType::where("maps_to_primitive_type", AttendancePrimitiveType::LATENESS)
+				->where("built_in", true)->first()->id
 		]);
 		Attendance::factory()->create([
 			"lesson_id" => $newerLesson->id,
 			"student_id" => $studentA->id,
-			"primitive_type" => AttendancePrimitiveType::EXCUSED_ABSENCE->value,
+			"attendance_complex_type_id" => $excusedAbsenceTypeId
 		]);
 
 		Attendance::factory()->create([
 			"lesson_id" => $olderLesson->id,
 			"student_id" => $studentB->id,
-			"primitive_type" => AttendancePrimitiveType::ABSENCE->value,
+			"attendance_complex_type_id" => $absenceTypeId
 		]);
 
 		$response = $this->post("/api/gradebooks/$gradebook->id/attendance/$lesson->id/autofill");
@@ -179,13 +189,13 @@ final class AttendanceControllerTest extends TestCase
 		$response->assertJsonCount(2);
 
 		$response->assertJsonFragment([
-			"student_id" => $studentA->id,
-			"primitive_type" => AttendancePrimitiveType::EXCUSED_ABSENCE->value,
+			"studentId" => $studentA->id,
+			"complexTypeId" => $excusedAbsenceTypeId,
 		]);
 
 		$response->assertJsonFragment([
-			"student_id" => $studentB->id,
-			"primitive_type" => AttendancePrimitiveType::ABSENCE->value,
+			"studentId" => $studentB->id,
+			"complexTypeId" => $absenceTypeId,
 		]);
 
 		$this->assertDatabaseMissing("attendances", ["lesson_id" => $lesson->id]);

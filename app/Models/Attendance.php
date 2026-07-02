@@ -20,10 +20,6 @@ class Attendance extends Model
 		'employee_id',
 	];
 
-	protected $casts = [
-		"primitive_type" => AttendancePrimitiveType::class,
-	];
-
 	public function lesson(): BelongsTo
 	{
 		return $this->belongsTo(Lesson::class);
