@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\UserPreferenceType;
+use App\Exceptions\NotFoundException;
 use App\Models\UserPreference;
 use Illuminate\Http\Request;
 
@@ -18,8 +20,12 @@ class UserPreferenceController extends Controller
 
 	public function update(Request $request, string $key)
 	{
+		$keyValidationRules = UserPreferenceType::tryFromName(ucfirst($key));
+		if ($keyValidationRules == null) {
+			throw new NotFoundException("USER_PREFERENCE_KEY");
+		}
 		$validated = $request->validate([
-			"value" => "required|string|max:65535"
+			"value" => "required|$keyValidationRules->value"
 		]);
 
 		UserPreference::updateOrCreate(
