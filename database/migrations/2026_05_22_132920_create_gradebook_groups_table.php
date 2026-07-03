@@ -29,6 +29,7 @@ return new class extends Migration
 			$table->timestamps();
 
 			$table->unique(["gradebook_group_id", "student_id"]);
+			$table->index(["student_id", "gradebook_group_id"]);
 		});
 
 		Schema::create("gradebook_group_subjects", function (Blueprint $table) {
@@ -61,6 +62,7 @@ return new class extends Migration
 			$table->timestamps();
 
 			$table->unique(["gradebook_group_subject_id", "employee_id"], "employee_gradebook_group_subject_unique");
+			$table->index(["employee_id", "gradebook_group_subject_id"], "employee_gradebook_group_subject_index");
 		});
 	}
 

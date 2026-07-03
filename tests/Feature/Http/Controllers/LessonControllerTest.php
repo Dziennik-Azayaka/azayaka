@@ -24,7 +24,6 @@ class LessonControllerTest extends TestCase
 
 		$matchingLesson = Lesson::factory()->create([
 			"subject_id" => $subject->id,
-			"primary_teacher_id" => $teacher->id,
 			"topic" => "Wielowątkowe programowanie obiektowe w języku Scratch",
 			"date" => "2026-05-24",
 			"completed" => true
@@ -57,7 +56,6 @@ class LessonControllerTest extends TestCase
 			"number" => 1,
 			"gradebookIds" => [$gradebook->id],
 			"subjectId" => $subject->id,
-			"primaryTeacherId" => $employee->id,
 			"topic" => "Programowanie pojazdów autonomicznych w języku Scratch",
 			"date" => "2026-05-24",
 			"startTime" => "10:00",
@@ -110,7 +108,6 @@ class LessonControllerTest extends TestCase
 			"number" => 2,
 			"gradebookIds" => $lesson->gradebooks->pluck("id")->toArray(),
 			"subjectId" => $newSubject->id,
-			"primaryTeacherId" => $lesson->primary_teacher_id,
 			"topic" => "Tworzenie dużych modeli językowych w języku Scratch",
 			"date" => "2026-05-25",
 			"startTime" => "12:00",

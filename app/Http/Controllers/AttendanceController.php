@@ -56,9 +56,11 @@ class AttendanceController extends Controller
 			->orderByDesc("start_time")
 			->paginate(15);
 
-		$students = Student::whereHas("gradebookGroups", function ($query) use ($gradebook) {
-			$query->where("gradebook_id", $gradebook->id);
-		})->orderBy("student_registry_number")->get();
+		$students = Student::join("gradebooks_students", "students.id", "=", "gradebooks_students.student_id")
+			->where("gradebooks_students.gradebook_id", $gradebook->id)
+			->orderBy("gradebooks_students.position")
+			->select("students.*")
+			->get();
 
 		return $lessons->map(fn(Lesson $lesson) => new LessonAttendanceResource(
 			$lesson,

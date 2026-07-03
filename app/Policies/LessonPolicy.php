@@ -4,7 +4,6 @@ namespace App\Policies;
 
 use App\Models\Employee;
 use App\Models\Lesson;
-use DB;
 
 class LessonPolicy
 {
@@ -29,13 +28,14 @@ class LessonPolicy
 			return true;
 		}
 
-		return DB::table("class_units_form_tutors")
-			->join("gradebooks", "class_units_form_tutors.class_unit_id", "=", "gradebooks.class_unit_id")
-			->join("lessons_gradebooks", "gradebooks.id", "=", "lessons_gradebooks.gradebook_id")
-			->where("lessons_gradebooks.lesson_id", $lesson->id)
-			->where("class_units_form_tutors.employee_id", $employee->id)
-			->where("class_units_form_tutors.date_from", "<=", $lesson->date)
-			->where("class_units_form_tutors.date_to", ">=", $lesson->date)
+		return $lesson->gradebooks()
+			->whereHas("classUnit.formTutors", function ($query) use ($employee) {
+				$query->where("employee_id", $employee->id)
+					->where("date_from", "<=", now())
+					->where(function ($query) {
+						$query->whereNull("date_to")->orWhere("date_to", ">=", now());
+					});
+			})
 			->exists();
 	}
 }

@@ -22,6 +22,7 @@ return new class extends Migration {
 			$table->boolean("completed")->default(false);
 			$table->timestamps();
 			$table->softDeletes();
+			$table->index(["primary_teacher_id", "subject_id"]);
 		});
 
 		Schema::create("lessons_gradebooks", function (Blueprint $table) {
@@ -29,6 +30,7 @@ return new class extends Migration {
 			$table->foreignId("lesson_id")->constrained("lessons")->onDelete("cascade");
 			$table->foreignId("gradebook_id")->constrained("gradebooks")->onDelete("cascade");
 			$table->unique(["lesson_id", "gradebook_id"]);
+			$table->index(["gradebook_id", "lesson_id"]);
 			$table->timestamps();
 		});
 
@@ -36,6 +38,8 @@ return new class extends Migration {
 			$table->id();
 			$table->foreignId("lesson_id")->constrained("lessons")->onDelete("cascade");
 			$table->foreignId("employee_id")->constrained("employees")->onDelete("cascade");
+			$table->unique(["lesson_id", "employee_id"]);
+			$table->index(["employee_id", "lesson_id"]);
 			$table->timestamps();
 		});
 
@@ -43,6 +47,8 @@ return new class extends Migration {
 			$table->id();
 			$table->foreignId("lesson_id")->constrained("lessons")->onDelete("cascade");
 			$table->foreignId("gradebook_group_id")->constrained("gradebook_groups")->onDelete("cascade");
+			$table->unique(["lesson_id", "gradebook_group_id"]);
+			$table->index(["gradebook_group_id", "lesson_id"]);
 			$table->timestamps();
 		});
 	}

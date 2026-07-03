@@ -144,10 +144,10 @@ final class GradebookControllerTest extends TestCase
 		$response->assertOk();
 		$response->assertJsonCount(1);
 		$response->assertJsonFragment([
-			"studentId" => $student->id,
-			"studentName" => $student->person->first_name,
-			"studentSecondName" => $student->person->second_name,
-			"studentLastName" => $student->person->last_name,
+			"id" => $student->id,
+			"firstName" => $student->person->first_name,
+			"secondName" => $student->person->second_name,
+			"lastName" => $student->person->last_name,
 			"position" => 5
 		]);
 	}

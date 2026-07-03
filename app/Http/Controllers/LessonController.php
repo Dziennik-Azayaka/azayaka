@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\LessonRequest;
+use App\Http\Resources\StudentLessonResource;
 use App\Models\Gradebook;
 use App\Models\Lesson;
 use App\Models\Student;
@@ -25,10 +26,10 @@ class LessonController extends Controller
 	{
 		$validated = $request->validated();
 
-		$lesson = \DB::transaction(function () use ($validated) {
+		$lesson = \DB::transaction(function () use ($request, $validated) {
 			$lesson = new Lesson();
 
-			$lesson = $this->saveLessonDetails($validated, $lesson);
+			$lesson = $this->saveLessonDetails($request, $validated, $lesson);
 			$lesson->gradebooks()->sync($validated["gradebookIds"]);
 			$this->authorize("create", [
 				$lesson
@@ -54,15 +55,8 @@ class LessonController extends Controller
 		$this->authorize("update", [$lesson]);
 
 		$validated = $request->validated();
-		if ($validated["primaryTeacherId"] != $lesson->primary_teacher_id) {
-			return response()->json([
-				"success" => false,
-				"errors" => ["CHANGING_THE_PRIMARY_TEACHER_IS_FORBIDDEN"]
-			]);
-		}
-
-		\DB::transaction(function () use ($validated, $lesson) {
-			$lesson = $this->saveLessonDetails($validated, $lesson);
+		\DB::transaction(function () use ($request, $validated, $lesson) {
+			$lesson = $this->saveLessonDetails($request, $validated, $lesson);
 			$lesson->gradebooks()->sync($validated["gradebookIds"]);
 			$lesson->assistingTeachers()->sync($validated["assistingTeachers"]);
 			$lesson->gradebookGroups()->sync($validated["groups"]);
@@ -76,10 +70,10 @@ class LessonController extends Controller
 	/**
 	 * @throws \Throwable
 	 */
-	private function saveLessonDetails(array $validated, Lesson $lesson): Lesson
+	private function saveLessonDetails(Request $request, array $validated, Lesson $lesson): Lesson
 	{
 		$lesson->number = $validated["number"];
-		$lesson->primary_teacher_id = $validated["primaryTeacherId"];
+		$lesson->primary_teacher_id = $this->getUserEmployee($request)->id;
 		$lesson->subject_id = $validated["subjectId"];
 		$lesson->topic = $validated["topic"];
 		$lesson->date = $validated["date"];
@@ -119,46 +113,17 @@ class LessonController extends Controller
 			});
 		$lessons = $this->applyFilters($request, $lessons);
 
-		return $lessons->get()->map(fn(Lesson $lesson) => [
-			"id" => $lesson->id,
-			"number" => $lesson->number,
-			"topic" => $lesson->topic,
-			"date" => $lesson->date,
-			"startTime" => $lesson->start_time,
-			"endTime" => $lesson->end_time,
-			"completed" => $lesson->completed,
-			"primaryTeacher" => $lesson->primaryTeacher->first_name . " " . $lesson->primaryTeacher->last_name,
-			"subject" => $lesson->subject->name,
-			"assistingTeachers" => $lesson->assistingTeachers->map(fn($teacher) => $teacher->first_name . " " . $teacher->last_name)
-		]);
+		return StudentLessonResource::collection($lessons->get());
 	}
 
 	private function applyFilters(Request $request, Builder|BelongsToMany $query): Builder|BelongsToMany
 	{
-		if ($request->has("dateFrom")) {
-			$query = $query->whereDate("date", ">=", $request->input("dateFrom"));
-		}
-
-		if ($request->has("dateTo")) {
-			$query = $query->whereDate("date", "<=", $request->input("dateTo"));
-		}
-
-		if ($request->has("completed")) {
-			$query = $query->where("completed", "=", $request->input("completed"));
-		}
-
-		if ($request->has("subjectId")) {
-			$query = $query->where("subject_id", "=", $request->input("subjectId"));
-		}
-
-		if ($request->has("primaryTeacherId")) {
-			$query = $query->where("primary_teacher_id", "=", $request->input("primaryTeacherId"));
-		}
-
-		if ($request->has("topic")) {
-			$query = $query->where("topic", "like", "%" . $request->input("topic") . "%");
-		}
-
-		return $query;
+		return $query
+			->when($request->has("dateFrom"), fn($query) => $query->dateFrom($request->input("dateFrom")))
+			->when($request->has("dateTo"), fn($query) => $query->dateTo($request->input("dateTo")))
+			->when($request->has("completed"), fn($query) => $query->completed($request->input("completed")))
+			->when($request->has("subjectId"), fn($query) => $query->forSubject($request->input("subjectId")))
+			->when($request->has("primaryTeacherId"), fn($query) => $query->forPrimaryTeacher($request->input("primaryTeacherId")))
+			->when($request->has("topic"), fn($query) => $query->topicLike($request->input("topic")));
 	}
 }

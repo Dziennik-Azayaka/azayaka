@@ -40,7 +40,6 @@ class LessonRequest extends FormRequest
 			"gradebookIds" => ["required", "array", "min:1"],
 			"gradebookIds.*" => ["exists:gradebooks,id"],
 			"subjectId" => ["required", "exists:subjects,id"],
-			"primaryTeacherId" => ["required", "exists:employees,id"],
 			"topic" => ["required", "string", "max:255"],
 			"date" => ["required", "date"],
 			"startTime" => ["required", "date_format:H:i"],

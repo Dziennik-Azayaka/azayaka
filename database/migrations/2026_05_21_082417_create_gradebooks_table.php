@@ -18,6 +18,8 @@ return new class extends Migration
 			$table->foreignId("class_unit_id")->constrained("class_units");
 			$table->integer("level")->nullable();
             $table->timestamps();
+			$table->unique(["classification_period_id", "class_unit_id"]);
+			$table->index(["class_unit_id", "classification_period_id"]);
         });
 
 		Schema::create("gradebooks_students", function (Blueprint $table) {

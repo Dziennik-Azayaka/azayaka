@@ -55,4 +55,23 @@ class Gradebook extends Model
 			"lesson_id"
 		);
 	}
+
+	public function scopeInSchoolUnit($query, int $schoolUnitId)
+	{
+		return $query->whereHas("classUnit", function ($query) use ($schoolUnitId) {
+			$query->where("school_unit_id", "=", $schoolUnitId);
+		});
+	}
+
+	public function scopeForClassUnit($query, int $classUnitId)
+	{
+		return $query->where("class_unit_id", "=", $classUnitId);
+	}
+
+	public function scopeInSchoolYear($query, int $schoolYear)
+	{
+		return $query->whereHas("startingClassificationPeriod", function ($query) use ($schoolYear) {
+			$query->where("school_year", "=", $schoolYear);
+		});
+	}
 }

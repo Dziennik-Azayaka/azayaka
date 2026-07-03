@@ -7,7 +7,9 @@ use App\Utilities\ClassificationPeriodAssistant;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class ClassUnit extends Model
 {
@@ -32,22 +34,27 @@ class ClassUnit extends Model
 			->withTimestamps();
 	}
 
-	public function schoolUnit()
+	public function schoolUnit(): BelongsTo
 	{
 		return $this->belongsTo(SchoolUnit::class);
 	}
 
-	public function startingPeriod()
+	public function startingPeriod(): BelongsTo
 	{
 		return $this->belongsTo(ClassificationPeriod::class, "starting_classification_period_id");
 	}
 
-	public function periods()
+	public function periods(): BelongsToMany
 	{
 		return $this->belongsToMany(ClassificationPeriod::class, "class_units_periods",
 			"class_unit_id", "classification_period_id")
 			->using(ClassUnitPeriod::class)
 			->withPivot("level", "id");
+	}
+
+	public function gradebooks(): HasMany
+	{
+		return $this->hasMany(Gradebook::class);
 	}
 
 	public function getLevelDuringClassificationPeriod(int $classificationPeriodId): ?int

@@ -161,7 +161,7 @@ class ClassUnitController extends Controller
 
 	public function delete(ClassUnit $classUnit)
 	{
-		if (Gradebook::where("class_unit_id", $classUnit->id)->exists()) {
+		if ($classUnit->gradebooks()->exists()) {
 			throw new EntityAlreadyExistsException("GRADEBOOK");
 		}
 		$classUnit->delete();

@@ -19,6 +19,7 @@ return new class extends Migration {
 			$table->string("leave_reason")->nullable();
 			$table->timestamps();
 			$table->softDeletes();
+			$table->index("person_id");
 		});
 	}
 

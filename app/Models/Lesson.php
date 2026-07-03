@@ -63,4 +63,34 @@ class Lesson extends Model
 	{
 		return $this->hasMany(Attendance::class);
 	}
+
+	public function scopeDateFrom($query, $dateFrom)
+	{
+		return $query->whereDate("date", ">=", $dateFrom);
+	}
+
+	public function scopeDateTo($query, $dateTo)
+	{
+		return $query->whereDate("date", "<=", $dateTo);
+	}
+
+	public function scopeCompleted($query, $completed)
+	{
+		return $query->where("completed", "=", $completed);
+	}
+
+	public function scopeForSubject($query, $subjectId)
+	{
+		return $query->where("subject_id", "=", $subjectId);
+	}
+
+	public function scopeForPrimaryTeacher($query, $primaryTeacherId)
+	{
+		return $query->where("primary_teacher_id", "=", $primaryTeacherId);
+	}
+
+	public function scopeTopicLike($query, $topic)
+	{
+		return $query->where("topic", "like", "%" . $topic . "%");
+	}
 }
