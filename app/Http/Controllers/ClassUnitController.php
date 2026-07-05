@@ -128,8 +128,9 @@ class ClassUnitController extends Controller
 			$employeeIds[] = $employee["id"];
 
 			$dateFrom = Carbon::parse($employee["dateFrom"]);
-			$dateTo = Carbon::parse($employee["dateTo"]);
-			if ($dateFrom->gt($dateTo)) {
+			$dateTo = isset($employee["dateTo"]) ? Carbon::parse($employee["dateTo"]) : null;
+
+			if ($dateTo !== null && $dateFrom->gt($dateTo)) {
 				throw new ValidatorAssistantException(null, null, ["EMPLOYEE_DATE_FROM_MUST_NOT_BE_LATER_THAN_DATE_TO"]);
 			}
 
@@ -137,7 +138,7 @@ class ClassUnitController extends Controller
 				$foundTeacherStartingWithTheClassificationPeriod = true;
 			}
 
-			if ($validated["promoteEvery"] == "year" && $dateTo->gt($endingDate)) {
+			if ($dateTo !== null && $validated["promoteEvery"] == "year" && $dateTo->gt($endingDate)) {
 				throw new ValidatorAssistantException(null, null, ["EMPLOYEE_DATE_TO_MUST_NOT_BE_LATER_THAN_THE_CLASS_UNIT_END_DATE"]);
 			}
 		}
@@ -179,7 +180,7 @@ class ClassUnitController extends Controller
 				"class_unit_id" => $classUnit->id,
 				"employee_id" => $employee["id"],
 				"date_from" => $employee["dateFrom"],
-				"date_to" => $employee["dateTo"],
+				"date_to" => $employee["dateTo"] ?? null,
 				"created_at" => $now,
 				"updated_at" => $now,
 			];
