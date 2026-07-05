@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Employee;
 use App\Models\Lesson;
+use App\Models\Subject;
 use Illuminate\Foundation\Http\FormRequest;
 
 class LessonRequest extends FormRequest
@@ -39,7 +41,16 @@ class LessonRequest extends FormRequest
 			],
 			"gradebookIds" => ["required", "array", "min:1"],
 			"gradebookIds.*" => ["exists:gradebooks,id"],
-			"subjectId" => ["required", "exists:subjects,id"],
+			"subjectId" => [
+				"required",
+				"exists:subjects,id",
+				function (string $attribute, mixed $value, \Closure $fail) {
+					$subject = Subject::find($value);
+					if ($subject && !$subject->active) {
+						$fail("SUBJECT_NOT_ACTIVE");
+					}
+				}
+			],
 			"topic" => ["required", "string", "max:255"],
 			"date" => ["required", "date"],
 			"startTime" => ["required", "date_format:H:i"],
@@ -47,7 +58,15 @@ class LessonRequest extends FormRequest
 			"completed" => ["nullable", "boolean"],
 
 			"assistingTeachers" => ["nullable", "array"],
-			"assistingTeachers.*" => ["exists:employees,id"],
+			"assistingTeachers.*" => [
+				"exists:employees,id",
+				function (string $attribute, mixed $value, \Closure $fail) {
+					$employee = Employee::find($value);
+					if ($employee && !$employee->active) {
+						$fail("ASSISTING_TEACHER_NOT_ACTIVE");
+					}
+				}
+			],
 			"groups" => ["required", "array"],
 			"groups.*" => ["exists:gradebook_groups,id"],
 		];
