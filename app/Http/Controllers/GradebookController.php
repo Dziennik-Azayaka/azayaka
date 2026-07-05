@@ -51,40 +51,25 @@ class GradebookController extends Controller
 		$this->authorize("manageStudents", [$gradebook]);
 
 		$validated = $request->validated();
-		$studentIdsSize = count($validated["studentIds"]);
 
-		$existingEntries = GradebookStudents::where("gradebook_id", $gradebook->id)->get();
-		$pivotEntries = [];
-		$now = now();
-		for ($i = 0; $i < $studentIdsSize; $i++) {
-			if ($existingEntries->contains("student_id", $validated["studentIds"][$i])) {
-				$existingEntry = $existingEntries->firstWhere("student_id", $validated["studentIds"][$i]);
-				$pivotEntries[] = [
-					"student_id" => $validated["studentIds"][$i],
-					"gradebook_id" => $gradebook->id,
-					"position" => $validated["positions"][$i],
-					"date_from" => $existingEntry->date_from,
-					"date_to" => $existingEntry->date_to,
-					"created_at" => $existingEntry->created_at,
-					"updated_at" => $now
-				];
-				continue;
-			}
-			$pivotEntries[] = [
-				"student_id" => $validated["studentIds"][$i],
-				"gradebook_id" => $gradebook->id,
-				"position" => $validated["positions"][$i],
-				"date_from" => $gradebook->startingClassificationPeriod->period_start,
-				"date_to" => null,
-				"created_at" => $now,
-				"updated_at" => $now
+		$existingEntries = GradebookStudents::where("gradebook_id", $gradebook->id)
+			->get()
+			->keyBy("student_id");
+
+		$syncData = [];
+
+		foreach ($validated["studentIds"] as $index => $studentId) {
+			$existingEntry = $existingEntries->get($studentId);
+
+			$syncData[$studentId] = [
+				"position" => $validated["positions"][$index],
+				"date_from" => $existingEntry?->date_from
+					?? $gradebook->startingClassificationPeriod->period_start,
+				"date_to" => $existingEntry?->date_to,
 			];
 		}
 
-		\DB::transaction(function () use ($pivotEntries, $gradebook) {
-			GradebookStudents::where("gradebook_id", $gradebook->id)->delete();
-			GradebookStudents::insert($pivotEntries);
-		});
+		$gradebook->students()->sync($syncData);
 
 		return \Response::json([
 			"success" => true

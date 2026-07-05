@@ -28,7 +28,8 @@ class Gradebook extends Model
 
 	public function students(): BelongsToMany
 	{
-		return $this->belongsToMany(Student::class, "gradebooks_students", "gradebook_id", "student_id");
+		return $this->belongsToMany(Student::class, "gradebooks_students", "gradebook_id", "student_id")
+			->withPivot("id", "date_from", "date_to")->withTimestamps();
 	}
 
 	public function getLevelAttribute(): ?int
