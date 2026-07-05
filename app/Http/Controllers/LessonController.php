@@ -26,6 +26,13 @@ class LessonController extends Controller
 	{
 		$validated = $request->validated();
 
+		if (!isset($validated["number"])) {
+			$validated["number"] = Lesson::where("subject_id", $validated["subjectId"])
+					->whereHas("gradebooks", fn($q) => $q->whereIn("gradebooks.id", $validated["gradebookIds"]))
+					->whereHas("gradebookGroups", fn($q) => $q->whereIn("gradebook_groups.id", $validated["groups"]))
+					->max("number") + 1;
+		}
+
 		$lesson = \DB::transaction(function () use ($request, $validated) {
 			$lesson = new Lesson();
 
@@ -55,6 +62,11 @@ class LessonController extends Controller
 		$this->authorize("update", [$lesson]);
 
 		$validated = $request->validated();
+
+		if (!isset($validated["number"])) {
+			$validated["number"] = $lesson->number;
+		}
+
 		\DB::transaction(function () use ($request, $validated, $lesson) {
 			$lesson = $this->saveLessonDetails($request, $validated, $lesson);
 			$lesson->gradebooks()->sync($validated["gradebookIds"]);
