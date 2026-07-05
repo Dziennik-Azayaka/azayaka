@@ -44,6 +44,28 @@ class LessonControllerTest extends TestCase
 		$response->assertJsonPath("0.topic", "Wielowątkowe programowanie obiektowe w języku Scratch");
 	}
 
+	public function test_can_filter_lessons_by_assisting_teacher(): void
+	{
+		$this->actingAdminUser();
+		$gradebook = Gradebook::factory()->create();
+		$assistingTeacher = Employee::factory()->create();
+
+		$matchingLesson = Lesson::factory()->create();
+		$matchingLesson->gradebooks()->sync([$gradebook->id]);
+		$matchingLesson->assistingTeachers()->attach($assistingTeacher);
+
+		$nonMatchingLesson = Lesson::factory()->create();
+		$nonMatchingLesson->gradebooks()->sync([$gradebook->id]);
+
+		$response = $this->getJson(
+			"/api/gradebooks/$gradebook->id/lessons?assistingTeacherId=$assistingTeacher->id"
+		);
+
+		$response->assertStatus(200);
+		$response->assertJsonCount(1);
+		$response->assertJsonPath("0.id", $matchingLesson->id);
+	}
+
 	public function test_can_create_a_lesson(): void
 	{
 		$employee = $this->actingAdminUser()->employees->first();

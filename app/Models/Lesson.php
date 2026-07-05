@@ -93,4 +93,11 @@ class Lesson extends Model
 	{
 		return $query->where("topic", "like", "%" . $topic . "%");
 	}
+
+	public function scopeForAssistingTeacher($query, $employeeId)
+	{
+		return $query->whereHas("assistingTeachers", function ($q) use ($employeeId) {
+			$q->where("employee_id", "=", $employeeId);
+		});
+	}
 }

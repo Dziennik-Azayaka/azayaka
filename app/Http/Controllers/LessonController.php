@@ -124,6 +124,7 @@ class LessonController extends Controller
 			->when($request->has("completed"), fn($query) => $query->completed($request->input("completed")))
 			->when($request->has("subjectId"), fn($query) => $query->forSubject($request->input("subjectId")))
 			->when($request->has("primaryTeacherId"), fn($query) => $query->forPrimaryTeacher($request->input("primaryTeacherId")))
+			->when($request->has("assistingTeacherId"), fn($query) => $query->forAssistingTeacher($request->input("assistingTeacherId")))
 			->when($request->has("topic"), fn($query) => $query->topicLike($request->input("topic")));
 	}
 }
