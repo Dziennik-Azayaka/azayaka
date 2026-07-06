@@ -4,15 +4,16 @@ namespace App\Http\Controllers;
 
 use App\Enums\AttendancePrimitiveType;
 use App\Exceptions\NotFoundException;
-use App\Models\Attendance;
-use DB;
-use App\Models\AttendanceComplexType;
 use App\Http\Resources\LessonAttendanceResource;
-use App\Models\Employee;
+use App\Models\Attendance;
+use App\Models\AttendanceComplexType;
 use App\Models\Gradebook;
+use App\Models\GradebookStudents;
 use App\Models\Lesson;
 use App\Models\Student;
 use App\Models\Subject;
+use DB;
+use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -22,7 +23,7 @@ class AttendanceController extends Controller
 	public function dayView(Request $request, Gradebook $gradebook)
 	{
 		$gradebook = $gradebook->load(["students.person"]);
-		$date = $request->input("date", now()->toDateString());;
+		$date = $request->input("date", now()->toDateString());
 
 		$lessons = Lesson::with([
 			"subject",
@@ -85,6 +86,25 @@ class AttendanceController extends Controller
 		]);
 
 		$attendances = $validated["attendances"];
+
+		$submittedStudentIds = array_column($attendances, "student_id");
+		$validStudentIds = GradebookStudents::query()
+			->where("gradebook_id", $gradebook->id)
+			->where("date_from", "<=", $lesson->date)
+			->where(function ($query) use ($lesson) {
+				$query->whereNull("date_to")->orWhere("date_to", ">=", $lesson->date);
+			})
+			->whereIn("student_id", $submittedStudentIds)
+			->pluck("student_id")
+			->toArray();
+
+		$invalidStudentIds = array_diff($submittedStudentIds, $validStudentIds);
+		if (!empty($invalidStudentIds)) {
+			return response()->json([
+				"success" => false,
+				"errors" => ["STUDENT_NOT_IN_GRADEBOOK_FOR_LESSON_DATE"]
+			], 422);
+		}
 
 		$upsertData = [];
 		$studentIdsToKeep = [];
@@ -184,5 +204,4 @@ class AttendanceController extends Controller
 
 		return array_values($newAttendances);
 	}
-
 }

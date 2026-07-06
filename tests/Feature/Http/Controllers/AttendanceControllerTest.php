@@ -63,6 +63,7 @@ final class AttendanceControllerTest extends TestCase
 		$gradebook = Gradebook::factory()->create();
 		$lesson = Lesson::factory()->create([
 			"primary_teacher_id" => $employee->id,
+			"date" => now()->toDateString(),
 		]);
 		$lesson->gradebooks()->sync([$gradebook->id]);
 		$student = Student::factory()->create();
@@ -97,6 +98,7 @@ final class AttendanceControllerTest extends TestCase
 		$gradebook = Gradebook::factory()->create();
 		$lesson = Lesson::factory()->create([
 			"primary_teacher_id" => $employee->id,
+			"date" => now()->toDateString(),
 		]);
 		$lesson->gradebooks()->sync([$gradebook->id]);
 		$student = Student::factory()->create();
@@ -266,5 +268,41 @@ final class AttendanceControllerTest extends TestCase
 		]);
 
 		$response->assertUnprocessable();
+	}
+
+	public function test_sync_fails_if_student_gradebook_date_range_does_not_cover_lesson_date(): void
+	{
+		$employee = $this->actingAdminUser()->employees->first();
+		$gradebook = Gradebook::factory()->create();
+		$lesson = Lesson::factory()->create([
+			"primary_teacher_id" => $employee->id,
+			"date" => "2025-06-15",
+		]);
+		$lesson->gradebooks()->sync([$gradebook->id]);
+		$studentA = Student::factory()->create();
+		$studentB = Student::factory()->create();
+		$gradebook->students()->attach($studentA->id, [
+			"position" => 1,
+			"date_from" => "2025-01-01",
+			"date_to" => "2025-05-31",
+		]);
+		$gradebook->students()->attach($studentB->id, [
+			"position" => 2,
+			"date_from" => "2025-07-01",
+		]);
+
+		$complexType = AttendanceComplexType::factory()->create();
+
+		$response = $this->post("/api/gradebooks/$gradebook->id/attendance/$lesson->id", [
+			"attendances" => [
+				[
+					"student_id" => $studentA->id,
+					"complex_type_id" => $complexType->id,
+				]
+			]
+		]);
+
+		$response->assertUnprocessable();
+		$response->assertJsonPath("errors.0", "STUDENT_NOT_IN_GRADEBOOK_FOR_LESSON_DATE");
 	}
 }
