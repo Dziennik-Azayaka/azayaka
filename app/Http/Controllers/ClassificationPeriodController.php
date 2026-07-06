@@ -27,8 +27,26 @@ class ClassificationPeriodController extends Controller
 	public function save(Request $request, int $schoolUnitId, int $schoolYear)
 	{
 		$validated = ValidatorAssistant::validate($request, [
-			"periodEnd" => ["required", "array"]
+			"periodEnd" => ["present", "array"]
 		]);
+
+		if (empty($validated["periodEnd"])) {
+			$periods = ClassificationPeriod::where("school_year", $schoolYear)
+				->where("school_unit_id", $schoolUnitId);
+			$gradebooksExist = Gradebook::whereIn("classification_period_id", $periods->pluck("id"))->exists();
+
+			if ($gradebooksExist) {
+				throw new EntityAlreadyExistsException("GRADEBOOK");
+			}
+
+			ClassificationPeriod::where("school_year", $schoolYear)
+				->where("school_unit_id", $schoolUnitId)
+				->delete();
+
+			return [
+				"success" => true
+			];
+		}
 
 		$classificationPeriodValidatorResponse = ClassificationPeriodAssistant::validate($validated["periodEnd"], $schoolYear);
 		if ($classificationPeriodValidatorResponse) {
@@ -144,25 +162,6 @@ class ClassificationPeriodController extends Controller
 			}
 		});
 
-
-		return [
-			"success" => true
-		];
-	}
-
-	public function delete(int $schoolUnitId, int $schoolYear)
-	{
-		$periods = ClassificationPeriod::where("school_year", $schoolYear)
-			->where("school_unit_id", $schoolUnitId);
-		$gradebooksExist = Gradebook::whereIn("classification_period_id", $periods->pluck("id"))->exists();
-
-		if ($gradebooksExist) {
-			throw new EntityAlreadyExistsException("GRADEBOOK");
-		}
-
-		ClassificationPeriod::where("school_year", $schoolYear)
-			->where("school_unit_id", $schoolUnitId)
-			->delete();
 
 		return [
 			"success" => true

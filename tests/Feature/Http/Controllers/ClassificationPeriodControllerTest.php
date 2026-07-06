@@ -109,7 +109,9 @@ final class ClassificationPeriodControllerTest extends TestCase
 		$periodTwo->period_end = "2026-08-31";
 		$periodTwo->save();
 
-		$response = $this->delete("/api/schoolUnits/$schoolUnit->id/classificationPeriods/2025");
+		$response = $this->postJson("/api/schoolUnits/$schoolUnit->id/classificationPeriods/2025", [
+			"periodEnd" => []
+		]);
 		$response->assertOk();
 		$this->assertDatabaseMissing("classification_periods", [
 			"school_year" => $periodOne->school_year,
@@ -145,7 +147,9 @@ final class ClassificationPeriodControllerTest extends TestCase
 			"classification_period_id" => $period->id,
 		]);
 
-		$response = $this->deleteJson("/api/schoolUnits/$schoolUnit->id/classificationPeriods/2025");
+		$response = $this->postJson("/api/schoolUnits/$schoolUnit->id/classificationPeriods/2025", [
+			"periodEnd" => []
+		]);
 
 		$response->assertStatus(409);
 		$response->assertJson([
