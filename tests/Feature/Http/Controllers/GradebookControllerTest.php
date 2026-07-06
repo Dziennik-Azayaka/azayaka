@@ -90,14 +90,17 @@ final class GradebookControllerTest extends TestCase
 			"period_start" => "2025-09-01",
 			"period_end" => "2025-12-31"
 		]);
+		$classUnit->periods()->attach($classificationPeriod->id, ["level" => 1]);
 		$response = $this->post("/api/gradebooks", [
 			"classUnitId" => $classUnit->id,
 			"classificationPeriodId" => $classificationPeriod->id,
+			"level" => 1
 		]);
 		$response->assertCreated();
 		$this->assertDatabaseHas("gradebooks", [
 			"class_unit_id" => $classUnit->id,
 			"classification_period_id" => $classificationPeriod->id,
+			"level" => 1
 		]);
 	}
 
@@ -113,13 +116,16 @@ final class GradebookControllerTest extends TestCase
 			"period_start" => "2025-09-01",
 			"period_end" => "2025-12-31"
 		]);
+		$classUnit->periods()->attach($classificationPeriod->id, ["level" => 1]);
 		Gradebook::factory()->create([
 			"class_unit_id" => $classUnit->id,
-			"classification_period_id" => $classificationPeriod->id
+			"classification_period_id" => $classificationPeriod->id,
+			"level" => 1
 		]);
 		$response = $this->post("/api/gradebooks", [
 			"classUnitId" => $classUnit->id,
 			"classificationPeriodId" => $classificationPeriod->id,
+			"level" => 1
 		]);
 		$response->assertConflict();
 	}

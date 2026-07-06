@@ -21,7 +21,8 @@ class GradebookFactory extends Factory
     {
         return [
 			"classification_period_id" => ClassificationPeriod::factory(),
-			"class_unit_id" => ClassUnit::factory()
+			"class_unit_id" => ClassUnit::factory(),
+			"level" => rand(1, 8)
         ];
     }
 }

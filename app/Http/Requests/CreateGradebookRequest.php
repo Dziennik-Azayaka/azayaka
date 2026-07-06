@@ -22,7 +22,7 @@ class CreateGradebookRequest extends FormRequest
 		return [
 			"classificationPeriodId" => ["required", "exists:classification_periods,id"],
 			"classUnitId" => ["required", "exists:class_units,id"],
-			"level" => ["nullable", "integer"],
+			"level" => ["required", "integer"],
 		];
 	}
 
@@ -36,27 +36,25 @@ class CreateGradebookRequest extends FormRequest
 			$classUnit = ClassUnit::findOrFail($this->input("classUnitId"));
 			$level = $this->input("level");
 
-			if ($level !== null) {
-				$validLevels = $classUnit->periods()->pluck("class_units_periods.level")->toArray();
-				if (!in_array($level, $validLevels)) {
-					throw new HttpResponseException(\Response::json([
-						"success" => false,
-						"errors" => ["LEVEL_OUTSIDE_CLASS_UNIT_RANGE"]
-					], 422));
-				}
+			$validLevels = $classUnit->periods()->pluck("class_units_periods.level")->toArray();
+			if (!in_array($level, $validLevels)) {
+				throw new HttpResponseException(\Response::json([
+					"success" => false,
+					"errors" => ["LEVEL_OUTSIDE_CLASS_UNIT_RANGE"]
+				], 422));
+			}
 
-				$existingLevelGradebooks = Gradebook::where("class_unit_id", $this->input("classUnitId"))
-					->where(function ($query) use ($level) {
-						$query->where("level", $level)
-							->orWhereNull("level");
-					})
-					->get()
-					->filter(fn($gradebook) => $gradebook->level === $level)
-					->count();
+			$existingLevelGradebooks = Gradebook::where("class_unit_id", $this->input("classUnitId"))
+				->where(function ($query) use ($level) {
+					$query->where("level", $level)
+						->orWhereNull("level");
+				})
+				->get()
+				->filter(fn($gradebook) => $gradebook->level === $level)
+				->count();
 
-				if ($existingLevelGradebooks > 0) {
-					throw new EntityAlreadyExistsException("GRADEBOOK");
-				}
+			if ($existingLevelGradebooks > 0) {
+				throw new EntityAlreadyExistsException("GRADEBOOK");
 			}
 
 			if (Gradebook::where("classification_period_id", $this->input("classificationPeriodId"))

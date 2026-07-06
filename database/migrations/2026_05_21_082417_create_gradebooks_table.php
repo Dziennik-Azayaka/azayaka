@@ -16,7 +16,7 @@ return new class extends Migration
 			// starting classification period
 			$table->foreignId("classification_period_id")->constrained("classification_periods");
 			$table->foreignId("class_unit_id")->constrained("class_units");
-			$table->integer("level")->nullable();
+			$table->integer("level");
             $table->timestamps();
 			$table->unique(["classification_period_id", "class_unit_id"]);
 			$table->index(["class_unit_id", "classification_period_id"]);
