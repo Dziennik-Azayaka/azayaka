@@ -29,6 +29,8 @@ return new class extends Migration
 			$table->integer("position");
 			$table->date("date_from");
 			$table->date("date_to")->nullable();
+			$table->index("gradebook_id");
+			$table->index("student_id");
 			$table->timestamps();
 		});
     }

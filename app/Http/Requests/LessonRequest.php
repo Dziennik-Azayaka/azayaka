@@ -6,6 +6,7 @@ use App\Models\Employee;
 use App\Models\Lesson;
 use App\Models\Subject;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class LessonRequest extends FormRequest
 {
@@ -44,12 +45,7 @@ class LessonRequest extends FormRequest
 			"subjectId" => [
 				"required",
 				"exists:subjects,id",
-				function (string $attribute, mixed $value, \Closure $fail) {
-					$subject = Subject::find($value);
-					if ($subject && !$subject->active) {
-						$fail("SUBJECT_NOT_ACTIVE");
-					}
-				}
+				Rule::exists("subjects", "id")->where("active", "true")
 			],
 			"topic" => ["required", "string", "max:255"],
 			"date" => ["required", "date"],
@@ -60,12 +56,7 @@ class LessonRequest extends FormRequest
 			"assistingTeachers" => ["nullable", "array"],
 			"assistingTeachers.*" => [
 				"exists:employees,id",
-				function (string $attribute, mixed $value, \Closure $fail) {
-					$employee = Employee::find($value);
-					if ($employee && !$employee->active) {
-						$fail("ASSISTING_TEACHER_NOT_ACTIVE");
-					}
-				}
+				Rule::exists("employees", "id")->where("active", "true")
 			],
 			"groups" => ["required", "array"],
 			"groups.*" => ["exists:gradebook_groups,id"],
