@@ -45,7 +45,7 @@ class LessonRequest extends FormRequest
 			"subjectId" => [
 				"required",
 				"exists:subjects,id",
-				Rule::exists("subjects", "id")->where("active", "true")
+				Rule::exists("subjects", "id")->where("active", true)
 			],
 			"topic" => ["required", "string", "max:255"],
 			"date" => ["required", "date"],
@@ -56,7 +56,7 @@ class LessonRequest extends FormRequest
 			"assistingTeachers" => ["nullable", "array"],
 			"assistingTeachers.*" => [
 				"exists:employees,id",
-				Rule::exists("employees", "id")->where("active", "true")
+				Rule::exists("employees", "id")->where("active", true)
 			],
 			"groups" => ["required", "array"],
 			"groups.*" => ["exists:gradebook_groups,id"],
