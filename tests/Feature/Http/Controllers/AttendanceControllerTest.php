@@ -38,7 +38,7 @@ final class AttendanceControllerTest extends TestCase
 			"primary_teacher_id" => $employee->id,
 			"date" => now()->toDateString(),
 		]);
-		$lesson->gradebooks()->sync([$gradebook->id]);
+		$lesson->gradebookGroups()->sync([$group->id]);
 
 		$complexType = AttendanceComplexType::factory()->create();
 		Attendance::factory()->create([
@@ -48,7 +48,7 @@ final class AttendanceControllerTest extends TestCase
 			"employee_id" => $employee->id,
 		]);
 
-		$response = $this->get("/api/gradebooks/$gradebook->id/attendance/dayView?date=$lesson->date");
+		$response = $this->get("/api/gradebookGroups/$group->id/attendance/dayView?date=$lesson->date");
 
 		$response->assertOk();
 		$response->assertJsonPath("0.id", $lesson->id);
@@ -74,7 +74,7 @@ final class AttendanceControllerTest extends TestCase
 
 		$complexType = AttendanceComplexType::factory()->create();
 
-		$response = $this->post("/api/gradebooks/$gradebook->id/attendance/$lesson->id", [
+		$response = $this->post("/api/lessons/$lesson->id/attendance", [
 			"attendances" => [
 				[
 					"student_id" => $student->id,
@@ -114,7 +114,7 @@ final class AttendanceControllerTest extends TestCase
 			"employee_id" => $employee->id,
 		]);
 
-		$response = $this->post("/api/gradebooks/$gradebook->id/attendance/$lesson->id", [
+		$response = $this->post("/api/lessons/$lesson->id/attendance", [
 			"attendances" => [
 				[
 					"student_id" => $student->id,
@@ -184,7 +184,7 @@ final class AttendanceControllerTest extends TestCase
 			"attendance_complex_type_id" => $absenceTypeId
 		]);
 
-		$response = $this->post("/api/gradebooks/$gradebook->id/attendance/$lesson->id/autofill");
+		$response = $this->post("/api/lessons/$lesson->id/attendance/autofill");
 
 		$response->assertOk();
 
@@ -212,7 +212,7 @@ final class AttendanceControllerTest extends TestCase
 		]);
 		$lesson->gradebooks()->sync([$gradebook->id]);
 
-		$response = $this->postJson("/api/gradebooks/$gradebook->id/attendance/$lesson->id/autofill");
+		$response = $this->postJson("/api/lessons/$lesson->id/attendance/autofill");
 
 		$response->assertStatus(404);
 		$response->assertJsonFragment(["PREVIOUS_LESSONS_NOT_FOUND"]);
@@ -234,7 +234,7 @@ final class AttendanceControllerTest extends TestCase
 			"date_from" => now()->toDateString(),
 		]);
 
-		$response = $this->post("/api/gradebooks/$gradebook->id/attendance/$lesson->id", [
+		$response = $this->post("/api/lessons/$lesson->id/attendance", [
 			"attendances" => [
 				[
 					"student_id" => $student->id,
@@ -258,7 +258,7 @@ final class AttendanceControllerTest extends TestCase
 		// NOT attached to the gradebook
 		$student = Student::factory()->create();
 
-		$response = $this->post("/api/gradebooks/$gradebook->id/attendance/$lesson->id", [
+		$response = $this->post("/api/lessons/$lesson->id/attendance", [
 			"attendances" => [
 				[
 					"student_id" => $student->id,
@@ -293,7 +293,7 @@ final class AttendanceControllerTest extends TestCase
 
 		$complexType = AttendanceComplexType::factory()->create();
 
-		$response = $this->post("/api/gradebooks/$gradebook->id/attendance/$lesson->id", [
+		$response = $this->post("/api/lessons/$lesson->id/attendance", [
 			"attendances" => [
 				[
 					"student_id" => $studentA->id,
@@ -304,5 +304,224 @@ final class AttendanceControllerTest extends TestCase
 
 		$response->assertUnprocessable();
 		$response->assertJsonPath("errors.0", "STUDENT_NOT_IN_GRADEBOOK_FOR_LESSON_DATE");
+	}
+
+	public function test_sync_supports_multiple_gradebooks_on_the_same_lesson(): void
+	{
+		$employee = $this->actingAdminUser()->employees->first();
+		$gradebookA = Gradebook::factory()->create();
+		$gradebookB = Gradebook::factory()->create();
+
+		$lesson = Lesson::factory()->create([
+			"primary_teacher_id" => $employee->id,
+			"date" => now()->toDateString(),
+		]);
+		$lesson->gradebooks()->sync([$gradebookA->id, $gradebookB->id]);
+
+		$studentA = Student::factory()->create();
+		$studentB = Student::factory()->create();
+		$studentOutside = Student::factory()->create();
+
+		$gradebookA->students()->attach($studentA->id, [
+			"position" => 1,
+			"date_from" => now()->toDateString(),
+		]);
+		$gradebookB->students()->attach($studentB->id, [
+			"position" => 1,
+			"date_from" => now()->toDateString(),
+		]);
+
+		$complexType = AttendanceComplexType::factory()->create();
+
+		$response = $this->post("/api/lessons/$lesson->id/attendance", [
+			"attendances" => [
+				["student_id" => $studentA->id, "complex_type_id" => $complexType->id],
+				["student_id" => $studentB->id, "complex_type_id" => $complexType->id],
+			]
+		]);
+
+		$response->assertCreated();
+		$this->assertDatabaseHas("attendances", [
+			"lesson_id" => $lesson->id,
+			"student_id" => $studentA->id,
+			"attendance_complex_type_id" => $complexType->id,
+			"employee_id" => $employee->id,
+		]);
+		$this->assertDatabaseHas("attendances", [
+			"lesson_id" => $lesson->id,
+			"student_id" => $studentB->id,
+			"attendance_complex_type_id" => $complexType->id,
+			"employee_id" => $employee->id,
+		]);
+		$this->assertDatabaseMissing("attendances", [
+			"lesson_id" => $lesson->id,
+			"student_id" => $studentOutside->id,
+		]);
+	}
+
+	public function test_sync_rejects_request_when_any_student_is_outside_any_gradebook(): void
+	{
+		$employee = $this->actingAdminUser()->employees->first();
+		$gradebookA = Gradebook::factory()->create();
+		$gradebookB = Gradebook::factory()->create();
+
+		$lesson = Lesson::factory()->create([
+			"primary_teacher_id" => $employee->id,
+			"date" => now()->toDateString(),
+		]);
+		$lesson->gradebooks()->sync([$gradebookA->id, $gradebookB->id]);
+
+		$studentA = Student::factory()->create();
+		$studentOutside = Student::factory()->create();
+
+		$gradebookA->students()->attach($studentA->id, [
+			"position" => 1,
+			"date_from" => now()->toDateString(),
+		]);
+
+		$complexType = AttendanceComplexType::factory()->create();
+
+		$response = $this->post("/api/lessons/$lesson->id/attendance", [
+			"attendances" => [
+				["student_id" => $studentA->id, "complex_type_id" => $complexType->id],
+				["student_id" => $studentOutside->id, "complex_type_id" => $complexType->id],
+			]
+		]);
+
+		$response->assertUnprocessable();
+		$response->assertJsonPath("errors.0", "ATTENDANCES_1_STUDENT_ID_THE_SELECTED_ATTENDANCES_1_STUDENT_ID_IS_INVALID");
+		$this->assertDatabaseMissing("attendances", ["lesson_id" => $lesson->id]);
+	}
+
+	public function test_sync_rejects_request_when_student_gradebook_date_range_does_not_cover_lesson_date_across_any_gradebook(): void
+	{
+		$employee = $this->actingAdminUser()->employees->first();
+		$gradebookA = Gradebook::factory()->create();
+		$gradebookB = Gradebook::factory()->create();
+
+		$lesson = Lesson::factory()->create([
+			"primary_teacher_id" => $employee->id,
+			"date" => "2025-06-15",
+		]);
+		$lesson->gradebooks()->sync([$gradebookA->id, $gradebookB->id]);
+
+		// studentA is in gradebookA but outside the date range
+		$studentA = Student::factory()->create();
+		$gradebookA->students()->attach($studentA->id, [
+			"position" => 1,
+			"date_from" => "2025-01-01",
+			"date_to" => "2025-05-31",
+		]);
+
+		// studentB is in gradebookB with a valid range
+		$studentB = Student::factory()->create();
+		$gradebookB->students()->attach($studentB->id, [
+			"position" => 1,
+			"date_from" => "2025-01-01",
+		]);
+
+		$complexType = AttendanceComplexType::factory()->create();
+
+		$response = $this->post("/api/lessons/$lesson->id/attendance", [
+			"attendances" => [
+				["student_id" => $studentA->id, "complex_type_id" => $complexType->id],
+				["student_id" => $studentB->id, "complex_type_id" => $complexType->id],
+			]
+		]);
+
+		$response->assertUnprocessable();
+		$response->assertJsonPath("errors.0", "STUDENT_NOT_IN_GRADEBOOK_FOR_LESSON_DATE");
+		$this->assertDatabaseMissing("attendances", ["lesson_id" => $lesson->id]);
+	}
+
+	public function test_sync_rejects_request_when_lesson_has_no_gradebooks_attached(): void
+	{
+		$employee = $this->actingAdminUser()->employees->first();
+		$gradebook = Gradebook::factory()->create();
+		$lesson = Lesson::factory()->create([
+			"primary_teacher_id" => $employee->id,
+			"date" => now()->toDateString(),
+		]);
+		// No gradebooks attached to the lesson
+
+		$student = Student::factory()->create();
+		$gradebook->students()->attach($student->id, [
+			"position" => 1,
+			"date_from" => now()->toDateString(),
+		]);
+
+		$complexType = AttendanceComplexType::factory()->create();
+
+		$response = $this->post("/api/lessons/$lesson->id/attendance", [
+			"attendances" => [
+				["student_id" => $student->id, "complex_type_id" => $complexType->id],
+			]
+		]);
+
+		$response->assertUnprocessable();
+		$response->assertJsonPath("errors.0", "ATTENDANCES_0_STUDENT_ID_THE_SELECTED_ATTENDANCES_0_STUDENT_ID_IS_INVALID");
+		$this->assertDatabaseMissing("attendances", ["lesson_id" => $lesson->id]);
+	}
+
+	public function test_autofill_aggregates_attendance_across_multiple_gradebooks(): void
+	{
+		$employee = $this->actingAdminUser()->employees->first();
+		$gradebookA = Gradebook::factory()->create();
+		$gradebookB = Gradebook::factory()->create();
+		$subject = Subject::factory()->create();
+
+		$olderLessonA = Lesson::factory()->create([
+			"subject_id" => $subject->id,
+			"date" => now()->toDateString(),
+			"start_time" => "07:00:00",
+		]);
+		$olderLessonA->gradebooks()->sync([$gradebookA->id, $gradebookB->id]);
+
+		$olderLessonB = Lesson::factory()->create([
+			"subject_id" => $subject->id,
+			"date" => now()->toDateString(),
+			"start_time" => "07:30:00",
+		]);
+		$olderLessonB->gradebooks()->sync([$gradebookB->id]);
+
+		$lesson = Lesson::factory()->create([
+			"subject_id" => $subject->id,
+			"primary_teacher_id" => $employee->id,
+			"date" => now()->toDateString(),
+			"start_time" => "08:00:00",
+		]);
+		$lesson->gradebooks()->sync([$gradebookA->id, $gradebookB->id]);
+
+		$studentA = Student::factory()->create(); // in gradebookA
+		$studentB = Student::factory()->create(); // in gradebookB
+
+		$excusedAbsenceTypeId = AttendanceComplexType::where("maps_to_primitive_type", AttendancePrimitiveType::EXCUSED_ABSENCE)
+			->where("built_in", true)->first()->id;
+		$absenceTypeId = AttendanceComplexType::where("maps_to_primitive_type", AttendancePrimitiveType::ABSENCE)
+			->where("built_in", true)->first()->id;
+
+		Attendance::factory()->create([
+			"lesson_id" => $olderLessonA->id,
+			"student_id" => $studentA->id,
+			"attendance_complex_type_id" => $excusedAbsenceTypeId,
+		]);
+		Attendance::factory()->create([
+			"lesson_id" => $olderLessonB->id,
+			"student_id" => $studentB->id,
+			"attendance_complex_type_id" => $absenceTypeId,
+		]);
+
+		$response = $this->post("/api/lessons/$lesson->id/attendance/autofill");
+
+		$response->assertOk();
+		$response->assertJsonCount(2);
+		$response->assertJsonFragment([
+			"studentId" => $studentA->id,
+			"complexTypeId" => $excusedAbsenceTypeId,
+		]);
+		$response->assertJsonFragment([
+			"studentId" => $studentB->id,
+			"complexTypeId" => $absenceTypeId,
+		]);
 	}
 }

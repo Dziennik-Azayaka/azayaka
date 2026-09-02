@@ -18,7 +18,7 @@ class AttendanceComplexTypeFactory extends Factory
      */
     public function definition(): array
     {
-		$sampleNames = ["nieobecność z powodów szkolnych", "dojazd PKS", "nieobecność ucznia z Ukrainy"];
+		$sampleNames = ["nieobecność z powodów szkolnych", "dojazd PKS", "nieobecność ucznia z Ukrainy", "nauczanie na odległość"];
         return [
             "name" => $sampleNames[array_rand($sampleNames)],
 			"shortcut" => $this->faker->randomLetter() . $this->faker->randomLetter() . $this->faker->randomLetter(),

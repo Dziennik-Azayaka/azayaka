@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -40,5 +41,16 @@ class Employee extends BaseModel
 			"employee_id",
 			"lesson_id"
 		);
+	}
+
+	public function scopeActiveFormTutor(Builder $query): void
+	{
+		$date = now();
+
+		$query->where("date_from", "<=", $date)
+			->where(function (Builder $query) use ($date) {
+				$query->whereNull("date_to")
+					->orWhere("date_to", ">=", $date);
+			});
 	}
 }

@@ -18,7 +18,6 @@ class AttendanceResource extends JsonResource
 	{
 		return [
 			"id" => $this->id,
-			"primitiveType" => $this->primitive_type,
 			"complexType" => $this->attendance_complex_type_id,
 			"studentId" => $this->student_id,
 			"employee" => $this->employee_id != null ?

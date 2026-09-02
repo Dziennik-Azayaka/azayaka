@@ -9,6 +9,8 @@ class StudentLessonResource extends JsonResource
 {
 	public function toArray(Request $request): array
 	{
+		$attendance = $this->attendances->first();
+
 		return [
 			"id" => $this->id,
 			"number" => $this->number,
@@ -19,7 +21,14 @@ class StudentLessonResource extends JsonResource
 			"completed" => $this->completed,
 			"primaryTeacher" => $this->primaryTeacher->first_name . " " . $this->primaryTeacher->last_name,
 			"subject" => $this->subject->name,
-			"assistingTeachers" => $this->assistingTeachers->map(fn($teacher) => $teacher->first_name . " " . $teacher->last_name)
+			"assistingTeachers" => $this->assistingTeachers->map(fn($teacher) => $teacher->first_name . " " . $teacher->last_name),
+			"attendance" => $attendance ? [
+				"id" => $attendance->id,
+				"complexType" => $attendance->attendance_complex_type_id,
+				"employee" => $attendance->employee_id
+					? $attendance->employee->first_name . " " . $attendance->employee->last_name
+					: "System",
+			] : null,
 		];
 	}
 }

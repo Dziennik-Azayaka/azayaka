@@ -9,7 +9,7 @@ use App\Http\Resources\StudentGradebookResource;
 use App\Models\ClassUnit;
 use App\Models\Gradebook;
 use App\Models\GradebookStudents;
-use App\Models\Student;
+use App\Services\AccessContext;
 use App\Utilities\CaseConverter;
 use Illuminate\Http\Request;
 
@@ -78,7 +78,7 @@ class GradebookController extends Controller
 
 	public function getStudentGradebooks(Request $request)
 	{
-		$student = Student::getStudentFromAccessId($request);
+		$student = app(AccessContext::class)->currentStudent();
 		$gradebooks = GradebookStudents::where("student_id", $student->id)
 			->with(["gradebook", "gradebook.classUnit"])->get();
 

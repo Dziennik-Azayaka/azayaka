@@ -6,7 +6,7 @@ use App\Http\Requests\LessonRequest;
 use App\Http\Resources\StudentLessonResource;
 use App\Models\Gradebook;
 use App\Models\Lesson;
-use App\Models\Student;
+use App\Services\AccessContext;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Http\Request;
@@ -16,7 +16,7 @@ class LessonController extends Controller
 	public function list(Request $request, Gradebook $gradebook)
 	{
 		$lessons = $gradebook->lessons()
-			->with(["gradebookGroups", "primaryTeacher", "subject", "assistingTeachers"]);
+			->with(["gradebookGroups.gradebook.classUnit", "gradebooks.classUnit", "primaryTeacher", "subject", "assistingTeachers"]);
 		$lessons = $this->applyFilters($request, $lessons);
 
 		return $lessons->get()->toResourceCollection();
@@ -85,7 +85,7 @@ class LessonController extends Controller
 	private function saveLessonDetails(Request $request, array $validated, Lesson $lesson): Lesson
 	{
 		$lesson->number = $validated["number"];
-		$lesson->primary_teacher_id = $this->getUserEmployee($request)->id;
+		$lesson->primary_teacher_id = app(AccessContext::class)->currentEmployee()->id;
 		$lesson->subject_id = $validated["subjectId"];
 		$lesson->topic = $validated["topic"];
 		$lesson->date = $validated["date"];
@@ -116,8 +116,8 @@ class LessonController extends Controller
 
 	public function getStudentLessons(Request $request, Gradebook $gradebook)
 	{
-		$student = Student::getStudentFromAccessId($request);
-		$lessons = $gradebook->lessons()->with(["primaryTeacher", "subject", "assistingTeachers"])
+		$student = app(AccessContext::class)->currentStudent();
+		$lessons = $gradebook->lessons()->with(["primaryTeacher", "subject", "assistingTeachers", "attendances", "attendances.employee"])
 			->whereHas("gradebookGroups", function ($groupQuery) use ($student) {
 				$groupQuery->whereHas("students", function ($query) use ($student) {
 					$query->where("student_id", $student->id);

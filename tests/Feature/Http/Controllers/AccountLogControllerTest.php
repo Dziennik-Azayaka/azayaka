@@ -70,8 +70,9 @@ final class AccountLogControllerTest extends TestCase
         $this->assertSame($earlier->toIso8601String(), Carbon::parse($date)->toIso8601String());
 
         // Different user with no credentials_changed
-        $this->be(User::factory()->create());
-        $response2 = $this->get("/api/user/logs/lastCredentialUpdate");
+		$this->be(User::factory()->create());
+		$this->withoutHeader("Access-ID");
+		$response2 = $this->get("/api/user/logs/lastCredentialUpdate");
         $response2->assertOk();
         $response2->assertJson([
             "success" => true,

@@ -64,6 +64,17 @@ class Lesson extends Model
 		return $this->hasMany(Attendance::class);
 	}
 
+	public function students(): BelongsToMany
+	{
+		return $this->belongsToMany(
+			Student::class,
+			"attendances",
+			"lesson_id",
+			"student_id"
+		)->withPivot("id", "attendance_complex_type_id", "employee_id", "created_at", "updated_at")
+			->withTimestamps();
+	}
+
 	public function scopeDateFrom($query, $dateFrom)
 	{
 		return $query->whereDate("date", ">=", $dateFrom);

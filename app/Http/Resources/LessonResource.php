@@ -15,6 +15,28 @@ class LessonResource extends JsonResource
 	 */
 	public function toArray(Request $request): array
 	{
+		$groupsByClassUnit = $this->gradebookGroups
+			->groupBy(fn($group) => $group->gradebook->class_unit_id);
+
+		$classUnits = $this->gradebooks
+			->map(fn($gradebook) => $gradebook->classUnit)
+			->unique("id")
+			->values()
+			->map(fn($classUnit) => [
+				"id" => $classUnit->id,
+				"alias" => $classUnit->alias,
+				"mark" => $classUnit->mark,
+				"level" => $classUnit->currentLevel,
+				"groups" => ($groupsByClassUnit->get($classUnit->id) ?? collect())
+					->map(fn($group) => [
+						"id" => $group->id,
+						"name" => $group->name,
+						"shortcut" => $group->shortcut,
+					])
+					->values(),
+			])
+			->values();
+
 		return [
 			"id" => $this->id,
 			"number" => $this->number,
@@ -30,11 +52,7 @@ class LessonResource extends JsonResource
 				"secondName" => $teacher->second_name,
 				"lastName" => $teacher->last_name,
 			]),
-			"groups" => $this->gradebookGroups->map(fn($group) => [
-				"id" => $group->id,
-				"name" => $group->name,
-				"shortcut" => $group->shortcut,
-			]),
+			"classUnits" => $classUnits,
 			"date" => $this->date->format("Y-m-d"),
 			"subject" => $this->subject->name,
 			"topic" => $this->topic,

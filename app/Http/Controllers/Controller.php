@@ -2,33 +2,25 @@
 
 namespace App\Http\Controllers;
 
-use App\Exceptions\CustomValidationException;
-use App\Models\AccountAccess;
-use App\Models\Employee;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Gate;
+use App\Services\AccessContext;
+use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Contracts\Auth\Access\Gate;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 abstract class Controller
 {
-	protected function getUserEmployee(Request $request): Employee
-	{
-		$accessID = $request->header("Access-ID") ?? $request->route("accessId");
-		$employeeAccess = AccountAccess::where("user_id", $request->user()->id)
-			->where("id", $accessID)
-			->with("employee")->first();
-		return $employeeAccess->employee;
-	}
+	use AuthorizesRequests;
 
-	protected function authorize(string $ability, mixed $arguments = []): void
+	public function authorize($ability, $arguments = [])
 	{
-		$employee = $this->getUserEmployee(request());
-		if (!Gate::forUser($employee)->allows($ability, $arguments)) {
-			response()->json([
-				"success" => false,
-				"errors" => [
-					"UNAUTHORIZED_TO_PERFORM_ACTION"
-				]
-			], 403)->throwResponse();
+		[$ability, $arguments] = $this->parseAbilityAndArguments($ability, $arguments);
+
+		$context = app(AccessContext::class);
+
+		if ($context->hasAccess() && $context->personaType() === "employee") {
+			return $this->authorizeForUser($context->currentEmployee(), $ability, $arguments);
 		}
+
+		return app(Gate::class)->authorize($ability, $arguments);
 	}
 }

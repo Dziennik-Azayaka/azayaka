@@ -5,7 +5,6 @@ namespace App\Policies;
 use App\Models\ClassUnit;
 use App\Models\Employee;
 use App\Models\Gradebook;
-use DB;
 
 class GradebookPolicy
 {
@@ -15,12 +14,10 @@ class GradebookPolicy
 			return true;
 		}
 
-		return DB::table("class_units_form_tutors")
-			->where("employee_id", $employee->id)
-			->where("class_unit_id", $classUnit->id)
-			->where("date_from", "<=", now())
-			->where(function ($query) {
-				$query->whereNull("date_to")->orWhere("date_to", ">=", now());
+		return $classUnit->formTutors()
+			->whereKey($employee->id)
+			->whereHas("employee", function ($query) {
+				$query->activeFormTutor();
 			})
 			->exists();
 	}
@@ -46,13 +43,10 @@ class GradebookPolicy
 
 	private function isFormTutorOfGradebook(Employee $employee, Gradebook $gradebook): bool
 	{
-		return DB::table("class_units_form_tutors")
-			->join("gradebooks", "class_units_form_tutors.class_unit_id", "=", "gradebooks.class_unit_id")
-			->where("gradebooks.id", $gradebook->id)
-			->where("class_units_form_tutors.employee_id", $employee->id)
-			->where("class_units_form_tutors.date_from", "<=", now())
-			->where(function ($query) {
-				$query->whereNull("date_to")->orWhere("date_to", ">=", now());
+		return $gradebook->classUnit()
+			->whereHas("formTutors", function ($query) use ($employee) {
+				$query->whereKey($employee->id)
+					->activeFormTutor();
 			})
 			->exists();
 	}

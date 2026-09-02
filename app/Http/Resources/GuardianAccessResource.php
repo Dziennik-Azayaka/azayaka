@@ -10,10 +10,10 @@ class GuardianAccessResource extends JsonResource
 	public function toArray(Request $request): array
 	{
 		return [
-			"guardianFirstName" => $this->first_name,
-			"guardianSecondName" => $this->second_name,
-			"guardianLastName" => $this->last_name,
-			"guardianId" => $this->id,
+			"firstName" => $this->first_name,
+			"secondName" => $this->second_name,
+			"lastName" => $this->last_name,
+			"id" => $this->id,
 			"students" => $this->person->students->map(fn($student) => [
 				"studentId" => $student->id,
 				"firstName" => $student->person->first_name,

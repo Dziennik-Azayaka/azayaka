@@ -9,17 +9,17 @@ class LessonPolicy
 {
 	public function create(Employee $employee, Lesson $lesson): bool
 	{
-		return $lesson->primary_teacher_id === $employee->id;
+		return $this->isAuthorisedToManage($employee, $lesson);
 	}
 
 	public function update(Employee $employee, Lesson $lesson): bool
 	{
-		return $this->create($employee, $lesson);
+		return $this->isAuthorisedToManage($employee, $lesson);
 	}
 
 	public function markAsCompleted(Employee $employee, Lesson $lesson): bool
 	{
-		return $this->update($employee, $lesson);
+		return $this->isAuthorisedToManage($employee, $lesson);
 	}
 
 	public function editAttendance(Employee $employee, Lesson $lesson): bool
@@ -31,11 +31,13 @@ class LessonPolicy
 		return $lesson->gradebooks()
 			->whereHas("classUnit.formTutors", function ($query) use ($employee) {
 				$query->where("employee_id", $employee->id)
-					->where("date_from", "<=", now())
-					->where(function ($query) {
-						$query->whereNull("date_to")->orWhere("date_to", ">=", now());
-					});
+					->activeFormTutor();
 			})
 			->exists();
+	}
+
+	protected function isAuthorisedToManage(Employee $employee, Lesson $lesson): bool
+	{
+		return $lesson->primary_teacher_id === $employee->id;
 	}
 }

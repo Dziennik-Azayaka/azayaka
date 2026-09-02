@@ -13,11 +13,10 @@ class Attendance extends Model
 	use HasFactory;
 
 	protected $fillable = [
-		'lesson_id',
-		'student_id',
-		'primitive_type',
-		'attendance_complex_type_id',
-		'employee_id',
+		"lesson_id",
+		"student_id",
+		"attendance_complex_type_id",
+		"employee_id",
 	];
 
 	public function lesson(): BelongsTo

@@ -4,11 +4,13 @@ use App\Http\Middleware\AllowOnlyStudentsOrGuardians;
 use App\Http\Middleware\EnsureEmployeeHasRole;
 use App\Http\Middleware\CustomThrottleRequests;
 use App\Http\Middleware\DenyIfAuthenticated;
+use App\Http\Middleware\ResolveAccessContext;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Routing\Middleware\ThrottleRequests;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -19,6 +21,7 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->alias([
+			"access.context" => ResolveAccessContext::class,
 			"students.guardians" => AllowOnlyStudentsOrGuardians::class,
 			"auth.deny" => DenyIfAuthenticated::class,
 			"employee.role" => EnsureEmployeeHasRole::class,
@@ -57,5 +60,16 @@ return Application::configure(basePath: dirname(__DIR__))
 			throw \App\Exceptions\CustomValidationException::withMessages(
 				$exception->validator?->errors()?->toArray() ?? ["UNKNOWN_ERROR"]
 			);
+		});
+
+		$exceptions->renderable(function (AccessDeniedHttpException $exception, $request) {
+			if (!$request->wantsJson()) {
+				return null;
+			}
+
+			return \Illuminate\Support\Facades\Response::json([
+				"success" => false,
+				"errors" => ["UNAUTHORIZED_TO_PERFORM_ACTION"]
+			], 403);
 		});
     })->create();

@@ -7,22 +7,22 @@ use App\Exceptions\NotFoundException;
 use App\Http\Resources\LessonAttendanceResource;
 use App\Models\Attendance;
 use App\Models\AttendanceComplexType;
-use App\Models\Gradebook;
+use App\Models\GradebookGroup;
 use App\Models\GradebookStudents;
 use App\Models\Lesson;
 use App\Models\Student;
 use App\Models\Subject;
+use App\Services\AccessContext;
 use DB;
-use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
 class AttendanceController extends Controller
 {
-	public function dayView(Request $request, Gradebook $gradebook)
+	public function dayView(Request $request, GradebookGroup $gradebookGroup)
 	{
-		$gradebook = $gradebook->load(["students.person"]);
+		$gradebookGroup = $gradebookGroup->load(["students.person"]);
 		$date = $request->input("date", now()->toDateString());
 
 		$lessons = Lesson::with([
@@ -31,35 +31,35 @@ class AttendanceController extends Controller
 			"attendances",
 			"attendances.complexType",
 			"attendances.employee",
-		])->whereHas("gradebooks", fn($q) => $q->where("gradebook_id", $gradebook->id))
+		])->whereHas("gradebookGroups", fn($q) => $q->where("gradebook_group_id", $gradebookGroup->id))
 			->where("date", $date)
-			->orderBy("start_time")
+			->oldest("start_time")
 			->get();
 
 		return $lessons->map(fn(Lesson $lesson) => new LessonAttendanceResource(
 			$lesson,
-			$gradebook->students,
+			$gradebookGroup->students,
 			false
 		));
 	}
 
-	public function subjectView(Gradebook $gradebook, Subject $subject)
+	public function subjectView(GradebookGroup $gradebookGroup, Subject $subject)
 	{
-		$gradebook = $gradebook->load("students");
+		$gradebookGroup = $gradebookGroup->load("students");
 		$lessons = Lesson::with([
 			"attendances.complexType",
 			"attendances.student",
 			"attendances.employee"
 		])
 			->where("subject_id", $subject->id)
-			->whereHas("gradebooks", fn($q) => $q->where("gradebook_id", $gradebook->id))
+			->whereHas("gradebookGroups", fn($q) => $q->where("gradebook_group_id", $gradebookGroup->id))
 			->orderByDesc("date")
 			->orderByDesc("start_time")
 			->paginate(15);
 
-		$students = Student::join("gradebooks_students", "students.id", "=", "gradebooks_students.student_id")
-			->where("gradebooks_students.gradebook_id", $gradebook->id)
-			->orderBy("gradebooks_students.position")
+		$students = Student::join("gradebook_group_student", "students.id", "=", "gradebook_group_student.student_id")
+			->where("gradebook_group_student.gradebook_group_id", $gradebookGroup->id)
+			->orderBy("students.id")
 			->select("students.*")
 			->get();
 
@@ -70,17 +70,26 @@ class AttendanceController extends Controller
 		));
 	}
 
-	public function sync(Request $request, Gradebook $gradebook, Lesson $lesson): JsonResponse
+	public function sync(Request $request, Lesson $lesson): JsonResponse
 	{
-		$employee = $this->getUserEmployee($request);
+		$employee = app(AccessContext::class)->currentEmployee();
 		$this->authorize("editAttendance", [$lesson]);
+
+		$gradebookIds = $lesson->gradebooks()->pluck("gradebooks.id")->all();
+
+		if (empty($gradebookIds)) {
+			return response()->json([
+				"success" => false,
+				"errors" => ["LESSON_HAS_NO_GRADEBOOKS"]
+			], 422);
+		}
 
 		$validated = $request->validate([
 			"attendances" => ["required", "array"],
 			"attendances.*.student_id" => [
 				"required",
 				"distinct",
-				Rule::exists("gradebooks_students", "student_id")->where("gradebook_id", $gradebook->id)
+				Rule::exists("gradebooks_students", "student_id")->whereIn("gradebook_id", $gradebookIds)
 			],
 			"attendances.*.complex_type_id" => ["nullable", "exists:attendance_complex_types,id"]
 		]);
@@ -89,7 +98,7 @@ class AttendanceController extends Controller
 
 		$submittedStudentIds = array_column($attendances, "student_id");
 		$validStudentIds = GradebookStudents::query()
-			->where("gradebook_id", $gradebook->id)
+			->whereIn("gradebook_id", $gradebookIds)
 			->where("date_from", "<=", $lesson->date)
 			->where(function ($query) use ($lesson) {
 				$query->whereNull("date_to")->orWhere("date_to", ">=", $lesson->date);
@@ -106,11 +115,11 @@ class AttendanceController extends Controller
 			], 422);
 		}
 
-		$upsertData = [];
-		$studentIdsToKeep = [];
-		$studentIdsToDelete = [];
-		$gradebookStudentIds = $gradebook->students()->pluck("students.id")->all();
-		$now = now();
+		$pivotData = [];
+		$gradebookStudentIds = GradebookStudents::query()
+			->whereIn("gradebook_id", $gradebookIds)
+			->pluck("student_id")
+			->all();
 
 		foreach ($attendances as $item) {
 			$studentId = $item["student_id"];
@@ -118,40 +127,28 @@ class AttendanceController extends Controller
 
 			// delete attendance if the user has removed an entry
 			if ($complexTypeId === null) {
-				$studentIdsToDelete[] = $studentId;
 				continue;
 			}
 
-			$studentIdsToKeep[] = $studentId;
-
-			$upsertData[] = [
-				"lesson_id" => $lesson->id,
-				"student_id" => $studentId,
+			$pivotData[$studentId] = [
 				"attendance_complex_type_id" => $complexTypeId,
 				"employee_id" => $employee->id,
-				"created_at" => $now,
-				"updated_at" => $now,
 			];
 		}
 
-		DB::transaction(function () use ($studentIdsToKeep, $gradebookStudentIds, $lesson, $upsertData, $studentIdsToDelete) {
-			Attendance::where("lesson_id", $lesson->id)
-				->whereIn("student_id", $gradebookStudentIds)
-				->where(function ($query) use ($studentIdsToKeep, $studentIdsToDelete) {
-					$query->whereIn("student_id", $studentIdsToDelete);
+		$currentlyAttached = $lesson->students()->pluck("students.id")->all();
+		$submittedIds = array_keys($pivotData);
+		$keepIds = array_values(array_unique(array_merge(
+			$submittedIds,
+			array_diff($currentlyAttached, $gradebookStudentIds)
+		)));
 
-					if (!empty($studentIdsToKeep)) {
-						$query->orWhereNotIn("student_id", $studentIdsToKeep);
-					}
-				})
-				->delete();
+		DB::transaction(function () use ($lesson, $pivotData, $keepIds, $currentlyAttached) {
+			$lesson->students()->sync(array_intersect_key($pivotData, array_flip($keepIds)));
 
-			if (!empty($upsertData)) {
-				Attendance::upsert(
-					$upsertData,
-					["lesson_id", "student_id"], // which fields are unique?
-					["attendance_complex_type_id", "employee_id", "updated_at"] // if the entry already exists, update these.
-				);
+			$detachIds = array_values(array_diff($currentlyAttached, $keepIds));
+			if (!empty($detachIds)) {
+				$lesson->students()->detach($detachIds);
 			}
 		});
 
@@ -160,12 +157,14 @@ class AttendanceController extends Controller
 		], 201);
 	}
 
-	public function autofill(Gradebook $gradebook, Lesson $lesson)
+	public function autofill(Lesson $lesson)
 	{
 		$this->authorize("editAttendance", [$lesson]);
 
+		$gradebookIds = $lesson->gradebooks()->pluck("gradebooks.id")->all();
+
 		$previousLessons = Lesson::where("subject_id", $lesson->subject_id)
-			->whereHas("gradebooks", fn($q) => $q->whereIn("gradebook_id", $lesson->gradebooks->pluck("id")))
+			->whereHas("gradebooks", fn($q) => $q->whereIn("gradebook_id", $gradebookIds))
 			->where("date", $lesson->date)
 			->where("start_time", "<", $lesson->start_time)
 			->orderByDesc("start_time")

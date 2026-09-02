@@ -39,7 +39,7 @@ Route::middleware(["throttle:16,1"])->group(function () {
 
 Route::get("/api/session", [SessionController::class, "sessionInfo"]);
 
-Route::middleware(["auth", "auth.session"])->group(function () {
+Route::middleware(["auth", "auth.session", "access.context"])->group(function () {
 	Route::get("/api/sessions", [SessionController::class, "currentSessions"]);
 	Route::delete("/api/sessions/remove", [SessionController::class, "removeSession"]);
 	Route::delete("/api/sessions/removeAll", [SessionController::class, "logoutOtherDevices"]);
@@ -90,7 +90,15 @@ Route::middleware(["auth", "auth.session"])->group(function () {
 
 		Route::post("/api/attendanceComplexTypes", [AttendanceComplexTypeController::class, "create"]);
 		Route::put("/api/attendanceComplexTypes/{type}", [AttendanceComplexTypeController::class, "update"]);
-		Route::patch("/api/attendanceComplexTypes/{type}", [AttendanceComplexTypeController::class, "changeActivity"]);
+		Route::put("/api/attendanceComplexTypes/{type}/activity", [AttendanceComplexTypeController::class, "changeActivity"]);
+
+		Route::get("/api/students/accesses", [StudentController::class, "listAccesses"]);
+		Route::post("api/students/accesses/document", [StudentController::class, "generateAccessesDocument"]);
+		Route::get("/api/students/{student}/generateAccess", [StudentController::class, "generateOrRegenerateAccess"]);
+
+		Route::get("/api/guardians/accesses", [GuardianController::class, "listAccesses"]);
+		Route::post("api/guardians/accesses/document", [GuardianController::class, "generateAccessesDocument"]);
+		Route::get("/api/guardians/{guardian}/students/{student}/generateAccess", [GuardianController::class, "generateOrRegenerateAccess"]);
 	});
 
 	Route::middleware(["employee.role:secretary"])->group(function () {
@@ -102,11 +110,8 @@ Route::middleware(["auth", "auth.session"])->group(function () {
 		Route::delete("/api/people/{person}", [PersonController::class, "destroy"]);
 		Route::post("/api/people/{person}/guardians", [GuardianController::class, "create"]);
 
-		Route::get("/api/guardians/accesses", [GuardianController::class, "listAccesses"]);
-		Route::post("api/guardians/accesses/document", [GuardianController::class, "generateAccessesDocument"]);
 		Route::put("/api/guardians/{guardian}", [GuardianController::class, "update"]);
 		Route::delete("/api/guardians/{guardian}", [GuardianController::class, "destroy"]);
-		Route::get("/api/guardians/{guardian}/students/{student}/generateAccess", [GuardianController::class, "generateOrRegenerateAccess"]);
 
 		Route::get("/api/studentRegistry", [StudentRegistryController::class, "list"]);
 		Route::post("/api/studentRegistry", [StudentRegistryController::class, "create"]);
@@ -115,11 +120,8 @@ Route::middleware(["auth", "auth.session"])->group(function () {
 		Route::post("/api/studentRegistry/{studentRegistry}", [StudentController::class, "create"]);
 		Route::get("/api/studentRegistry/{studentRegistry}/export", [StudentRegistryController::class, "export"]);
 
-		Route::get("/api/students/accesses", [StudentController::class, "listAccesses"]);
-		Route::post("api/students/accesses/document", [StudentController::class, "generateAccessesDocument"]);
 		Route::put("/api/students/{student}", [StudentController::class, "update"]);
 		Route::delete("/api/students/{student}", [StudentController::class, "destroy"]);
-		Route::get("/api/students/{student}/generateAccess", [StudentController::class, "generateOrRegenerateAccess"]);
 
 		Route::get("/api/childrenRegistry", [ChildrenRegistryController::class, "list"]);
 		Route::post("/api/childrenRegistry", [ChildrenRegistryController::class, "create"]);
@@ -156,10 +158,10 @@ Route::middleware(["auth", "auth.session"])->group(function () {
 
 	Route::middleware(["employee.role:headmaster,teacher"])->group(function () {
 		Route::get("/api/gradebooks/{gradebook}/lessons", [LessonController::class, "list"]);
-		Route::get("/api/gradebooks/{gradebook}/attendance/dayView", [AttendanceController::class, "dayView"]);
-		Route::get("/api/gradebooks/{gradebook}/attendance/subjectView", [AttendanceController::class, "subjectView"]);
-		Route::post("/api/gradebooks/{gradebook}/attendance/{lesson}", [AttendanceController::class, "sync"]);
-		Route::post("/api/gradebooks/{gradebook}/attendance/{lesson}/autofill", [AttendanceController::class, "autofill"]);
+		Route::get("/api/gradebookGroups/{gradebookGroup}/attendance/dayView", [AttendanceController::class, "dayView"]);
+		Route::get("/api/gradebookGroups/{gradebookGroup}/attendance/subjectView", [AttendanceController::class, "subjectView"]);
+		Route::post("/api/lessons/{lesson}/attendance", [AttendanceController::class, "sync"]);
+		Route::post("/api/lessons/{lesson}/attendance/autofill", [AttendanceController::class, "autofill"]);
 	});
 
 	Route::middleware(["employee.role:teacher"])->group(function () {

@@ -141,7 +141,7 @@ final class AttendanceComplexTypeControllerTest extends TestCase
 		$this->actingAdminUser();
 
 		$type = AttendanceComplexType::factory()->create();
-		$response = $this->patchJson("/api/attendanceComplexTypes/$type->id");
+		$response = $this->putJson("/api/attendanceComplexTypes/$type->id/activity");
 
 		$response->assertStatus(200)
 			->assertJson([
@@ -161,7 +161,7 @@ final class AttendanceComplexTypeControllerTest extends TestCase
 		$type = AttendanceComplexType::factory()->create([
 			"active" => false
 		]);
-		$response = $this->patchJson("/api/attendanceComplexTypes/$type->id");
+		$response = $this->putJson("/api/attendanceComplexTypes/$type->id/activity");
 
 		$response->assertStatus(200)
 			->assertJson([

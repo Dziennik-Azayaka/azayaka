@@ -12,7 +12,8 @@ class StudentGradebookResource extends JsonResource
 		return [
 			"id" => $this->gradebook->id,
 			"classUnit" => $this->gradebook->classUnit->toResource(),
-			"schoolYear" => $this->gradebook->startingClassificationPeriod->school_year
+			"schoolYear" => $this->gradebook->startingClassificationPeriod->school_year,
+			"periodNumber" => $this->gradebook->startingClassificationPeriod->period_number
 		];
 	}
 }

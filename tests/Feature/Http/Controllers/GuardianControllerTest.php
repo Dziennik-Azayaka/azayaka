@@ -128,9 +128,9 @@ final class GuardianControllerTest extends TestCase
 
 		$response->assertStatus(200)
 			->assertJsonFragment([
-				"guardianId" => $guardian->id,
-				"guardianFirstName" => $guardian->first_name,
-				"guardianLastName" => $guardian->last_name,
+				"id" => $guardian->id,
+				"firstName" => $guardian->first_name,
+				"lastName" => $guardian->last_name,
 			]);
 
 		$data = $response->json()[0];

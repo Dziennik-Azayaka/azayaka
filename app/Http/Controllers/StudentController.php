@@ -11,6 +11,7 @@ use App\Http\Resources\ResidenceAddressResource;
 use App\Models\AccountAccess;
 use App\Models\Student;
 use App\Models\StudentRegistry;
+use App\Services\AccessContext;
 use App\Utilities\AccountAccessDocumentGenerator;
 use App\Utilities\AccountAccessWordsGenerator;
 use Illuminate\Http\Request;
@@ -209,7 +210,8 @@ class StudentController extends Controller
 
 	public function getStudentInfo(Request $request)
 	{
-		$student = Student::getStudentFromAccessId($request);
+		$student = app(AccessContext::class)->currentStudent()
+			->load(["person", "person.residenceAddress"]);
 
 		return [
 			"id" => $student->id,

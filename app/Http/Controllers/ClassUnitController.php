@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Enums\ClassUnitCategory;
 use App\Exceptions\EntityAlreadyExistsException;
-use App\Exceptions\GradebooksExistException;
 use App\Models\ClassificationPeriod;
 use App\Models\ClassUnit;
 use App\Models\ClassUnitFormTutors;
@@ -127,7 +126,7 @@ class ClassUnitController extends Controller
 		foreach ($validated["employees"] as $employee) {
 			$employeeIds[] = $employee["id"];
 
-			$dateFrom = Carbon::parse($employee["dateFrom"]);
+			$dateFrom = isset($employee["dateFrom"]) ? Carbon::parse($employee["dateFrom"]) : Carbon::parse($startingClassificationPeriod->period_start);
 			$dateTo = isset($employee["dateTo"]) ? Carbon::parse($employee["dateTo"]) : null;
 
 			if ($dateTo !== null && $dateFrom->gt($dateTo)) {
@@ -174,12 +173,13 @@ class ClassUnitController extends Controller
 	public function generatePivotEntries($employees, ClassUnit $classUnit): array
 	{
 		$now = Carbon::now();
+		$startingPeriod = ClassificationPeriod::find($classUnit->starting_classification_period_id);
 		$pivotEntries = [];
 		foreach ($employees as $employee) {
 			$pivotEntries[] = [
 				"class_unit_id" => $classUnit->id,
 				"employee_id" => $employee["id"],
-				"date_from" => $employee["dateFrom"],
+				"date_from" => $employee["dateFrom"] ?? $startingPeriod->period_start,
 				"date_to" => $employee["dateTo"] ?? null,
 				"created_at" => $now,
 				"updated_at" => $now,

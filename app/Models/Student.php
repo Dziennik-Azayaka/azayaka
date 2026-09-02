@@ -6,9 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Http\Request;
 
 class Student extends BaseModel
 {
@@ -38,12 +36,5 @@ class Student extends BaseModel
 	public function accountAccesses(): HasMany
 	{
 		return $this->hasMany(AccountAccess::class);
-	}
-
-	public static function getStudentFromAccessId(Request $request): Student
-	{
-		$accessID = $request->header("Access-ID") ?? $request->route("accessId");
-		return AccountAccess::where("user_id", $request->user()->id)
-			->where("id", $accessID)->first()->student()->with(["person", "person.residenceAddress"])->first();
 	}
 }

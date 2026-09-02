@@ -44,16 +44,16 @@ class CreateGradebookRequest extends FormRequest
 				], 422));
 			}
 
-			$existingLevelGradebooks = Gradebook::where("class_unit_id", $this->input("classUnitId"))
+			$gradebooksExistForLevel = Gradebook::where("class_unit_id", $this->input("classUnitId"))
 				->where(function ($query) use ($level) {
 					$query->where("level", $level)
 						->orWhereNull("level");
 				})
 				->get()
 				->filter(fn($gradebook) => $gradebook->level === $level)
-				->count();
+				->isNotEmpty();
 
-			if ($existingLevelGradebooks > 0) {
+			if ($gradebooksExistForLevel) {
 				throw new EntityAlreadyExistsException("GRADEBOOK");
 			}
 

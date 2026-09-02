@@ -247,6 +247,7 @@ final class GradebookControllerTest extends TestCase
 		$response->assertJsonFragment([
 			"id" => $gradebook->id,
 			"schoolYear" => $gradebook->startingClassificationPeriod->school_year,
+			"periodNumber" => $gradebook->startingClassificationPeriod->period_number
 		]);
 	}
 
