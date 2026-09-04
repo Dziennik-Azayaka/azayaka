@@ -20,6 +20,13 @@ final class AttendanceControllerTest extends TestCase
 {
 	use RefreshDatabase;
 
+	private function attachGradebook(Lesson $lesson, int ...$gradebookIds): void
+	{
+		foreach ($gradebookIds as $gradebookId) {
+			$lesson->gradebooks()->create(["gradebook_id" => $gradebookId]);
+		}
+	}
+
 	public function test_day_view_returns_correct_structure(): void
 	{
 		$employee = $this->actingAdminUser()->employees->first();
@@ -38,7 +45,8 @@ final class AttendanceControllerTest extends TestCase
 			"primary_teacher_id" => $employee->id,
 			"date" => now()->toDateString(),
 		]);
-		$lesson->gradebookGroups()->sync([$group->id]);
+		$lessonGradebook = $lesson->gradebooks()->create(["gradebook_id" => $gradebook->id]);
+		$lessonGradebook->groups()->create(["gradebook_group_id" => $group->id]);
 
 		$complexType = AttendanceComplexType::factory()->create();
 		Attendance::factory()->create([
@@ -65,7 +73,7 @@ final class AttendanceControllerTest extends TestCase
 			"primary_teacher_id" => $employee->id,
 			"date" => now()->toDateString(),
 		]);
-		$lesson->gradebooks()->sync([$gradebook->id]);
+		$this->attachGradebook($lesson, $gradebook->id);
 		$student = Student::factory()->create();
 		$gradebook->students()->attach($student->id, [
 			"position" => 1,
@@ -100,7 +108,7 @@ final class AttendanceControllerTest extends TestCase
 			"primary_teacher_id" => $employee->id,
 			"date" => now()->toDateString(),
 		]);
-		$lesson->gradebooks()->sync([$gradebook->id]);
+		$this->attachGradebook($lesson, $gradebook->id);
 		$student = Student::factory()->create();
 
 		$gradebook->students()->attach($student->id, [
@@ -141,14 +149,14 @@ final class AttendanceControllerTest extends TestCase
 			"date" => now()->toDateString(),
 			"start_time" => "07:00:00",
 		]);
-		$olderLesson->gradebooks()->sync([$gradebook->id]);
+		$this->attachGradebook($olderLesson, $gradebook->id);
 
 		$newerLesson = Lesson::factory()->create([
 			"subject_id" => $subject->id,
 			"date" => now()->toDateString(),
 			"start_time" => "07:45:00",
 		]);
-		$newerLesson->gradebooks()->sync([$gradebook->id]);
+		$this->attachGradebook($newerLesson, $gradebook->id);
 
 		$lesson = Lesson::factory()->create([
 			"subject_id" => $subject->id,
@@ -156,7 +164,7 @@ final class AttendanceControllerTest extends TestCase
 			"date" => now()->toDateString(),
 			"start_time" => "08:00:00",
 		]);
-		$lesson->gradebooks()->sync([$gradebook->id]);
+		$this->attachGradebook($lesson, $gradebook->id);
 
 		$studentA = Student::factory()->create();
 		$studentB = Student::factory()->create();
@@ -210,7 +218,7 @@ final class AttendanceControllerTest extends TestCase
 		$lesson = Lesson::factory()->create([
 			"primary_teacher_id" => $employee->id,
 		]);
-		$lesson->gradebooks()->sync([$gradebook->id]);
+		$this->attachGradebook($lesson, $gradebook->id);
 
 		$response = $this->postJson("/api/lessons/$lesson->id/attendance/autofill");
 
@@ -227,7 +235,7 @@ final class AttendanceControllerTest extends TestCase
 		$lesson = Lesson::factory()->create([
 			"primary_teacher_id" => $otherEmployee->id,
 		]);
-		$lesson->gradebooks()->sync([$gradebook->id]);
+		$this->attachGradebook($lesson, $gradebook->id);
 		$student = Student::factory()->create();
 		$gradebook->students()->attach($student->id, [
 			"position" => 1,
@@ -254,7 +262,7 @@ final class AttendanceControllerTest extends TestCase
 		$lesson = Lesson::factory()->create([
 			"primary_teacher_id" => $employee->id,
 		]);
-		$lesson->gradebooks()->sync([$gradebook->id]);
+		$this->attachGradebook($lesson, $gradebook->id);
 		// NOT attached to the gradebook
 		$student = Student::factory()->create();
 
@@ -278,7 +286,7 @@ final class AttendanceControllerTest extends TestCase
 			"primary_teacher_id" => $employee->id,
 			"date" => "2025-06-15",
 		]);
-		$lesson->gradebooks()->sync([$gradebook->id]);
+		$this->attachGradebook($lesson, $gradebook->id);
 		$studentA = Student::factory()->create();
 		$studentB = Student::factory()->create();
 		$gradebook->students()->attach($studentA->id, [
@@ -316,7 +324,7 @@ final class AttendanceControllerTest extends TestCase
 			"primary_teacher_id" => $employee->id,
 			"date" => now()->toDateString(),
 		]);
-		$lesson->gradebooks()->sync([$gradebookA->id, $gradebookB->id]);
+		$this->attachGradebook($lesson, $gradebookA->id, $gradebookB->id);
 
 		$studentA = Student::factory()->create();
 		$studentB = Student::factory()->create();
@@ -369,7 +377,7 @@ final class AttendanceControllerTest extends TestCase
 			"primary_teacher_id" => $employee->id,
 			"date" => now()->toDateString(),
 		]);
-		$lesson->gradebooks()->sync([$gradebookA->id, $gradebookB->id]);
+		$this->attachGradebook($lesson, $gradebookA->id, $gradebookB->id);
 
 		$studentA = Student::factory()->create();
 		$studentOutside = Student::factory()->create();
@@ -403,7 +411,7 @@ final class AttendanceControllerTest extends TestCase
 			"primary_teacher_id" => $employee->id,
 			"date" => "2025-06-15",
 		]);
-		$lesson->gradebooks()->sync([$gradebookA->id, $gradebookB->id]);
+		$this->attachGradebook($lesson, $gradebookA->id, $gradebookB->id);
 
 		// studentA is in gradebookA but outside the date range
 		$studentA = Student::factory()->create();
@@ -475,14 +483,14 @@ final class AttendanceControllerTest extends TestCase
 			"date" => now()->toDateString(),
 			"start_time" => "07:00:00",
 		]);
-		$olderLessonA->gradebooks()->sync([$gradebookA->id, $gradebookB->id]);
+		$this->attachGradebook($olderLessonA, $gradebookA->id, $gradebookB->id);
 
 		$olderLessonB = Lesson::factory()->create([
 			"subject_id" => $subject->id,
 			"date" => now()->toDateString(),
 			"start_time" => "07:30:00",
 		]);
-		$olderLessonB->gradebooks()->sync([$gradebookB->id]);
+		$this->attachGradebook($olderLessonB, $gradebookB->id);
 
 		$lesson = Lesson::factory()->create([
 			"subject_id" => $subject->id,
@@ -490,7 +498,7 @@ final class AttendanceControllerTest extends TestCase
 			"date" => now()->toDateString(),
 			"start_time" => "08:00:00",
 		]);
-		$lesson->gradebooks()->sync([$gradebookA->id, $gradebookB->id]);
+		$this->attachGradebook($lesson, $gradebookA->id, $gradebookB->id);
 
 		$studentA = Student::factory()->create(); // in gradebookA
 		$studentB = Student::factory()->create(); // in gradebookB

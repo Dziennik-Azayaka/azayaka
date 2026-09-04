@@ -4,7 +4,9 @@ namespace Database\Factories;
 
 use App\Models\Employee;
 use App\Models\Gradebook;
+use App\Models\GradebookGroup;
 use App\Models\Lesson;
+use App\Models\LessonGradebook;
 use App\Models\Subject;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -16,7 +18,18 @@ class LessonFactory extends Factory
 	public function configure(): static
 	{
 		return $this->afterCreating(function (Lesson $lesson) {
-			$lesson->gradebooks()->attach(Gradebook::factory()->create());
+			$gradebook = Gradebook::factory()->create();
+			$lessonGradebook = LessonGradebook::create([
+				"lesson_id" => $lesson->id,
+				"gradebook_id" => $gradebook->id,
+			]);
+
+			$group = GradebookGroup::factory()->create([
+				"gradebook_id" => $gradebook->id,
+			]);
+			$lessonGradebook->groups()->create([
+				"gradebook_group_id" => $group->id,
+			]);
 		});
 	}
 

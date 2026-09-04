@@ -37,9 +37,11 @@ class GradebookGroup extends Model
 	{
 		return $this->belongsToMany(
 			Lesson::class,
-			"lessons_gradebook_group",
+			"lesson_gradebook_groups",
 			"gradebook_group_id",
-			"lesson_id"
-		);
+			"lesson_gradebook_id"
+		)->join("lesson_gradebooks", "lesson_gradebooks.id", "=", "lesson_gradebook_groups.lesson_gradebook_id")
+			->whereColumn("lesson_gradebooks.lesson_id", "lessons.id")
+			->select("lessons.*");
 	}
 }

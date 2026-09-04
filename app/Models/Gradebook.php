@@ -7,7 +7,6 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Gradebook extends Model
 {
@@ -47,14 +46,9 @@ class Gradebook extends Model
 		return $this->hasMany(GradebookGroupSubject::class, "gradebook_id")->whereNull("gradebook_group_id");
 	}
 
-	public function lessons(): BelongsToMany
+	public function lessons(): HasMany
 	{
-		return $this->belongsToMany(
-			Lesson::class,
-			"lessons_gradebooks",
-			"gradebook_id",
-			"lesson_id"
-		);
+		return $this->hasMany(LessonGradebook::class);
 	}
 
 	public function scopeInSchoolUnit($query, int $schoolUnitId)

@@ -28,7 +28,7 @@ class LessonControllerTest extends TestCase
 			"date" => "2026-05-24",
 			"completed" => true
 		]);
-		$matchingLesson->gradebooks()->sync([$gradebook->id]);
+		$matchingLesson->gradebooks()->create(["gradebook_id" => $gradebook->id]);
 
 		Lesson::factory()->create([
 			"date" => "2026-05-25",
@@ -51,11 +51,11 @@ class LessonControllerTest extends TestCase
 		$assistingTeacher = Employee::factory()->create();
 
 		$matchingLesson = Lesson::factory()->create();
-		$matchingLesson->gradebooks()->sync([$gradebook->id]);
+		$matchingLesson->gradebooks()->create(["gradebook_id" => $gradebook->id]);
 		$matchingLesson->assistingTeachers()->attach($assistingTeacher);
 
 		$nonMatchingLesson = Lesson::factory()->create();
-		$nonMatchingLesson->gradebooks()->sync([$gradebook->id]);
+		$nonMatchingLesson->gradebooks()->create(["gradebook_id" => $gradebook->id]);
 
 		$response = $this->getJson(
 			"/api/gradebooks/$gradebook->id/lessons?assistingTeacherId=$assistingTeacher->id"
@@ -72,11 +72,16 @@ class LessonControllerTest extends TestCase
 		$gradebook = Gradebook::factory()->create();
 		$subject = Subject::factory()->create();
 		$assistingTeacher = Employee::factory()->create();
-		$group = GradebookGroup::factory()->create();
+		$group = GradebookGroup::factory()->create(["gradebook_id" => $gradebook->id]);
 
 		$payload = [
 			"number" => 1,
-			"gradebookIds" => [$gradebook->id],
+			"gradebooks" => [
+				[
+					"id" => $gradebook->id,
+					"groupIds" => [$group->id],
+				],
+			],
 			"subjectId" => $subject->id,
 			"topic" => "Programowanie pojazdów autonomicznych w języku Scratch",
 			"date" => "2026-05-24",
@@ -84,7 +89,6 @@ class LessonControllerTest extends TestCase
 			"endTime" => "11:30",
 			"completed" => false,
 			"assistingTeachers" => [$assistingTeacher->id],
-			"groups" => [$group->id],
 		];
 
 		$response = $this->postJson("/api/lessons", $payload);
@@ -99,7 +103,7 @@ class LessonControllerTest extends TestCase
 			"primary_teacher_id" => $employee->id,
 		]);
 
-		$this->assertDatabaseHas("lessons_gradebooks", [
+		$this->assertDatabaseHas("lesson_gradebooks", [
 			"lesson_id" => $lessonId,
 			"gradebook_id" => $gradebook->id,
 		]);
@@ -109,26 +113,31 @@ class LessonControllerTest extends TestCase
 			"employee_id" => $assistingTeacher->id,
 		]);
 
-		$this->assertDatabaseHas("lessons_gradebook_group", [
-			"lesson_id" => $lessonId,
+		$this->assertDatabaseHas("lesson_gradebook_groups", [
 			"gradebook_group_id" => $group->id,
 		]);
 	}
 
 	public function test_can_update_a_lesson(): void
 	{
-		$this->actingAdminUser();
+		$employee = $this->actingAdminUser()->employees->first();
 		$lesson = Lesson::factory()->create([
 			"topic" => "Sieci neuronowe w Scratchu",
-			"primary_teacher_id" => $this->actingAdminUser->employees->first()->id
+			"primary_teacher_id" => $employee->id
 		]);
 
 		$newSubject = Subject::factory()->create();
-		$newGroup = GradebookGroup::factory()->create();
+		$gradebookIds = $lesson->gradebooks->pluck("gradebook_id")->toArray();
+		$newGroup = GradebookGroup::factory()->create(["gradebook_id" => $gradebookIds[0]]);
 
 		$payload = [
 			"number" => 2,
-			"gradebookIds" => $lesson->gradebooks->pluck("id")->toArray(),
+			"gradebooks" => [
+				[
+					"id" => $gradebookIds[0],
+					"groupIds" => [$newGroup->id],
+				],
+			],
 			"subjectId" => $newSubject->id,
 			"topic" => "Tworzenie dużych modeli językowych w języku Scratch",
 			"date" => "2026-05-25",
@@ -136,7 +145,6 @@ class LessonControllerTest extends TestCase
 			"endTime" => "13:00",
 			"completed" => false,
 			"assistingTeachers" => [],
-			"groups" => [$newGroup->id],
 		];
 
 		$response = $this->putJson("/api/lessons/$lesson->id", $payload);
@@ -150,8 +158,7 @@ class LessonControllerTest extends TestCase
 			"subject_id" => $newSubject->id,
 		]);
 
-		$this->assertDatabaseHas("lessons_gradebook_group", [
-			"lesson_id" => $lesson->id,
+		$this->assertDatabaseHas("lesson_gradebook_groups", [
 			"gradebook_group_id" => $newGroup->id,
 		]);
 	}
@@ -189,8 +196,9 @@ class LessonControllerTest extends TestCase
 			"subject_id" => $subject->id,
 			"primary_teacher_id" => $primaryTeacher->id
 		]);
-		$lesson->gradebooks()->sync([$gradebook->id]);
-		$lesson->gradebookGroups()->attach($gradebookGroup);
+		$lessonGradebook = $lesson->gradebooks()->create(["gradebook_id" => $gradebook->id]);
+		$lessonGradebook->groups()->create(["gradebook_group_id" => $gradebookGroup->id]);
+
 		$response = $this->getJson("/api/students/me/gradebooks/$gradebook->id/lessons");
 		$response->assertStatus(200);
 		$response->assertJsonCount(1);

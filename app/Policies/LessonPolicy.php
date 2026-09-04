@@ -29,7 +29,7 @@ class LessonPolicy
 		}
 
 		return $lesson->gradebooks()
-			->whereHas("classUnit.formTutors", function ($query) use ($employee) {
+			->whereHas("gradebook.classUnit.formTutors", function ($query) use ($employee) {
 				$query->where("employee_id", $employee->id)
 					->activeFormTutor();
 			})

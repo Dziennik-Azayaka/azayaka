@@ -26,7 +26,7 @@ return new class extends Migration {
 			$table->index(["subject_id"]);
 		});
 
-		Schema::create("lessons_gradebooks", function (Blueprint $table) {
+		Schema::create("lesson_gradebooks", function (Blueprint $table) {
 			$table->id();
 			$table->foreignId("lesson_id")->constrained("lessons")->onDelete("cascade");
 			$table->foreignId("gradebook_id")->constrained("gradebooks")->onDelete("cascade");
@@ -44,12 +44,12 @@ return new class extends Migration {
 			$table->timestamps();
 		});
 
-		Schema::create("lessons_gradebook_group", function (Blueprint $table) {
+		Schema::create("lesson_gradebook_groups", function (Blueprint $table) {
 			$table->id();
-			$table->foreignId("lesson_id")->constrained("lessons")->onDelete("cascade");
+			$table->foreignId("lesson_gradebook_id")->constrained("lesson_gradebooks")->onDelete("cascade");
 			$table->foreignId("gradebook_group_id")->constrained("gradebook_groups")->onDelete("cascade");
-			$table->unique(["lesson_id", "gradebook_group_id"]);
-			$table->index(["gradebook_group_id", "lesson_id"]);
+			$table->unique(["lesson_gradebook_id", "gradebook_group_id"], "lesson_gradebook_groups_unique");
+			$table->index(["gradebook_group_id", "lesson_gradebook_id"], "lesson_gradebook_groups_index");
 			$table->timestamps();
 		});
 	}
@@ -59,9 +59,9 @@ return new class extends Migration {
 	 */
 	public function down(): void
 	{
-		Schema::dropIfExists("lessons_gradebook_group");
+		Schema::dropIfExists("lesson_gradebook_groups");
 		Schema::dropIfExists("lessons_assisting_teachers");
-		Schema::dropIfExists("lessons_gradebooks");
+		Schema::dropIfExists("lesson_gradebooks");
 		Schema::dropIfExists("lessons");
 	}
 };

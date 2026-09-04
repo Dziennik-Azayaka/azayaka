@@ -6,6 +6,7 @@ use App\Http\Requests\LessonRequest;
 use App\Http\Resources\StudentLessonResource;
 use App\Models\Gradebook;
 use App\Models\Lesson;
+use App\Models\LessonGradebook;
 use App\Services\AccessContext;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -15,8 +16,14 @@ class LessonController extends Controller
 {
 	public function list(Request $request, Gradebook $gradebook)
 	{
-		$lessons = $gradebook->lessons()
-			->with(["gradebookGroups.gradebook.classUnit", "gradebooks.classUnit", "primaryTeacher", "subject", "assistingTeachers"]);
+		$lessons = Lesson::whereHas("gradebooks.gradebook", fn($q) => $q->where("gradebooks.id", $gradebook->id))
+			->with([
+				"subject",
+				"primaryTeacher",
+				"assistingTeachers",
+				"gradebooks.gradebook.classUnit",
+				"gradebooks.groups.gradebookGroup",
+			]);
 		$lessons = $this->applyFilters($request, $lessons);
 
 		return $lessons->get()->toResourceCollection();
@@ -25,28 +32,42 @@ class LessonController extends Controller
 	public function create(LessonRequest $request)
 	{
 		$validated = $request->validated();
+		$employee = app(AccessContext::class)->currentEmployee();
 
-		if (!isset($validated["number"])) {
-			$validated["number"] = Lesson::where("subject_id", $validated["subjectId"])
-					->whereHas("gradebooks", fn($q) => $q->whereIn("gradebooks.id", $validated["gradebookIds"]))
-					->whereHas("gradebookGroups", fn($q) => $q->whereIn("gradebook_groups.id", $validated["groups"]))
-					->max("number") + 1;
-		}
+		$lesson = \DB::transaction(function () use ($validated, $employee) {
+			if (!isset($validated["number"])) {
+				$validated["number"] = $this->nextNumber($validated);
+			}
 
-		$lesson = \DB::transaction(function () use ($request, $validated) {
 			$lesson = new Lesson();
+			$lesson->number = $validated["number"];
+			$lesson->primary_teacher_id = $employee->id;
+			$lesson->subject_id = $validated["subjectId"];
+			$lesson->topic = $validated["topic"];
+			$lesson->date = $validated["date"];
+			$lesson->start_time = $validated["startTime"];
+			$lesson->end_time = $validated["endTime"];
+			$lesson->completed = $validated["completed"] ?? false;
+			$lesson->saveOrFail();
 
-			$lesson = $this->saveLessonDetails($request, $validated, $lesson);
-			$lesson->gradebooks()->sync($validated["gradebookIds"]);
-			$this->authorize("create", [
-				$lesson
-			]);
+			$this->authorize("create", [$lesson]);
+
+			foreach ($validated["gradebooks"] as $entry) {
+				$lessonGradebook = LessonGradebook::create([
+					"lesson_id" => $lesson->id,
+					"gradebook_id" => $entry["id"],
+				]);
+
+				foreach ($entry["groupIds"] ?? [] as $groupId) {
+					$lessonGradebook->groups()->create([
+						"gradebook_group_id" => $groupId,
+					]);
+				}
+			}
 
 			if (!empty($validated["assistingTeachers"])) {
 				$lesson->assistingTeachers()->attach($validated["assistingTeachers"]);
 			}
-
-			$lesson->gradebookGroups()->attach($validated["groups"]);
 
 			return $lesson;
 		});
@@ -67,37 +88,38 @@ class LessonController extends Controller
 			$validated["number"] = $lesson->number;
 		}
 
-		\DB::transaction(function () use ($request, $validated, $lesson) {
-			$lesson = $this->saveLessonDetails($request, $validated, $lesson);
-			$lesson->gradebooks()->sync($validated["gradebookIds"]);
-			$lesson->assistingTeachers()->sync($validated["assistingTeachers"]);
-			$lesson->gradebookGroups()->sync($validated["groups"]);
+		\DB::transaction(function () use ($validated, $lesson) {
+			$lesson->number = $validated["number"];
+			$lesson->subject_id = $validated["subjectId"];
+			$lesson->topic = $validated["topic"];
+			$lesson->date = $validated["date"];
+			$lesson->start_time = $validated["startTime"];
+			$lesson->end_time = $validated["endTime"];
+			if (array_key_exists("completed", $validated)) {
+				$lesson->completed = $validated["completed"];
+			}
+			$lesson->saveOrFail();
+
+			$lesson->gradebooks()->delete();
+			foreach ($validated["gradebooks"] as $entry) {
+				$lessonGradebook = LessonGradebook::create([
+					"lesson_id" => $lesson->id,
+					"gradebook_id" => $entry["id"],
+				]);
+
+				foreach ($entry["groupIds"] ?? [] as $groupId) {
+					$lessonGradebook->groups()->create([
+						"gradebook_group_id" => $groupId,
+					]);
+				}
+			}
+
+			$lesson->assistingTeachers()->sync($validated["assistingTeachers"] ?? []);
 		});
 
 		return [
 			"success" => true
 		];
-	}
-
-	/**
-	 * @throws \Throwable
-	 */
-	private function saveLessonDetails(Request $request, array $validated, Lesson $lesson): Lesson
-	{
-		$lesson->number = $validated["number"];
-		$lesson->primary_teacher_id = app(AccessContext::class)->currentEmployee()->id;
-		$lesson->subject_id = $validated["subjectId"];
-		$lesson->topic = $validated["topic"];
-		$lesson->date = $validated["date"];
-		$lesson->start_time = $validated["startTime"];
-		$lesson->end_time = $validated["endTime"];
-		if (isset($validated["completed"])) {
-			$lesson->completed = $validated["completed"];
-		} else {
-			$lesson->completed = false;
-		}
-		$lesson->saveOrFail();
-		return $lesson;
 	}
 
 	public function markAsCompleted(Lesson $lesson)
@@ -117,12 +139,11 @@ class LessonController extends Controller
 	public function getStudentLessons(Request $request, Gradebook $gradebook)
 	{
 		$student = app(AccessContext::class)->currentStudent();
-		$lessons = $gradebook->lessons()->with(["primaryTeacher", "subject", "assistingTeachers", "attendances", "attendances.employee"])
-			->whereHas("gradebookGroups", function ($groupQuery) use ($student) {
-				$groupQuery->whereHas("students", function ($query) use ($student) {
-					$query->where("student_id", $student->id);
-				});
-			});
+		$lessons = Lesson::whereHas("gradebooks.gradebook", fn($q) => $q->where("gradebooks.id", $gradebook->id))
+			->whereHas("gradebooks.groups.gradebookGroup.students", function ($query) use ($student) {
+				$query->where("students.id", $student->id);
+			})
+			->with(["primaryTeacher", "subject", "assistingTeachers", "attendances", "attendances.employee"]);
 		$lessons = $this->applyFilters($request, $lessons);
 
 		return StudentLessonResource::collection($lessons->get());
@@ -138,5 +159,16 @@ class LessonController extends Controller
 			->when($request->has("primaryTeacherId"), fn($query) => $query->forPrimaryTeacher($request->input("primaryTeacherId")))
 			->when($request->has("assistingTeacherId"), fn($query) => $query->forAssistingTeacher($request->input("assistingTeacherId")))
 			->when($request->has("topic"), fn($query) => $query->topicLike($request->input("topic")));
+	}
+
+	private function nextNumber(array $validated): int
+	{
+		$gradebookIds = collect($validated["gradebooks"])->pluck("id")->all();
+		$groupIds = collect($validated["gradebooks"])->flatMap(fn($g) => $g["groupIds"] ?? [])->all();
+
+		return (int) Lesson::where("subject_id", $validated["subjectId"])
+			->whereHas("gradebooks", fn($q) => $q->whereIn("gradebook_id", $gradebookIds))
+			->whereHas("gradebooks.groups.gradebookGroup", fn($q) => $q->whereIn("gradebook_groups.id", $groupIds))
+			->max("number") + 1;
 	}
 }

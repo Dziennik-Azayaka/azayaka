@@ -4,7 +4,6 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
-use function PHPSTORM_META\map;
 
 class LessonResource extends JsonResource
 {
@@ -15,25 +14,30 @@ class LessonResource extends JsonResource
 	 */
 	public function toArray(Request $request): array
 	{
-		$groupsByClassUnit = $this->gradebookGroups
-			->groupBy(fn($group) => $group->gradebook->class_unit_id);
+		$entries = $this->gradebooks->map(function ($lessonGradebook) {
+			$gradebook = $lessonGradebook->gradebook;
+			$groups = $lessonGradebook->groups->map(fn($g) => $g->gradebookGroup);
 
-		$classUnits = $this->gradebooks
-			->map(fn($gradebook) => $gradebook->classUnit)
-			->unique("id")
-			->values()
-			->map(fn($classUnit) => [
-				"id" => $classUnit->id,
-				"alias" => $classUnit->alias,
-				"mark" => $classUnit->mark,
-				"level" => $classUnit->currentLevel,
-				"groups" => ($groupsByClassUnit->get($classUnit->id) ?? collect())
-					->map(fn($group) => [
-						"id" => $group->id,
-						"name" => $group->name,
-						"shortcut" => $group->shortcut,
-					])
-					->values(),
+			return [
+				"classUnit" => $gradebook?->classUnit,
+				"groups" => $groups,
+			];
+		});
+
+		$classUnits = $entries
+			->filter(fn($e) => $e["classUnit"] !== null)
+			->groupBy(fn($e) => $e["classUnit"]->id)
+			->map(fn($group, $classUnitId) => [
+				"id" => $group->first()["classUnit"]->id,
+				"alias" => $group->first()["classUnit"]->alias,
+				"mark" => $group->first()["classUnit"]->mark,
+				"level" => $group->first()["classUnit"]->currentLevel,
+				"groups" => $group->flatMap(fn($e) => $e["groups"])->unique("id")->values()
+					->map(fn($g) => [
+						"id" => $g->id,
+						"name" => $g->name,
+						"shortcut" => $g->shortcut,
+					])->values()
 			])
 			->values();
 

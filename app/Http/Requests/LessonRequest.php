@@ -18,18 +18,21 @@ class LessonRequest extends FormRequest
 	public function rules(): array
 	{
 		$subjectId = $this->input("subjectId");
-		$gradebookIds = $this->input("gradebookIds", []);
+		$gradebooks = $this->input("gradebooks", []);
+		$gradebookIds = collect($gradebooks)->pluck("id")->all();
 		$lessonId = $this->route("lesson")?->id;
 
 		return [
 			"number" => [
 				"nullable",
 				"integer",
-				function (string $attribute, mixed $value, \Closure $fail) use ($subjectId, $gradebookIds, $lessonId) {
+				function (string $attribute, mixed $value, \Closure $fail) use ($subjectId, $gradebooks, $lessonId) {
+					$groupIds = collect($gradebooks)->flatMap(fn($g) => $g["groupIds"] ?? [])->all();
+
 					$query = Lesson::where("number", $value)
 						->where("subject_id", $subjectId)
-						->whereHas("gradebooks", fn($q) => $q->whereIn("gradebooks.id", $gradebookIds))
-						->whereHas("gradebookGroups", fn($q) => $q->where("gradebook_groups.id", $this->input("groups")));
+						->whereHas("gradebooks", fn($q) => $q->whereIn("gradebook_id", collect($gradebooks)->pluck("id")->all()))
+						->whereHas("gradebooks.groups.gradebookGroup", fn($q) => $q->whereIn("gradebook_groups.id", $groupIds));
 
 					if ($lessonId) {
 						$query->where("id", "!=", $lessonId);
@@ -40,8 +43,29 @@ class LessonRequest extends FormRequest
 					}
 				}
 			],
-			"gradebookIds" => ["required", "array", "min:1"],
-			"gradebookIds.*" => ["exists:gradebooks,id"],
+			"gradebooks" => ["required", "array", "min:1"],
+			"gradebooks.*.id" => [
+				"required",
+				"exists:gradebooks,id",
+				function (string $attribute, mixed $value, \Closure $fail) {
+					$index = (int) explode(".", explode("*", $attribute)[0])[1];
+					$groupIds = $this->input("gradebooks.$index.groupIds", []);
+
+					if (empty($groupIds)) {
+						return;
+					}
+
+					$invalid = \App\Models\GradebookGroup::whereIn("id", $groupIds)
+						->where("gradebook_id", "!=", $value)
+						->exists();
+
+					if ($invalid) {
+						$fail("GROUPS_DO_NOT_BELONG_TO_GRADEBOOK");
+					}
+				}
+			],
+			"gradebooks.*.groupIds" => ["array"],
+			"gradebooks.*.groupIds.*" => ["exists:gradebook_groups,id"],
 			"subjectId" => [
 				"required",
 				"exists:subjects,id",
@@ -58,8 +82,6 @@ class LessonRequest extends FormRequest
 				"exists:employees,id",
 				Rule::exists("employees", "id")->where("active", true)
 			],
-			"groups" => ["required", "array"],
-			"groups.*" => ["exists:gradebook_groups,id"],
 		];
 	}
 }

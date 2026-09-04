@@ -31,7 +31,7 @@ class AttendanceController extends Controller
 			"attendances",
 			"attendances.complexType",
 			"attendances.employee",
-		])->whereHas("gradebookGroups", fn($q) => $q->where("gradebook_group_id", $gradebookGroup->id))
+		])->whereHas("gradebooks.groups.gradebookGroup", fn($q) => $q->where("gradebook_groups.id", $gradebookGroup->id))
 			->where("date", $date)
 			->oldest("start_time")
 			->get();
@@ -52,7 +52,7 @@ class AttendanceController extends Controller
 			"attendances.employee"
 		])
 			->where("subject_id", $subject->id)
-			->whereHas("gradebookGroups", fn($q) => $q->where("gradebook_group_id", $gradebookGroup->id))
+			->whereHas("gradebooks.groups.gradebookGroup", fn($q) => $q->where("gradebook_groups.id", $gradebookGroup->id))
 			->orderByDesc("date")
 			->orderByDesc("start_time")
 			->paginate(15);
@@ -75,14 +75,7 @@ class AttendanceController extends Controller
 		$employee = app(AccessContext::class)->currentEmployee();
 		$this->authorize("editAttendance", [$lesson]);
 
-		$gradebookIds = $lesson->gradebooks()->pluck("gradebooks.id")->all();
-
-		if (empty($gradebookIds)) {
-			return response()->json([
-				"success" => false,
-				"errors" => ["LESSON_HAS_NO_GRADEBOOKS"]
-			], 422);
-		}
+		$gradebookIds = $lesson->gradebooks()->pluck("gradebook_id")->all();
 
 		$validated = $request->validate([
 			"attendances" => ["required", "array"],
@@ -161,7 +154,14 @@ class AttendanceController extends Controller
 	{
 		$this->authorize("editAttendance", [$lesson]);
 
-		$gradebookIds = $lesson->gradebooks()->pluck("gradebooks.id")->all();
+		$gradebookIds = $lesson->gradebooks()->pluck("gradebook_id")->all();
+
+		if (empty($gradebookIds)) {
+			return response()->json([
+				"success" => false,
+				"errors" => ["LESSON_HAS_NO_GRADEBOOKS"]
+			], 422);
+		}
 
 		$previousLessons = Lesson::where("subject_id", $lesson->subject_id)
 			->whereHas("gradebooks", fn($q) => $q->whereIn("gradebook_id", $gradebookIds))

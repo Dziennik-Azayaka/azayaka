@@ -19,14 +19,9 @@ class Lesson extends Model
 		"completed" => "boolean"
 	];
 
-	public function gradebooks(): BelongsToMany
+	public function gradebooks(): HasMany
 	{
-		return $this->belongsToMany(
-			Gradebook::class,
-			"lessons_gradebooks",
-			"lesson_id",
-			"gradebook_id"
-		);
+		return $this->hasMany(LessonGradebook::class);
 	}
 
 	public function subject(): BelongsTo
@@ -46,16 +41,6 @@ class Lesson extends Model
 			"lessons_assisting_teachers",
 			"lesson_id",
 			"employee_id"
-		);
-	}
-
-	public function gradebookGroups(): BelongsToMany
-	{
-		return $this->belongsToMany(
-			GradebookGroup::class,
-			"lessons_gradebook_group",
-			"lesson_id",
-			"gradebook_group_id"
 		);
 	}
 
@@ -103,6 +88,13 @@ class Lesson extends Model
 	public function scopeTopicLike($query, $topic)
 	{
 		return $query->where("topic", "like", "%" . $topic . "%");
+	}
+
+	public function scopeForGradebookGroup($query, $gradebookGroupId)
+	{
+		return $query->whereHas("gradebooks.groups.gradebookGroup", function ($q) use ($gradebookGroupId) {
+			$q->where("gradebook_groups.id", $gradebookGroupId);
+		});
 	}
 
 	public function scopeForAssistingTeacher($query, $employeeId)
