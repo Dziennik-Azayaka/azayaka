@@ -8,6 +8,8 @@ use App\Enums\AccountEventType;
 use App\Models\AccountAccess;
 use App\Models\AccountLog;
 use App\Models\Employee;
+use App\Utilities\AccountAccessDocumentGenerator;
+use App\Utilities\AccountAccessWordsGenerator;
 use App\Utilities\ValidatorAssistant\ValidatorAssistant;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -130,16 +132,7 @@ class EmployeeController extends Controller
 	{
 		$accountAccess = new AccountAccess();
 		$accountAccess->employee_id = $employee->id;
-
-		$words = explode("\n", file_get_contents(resource_path("data/dictionary.txt")));
-		$keys = array_rand($words, 10);
-		$oneTimeWords = "";
-		foreach ($keys as $key) {
-			$oneTimeWords .= $words[$key] . ",";
-		}
-		$oneTimeWords = rtrim($oneTimeWords, ",");
-
-		$accountAccess->words = $oneTimeWords;
+		$accountAccess->words = AccountAccessWordsGenerator::generate();
 		$accountAccess->save();
 		return $accountAccess;
 	}
@@ -298,35 +291,13 @@ class EmployeeController extends Controller
 		return $validator;
 	}
 
-	public function generateEmployeeAccessesDocument(Request $request)
+	public function generateAccessesDocument(Request $request)
 	{
-		$validator = ValidatorAssistant::validate($request, [
+		$validatedData = $request->validate([
 			"ids" => "required|array"
 		]);
 
-		$ids = array_unique($validator["ids"]);
-		$employees = Employee::whereIn("id", $ids)->get();
-		$employeeIds = $employees->pluck("id");
-		$accesses = AccountAccess::whereIn("employee_id", $employeeIds)->get();
-
-		$document = new AccountAccessesActivationDocument();
-
-		foreach ($employees as $employee) {
-			$access = $accesses->where("employee_id", $employee->id)->first();
-			if (!$employee->active || $access?->words == null) {
-				return Response::json([
-					"success" => false,
-					"errors" => [
-						"EMPLOYEE_NOT_ACTIVE_OR_HAS_NO_ACCESS_WORDS"
-					]
-				], 400);
-			}
-			$document->addAccess(AccessType::EMPLOYEE,
-				$employee->first_name . " " . $employee->last_name,
-				explode(",", $access->words));
-		}
-
-		$document->generateDocument();
-		return $document->streamDocument();
+		$generator = new AccountAccessDocumentGenerator(AccessType::EMPLOYEE, $validatedData["ids"]);
+		return $generator->generateDocument();
 	}
 }

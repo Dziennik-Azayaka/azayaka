@@ -15,7 +15,7 @@ final class StudentRegistryControllerTest extends TestCase
 
 	public function test_can_list_student_registries(): void
 	{
-		$this->actingUser();
+		$this->actingAdminUser();
 		$schoolUnit = SchoolUnit::factory()->create();
 		$registry = $schoolUnit->studentRegistry()->create();
 		$response = $this->get("/api/studentRegistry");
@@ -29,7 +29,7 @@ final class StudentRegistryControllerTest extends TestCase
 
 	public function test_can_create_a_student_registry(): void
 	{
-		$this->actingUser();
+		$this->actingAdminUser();
 		$schoolUnit = SchoolUnit::factory()->create();
 		$response = $this->post("/api/studentRegistry", [
 			"schoolUnitId" => $schoolUnit->id
@@ -42,7 +42,7 @@ final class StudentRegistryControllerTest extends TestCase
 
 	public function test_cannot_create_a_student_registry_without_a_valid_school_unit_id(): void
 	{
-		$this->actingUser();
+		$this->actingAdminUser();
 		$response = $this->post("/api/studentRegistry", [
 			"schoolUnitId" => "invalid-id"
 		]);
@@ -54,7 +54,7 @@ final class StudentRegistryControllerTest extends TestCase
 
 	public function test_cannot_create_a_student_registry_when_the_school_unit_already_has_one(): void
 	{
-		$this->actingUser();
+		$this->actingAdminUser();
 		$schoolUnit = SchoolUnit::factory()->create();
 		$schoolUnit->studentRegistry()->create();
 		$response = $this->post("/api/studentRegistry", [
@@ -65,7 +65,7 @@ final class StudentRegistryControllerTest extends TestCase
 
 	public function test_can_export_student_registry_as_xml(): void
 	{
-		$this->actingUser();
+		$this->actingAdminUser();
 
 		$schoolUnit = SchoolUnit::factory()->create([
 			"name" => "Szkoła im. Microsoftowców",
@@ -132,7 +132,7 @@ final class StudentRegistryControllerTest extends TestCase
 
 	public function test_can_export_student_registry_as_html(): void
 	{
-		$this->actingUser();
+		$this->actingAdminUser();
 
 		$schoolUnit = SchoolUnit::factory()->create([
 			"name" => "Szkoła im. Webmasterów",
@@ -165,7 +165,7 @@ final class StudentRegistryControllerTest extends TestCase
 
 	public function test_xml_export_uses_alternate_identity_document_when_student_has_no_pesel(): void
 	{
-		$this->actingUser();
+		$this->actingAdminUser();
 
 		$schoolUnit = SchoolUnit::factory()->create();
 		$registry = $schoolUnit->studentRegistry()->create();
@@ -194,7 +194,7 @@ final class StudentRegistryControllerTest extends TestCase
 
 	public function test_xml_export_returns_an_empty_students_node_when_registry_has_no_students(): void
 	{
-		$this->actingUser();
+		$this->actingAdminUser();
 
 		$schoolUnit = SchoolUnit::factory()->create();
 		$registry = $schoolUnit->studentRegistry()->create();

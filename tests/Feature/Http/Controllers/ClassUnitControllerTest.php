@@ -7,6 +7,7 @@ use App\Models\ClassificationPeriod;
 use App\Models\ClassUnit;
 use App\Models\ClassUnitFormTutors;
 use App\Models\Employee;
+use App\Models\Gradebook;
 use App\Models\SchoolComplex;
 use App\Models\SchoolUnit;
 use App\Models\User;
@@ -20,7 +21,7 @@ final class ClassUnitControllerTest extends TestCase
 
 	public function test_can_list_class_units(): void
 	{
-		$this->actingUser();
+		$this->actingAdminUser();
 		$complex = SchoolComplex::factory()->create();
 		$unit = SchoolUnit::factory()->create(["school_complex_id" => $complex->id]);
 		ClassUnit::factory()->count(5)->create([
@@ -60,7 +61,7 @@ final class ClassUnitControllerTest extends TestCase
 
 	public function test_can_list_future_class_units(): void
 	{
-		$this->actingUser();
+		$this->actingAdminUser();
 		$complex = SchoolComplex::factory()->create();
 		$unit = SchoolUnit::factory()->create([
 			"school_complex_id" => $complex->id,
@@ -105,7 +106,7 @@ final class ClassUnitControllerTest extends TestCase
 
 	public function test_can_list_current_class_units(): void
 	{
-		$this->actingUser();
+		$this->actingAdminUser();
 		$complex = SchoolComplex::factory()->create();
 		$unit = SchoolUnit::factory()->create([
 			"school_complex_id" => $complex->id,
@@ -176,7 +177,7 @@ final class ClassUnitControllerTest extends TestCase
 
 	public function test_can_list_past_class_units(): void
 	{
-		$this->actingUser();
+		$this->actingAdminUser();
 		$complex = SchoolComplex::factory()->create();
 		$unit = SchoolUnit::factory()->create(["school_complex_id" => $complex->id]);
 
@@ -244,7 +245,7 @@ final class ClassUnitControllerTest extends TestCase
 
 	public function test_can_create_a_class_unit(): void
 	{
-		$this->actingUser();
+		$this->actingAdminUser();
 		$complex = SchoolComplex::factory()->create();
 		$unit = SchoolUnit::factory()->create(["school_complex_id" => $complex->id]);
 		$employee = Employee::factory()->create();
@@ -308,7 +309,7 @@ final class ClassUnitControllerTest extends TestCase
 
 	public function test_can_create_a_class_unit_with_promotion_every_semester(): void
 	{
-		$this->actingUser();
+		$this->actingAdminUser();
 		$complex = SchoolComplex::factory()->create();
 		$unit = SchoolUnit::factory()->create(["school_complex_id" => $complex->id]);
 		$employee = Employee::factory()->create();
@@ -374,7 +375,7 @@ final class ClassUnitControllerTest extends TestCase
 
 	public function test_creating_a_class_unit_with_disabled_employees_fails(): void
 	{
-		$this->actingUser();
+		$this->actingAdminUser();
 		$complex = SchoolComplex::factory()->create();
 		$unit = SchoolUnit::factory()->create(["school_complex_id" => $complex->id]);
 		$disabledEmployee = Employee::factory()->create(["active" => false]);
@@ -423,7 +424,7 @@ final class ClassUnitControllerTest extends TestCase
 
 	public function test_creating_a_class_unit_with_nonexistent_employees_fails(): void
 	{
-		$this->actingUser();
+		$this->actingAdminUser();
 		$complex = SchoolComplex::factory()->create();
 		$unit = SchoolUnit::factory()->create(["school_complex_id" => $complex->id]);
 		$employee = Employee::factory()->create();
@@ -467,7 +468,7 @@ final class ClassUnitControllerTest extends TestCase
 
 	public function test_can_update_a_class_unit(): void
 	{
-		$this->actingUser();
+		$this->actingAdminUser();
 		$complex = SchoolComplex::factory()->create();
 		$unit = SchoolUnit::factory()->create(["school_complex_id" => $complex->id]);
 		$oldEmployee = Employee::factory()->create();
@@ -522,7 +523,7 @@ final class ClassUnitControllerTest extends TestCase
 
 	public function test_can_delete_a_class_unit(): void
 	{
-		$this->actingUser();
+		$this->actingAdminUser();
 		$complex = SchoolComplex::factory()->create();
 		$unit = SchoolUnit::factory()->create(["school_complex_id" => $complex->id]);
 		$classUnit = ClassUnit::factory()->create(["school_unit_id" => $unit->id]);
@@ -544,5 +545,21 @@ final class ClassUnitControllerTest extends TestCase
 			"employee_id" => $employee->id,
 			"class_unit_id" => $classUnit->id,
 		]);
+	}
+
+	public function test_cannot_delete_class_unit_with_gradebooks(): void
+	{
+		$this->actingAdminUser();
+		$classUnit = ClassUnit::factory()->create();
+		Gradebook::factory()->create(["class_unit_id" => $classUnit->id]);
+
+		$response = $this->deleteJson("/api/classUnits/$classUnit->id");
+
+		$response->assertStatus(409);
+		$response->assertJson([
+			"success" => false,
+			"errors" => ["GRADEBOOK_ALREADY_EXISTS"],
+		]);
+		$this->assertDatabaseHas("class_units", ["id" => $classUnit->id]);
 	}
 }

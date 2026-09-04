@@ -18,6 +18,7 @@ return new class extends Migration {
 
 		Schema::table("students", function (Blueprint $table) {
 			$table->foreignId("student_registry_id")->constrained("student_registries")->cascadeOnDelete();
+			$table->unique(["student_registry_id", "student_registry_number"]);
 		});
 	}
 

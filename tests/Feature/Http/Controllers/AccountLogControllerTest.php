@@ -15,7 +15,7 @@ final class AccountLogControllerTest extends TestCase
 
     public function test_list_returns_paginated_camelised_logs_for_authenticated_user(): void
     {
-        $user = $this->actingUser();
+        $user = $this->actingAdminUser();
         AccountLog::factory()->count(60)->create([
             "user_id" => $user->id,
             "created_at" => now(),
@@ -45,7 +45,7 @@ final class AccountLogControllerTest extends TestCase
 
     public function test_getDateOfLastUpdateToCredentials_returns_earliest_date_or_null(): void
     {
-        $user = $this->actingUser();
+        $user = $this->actingAdminUser();
 
         $earlier = now()->subDays(3);
         $later = now()->subDay();
@@ -70,8 +70,9 @@ final class AccountLogControllerTest extends TestCase
         $this->assertSame($earlier->toIso8601String(), Carbon::parse($date)->toIso8601String());
 
         // Different user with no credentials_changed
-        $this->be(User::factory()->create());
-        $response2 = $this->get("/api/user/logs/lastCredentialUpdate");
+		$this->be(User::factory()->create());
+		$this->withoutHeader("Access-ID");
+		$response2 = $this->get("/api/user/logs/lastCredentialUpdate");
         $response2->assertOk();
         $response2->assertJson([
             "success" => true,

@@ -2,18 +2,20 @@
 
 namespace App\Http\Controllers;
 
+use App\Documents\AccountAccessesActivation\AccountAccessesActivationDocument;
+use App\Enums\AccessType;
 use App\Exceptions\CustomValidationException;
-use App\Models\ChildrenRegistry;
-use App\Models\ResidenceAddress;
+use App\Exceptions\EntityAlreadyExistsException;
+use App\Exceptions\RegistryArchivedException;
+use App\Http\Resources\ResidenceAddressResource;
+use App\Models\AccountAccess;
 use App\Models\Student;
 use App\Models\StudentRegistry;
-use App\Rules\Pesel;
-use App\Utilities\ValidatorAssistant\ValidatorAssistant;
-use App\Utilities\ValidatorAssistant\ValidatorAssistantException;
-use DB;
+use App\Services\AccessContext;
+use App\Utilities\AccountAccessDocumentGenerator;
+use App\Utilities\AccountAccessWordsGenerator;
 use Illuminate\Http\Request;
-use Illuminate\Validation\Rule;
-use Illuminate\Validation\Rules\File;
+use Response;
 
 class StudentController extends Controller
 {
@@ -48,12 +50,12 @@ class StudentController extends Controller
 		}
 
 		if ($request->has("classUnitId")) {
-			$query = $query->whereHas("classUnits", function ($classUnitQuery) use ($request) {
-				$classUnitQuery->where("class_units.id", "=", $request->input("classUnitId"));
+			$query = $query->whereHas("gradebooks", function ($gradebookQuery) use ($request) {
+				$gradebookQuery->where("class_unit_id", "=", $request->input("classUnitId"));
 			});
 		} else if ($request->has("level")) {
-			$query = $query->whereHas("classUnits", function ($classUnitQuery) use ($request) {
-				$classUnitQuery->whereHas("periods", function ($periodQuery) use ($request) {
+			$query = $query->whereHas("gradebooks", function ($gradebookQuery) use ($request) {
+				$gradebookQuery->whereHas("startingClassificationPeriod", function ($periodQuery) use ($request) {
 					$now = now();
 
 					$periodQuery->where("period_start", "<=", $now)
@@ -63,7 +65,27 @@ class StudentController extends Controller
 			});
 		}
 
-		return $query->get()->toResourceCollection();
+		$sortableColumns = [
+			"id" => "students.id",
+			"person.lastName" => "people.last_name",
+			"names" => "people.first_name",
+			"birthdate" => "people.birthdate",
+			"admissionDate" => "students.admission_date",
+		];
+
+		if ($request->has("sort") && isset($sortableColumns[$request->input("sort")])) {
+			$sortColumn = $sortableColumns[$request->input("sort")];
+			$sortDirection = $request->input("order", "asc") === "desc" ? "desc" : "asc";
+
+			if (str_starts_with($sortColumn, "people.")) {
+				$query->join("people", "students.person_id", "=", " people.id")
+					->select("students.*");
+			}
+
+			$query->orderBy($sortColumn, $sortDirection);
+		}
+
+		return $query->paginate(100)->toResourceCollection();
 	}
 
 
@@ -71,13 +93,22 @@ class StudentController extends Controller
 	{
 		$validated = $request->validate([
 			"personId" => ["required", "exists:people,id"],
-			"admissionDate" => ["required", "date"]
+			"admissionDate" => ["required", "date"],
+			"studentRegistryNumber" => ["nullable", "integer"]
 		]);
+
+		if ($validated["studentRegistryNumber"] == null) {
+			$validated["studentRegistryNumber"] = $studentRegistry->students()->max("student_registry_number") + 1;
+		} else if ($studentRegistry->students()->where("student_registry_number", $validated["studentRegistryNumber"])->exists()) {
+			throw new EntityAlreadyExistsException("STUDENT_REGISTRY_NUMBER");
+
+		}
 
 		$student = new Student();
 		$student->person_id = $validated["personId"];
 		$student->student_registry_id = $studentRegistry->id;
 		$student->admission_date = $validated["admissionDate"];
+		$student->student_registry_number = $validated["studentRegistryNumber"];
 		$student->saveOrFail();
 
 		return \Response::json(["success" => true,
@@ -113,10 +144,82 @@ class StudentController extends Controller
 		];
 	}
 
+	public function generateOrRegenerateAccess(Student $student)
+	{
+		$hasActiveClassUnit = $student->gradebooks()
+			->whereHas("classUnit.periods", function ($query) {
+				$query->where("period_start", "<=", now())
+					->where("period_end", ">=", now());
+			})->exists();
+
+		if (!$hasActiveClassUnit) {
+			return \Response::json([
+				"success" => false,
+				"errors" => ["STUDENT_NOT_IN_ACTIVE_CLASS_UNIT"]
+			], 422);
+		}
+
+		AccountAccess::where("student_id", $student->id)->delete();
+		$accountAccess = new AccountAccess();
+		$accountAccess->student_id = $student->id;
+		$accountAccess->words = AccountAccessWordsGenerator::generate();
+		$accountAccess->save();
+		return [
+			"success" => true,
+			"words" => $accountAccess->words
+		];
+	}
+
+	public function listAccesses(Request $request)
+	{
+		$students = Student::whereNull("leave_date");
+		if ($request->has("classUnitId")) {
+			$students->whereHas("gradebooks", function ($gradebookQuery) use ($request) {
+				$gradebookQuery->where("class_unit_id", "=", $request->input("classUnitId"));
+			});
+		}
+
+		return $students->with("accountAccesses")->get()->map(fn($student) => [
+			"firstName" => $student->person->first_name,
+			"secondName" => $student->person->second_name,
+			"lastName" => $student->person->last_name,
+			"studentId" => $student->id,
+			"accessWords" => $student->accountAccesses->filter(function ($access) {
+				return $access->guardian_id == null;
+			})->first()
+		]);
+	}
+
+	public function generateAccessesDocument(Request $request)
+	{
+		$validatedData = $request->validate([
+			"ids" => "required|array"
+		]);
+
+		$generator = new AccountAccessDocumentGenerator(AccessType::STUDENT, $validatedData["ids"]);
+		return $generator->generateDocument();
+	}
+
 	private function checkIfRegistryIsActive(StudentRegistry $studentRegistry)
 	{
 		if ($studentRegistry->isArchived()) {
-			throw CustomValidationException::withMessages(["STUDENT_REGISTRY_ARCHIVED"]);
+			throw new RegistryArchivedException("student");
+
 		}
+	}
+
+	public function getStudentInfo(Request $request)
+	{
+		$student = app(AccessContext::class)->currentStudent()
+			->load(["person", "person.residenceAddress"]);
+
+		return [
+			"id" => $student->id,
+			"firstName" => $student->person->first_name,
+			"secondName" => $student->person->first_name,
+			"lastName" => $student->person->last_name,
+			"residenceAddress" => new ResidenceAddressResource($student->person->residenceAddress),
+			"gender" => $student->person->gender
+		];
 	}
 }

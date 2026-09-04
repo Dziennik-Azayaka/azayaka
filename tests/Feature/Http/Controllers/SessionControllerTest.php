@@ -30,15 +30,15 @@ final class SessionControllerTest extends TestCase
     {
         $user = User::factory()->create();
 
-        $response = $this->post("/api/login", [
+        $response = $this->postJson("/api/login", [
             "email" => $user->email,
             "password" => "wrong-password",
         ]);
 
-        $response->assertStatus(401);
+        $response->assertStatus(403);
         $response->assertJson([
             "success" => false,
-            "errors" => ["INVALID_USERNAME_OR_PASSWORD"],
+            "errors" => ["INVALID_CREDENTIALS"],
         ]);
         $this->assertGuest();
     }

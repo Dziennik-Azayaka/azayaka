@@ -2,9 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Exceptions\EntityAlreadyExistsException;
+use App\Exceptions\GradebooksExistException;
 use App\Models\ClassificationPeriod;
 use App\Models\ClassUnit;
 use App\Models\ClassUnitPeriod;
+use App\Models\Gradebook;
 use App\Utilities\ClassificationPeriodAssistant;
 use App\Utilities\ValidatorAssistant\ValidatorAssistant;
 use Carbon\Carbon;
@@ -24,8 +27,26 @@ class ClassificationPeriodController extends Controller
 	public function save(Request $request, int $schoolUnitId, int $schoolYear)
 	{
 		$validated = ValidatorAssistant::validate($request, [
-			"periodEnd" => ["required", "array"]
+			"periodEnd" => ["present", "array"]
 		]);
+
+		if (empty($validated["periodEnd"])) {
+			$periods = ClassificationPeriod::where("school_year", $schoolYear)
+				->where("school_unit_id", $schoolUnitId);
+			$gradebooksExist = Gradebook::whereIn("classification_period_id", $periods->pluck("id"))->exists();
+
+			if ($gradebooksExist) {
+				throw new EntityAlreadyExistsException("GRADEBOOK");
+			}
+
+			ClassificationPeriod::where("school_year", $schoolYear)
+				->where("school_unit_id", $schoolUnitId)
+				->delete();
+
+			return [
+				"success" => true
+			];
+		}
 
 		$classificationPeriodValidatorResponse = ClassificationPeriodAssistant::validate($validated["periodEnd"], $schoolYear);
 		if ($classificationPeriodValidatorResponse) {
@@ -141,18 +162,6 @@ class ClassificationPeriodController extends Controller
 			}
 		});
 
-
-		return [
-			"success" => true
-		];
-	}
-
-	public function delete(int $schoolUnitId, int $schoolYear)
-	{
-		// TODO: Implement checks to make sure no grade books have been created for this year
-		ClassificationPeriod::where("school_year", $schoolYear)
-			->where("school_unit_id", $schoolUnitId)
-			->delete();
 
 		return [
 			"success" => true

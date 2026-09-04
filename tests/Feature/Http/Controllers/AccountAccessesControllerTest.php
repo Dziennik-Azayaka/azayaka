@@ -35,7 +35,7 @@ final class AccountAccessesControllerTest extends TestCase
 			"success" => true
 		]);
 
-		$response404 = $this->post("/api/activation/lookup", [
+		$response404 = $this->postJson("/api/activation/lookup", [
 			"code" => "e,f,g",
 		]);
 		$response404->assertStatus(404);
@@ -107,12 +107,12 @@ final class AccountAccessesControllerTest extends TestCase
 			"email" => "tadeusz.nowak@example.com",
 		]);
 
-		$responseWrong = $this->post("/api/activation", [
+		$responseWrong = $this->postJson("/api/activation", [
 			"code" => $code,
 			"email" => "tadeusz.nowak@example.com",
 			"password" => "incorrect123",
 		]);
-		$responseWrong->assertStatus(401);
+		$responseWrong->assertStatus(403);
 		$responseWrong->assertJson([
 			"success" => false,
 		]);
@@ -133,7 +133,7 @@ final class AccountAccessesControllerTest extends TestCase
 
 	public function test_createAccountOrAttachAccess_returns_404_when_code_not_found(): void
 	{
-		$response = $this->post("/api/activation", [
+		$response = $this->postJson("/api/activation", [
 			"code" => "not,a,real,code",
 			"email" => "user@example.com",
 			"password" => "password1234",
@@ -189,7 +189,7 @@ final class AccountAccessesControllerTest extends TestCase
 
 	public function test_list_returns_accesses_with_personas_for_authenticated_user(): void
 	{
-		$user = $this->actingUser();
+		$user = $this->actingAdminUser();
 
 		// Student access
 		$person = Person::factory()->create(["first_name" => "Krzysztof", "last_name" => "Nowak"]);

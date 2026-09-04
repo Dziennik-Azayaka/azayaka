@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Exceptions\EntityAlreadyExistsException;
+use App\Exceptions\NotFoundException;
 use App\Models\SchoolUnit;
 use App\Models\Student;
 use App\Models\StudentRegistry;
@@ -11,6 +13,13 @@ use Illuminate\Http\Request;
 
 class StudentRegistryController extends Controller
 {
+	public function lookup(SchoolUnit $schoolUnit)
+	{
+		$studentRegistry = $schoolUnit->studentRegistry;
+		if (!$studentRegistry) throw new NotFoundException("STUDENT_REGISTRY");
+		return response()->json([ "registryId" => $studentRegistry->id ]);
+	}
+
 	public function list()
 	{
 		return StudentRegistry::all()->toResourceCollection();
@@ -23,12 +32,7 @@ class StudentRegistryController extends Controller
 		]);
 		$schoolUnitId = $validator["schoolUnitId"];
 		if (StudentRegistry::where("school_unit_id", $schoolUnitId)->exists()) {
-			return \Response::json([
-				"success" => false,
-				"errors" => [
-					"STUDENT_REGISTRY_ALREADY_EXISTS"
-				]
-			], 409);
+			throw new EntityAlreadyExistsException("STUDENT_REGISTRY");
 		}
 
 		$registry = new StudentRegistry();

@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Exceptions\EntityAlreadyExistsException;
+use App\Exceptions\RegistryArchivedException;
+use App\Exceptions\UnknownServerErrorException;
 use App\Http\Requests\CreatePersonRequest;
 use App\Models\Child;
 use App\Models\ChildrenRegistry;
@@ -69,18 +72,19 @@ class PersonController extends Controller
 			(isset($validated["alternateIdentityDocument"]) &&
 				Person::where("alternate_identity_document", "=", $validated["alternateIdentityDocument"])
 					->where("school_unit_id", "=", $schoolUnitId)->exists())) {
-			return response()->json([
-				"success" => false,
-				"errors" => [
-					"PERSON_ALREADY_EXISTS"
-				]
-			], 409);
+			throw new EntityAlreadyExistsException("PERSON");
 		}
 
-		$registryCheck = $this->checkIfRegistriesAreActive($validated);
-		if ($registryCheck != null) {
-			return $registryCheck;
+		if (isset($validated["studentRegistryId"])) {
+			$studentRegistry = StudentRegistry::where("id", "=", $validated["studentRegistryId"])->first();
+			if (!isset($validated["studentRegistryNumber"])) {
+				$validated["studentRegistryNumber"] = $studentRegistry->students()->max("student_registry_number") + 1;
+			} else if ($studentRegistry->students()->where("student_registry_number", $validated["studentRegistryNumber"])->exists()) {
+				throw new EntityAlreadyExistsException("STUDENT_REGISTRY_NUMBER");
+			}
 		}
+
+		$this->checkIfRegistriesAreActive($validated);
 
 		$personId = $this->savePersonAndAddressToDatabase($validated, $schoolUnitId);
 
@@ -92,19 +96,13 @@ class PersonController extends Controller
 
 	public function update(CreatePersonRequest $request, int $schoolUnitId, Person $person)
 	{
-		$registryCheck = $this->checkIfRegistriesAreActive($request->validated());
-		if ($registryCheck != null) {
-			return $registryCheck;
-		}
+		$this->checkIfRegistriesAreActive($request->validated());
 
 		try {
 			$this->savePersonAndAddressToDatabase($request->validated(), $schoolUnitId, $person);
 		} catch (Throwable $e) {
 			Log::error($e);
-			return response()->json([
-				"success" => false,
-				"errors" => ["UNKNOWN_SERVER_ERROR"]
-			], 500);
+			throw new UnknownServerErrorException();
 		}
 
 		return [
@@ -128,9 +126,12 @@ class PersonController extends Controller
 			"childrenRegistryId" => ["nullable", "exists:children_registries,id"]
 		]);
 
-		$registryCheck = $this->checkIfRegistriesAreActive($request->only(["studentRegistryId", "childrenRegistryId"]));
-		if ($registryCheck != null) {
-			return $registryCheck;
+		$this->checkIfRegistriesAreActive($request->only(["studentRegistryId", "childrenRegistryId"]));
+
+		$registryNumbers = [];
+		if ($request->has("studentRegistryId")) {
+			$registryNumbers = StudentRegistry::find($request->input("studentRegistryId"))
+				?->students->pluck("student_registry_number")->toArray() ?? [];
 		}
 
 		$rules = (new CreatePersonRequest())->rules();
@@ -138,10 +139,14 @@ class PersonController extends Controller
 		$seenAltDocs = [];
 		$rows = CsvImportAssistant::import($request->file("csvFile"),
 			function (array $row, Closure $error, Closure $pass)
-			use (&$seenAltDocs, &$seenPesels, $rules, $request, $schoolUnitId) {
-				if ($request->has("studentRegistryId")) {
-					$row["studentRegistryId"] = $request->input("studentRegistryId");
+			use (&$seenAltDocs, &$seenPesels, &$registryNumbers, $rules, $request, $schoolUnitId) {
+			if ($request->has("studentRegistryId")) {
+				$row["studentRegistryId"] = $request->input("studentRegistryId");
+				if (in_array($row["studentRegistryNumber"], $registryNumbers)) {
+					$error("Osoba o tym numerze w dzienniku już istnieje");
 				}
+				$registryNumbers[] = $row["studentRegistryNumber"];
+			}
 				if ($request->has("childrenRegistryId")) {
 					$row["childrenRegistryId"] = $request->input("childrenRegistryId");
 				}
@@ -200,7 +205,7 @@ class PersonController extends Controller
 	 */
 	private function savePersonAndAddressToDatabase(
 		array   $validated,
-		?int     $schoolUnitId = null,
+		?int    $schoolUnitId = null,
 		?Person $person = null): Person
 	{
 		$updating = !($person == null);
@@ -241,6 +246,7 @@ class PersonController extends Controller
 			if (!$updating) {
 				if (isset($validated["studentRegistryId"])) {
 					$student = new Student();
+					$student->student_registry_number = $validated["studentRegistryNumber"];
 					$student->student_registry_id = $validated["studentRegistryId"];
 					$student->admission_date = $validated["admissionDate"];
 					$student->person_id = $person->id;
@@ -258,7 +264,10 @@ class PersonController extends Controller
 		return $person;
 	}
 
-	private function checkIfRegistriesAreActive(array $validated): ?JsonResponse
+	/**
+	 * @throws RegistryArchivedException
+	 */
+	private function checkIfRegistriesAreActive(array $validated)
 	{
 		if (isset($validated["studentRegistryId"])) {
 			$studentRegistry = StudentRegistry::where("id", "=", $validated["studentRegistryId"])->first();
@@ -269,13 +278,7 @@ class PersonController extends Controller
 
 		if ((isset($studentRegistry) && $studentRegistry->isArchived()) ||
 			(isset($childrenRegistry) && $childrenRegistry->isArchived())) {
-			return response()->json([
-				"success" => false,
-				"errors" => [
-					"REGISTRY_ARCHIVED"
-				]
-			], 422);
+			throw new RegistryArchivedException();
 		}
-		return null;
 	}
 }
