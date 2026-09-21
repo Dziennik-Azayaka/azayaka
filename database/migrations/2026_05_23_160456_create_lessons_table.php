@@ -22,8 +22,9 @@ return new class extends Migration {
 			$table->boolean("completed")->default(false);
 			$table->timestamps();
 			$table->softDeletes();
-			$table->index(["primary_teacher_id"]);
-			$table->index(["subject_id"]);
+			$table->index(["primary_teacher_id", "date"]);
+			$table->index(["subject_id", "date"]);
+			$table->index(["date"]);
 		});
 
 		Schema::create("lesson_gradebooks", function (Blueprint $table) {

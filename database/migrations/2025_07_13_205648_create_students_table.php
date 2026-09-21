@@ -20,6 +20,7 @@ return new class extends Migration {
 			$table->timestamps();
 			$table->softDeletes();
 			$table->index("person_id");
+			$table->index("student_registry_number");
 		});
 	}
 
