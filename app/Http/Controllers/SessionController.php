@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Enums\AccountEventType;
+use App\Exceptions\InvalidCredentialsException;
 use App\Utilities\AccountEventLogger;
 use App\Utilities\CaseConverter;
 use App\Utilities\ValidatorAssistant\ValidatorAssistant;
@@ -29,12 +30,7 @@ class SessionController extends Controller
 			];
 		} else {
 			AccountEventLogger::log($request, AccountEventType::FAILED_LOGIN_ATTEMPT);
-			return Response::json([
-				"success" => false,
-				"errors" => [
-					"INVALID_USERNAME_OR_PASSWORD"
-				]
-			], 401);
+			throw new InvalidCredentialsException();
 		}
 	}
 
@@ -112,12 +108,7 @@ class SessionController extends Controller
 		try {
 			Auth::logoutOtherDevices($request->input("password"));
 		} catch (AuthenticationException) {
-			return Response::json([
-				"success" => false,
-				"errors" => [
-					"WRONG_PASSWORD"
-				]
-			], 401);
+			throw new InvalidCredentialsException();
 		}
 		AccountEventLogger::log($request, AccountEventType::LOGGED_OUT_BY_ANOTHER_DEVICE);
 		return [

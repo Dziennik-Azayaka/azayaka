@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Exceptions\EntityAlreadyExistsException;
 use App\Models\ChildrenRegistry;
 use App\Models\SchoolUnit;
 use App\Utilities\ValidatorAssistant\ValidatorAssistant;
@@ -22,12 +23,7 @@ class ChildrenRegistryController extends Controller
 		]);
 		$schoolUnitId = $validator["schoolUnitId"];
 		if (ChildrenRegistry::where("school_unit_id", $schoolUnitId)->exists()) {
-			return \Response::json([
-				"success" => false,
-				"errors" => [
-					"CHILDREN_REGISTRY_ALREADY_EXISTS"
-				]
-			], 409);
+			throw new EntityAlreadyExistsException("CHILDREN_REGISTRY");
 		}
 
 		$registry = new ChildrenRegistry();

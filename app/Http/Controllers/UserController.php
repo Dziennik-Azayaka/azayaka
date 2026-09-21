@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Enums\AccountEventType;
+use App\Exceptions\InvalidCredentialsException;
 use App\Utilities\AccountEventLogger;
 use App\Utilities\ValidatorAssistant\ValidatorAssistant;
 use Illuminate\Http\Request;
@@ -19,12 +20,7 @@ class UserController extends Controller
 		]);
 
 		if (!Hash::check($validated["password"], $request->user()->password)) {
-			return Response::json([
-				"success" => false,
-				"errors" => [
-					"WRONG_PASSWORD"
-				]
-			], 400);
+			throw new InvalidCredentialsException();
 		}
 
 		$request->user()->update([
@@ -46,12 +42,7 @@ class UserController extends Controller
 		]);
 
 		if (!Hash::check($validated["oldPassword"], $request->user()->password)) {
-			return Response::json([
-				"success" => false,
-				"errors" => [
-					"WRONG_PASSWORD"
-				]
-			], 400);
+			throw new InvalidCredentialsException();
 		}
 
 		Auth::logoutOtherDevices($request->input("oldPassword"));

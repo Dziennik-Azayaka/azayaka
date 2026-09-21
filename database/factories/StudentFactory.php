@@ -22,6 +22,7 @@ class StudentFactory extends Factory
 		$leftSchool = rand(1, 10) > 8;
 
 		return [
+			"student_registry_number" => rand(1, 9999),
 			"person_id" => Person::factory()->create(),
 			"admission_date" => "2025-09-01",
 			"leave_date" => $leftSchool ? null : "2025-12-31",

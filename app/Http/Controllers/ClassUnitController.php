@@ -3,11 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Enums\ClassUnitCategory;
+use App\Exceptions\EntityAlreadyExistsException;
 use App\Models\ClassificationPeriod;
 use App\Models\ClassUnit;
 use App\Models\ClassUnitFormTutors;
 use App\Models\ClassUnitPeriod;
 use App\Models\Employee;
+use App\Models\Gradebook;
 use App\Models\SchoolUnit;
 use App\Utilities\ClassificationPeriodAssistant;
 use App\Utilities\ValidatorAssistant\ValidatorAssistant;
@@ -124,9 +126,10 @@ class ClassUnitController extends Controller
 		foreach ($validated["employees"] as $employee) {
 			$employeeIds[] = $employee["id"];
 
-			$dateFrom = Carbon::parse($employee["dateFrom"]);
-			$dateTo = Carbon::parse($employee["dateTo"]);
-			if ($dateFrom->gt($dateTo)) {
+			$dateFrom = isset($employee["dateFrom"]) ? Carbon::parse($employee["dateFrom"]) : Carbon::parse($startingClassificationPeriod->period_start);
+			$dateTo = isset($employee["dateTo"]) ? Carbon::parse($employee["dateTo"]) : null;
+
+			if ($dateTo !== null && $dateFrom->gt($dateTo)) {
 				throw new ValidatorAssistantException(null, null, ["EMPLOYEE_DATE_FROM_MUST_NOT_BE_LATER_THAN_DATE_TO"]);
 			}
 
@@ -134,7 +137,7 @@ class ClassUnitController extends Controller
 				$foundTeacherStartingWithTheClassificationPeriod = true;
 			}
 
-			if ($validated["promoteEvery"] == "year" && $dateTo->gt($endingDate)) {
+			if ($dateTo !== null && $validated["promoteEvery"] == "year" && $dateTo->gt($endingDate)) {
 				throw new ValidatorAssistantException(null, null, ["EMPLOYEE_DATE_TO_MUST_NOT_BE_LATER_THAN_THE_CLASS_UNIT_END_DATE"]);
 			}
 		}
@@ -158,7 +161,9 @@ class ClassUnitController extends Controller
 
 	public function delete(ClassUnit $classUnit)
 	{
-		// TODO: Implement checks to make sure no grade books have been created for this class unit
+		if ($classUnit->gradebooks()->exists()) {
+			throw new EntityAlreadyExistsException("GRADEBOOK");
+		}
 		$classUnit->delete();
 		return [
 			"success" => true
@@ -168,13 +173,14 @@ class ClassUnitController extends Controller
 	public function generatePivotEntries($employees, ClassUnit $classUnit): array
 	{
 		$now = Carbon::now();
+		$startingPeriod = ClassificationPeriod::find($classUnit->starting_classification_period_id);
 		$pivotEntries = [];
 		foreach ($employees as $employee) {
 			$pivotEntries[] = [
 				"class_unit_id" => $classUnit->id,
 				"employee_id" => $employee["id"],
-				"date_from" => $employee["dateFrom"],
-				"date_to" => $employee["dateTo"],
+				"date_from" => $employee["dateFrom"] ?? $startingPeriod->period_start,
+				"date_to" => $employee["dateTo"] ?? null,
 				"created_at" => $now,
 				"updated_at" => $now,
 			];

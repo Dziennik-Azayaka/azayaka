@@ -6,6 +6,7 @@ use App\Models\AccountAccess;
 use App\Models\ClassificationPeriod;
 use App\Models\ClassUnit;
 use App\Models\Employee;
+use App\Models\Gradebook;
 use App\Models\SchoolComplex;
 use App\Models\SchoolUnit;
 use App\Models\User;
@@ -18,7 +19,7 @@ final class ClassificationPeriodControllerTest extends TestCase
 
 	public function test_can_list_classification_periods(): void
 	{
-		$this->actingUser();
+		$this->actingAdminUser();
 		$complex = SchoolComplex::factory()->create();
 		$schoolUnit = SchoolUnit::factory()->create(["school_complex_id" => $complex->id]);
 		$periodOne = new ClassificationPeriod();
@@ -53,7 +54,7 @@ final class ClassificationPeriodControllerTest extends TestCase
 
 	public function test_can_save_new_classification_periods(): void
 	{
-		$this->actingUser();
+		$this->actingAdminUser();
 		$complex = SchoolComplex::factory()->create();
 		$schoolUnit = SchoolUnit::factory()->create(["school_complex_id" => $complex->id]);
 		$response = $this->post("/api/schoolUnits/$schoolUnit->id/classificationPeriods/2025", [
@@ -89,7 +90,7 @@ final class ClassificationPeriodControllerTest extends TestCase
 	}
 
 	public function test_can_delete_classification_periods(): void {
-		$this->actingUser();
+		$this->actingAdminUser();
 		$complex = SchoolComplex::factory()->create();
 		$schoolUnit = SchoolUnit::factory()->create(["school_complex_id" => $complex->id]);
 		$periodOne = new ClassificationPeriod();
@@ -108,7 +109,9 @@ final class ClassificationPeriodControllerTest extends TestCase
 		$periodTwo->period_end = "2026-08-31";
 		$periodTwo->save();
 
-		$response = $this->delete("/api/schoolUnits/$schoolUnit->id/classificationPeriods/2025");
+		$response = $this->postJson("/api/schoolUnits/$schoolUnit->id/classificationPeriods/2025", [
+			"periodEnd" => []
+		]);
 		$response->assertOk();
 		$this->assertDatabaseMissing("classification_periods", [
 			"school_year" => $periodOne->school_year,
@@ -127,5 +130,32 @@ final class ClassificationPeriodControllerTest extends TestCase
 			"period_end" => $periodTwo->period_end,
 			"id" => $periodTwo->id,
 		]);
+	}
+
+	public function test_cannot_delete_classification_periods_if_gradebooks_exist(): void
+	{
+		$this->actingAdminUser();
+		$schoolUnit = SchoolUnit::factory()->create();
+		$period = ClassificationPeriod::create([
+			"school_unit_id" => $schoolUnit->id,
+			"school_year" => 2025,
+			"period_number" => 1,
+			"period_start" => "2025-09-01",
+			"period_end" => "2025-12-31",
+		]);
+		Gradebook::factory()->create([
+			"classification_period_id" => $period->id,
+		]);
+
+		$response = $this->postJson("/api/schoolUnits/$schoolUnit->id/classificationPeriods/2025", [
+			"periodEnd" => []
+		]);
+
+		$response->assertStatus(409);
+		$response->assertJson([
+			"success" => false,
+			"errors" => ["GRADEBOOK_ALREADY_EXISTS"],
+		]);
+		$this->assertDatabaseHas("classification_periods", ["id" => $period->id]);
 	}
 }

@@ -68,7 +68,7 @@ class StudentsRegisterXmlExport extends RegisterXmlExport
 			"DataRozpoczeciaNauki",
 			Carbon::parse($student->admission_date)->format("d.m.Y") . " r."));
 
-		$currentClassUnit = $student->classUnits()->withPivot("date_from", "date_to")
+		$currentClassUnit = $student->gradebooks()->withPivot("date_from", "date_to")
 			->get()->sortBy("pivot.date_to")->last();
 
 		if ($currentClassUnit) {

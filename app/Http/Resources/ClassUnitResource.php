@@ -31,7 +31,7 @@ class ClassUnitResource extends JsonResource
 				"firstName" => $tutor->first_name,
 				"lastName" => $tutor->last_name,
 				"dateFrom" => Carbon::parse($tutor->pivot->date_from)->format("Y-m-d"),
-				"dateTo" => Carbon::parse($tutor->pivot->date_to)->format("Y-m-d")
+				"dateTo" => $tutor->pivot->date_to === null ? null : Carbon::parse($tutor->pivot->date_to)->format("Y-m-d")
 			]),
 			"schoolUnit" => [
 				"id" => $this->schoolUnit->id,

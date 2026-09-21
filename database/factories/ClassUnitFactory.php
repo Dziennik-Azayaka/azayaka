@@ -22,7 +22,7 @@ class ClassUnitFactory extends Factory
         return [
             "school_unit_id" => SchoolUnit::factory(),
             "alias" => $this->faker->unique()->word(),
-            "mark" => $this->faker->unique()->randomLetter(),
+            "mark" => $this->faker->randomLetter(),
             "starting_classification_period_id" => ClassificationPeriod::factory(),
             "teaching_cycle_length" => $this->faker->numberBetween(2, 8),
         ];

@@ -15,7 +15,7 @@ final class SubjectControllerTest extends TestCase
 
 	public function test_can_list_subjects(): void
 	{
-		$this->actingUser();
+		$this->actingAdminUser();
 		Subject::factory()->count(10)->create();
 		$response = $this->get("/api/subjects");
 		$response->assertOk();
@@ -32,7 +32,7 @@ final class SubjectControllerTest extends TestCase
 
 	public function test_can_create_subject(): void
 	{
-		$this->actingUser();
+		$this->actingAdminUser();
 		$response = $this->post("/api/subjects", [
 			"name" => "Test Subject",
 			"shortcut" => "TSubject"
@@ -49,7 +49,7 @@ final class SubjectControllerTest extends TestCase
 			"shortcut" => "CSubject"
 		]);
 
-		$this->actingUser();
+		$this->actingAdminUser();
 		$response = $this->post("/api/subjects", [
 			"name" => "Colliding Subject 2",
 			"shortcut" => "CSubject"
@@ -60,7 +60,7 @@ final class SubjectControllerTest extends TestCase
 
 	public function test_can_update_subject(): void
 	{
-		$this->actingUser();
+		$this->actingAdminUser();
 		$subject = Subject::factory()->create([
 			"name" => "Old Subject",
 			"shortcut" => "OSubject"
@@ -77,7 +77,7 @@ final class SubjectControllerTest extends TestCase
 
 	public function test_can_archive_subject(): void
 	{
-		$this->actingUser();
+		$this->actingAdminUser();
 		$subject = Subject::factory()->create();
 		$response = $this->put("/api/subjects/{$subject->id}/activity");
 		$response->assertOk();
@@ -86,7 +86,7 @@ final class SubjectControllerTest extends TestCase
 
 	public function test_can_unarchive_subject(): void
 	{
-		$this->actingUser();
+		$this->actingAdminUser();
 		$subject = Subject::factory()->create([
 			"active" => false
 		]);

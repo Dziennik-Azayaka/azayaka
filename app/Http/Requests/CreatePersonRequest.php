@@ -25,6 +25,7 @@ class CreatePersonRequest extends FormRequest
 			"birthplace" => ["required", "string", "max:255"],
 			"gender" => ["nullable", "in:male,female"],
 			"studentRegistryId" => ["nullable", "exists:student_registries,id"],
+			"studentRegistryNumber" => ["nullable", "integer"],
 			"admissionDate" => ["required_with:studentRegistryId", "date"],
 			"childrenRegistryId" => ["nullable", "exists:children_registries,id"],
 			"residenceAddressCountry" => ["required", "max:255"],

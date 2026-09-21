@@ -14,10 +14,10 @@ class CsvImportException extends Exception
 	public function __construct(array $messages)
 	{
 		$this->messages = $messages;
-		parent::__construct($messages[0], 0, null);
+		parent::__construct($messages[0]);
 	}
 
-	public function render(Request $request): JsonResponse
+	public function render(): JsonResponse
 	{
 		return new JsonResponse([
 			"success" => false,

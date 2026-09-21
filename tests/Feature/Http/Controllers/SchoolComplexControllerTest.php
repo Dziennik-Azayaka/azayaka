@@ -17,7 +17,7 @@ final class SchoolComplexControllerTest extends TestCase
 
 	public function test_list_returns_complexes_with_expected_fields(): void
 	{
-		$this->actingUser();
+		$this->actingAdminUser();
 		SchoolComplex::factory()->count(2)->create();
 
 		$response = $this->get("/api/schoolComplex");
@@ -29,7 +29,7 @@ final class SchoolComplexControllerTest extends TestCase
 
 	public function test_create_without_existing_units_creates_complex_with_correct_type(): void
 	{
-		$this->actingUser();
+		$this->actingAdminUser();
 		$response = $this->post("/api/schoolComplex", [
 			"name" => "Zespół Szkół im. Dzienniczkowców",
 		]);
@@ -45,7 +45,7 @@ final class SchoolComplexControllerTest extends TestCase
 
 	public function test_create_with_existing_units_assigns_parent_to_all_units(): void
 	{
-		$this->actingUser();
+		$this->actingAdminUser();
 		$units = SchoolUnit::factory()->count(3)->create(["school_complex_id" => null]);
 
 		$response = $this->post("/api/schoolComplex", [
@@ -65,7 +65,7 @@ final class SchoolComplexControllerTest extends TestCase
 
 	public function test_update_changes_name_and_sets_type(): void
 	{
-		$this->actingUser();
+		$this->actingAdminUser();
 		$complex = SchoolComplex::factory()->create(["name" => "Old Name", "type" => SchoolType::LICEUM_OGOLNOKSZTALCACE->value]);
 
 		$response = $this->put("/api/schoolComplex/{$complex->id}", [

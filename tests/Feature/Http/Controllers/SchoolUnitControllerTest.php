@@ -38,7 +38,7 @@ final class SchoolUnitControllerTest extends TestCase
 
 	public function test_list_returns_units_resource_collection(): void
 	{
-		$this->actingUser();
+		$this->actingAdminUser();
 		SchoolUnit::factory()->count(2)->create(["school_complex_id" => null]);
 
 		$response = $this->get("/api/schoolUnits");
@@ -68,7 +68,7 @@ final class SchoolUnitControllerTest extends TestCase
 
 	public function test_create_persists_valid_school_unit(): void
 	{
-		$this->actingUser();
+		$this->actingAdminUser();
 		$complex = SchoolComplex::factory()->create();
 
 		$payload = $this->validPayload(["schoolComplexId" => $complex->id]);
@@ -95,7 +95,7 @@ final class SchoolUnitControllerTest extends TestCase
 
 	public function test_create_rejects_invalid_student_category(): void
 	{
-		$this->actingUser();
+		$this->actingAdminUser();
 		$payload = $this->validPayload(["studentCategory" => "invalid-type"]);
 
 		$response = $this->post("/api/schoolUnits", $payload);
@@ -108,7 +108,7 @@ final class SchoolUnitControllerTest extends TestCase
 
 	public function test_create_blocks_multiple_units_without_parent(): void
 	{
-		$this->actingUser();
+		$this->actingAdminUser();
 		SchoolUnit::factory()->count(2)->create(["school_complex_id" => null]);
 
 		$payload = $this->validPayload(["schoolComplexId" => null]);
@@ -123,7 +123,7 @@ final class SchoolUnitControllerTest extends TestCase
 
 	public function test_archive_toggles_active_and_blocks_update_when_inactive(): void
 	{
-		$this->actingUser();
+		$this->actingAdminUser();
 		$complex = SchoolComplex::factory()->create();
 		$unit = SchoolUnit::factory()->create(["school_complex_id" => $complex->id]);
 
@@ -138,8 +138,8 @@ final class SchoolUnitControllerTest extends TestCase
 		]);
 
 		$updatePayload = $this->validPayload(["name" => "Updated Name", "schoolComplexId" => $complex->id]);
-		$updateResponse = $this->put("/api/schoolUnits/$unit->id", $updatePayload);
-		$updateResponse->assertOk();
+		$updateResponse = $this->putJson("/api/schoolUnits/$unit->id", $updatePayload);
+		$updateResponse->assertConflict();
 		$updateResponse->assertJson([
 			"success" => false,
 			"errors" => ["SCHOOL_UNIT_NOT_ACTIVE"],
