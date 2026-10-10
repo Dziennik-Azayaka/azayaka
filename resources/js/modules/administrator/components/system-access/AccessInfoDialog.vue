@@ -58,7 +58,7 @@ function downloadPdf() {
     },
     onSettled: () => {
       loading.value = null;
-    }
+    },
   });
 }
 </script>

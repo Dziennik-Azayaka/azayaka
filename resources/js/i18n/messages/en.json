@@ -108,7 +108,15 @@
 			},
 			"title": "Access to system"
 		},
-		"title": "Administrator panel"
+		"title": "Administrator panel",
+		"classes": {
+			"details": "Class details",
+			"title": "Classes",
+			"delete": {
+				"title": "Are you sure you want to delete this class?",
+				"description": "This action is irreversible. All data associated with this class will be deleted."
+			}
+		}
 	},
 	"apiErrors": {
 		"incorrectCode": "The code is incorrect.",
@@ -122,20 +130,20 @@
 	"assets": {
 		"institutionTypes": {
 			"complementaryGeneralSecondarySchoolForVocationalGraduates": "Complementary general secondary school for graduates of basic vocational schools",
-            "generalBalletSchool": "General ballet school",
+			"generalBalletSchool": "General ballet school",
 			"generalMusicSchoolStageOne": "General music school, stage one",
-            "generalMusicSchoolStageTwo": "General music school, stage two",
-            "generalSchoolOfFineArts": "General school of fine arts",
+			"generalMusicSchoolStageTwo": "General music school, stage two",
+			"generalSchoolOfFineArts": "General school of fine arts",
 			"generalSecondarySchool": "General secondary school",
-            "postSecondaryArtSchool": "Post-secondary art school",
-            "postSecondaryMusicSchool": "Post-secondary music school",
-            "postSecondarySchool": "Post-secondary school",
+			"postSecondaryArtSchool": "Post-secondary art school",
+			"postSecondaryMusicSchool": "Post-secondary music school",
+			"postSecondarySchool": "Post-secondary school",
 			"primarySchool": "Primary school",
-            "schoolOfFineArts": "Secondary school of fine arts",
-            "specialSchoolForWorkPreparation": "Special school for work preparation",
-            "technicalSecondarySchool": "Technical secondary school",
+			"schoolOfFineArts": "Secondary school of fine arts",
+			"specialSchoolForWorkPreparation": "Special school for work preparation",
+			"technicalSecondarySchool": "Technical secondary school",
 			"vocationalSchoolStageOne": "First-stage vocational school",
-            "vocationalSchoolStageTwo": "Second-stage vocational school"
+			"vocationalSchoolStageTwo": "Second-stage vocational school"
 		},
 		"studentCategories": {
 			"adultsOnly": "Adults",
@@ -192,7 +200,8 @@
 			"skipToContent": "Skip to content",
 			"toggleMenu": "Open/close menu",
 			"tryAgain": "Try again",
-			"unarchive": "Unarchive"
+			"unarchive": "Unarchive",
+			"delete": "Delete"
 		},
 		"actions_": "Actions",
 		"auto": "(auto)",
@@ -207,6 +216,8 @@
 				"flatNumber": "Flat number"
 			},
 			"date": "Date",
+			"dateFrom": "Date from",
+			"dateTo": "Date to",
 			"district": "District",
 			"email": "Email address",
 			"firstName": "First name",
@@ -302,7 +313,7 @@
 		"maxLength": "The value must not exceed {number} characters.",
 		"maxValue": "The value must not exceed {number}.",
 		"minLength": "The value must be at least {number} characters long.",
-        "minValue": "The value must be at least {number}.",
-        "passwordsMustMatch": "A different password has been entered in the \"Confirm password\" field."
+		"minValue": "The value must be at least {number}.",
+		"passwordsMustMatch": "A different password has been entered in the \"Confirm password\" field."
 	}
 }
