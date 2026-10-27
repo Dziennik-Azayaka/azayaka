@@ -87,7 +87,7 @@ class GuardianController extends Controller
 		}
 
 
-		return GuardianAccessResource::collection($guardians->with(["accountAccesses", "person"])->get());
+		return GuardianAccessResource::collection($guardians->with(["accountAccesses", "person.students.person"])->get());
 	}
 
 	public function generateAccessesDocument(Request $request)

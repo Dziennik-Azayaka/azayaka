@@ -1,10 +1,9 @@
 <script setup lang="ts">
 import AccessCode from './AccessCode.vue';
 import AccessStatusInfo from './AccessStatusInfo.vue';
-import { useDownloadEmployeeAccessPdf } from '@/api/hooks/employee/downloadEmployeeAccessPdf';
-import { useUpdateEmployeeAccess } from '@/api/hooks/employee/updateEmployeeAccess';
-import { AccessStatus } from '@/api/types/access';
-import type { EmployeeAccess } from '@/api/types/employee-access';
+import { useDownloadAccessPdf } from '@/api/hooks/access/downloadAccessPdf';
+import { useUpdateAccess } from '@/api/hooks/access/updateAccess';
+import { AccessStatus, type AccessAction, type AccessEntry } from '@/api/types/access';
 import { ErrorBanner } from '@/components/ui/banner';
 import { Button } from '@/components/ui/button';
 import {
@@ -18,24 +17,28 @@ import {
 } from '@/components/ui/dialog';
 import { useDownloadPDFPage } from '@/lib/utils';
 import { LucideLock, LucidePrinter, LucideRefreshCw, LucideRotateCw } from 'lucide-vue-next';
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 
-const props = defineProps<{
-  data: EmployeeAccess;
-  accessType: 'employee' | 'guardian' | 'student';
-}>();
+const props = defineProps<{ access: AccessEntry }>();
 
 const { t, d } = useI18n();
 
 const dialogOpen = ref(false);
-const loading = ref<'regenerate' | 'generate' | 'revoke' | 'pdf' | null>(null);
+const loading = ref<AccessAction | 'pdf' | null>(null);
 
-const { error, mutate } = useUpdateEmployeeAccess();
-function update(action: 'revoke' | 'regenerate' | 'generate') {
+const title = computed(() => {
+  const typeName = t(`common.accessTypes.${props.access.type}`);
+  const shortcut = props.access.secondary ? ` (${props.access.secondary})` : '';
+
+  return `${props.access.fullName}${shortcut} - ${typeName}`;
+});
+
+const { error, mutate } = useUpdateAccess();
+function update(action: AccessAction) {
   loading.value = action;
   mutate(
-    { id: props.data.id, action },
+    { entry: props.access, action },
     {
       onSettled: () => {
         loading.value = null;
@@ -44,22 +47,25 @@ function update(action: 'revoke' | 'regenerate' | 'generate') {
   );
 }
 
-const { mutate: download } = useDownloadEmployeeAccessPdf();
+const { mutate: download } = useDownloadAccessPdf();
 function downloadPdf() {
   loading.value = 'pdf';
   const { displayError, displayPDF } = useDownloadPDFPage();
 
-  download([props.data.id], {
-    onSuccess: (blob) => {
-      displayPDF(blob);
+  download(
+    { type: props.access.type, ids: [props.access.entityId] },
+    {
+      onSuccess: (blob) => {
+        displayPDF(blob);
+      },
+      onError: () => {
+        displayError();
+      },
+      onSettled: () => {
+        loading.value = null;
+      },
     },
-    onError: () => {
-      displayError();
-    },
-    onSettled: () => {
-      loading.value = null;
-    }
-  });
+  );
 }
 </script>
 
@@ -70,39 +76,41 @@ function downloadPdf() {
     </DialogTrigger>
     <DialogContent class="max-w-160!">
       <DialogHeader>
-        <DialogTitle>
-          <template v-if="accessType === 'employee'">
-            {{ data.fullName }} ({{ data.shortcut }}) - {{ t('common.accessTypes.employee') }}
-          </template>
-        </DialogTitle>
+        <DialogTitle>{{ title }}</DialogTitle>
+        <p v-if="access.studentName" class="text-sm text-muted-foreground">
+          {{ t('administrator.systemAccess.student') }}: {{ access.studentName }}
+        </p>
       </DialogHeader>
 
-      <AccessStatusInfo :status="data.status" />
-      <dl v-if="data.status === AccessStatus.ACTIVE" class="space-y-1 mt-2">
+      <AccessStatusInfo :status="access.status" />
+      <dl v-if="access.status === AccessStatus.ACTIVE" class="space-y-1 mt-2">
         <div class="space-y-0.5">
           <dt class="font-medium text-sm">{{ t('administrator.systemAccess.activationDate') }}</dt>
-          <dd class="inline">{{ d(data.activatedAt, 'long') }}</dd>
+          <dd class="inline">{{ access.activatedAt ? d(access.activatedAt, 'long') : '-' }}</dd>
         </div>
         <div class="space-y-0.5">
           <dt class="font-medium text-sm">{{ t('administrator.systemAccess.lastLoginDate') }}</dt>
-          <dd>{{ d(data.lastLoginAt, 'long') }}</dd>
+          <dd>{{ access.lastLoginAt ? d(access.lastLoginAt, 'long') : '-' }}</dd>
         </div>
       </dl>
 
-      <AccessCode :code="data.activationCode" v-if="data.status === AccessStatus.CODE_GENERATED" />
+      <AccessCode
+        :code="access.activationCode ?? []"
+        v-if="access.status === AccessStatus.CODE_GENERATED"
+      />
 
       <p
         class="rounded-md px-4 py-3.5 bg-primary text-primary-foreground text-sm"
-        v-if="data.status === AccessStatus.CODE_GENERATED"
+        v-if="access.status === AccessStatus.CODE_GENERATED"
       >
         {{ t('administrator.systemAccess.statusDescriptions.codeGenerated') }}
       </p>
 
       <p
         class="rounded-md px-4 py-3.5 bg-primary text-primary-foreground text-sm"
-        v-if="data.status === AccessStatus.INACTIVE"
+        v-if="access.status === AccessStatus.INACTIVE"
       >
-        {{ t('administrator.systemAccess.statusDescriptions.inactive') }}
+        {{ t('administrator.systemAccess.statusDescriptions.noAccess') }}
       </p>
 
       <ErrorBanner :error="error" v-if="error" />
@@ -110,7 +118,7 @@ function downloadPdf() {
       <DialogFooter>
         <Button
           variant="outline"
-          v-if="data.status === AccessStatus.CODE_GENERATED"
+          v-if="access.status === AccessStatus.CODE_GENERATED"
           type="button"
           @click="downloadPdf"
           :loading="loading === 'pdf'"
@@ -122,7 +130,7 @@ function downloadPdf() {
         <Button
           variant="default"
           type="button"
-          v-if="data.status === AccessStatus.INACTIVE"
+          v-if="access.status === AccessStatus.INACTIVE"
           @click="update('generate')"
           :loading="loading === 'generate'"
           :disabled="loading"
@@ -133,7 +141,7 @@ function downloadPdf() {
         <Button
           variant="outline"
           type="button"
-          v-if="data.status === AccessStatus.ACTIVE"
+          v-if="access.status === AccessStatus.ACTIVE"
           @click="update('regenerate')"
           :loading="loading === 'regenerate'"
           :disabled="loading"
@@ -144,7 +152,7 @@ function downloadPdf() {
         <Button
           variant="destructive"
           type="button"
-          v-if="data.status !== AccessStatus.INACTIVE"
+          v-if="access.type === 'employee' && access.status === AccessStatus.ACTIVE"
           @click="update('revoke')"
           :loading="loading === 'revoke'"
           :disabled="loading"

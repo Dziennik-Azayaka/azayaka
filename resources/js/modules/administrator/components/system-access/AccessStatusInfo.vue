@@ -42,7 +42,7 @@ const { t } = useI18n();
       <div class="flex flex-col items-center">
         <div class="text-sm font-medium text-center">
           <template v-if="status === AccessStatus.INACTIVE">{{
-            t('administrator.systemAccess.diagramSteps.accessBlocked')
+            t('administrator.systemAccess.diagramSteps.noAccess')
           }}</template>
           <template v-else>{{
             t('administrator.systemAccess.diagramSteps.codeGenerated')

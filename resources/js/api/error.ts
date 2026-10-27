@@ -24,6 +24,8 @@ export class ApiError {
         return 'apiErrors.takenShortcut';
       case 'WRONG_PASSWORD':
         return 'apiErrors.incorrectPassword';
+      case 'STUDENT_NOT_IN_ACTIVE_CLASS_UNIT':
+        return 'apiErrors.studentNotInActiveClassUnit';
       case 'EMAIL_TAKEN':
         return 'apiErrors.takenEmail';
       default:

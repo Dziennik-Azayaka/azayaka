@@ -7,6 +7,7 @@ use App\Enums\AccessType;
 use App\Exceptions\CustomValidationException;
 use App\Exceptions\EntityAlreadyExistsException;
 use App\Exceptions\RegistryArchivedException;
+use App\Http\Resources\AccountAccessResource;
 use App\Http\Resources\ResidenceAddressResource;
 use App\Models\AccountAccess;
 use App\Models\Student;
@@ -179,15 +180,17 @@ class StudentController extends Controller
 			});
 		}
 
-		return $students->with("accountAccesses")->get()->map(fn($student) => [
-			"firstName" => $student->person->first_name,
-			"secondName" => $student->person->second_name,
-			"lastName" => $student->person->last_name,
-			"studentId" => $student->id,
-			"accessWords" => $student->accountAccesses->filter(function ($access) {
-				return $access->guardian_id == null;
-			})->first()
-		]);
+		return $students->with("accountAccesses")->get()->map(function ($student) {
+			$access = $student->accountAccesses->first(fn($access) => $access->guardian_id == null);
+
+			return [
+				"firstName" => $student->person->first_name,
+				"secondName" => $student->person->second_name,
+				"lastName" => $student->person->last_name,
+				"studentId" => $student->id,
+				"accessWords" => $access ? new AccountAccessResource($access) : null
+			];
+		});
 	}
 
 	public function generateAccessesDocument(Request $request)

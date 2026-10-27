@@ -2,9 +2,7 @@
 import AccessInfoDialog from './AccessInfoDialog.vue';
 import AccessStatusBadge from './AccessStatusBadge.vue';
 import MassActionPrint from './MassActionPrint.vue';
-import { useDownloadEmployeeAccessPdf } from '@/api/hooks/employee/downloadEmployeeAccessPdf';
-import { AccessStatus } from '@/api/types/access';
-import type { EmployeeAccess } from '@/api/types/employee-access';
+import { AccessStatus, type AccessEntry, type AccessType } from '@/api/types/access';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import {
@@ -26,10 +24,10 @@ import {
 import { h, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 
-const props = defineProps<{ accesses: EmployeeAccess[] }>();
+const props = defineProps<{ accesses: AccessEntry[]; type: AccessType }>();
 const { t, d } = useI18n();
 
-const columnHelper = createColumnHelper<EmployeeAccess>();
+const columnHelper = createColumnHelper<AccessEntry>();
 const columns = [
   columnHelper.display({
     id: 'select',
@@ -41,14 +39,25 @@ const columns = [
         'onUpdate:modelValue': (value) => table.toggleAllPageRowsSelected(!!value),
         ariaLabel: () => t('common.actions.selectAll'),
       }),
-    cell: ({ row }) => h(TableCheckbox<EmployeeAccess>, { row }),
+    cell: ({ row }) => h(TableCheckbox<AccessEntry>, { row }),
     enableSorting: false,
     enableHiding: false,
   }),
-  columnHelper.accessor((row) => `${row.fullName} (${row.shortcut})`, {
-    id: 'fullName',
-    header: () => `${t('common.data.fullName')} (${t('common.data.short').toLowerCase()})`,
+  columnHelper.accessor('fullName', {
+    header: () => t('common.data.fullName'),
+    cell: ({ row }) =>
+      row.original.secondary
+        ? `${row.original.fullName} (${row.original.secondary})`
+        : row.original.fullName,
   }),
+  ...(props.type === 'guardian'
+    ? [
+        columnHelper.accessor('studentName', {
+          header: () => t('administrator.systemAccess.student'),
+          cell: ({ row }) => row.original.studentName ?? '-',
+        }),
+      ]
+    : []),
   columnHelper.accessor('status', {
     header: () => t('administrator.systemAccess.accessStatus'),
     cell: ({ row }) => h(AccessStatusBadge, { status: row.getValue('status') as AccessStatus }),
@@ -56,7 +65,8 @@ const columns = [
       filterValue === 'all' || row.getValue(columnId) === filterValue,
   }),
   columnHelper.accessor(
-    (row) => (row.status === AccessStatus.ACTIVE ? d(row.lastLoginAt, 'long') : '-'),
+    (row) =>
+      row.status === AccessStatus.ACTIVE && row.lastLoginAt ? d(row.lastLoginAt, 'long') : '-',
     {
       id: 'lastLoginAt',
       header: () => t('administrator.systemAccess.lastLoginDate'),
@@ -70,7 +80,7 @@ const table = useVueTable({
   get data() {
     return props.accesses;
   },
-  getRowId: (access) => access.id.toString(),
+  getRowId: (access) => access.rowKey,
   columns,
   getCoreRowModel: getCoreRowModel(),
   getFilteredRowModel: getFilteredRowModel(),
@@ -79,9 +89,9 @@ const table = useVueTable({
     searchQuery.value = val;
   },
   globalFilterFn: (row, _, filterValue) => {
-    const { fullName, shortcut } = row.original;
+    const { fullName, secondary, studentName } = row.original;
 
-    const combined = `${fullName} ${shortcut}`.toLowerCase();
+    const combined = `${fullName} ${secondary ?? ''} ${studentName ?? ''}`.toLowerCase();
     return combined.includes(filterValue.toLowerCase());
   },
   state: {
@@ -137,14 +147,14 @@ const table = useVueTable({
         </SelectContent>
       </Select>
       <MassActionPrint
-        :hook="useDownloadEmployeeAccessPdf"
+        :type="type"
         :selected="table.getSelectedRowModel().rows.map((row) => row.original)"
       />
     </div>
 
     <TableTemplate :table="table">
       <template #row="{ templateRow, row }">
-        <AccessInfoDialog :data="row.original" access-type="employee">
+        <AccessInfoDialog :access="row.original">
           <component :is="templateRow" />
         </AccessInfoDialog>
       </template>
