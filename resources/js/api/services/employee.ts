@@ -1,7 +1,5 @@
 import { type EmployeeBodyDTO, type EmployeeDTO, employeeFromDTO } from '../dtos/employee';
-import { type EmployeeAccessDTO, employeeAccessFromDTO } from '../dtos/employee-access';
 import type { Employee } from '../types/employee';
-import type { EmployeeAccess } from '../types/employee-access';
 import { http } from '@/config/ofetch';
 
 export const EmployeeService = {
@@ -23,21 +21,5 @@ export const EmployeeService = {
     http(`/employees/${id}`, {
       method: 'PUT',
       body: data,
-    }),
-  getAccesses: (): Promise<EmployeeAccess[]> =>
-    http<EmployeeAccessDTO[]>('/employees/accesses', { method: 'GET' }).then((res) =>
-      res.map(employeeAccessFromDTO),
-    ),
-  updateAccess: (id: number, action: 'generate' | 'regenerate' | 'revoke') =>
-    http('/employees/accesses', {
-      method: 'PATCH',
-      body: { ids: [id], action },
-    }),
-  getPdfInstructions: (ids: number[]) =>
-    http<Blob, 'blob'>('/employees/accesses/document', {
-      method: 'POST',
-      body: { ids },
-      responseType: 'blob',
-      parseResponse: undefined,
     }),
 };

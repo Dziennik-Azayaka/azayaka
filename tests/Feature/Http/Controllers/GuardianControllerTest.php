@@ -134,7 +134,7 @@ final class GuardianControllerTest extends TestCase
 			]);
 
 		$data = $response->json()[0];
-		$this->assertEquals("Jan", $data["students"][0]["firstName"]);
+		$this->assertEquals("Jan", $data["student"]["firstName"]);
 		$this->assertEquals("a,b,c", $data["accessWords"]["words"]);
 	}
 

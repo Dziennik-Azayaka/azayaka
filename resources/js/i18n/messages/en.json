@@ -73,12 +73,12 @@
 				"active": "Active",
 				"all": "All",
 				"codeGenerated": "Generated activation code",
-				"inactive": "Blocked"
+				"inactive": "No access"
 			},
 			"actions": {
 				"generate": "Generate activation code",
 				"regenerate": "Regenerate activation code",
-				"revoke": "Block access",
+				"revoke": "Revoke access",
 				"seeCode": "Click here to view the activation code.",
 				"printInstructionsOne": "Print instructions"
 			},
@@ -86,34 +86,41 @@
 			"code": "Access activation code",
 			"description": "To view details or manage user access, click on a row in the table.",
 			"diagramSteps": {
-				"accessBlocked": "Access to system has been blocked",
 				"codeGenerated": "Access activation code has been generated",
+				"noAccess": "No access to the system",
 				"userActivatedAccess": "User has activated their access",
 				"userCreated": "User has been created",
 				"userHasntActivateAccess": "The user has not activated their access"
 			},
 			"lastLoginDate": "Date of last log in",
+			"student": "Student",
 			"massActionPrint": {
 				"title": "Print instructions for selected item",
 				"dialogTitle": "Warning",
-				"dialogDescription": "Some of the selected users already have access activated or their access is blocked. These users will be excluded from the instructions printing."
+				"dialogDescription": "Some of the selected users already have access activated or do not have access. These users will be excluded from the instructions printing."
 			},
 			"statusDescriptions": {
 				"codeGenerated": "To access the system, you must register using the code provided above. You can print the registration instructions, which will include this code.",
-				"inactive": "The administrator has blocked the user access to the system. To unlock the access, you will need to generate a new activation code. The user will need to go through the access activation process again."
+				"noAccess": "The user does not have access to the system. Generate an activation code to provide the user with registration instructions."
 			},
 			"tableSearch": "Search for users...",
 			"tabs": {
-				"employees": "Employees"
+				"employees": "Employees",
+				"guardians": "Guardians",
+				"students": "Students"
 			},
 			"title": "Access to system"
 		},
 		"title": "Administrator panel"
 	},
 	"apiErrors": {
+		"entityHasNoAccessWords": "Instructions cannot be generated because the user has no activation code.",
+		"gradebookExists": "This operation cannot be performed because gradebooks already exist for this school year.",
 		"incorrectCode": "The code is incorrect.",
 		"incorrectCredentials": "Email address or password is incorrect.",
 		"incorrectPassword": "Password is incorrect.",
+		"schoolUnitNotActive": "This school unit cannot be edited because it has been archived.",
+		"studentNotInActiveClassUnit": "The student is not assigned to an active class, so access cannot be generated.",
 		"takenEmail": "This email address is already taken.",
 		"takenName": "This name is already taken.",
 		"takenShortcut": "This shortcut is already taken.",
@@ -122,20 +129,20 @@
 	"assets": {
 		"institutionTypes": {
 			"complementaryGeneralSecondarySchoolForVocationalGraduates": "Complementary general secondary school for graduates of basic vocational schools",
-            "generalBalletSchool": "General ballet school",
+			"generalBalletSchool": "General ballet school",
 			"generalMusicSchoolStageOne": "General music school, stage one",
-            "generalMusicSchoolStageTwo": "General music school, stage two",
-            "generalSchoolOfFineArts": "General school of fine arts",
+			"generalMusicSchoolStageTwo": "General music school, stage two",
+			"generalSchoolOfFineArts": "General school of fine arts",
 			"generalSecondarySchool": "General secondary school",
-            "postSecondaryArtSchool": "Post-secondary art school",
-            "postSecondaryMusicSchool": "Post-secondary music school",
-            "postSecondarySchool": "Post-secondary school",
+			"postSecondaryArtSchool": "Post-secondary art school",
+			"postSecondaryMusicSchool": "Post-secondary music school",
+			"postSecondarySchool": "Post-secondary school",
 			"primarySchool": "Primary school",
-            "schoolOfFineArts": "Secondary school of fine arts",
-            "specialSchoolForWorkPreparation": "Special school for work preparation",
-            "technicalSecondarySchool": "Technical secondary school",
+			"schoolOfFineArts": "Secondary school of fine arts",
+			"specialSchoolForWorkPreparation": "Special school for work preparation",
+			"technicalSecondarySchool": "Technical secondary school",
 			"vocationalSchoolStageOne": "First-stage vocational school",
-            "vocationalSchoolStageTwo": "Second-stage vocational school"
+			"vocationalSchoolStageTwo": "Second-stage vocational school"
 		},
 		"studentCategories": {
 			"adultsOnly": "Adults",
@@ -302,7 +309,7 @@
 		"maxLength": "The value must not exceed {number} characters.",
 		"maxValue": "The value must not exceed {number}.",
 		"minLength": "The value must be at least {number} characters long.",
-        "minValue": "The value must be at least {number}.",
-        "passwordsMustMatch": "A different password has been entered in the \"Confirm password\" field."
+		"minValue": "The value must be at least {number}.",
+		"passwordsMustMatch": "A different password has been entered in the \"Confirm password\" field."
 	}
 }

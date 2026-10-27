@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { AccessStatus } from '@/api/types/access';
+import { useDownloadAccessPdf } from '@/api/hooks/access/downloadAccessPdf';
+import { AccessStatus, type AccessEntry, type AccessType } from '@/api/types/access';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -11,28 +12,32 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { useDownloadPDFPage } from '@/lib/utils';
-import type { UseMutationReturnType } from '@tanstack/vue-query';
 import { LucidePrinter } from 'lucide-vue-next';
 import { computed, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 const props = defineProps<{
-  hook: () => UseMutationReturnType<Blob, Error, number[], unknown>;
-  selected: { id: number; status: AccessStatus }[];
+  type: AccessType;
+  selected: AccessEntry[];
 }>();
 
 const { t } = useI18n();
 const showWarning = ref(false);
 
-const { mutate: download, isPending } = props.hook();
+const { mutate: download, isPending } = useDownloadAccessPdf();
 
 function downloadPdf() {
   const { displayError, displayPDF } = useDownloadPDFPage();
+  const ids = [
+    ...new Set(
+      props.selected
+        .filter((access) => access.status === AccessStatus.CODE_GENERATED)
+        .map((access) => access.entityId),
+    ),
+  ];
 
   download(
-    props.selected
-      .filter((access) => access.status === AccessStatus.CODE_GENERATED)
-      .map((access) => access.id),
+    { type: props.type, ids },
     {
       onSuccess: (blob) => {
         displayPDF(blob);
