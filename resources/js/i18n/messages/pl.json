@@ -114,9 +114,12 @@
 		"title": "Panel administratora"
 	},
 	"apiErrors": {
+		"entityHasNoAccessWords": "Nie można wygenerować instrukcji, ponieważ użytkownik nie ma wygenerowanego kodu aktywacji.",
+		"gradebookExists": "Nie można wykonać tej operacji, ponieważ dla tego roku szkolnego istnieją już dzienniki.",
 		"incorrectCode": "Podany kod jest nieprawidłowy.",
 		"incorrectCredentials": "Adres e-mail lub hasło jest nieprawidłowe.",
 		"incorrectPassword": "Hasło jest nieprawidłowe.",
+		"schoolUnitNotActive": "Nie można edytować tej jednostki, ponieważ została zarchiwizowana.",
 		"studentNotInActiveClassUnit": "Uczeń nie należy do aktywnej klasy, więc nie można wygenerować dla niego dostępu.",
 		"takenEmail": "Ten adres e-mail jest już użyty.",
 		"takenName": "Ta nazwa jest już użyta.",

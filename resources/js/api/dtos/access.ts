@@ -43,7 +43,7 @@ export interface GuardianAccessDTO {
   firstName: string;
   secondName: string | null;
   lastName: string;
-  students: GuardianStudentDTO[];
+  student: GuardianStudentDTO;
   accessWords: AccountAccessDTO | null;
 }
 
@@ -105,17 +105,15 @@ export function studentAccessFromDTO(dto: StudentAccessDTO): AccessEntry {
 }
 
 export function guardianAccessFromDTO(dto: GuardianAccessDTO): AccessEntry {
-  const student = dto.students[0];
+  const student = dto.student;
 
   return {
     rowKey: `guardian-${dto.id}`,
     entityId: dto.id,
-    studentId: student?.studentId,
+    studentId: student.studentId,
     type: 'guardian',
     fullName: formatName(dto.firstName, dto.secondName, dto.lastName),
-    studentName: student
-      ? formatName(student.firstName, student.secondName, student.lastName)
-      : undefined,
+    studentName: formatName(student.firstName, student.secondName, student.lastName),
     ...accessDetailsFromDTO(dto.accessWords),
   };
 }

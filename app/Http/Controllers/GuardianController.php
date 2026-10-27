@@ -77,7 +77,8 @@ class GuardianController extends Controller
 
 	public function listAccesses(Request $request)
 	{
-		$guardians = Guardian::query();
+		$guardians = Guardian::query()
+			->whereHas("person.students");
 		if ($request->has("classUnitId")) {
 			$guardians->when($request->input("classUnitId"), function ($query, $classUnitId) {
 				$query->whereHas("person.students.gradebooks", function ($q) use ($classUnitId) {
@@ -87,7 +88,9 @@ class GuardianController extends Controller
 		}
 
 
-		return GuardianAccessResource::collection($guardians->with(["accountAccesses", "person.students.person"])->get());
+		return GuardianAccessResource::collection(
+			$guardians->with(["accountAccesses", "person.students.person"])->get()
+		);
 	}
 
 	public function generateAccessesDocument(Request $request)

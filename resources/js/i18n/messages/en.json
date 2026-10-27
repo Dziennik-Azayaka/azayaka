@@ -114,9 +114,12 @@
 		"title": "Administrator panel"
 	},
 	"apiErrors": {
+		"entityHasNoAccessWords": "Instructions cannot be generated because the user has no activation code.",
+		"gradebookExists": "This operation cannot be performed because gradebooks already exist for this school year.",
 		"incorrectCode": "The code is incorrect.",
 		"incorrectCredentials": "Email address or password is incorrect.",
 		"incorrectPassword": "Password is incorrect.",
+		"schoolUnitNotActive": "This school unit cannot be edited because it has been archived.",
 		"studentNotInActiveClassUnit": "The student is not assigned to an active class, so access cannot be generated.",
 		"takenEmail": "This email address is already taken.",
 		"takenName": "This name is already taken.",

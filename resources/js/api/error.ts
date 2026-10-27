@@ -14,9 +14,9 @@ export class ApiError {
 
   getTranslationId() {
     switch (this.code) {
-      case 'CODE_NOT_FOUND':
+      case 'ACTIVATION_CODE_NOT_FOUND':
         return 'apiErrors.incorrectCode';
-      case 'INVALID_USERNAME_OR_PASSWORD':
+      case 'INVALID_CREDENTIALS':
         return 'apiErrors.incorrectCredentials';
       case 'NAME_TAKEN':
         return 'apiErrors.takenName';
@@ -28,6 +28,12 @@ export class ApiError {
         return 'apiErrors.studentNotInActiveClassUnit';
       case 'EMAIL_TAKEN':
         return 'apiErrors.takenEmail';
+      case 'ENTITY_HAS_NO_ACCESS_WORDS':
+        return 'apiErrors.entityHasNoAccessWords';
+      case 'GRADEBOOK_ALREADY_EXISTS':
+        return 'apiErrors.gradebookExists';
+      case 'SCHOOL_UNIT_NOT_ACTIVE':
+        return 'apiErrors.schoolUnitNotActive';
       default:
         return 'apiErrors.unexpectedError';
     }

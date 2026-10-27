@@ -10,23 +10,26 @@ class GuardianAccessResource extends JsonResource
 	public function toArray(Request $request): array
 	{
 		$student = $this->person->students->first();
-		$access = $student
-			? $this->accountAccesses->first(
-				fn($access) => $access->guardian_id != null && $access->student_id == $student->id
-			)
-			: null;
+
+		if (!$student) {
+			throw new \RuntimeException("Guardian {$this->id} has no assigned student.");
+		}
+
+		$access = $this->accountAccesses->first(
+			fn($access) => $access->student_id == $student->id
+		);
 
 		return [
 			"firstName" => $this->first_name,
 			"secondName" => $this->second_name,
 			"lastName" => $this->last_name,
 			"id" => $this->id,
-			"students" => $this->person->students->map(fn($student) => [
+			"student" => [
 				"studentId" => $student->id,
 				"firstName" => $student->person->first_name,
 				"secondName" => $student->person->second_name,
 				"lastName" => $student->person->last_name
-			]),
+			],
 			"accessWords" => $access ? new AccountAccessResource($access) : null
 		];
 	}
